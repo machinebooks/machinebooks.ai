@@ -1,0 +1,14 @@
+# Extraído de: LibroUsuario/cap-26-que-no-delegar.md
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep"
+    ],
+    "deny": [
+      "Bash(rm *)",
+      "Bash(sudo *)"
+    ]
+  }
+}

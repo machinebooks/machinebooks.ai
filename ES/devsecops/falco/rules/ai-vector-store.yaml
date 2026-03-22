@@ -1,0 +1,21 @@
+# Extraído de: LibroDevSecOps/cap-18-runtime-security.md
+# falco/rules/ai-vector-store.yaml
+- rule: Acceso al almacén de vectores desde contenedor no autorizado
+  desc: >
+    Solo los contenedores de inferencia y de indexación
+    deberían conectar al servicio de Qdrant (puerto 6333).
+    Un contenedor de API gateway o de frontend que accede
+    directamente al almacén vectorial es un indicador
+    de movimiento lateral o de exfiltración de datos RAG.
+  condition: >
+    outbound
+    and container
+    and fd.sport = 6333
+    and not container.name in (inference-service,
+         indexer-service, rag-worker)
+  output: >
+    Acceso al almacén vectorial desde contenedor no autorizado
+    (contenedor=%container.name imagen=%container.image.repository
+    destino=%fd.sip:%fd.sport proceso=%proc.name)
+  priority: CRITICAL
+  tags: [ai_workload, data_exfiltration, rag_security]

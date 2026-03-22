@@ -1,0 +1,25 @@
+# Extraído de: LibroFinOps/cap-22-multiproveedor.md
+# policies/providers/anthropic.yaml
+provider: anthropic
+model_ids: ["claude-opus-4-6", "claude-sonnet-4-6", "claude-haiku-4-5"]
+last_terms_review: "2025-02-01"
+next_review_due: "2025-08-01"  # revisión semestral
+
+gdpr_compliance:
+  dpa_signed: true
+  dpa_date: "2024-09-15"
+  data_residency: "US (primario), EU (disponible bajo contrato)"
+  data_retention_policy: "No retiene datos de prompts tras la inferencia"
+  training_data_opt_out: true
+
+ai_act_compliance:
+  risk_category_assessment: "GPAI (propósito general)"
+  transparency_obligations: "cumple Art. 13 AI Act"
+
+contact:
+  account_manager: "enterprise-support@anthropic.com"
+  escalation_process: "Portal enterprise > ticket P1 > llamada 24h"
+
+restrictions:
+  prohibited_uses: []
+  requires_enterprise_agreement: true

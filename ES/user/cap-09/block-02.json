@@ -1,0 +1,16 @@
+# Extraído de: LibroUsuario/cap-09-conectar-todo.md
+{
+  "mcpServers": {
+    "google-drive": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-google-drive"
+      ],
+      "env": {
+        "GOOGLE_CREDENTIALS_PATH": "C:\\Users\\TU_USUARIO\\mcp-credentials\\gmail-credentials.json",
+        "GOOGLE_TOKEN_PATH": "C:\\Users\\TU_USUARIO\\mcp-credentials\\gdrive-token.json"
+      }
+    }
+  }
+}

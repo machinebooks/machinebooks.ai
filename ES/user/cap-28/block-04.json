@@ -1,0 +1,20 @@
+# Extraído de: LibroUsuario/cap-28-tu-segundo-cerebro-operativo.md
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y", "@modelcontextprotocol/server-filesystem",
+        "/ruta/a/mi-trabajo"
+      ]
+    },
+    "gmail": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-gmail"]
+    },
+    "google-calendar": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-google-calendar"]
+    }
+  }
+}

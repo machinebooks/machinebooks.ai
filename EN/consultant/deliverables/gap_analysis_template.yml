@@ -1,0 +1,61 @@
+# Source: The Consultant and the Machine -- Chapter 6
+# Pattern: YAML template for gap analysis reports
+
+# templates/gap_analysis_iso27001.yaml
+template:
+  id: "gap-analysis-iso27001-v3"
+  version: "3.2.1"
+  last_updated: "2026-02-15"
+  document_type: "gap_analysis"
+  framework: "ISO 27001:2022"
+
+  voice:
+    formality: "high"
+    assertiveness: "direct"  # No hedging in findings
+    person: "third"          # "It is observed" not "We observed"
+    prohibited_terms:
+      - "could be considered"
+      - "it might be advisable perhaps"
+      - "not entirely aligned"
+    preferred_terms:
+      gap: "gap"
+      remediation: "corrective measure"
+      residual_risk: "residual risk"
+
+  sections:
+    - id: "executive_summary"
+      max_words: 500
+      instructions: >
+        Summarize the main findings in 3-5 paragraphs.
+        Include: total number of controls evaluated, overall
+        compliance percentage, the 3 most critical gaps,
+        total estimated remediation effort. Tone: direct,
+        without alarm but without minimizing.
+      requires_human_review: true
+
+    - id: "methodology"
+      max_words: 300
+      instructions: >
+        Describe the approach: controls evaluated, evidence
+        sources, evaluation criteria, maturity scale.
+      static_content: true  # Generated once, does not change
+
+    - id: "detailed_findings"
+      max_words: null  # Variable per controls
+      per_control: true
+      instructions: >
+        For each control: status (compliant/partially
+        compliant/non-compliant), evidence collected,
+        gap description if applicable, associated risk,
+        proposed remediation with estimated effort
+        (hours, cost, timeline).
+      requires_human_review: false  # Review by sampling
+
+    - id: "remediation_plan"
+      max_words: 800
+      instructions: >
+        Prioritize remediations by criticality and effort.
+        Group into quick wins (< 2 weeks), medium-term
+        (1-3 months) and long-term (3-12 months). Include
+        dependencies between remediations.
+      requires_human_review: true

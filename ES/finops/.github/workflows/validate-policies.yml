@@ -1,0 +1,67 @@
+# Extraído de: LibroFinOps/cap-20-policy-as-code.md
+# .github/workflows/validate-policies.yml
+name: Validar y desplegar políticas FinOps
+
+on:
+  pull_request:
+    paths: ["policies/**"]
+  push:
+    branches: [main]
+    paths: ["policies/**"]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2   # para comparar con el commit anterior
+
+      - name: Validar sintaxis YAML
+        run: |
+          python scripts/validate_yaml_schema.py policies/
+
+      - name: Detectar cambios de presupuesto >20%
+        id: budget_check
+        run: |
+          python scripts/check_budget_increases.py \
+            --old HEAD~1 \
+            --new HEAD \
+            --threshold 0.20
+
+      - name: Bloquear si falta aprobación FinOps
+        if: steps.budget_check.outputs.requires_approval == 'true'
+        run: |
+          echo "::error::Este PR aumenta presupuestos >20%."
+          echo "Requiere aprobación del equipo FinOps."
+          exit 1
+
+      - name: Simular impacto en coste
+        run: |
+          python scripts/simulate_policy_impact.py \
+            --policies policies/ \
+            --usage-data data/last_30_days.json
+
+  deploy-staging:
+    needs: validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sincronizar políticas a staging
+        run: |
+          rsync -av policies/ ${{ secrets.STAGING_POLICIES_PATH }}/
+
+      - name: Verificar aplicación en staging (15 min)
+        run: |
+          python scripts/verify_policy_application.py \
+            --env staging --minutes 15
+
+  deploy-production:
+    needs: deploy-staging
+    environment: production    # requiere aprobación manual en GitHub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sincronizar políticas a producción
+        run: |
+          rsync -av policies/ ${{ secrets.PROD_POLICIES_PATH }}/
+          echo "Políticas desplegadas: $(date -u)" >> deployment.log

@@ -1,0 +1,51 @@
+# Source: The Consultant and the Machine -- Chapter 23
+# Pattern: Confidentiality policy per project type
+
+# project_security_config.yaml
+project:
+  name: "ENS compliance assessment"
+  client_sector: "sector_publico"
+  security_level: "alto"  # bajo, medio, alto
+
+classification:
+  # Default minimum level for all project content
+  default_level: "confidential"
+
+  # Project entities that must always be sanitized
+  project_entities:
+    - name: "Entity name"
+      category: "org"
+    - name: "IT director's name"
+      category: "persona"
+    - name: "192.168.1.0/24"
+      category: "ip_range"
+
+  # Terms that automatically elevate to "restricted"
+  restricted_terms:
+    - "vulnerabilidad crítica"
+    - "incidente de seguridad"
+    - "brecha de datos"
+    - "acceso no autorizado"
+
+routing:
+  # For ENS "alto" level, force local on restricted data
+  restricted: "local_only"
+  confidential: "api_sanitized"
+  internal: "api_direct"
+  public: "api_direct"
+
+  # Local model for restricted data
+  local_model: "llama3:70b"
+  local_endpoint: "http://localhost:11434"
+
+  # API for the rest
+  api_model: "claude-sonnet-4-6"
+
+audit:
+  # Log all classification decisions
+  log_classifications: true
+  # Retain logs for contract duration + 2 years
+  retention_days: 1095
+  # Notify lead if restricted data detected
+  alert_on_restricted: true
+  alert_email: "lead@consultora.ejemplo.com"

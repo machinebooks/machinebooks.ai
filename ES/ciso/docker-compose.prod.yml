@@ -1,0 +1,220 @@
+# Extraído de: LibroCISO/cap-20-docker-compose.md
+# docker-compose.prod.yml — Entorno de producción GRC
+# Sin herramientas de debug, con Gunicorn, TLS real,
+# logs estructurados y permisos restrictivos.
+
+version: "3.9"
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod         # Build multi-stage, nginx para estáticos
+    # Sin volumes de hot reload — imagen inmutable con bundle optimizado
+    networks:
+      - spd_frontend
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.25-alpine
+    ports:
+      - "443:443"                         # Solo HTTPS en producción
+    volumes:
+      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - /etc/pki/tls/certs/grc.crt:/etc/nginx/certs/server.crt:ro
+      - /etc/pki/tls/private/grc.key:/etc/nginx/certs/server.key:ro
+      - /var/log/nginx:/var/log/nginx     # Logs en filesystem del host
+    depends_on:
+      fastapi:
+        condition: service_healthy
+    networks:
+      - spd_frontend
+      - spd_backend
+    restart: unless-stopped
+
+  fastapi:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    command: >
+      gunicorn main:app
+      --bind 0.0.0.0:8000
+      --workers ${GUNICORN_WORKERS:-4}
+      --worker-class uvicorn.workers.UvicornWorker
+      --timeout 120
+      --graceful-timeout 30
+      --access-logfile -
+      --error-logfile -
+    # Sin volumes de código — imagen inmutable
+    volumes:
+      - uploads_data:/app/uploads
+      - reports_data:/app/reports
+    env_file:
+      - .env.prod                         # Variables sensibles NO versionadas
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - spd_backend
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 512M
+
+  celery-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    command: >
+      celery -A app.celery_app worker
+      --loglevel=warning
+      -Q ai,email,reports,maintenance,notifications
+      --concurrency=${CELERY_CONCURRENCY:-4}
+      --max-tasks-per-child=100
+    # max-tasks-per-child previene memory leaks acumulativos
+    volumes:
+      - uploads_data:/app/uploads
+      - reports_data:/app/reports
+    env_file:
+      - .env.prod
+    depends_on:
+      redis:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    networks:
+      - spd_backend
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 4G                      # Los workers de IA necesitan más RAM
+        reservations:
+          memory: 1G
+
+  celery-beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    command: >
+      celery -A app.celery_app beat
+      --loglevel=warning
+      --schedule=/var/run/celerybeat-schedule
+      --pidfile=/var/run/celerybeat.pid
+    env_file:
+      - .env.prod
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - spd_backend
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.0
+    env_file:
+      - .env.prod
+    volumes:
+      - /srv/grc/mysql_data:/var/lib/mysql    # Ruta explícita en host
+    # Sin puerto expuesto al host — solo accesible desde la red Docker
+    networks:
+      - spd_backend
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    command: >
+      redis-server
+      --requirepass ${REDIS_PASS}
+      --maxmemory 1gb
+      --maxmemory-policy allkeys-lru
+      --appendonly yes
+      --save 900 1
+      --save 300 10
+    volumes:
+      - /srv/grc/redis_data:/data
+    networks:
+      - spd_backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASS}", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  qdrant:
+    image: qdrant/qdrant:v1.7.4
+    volumes:
+      - /srv/grc/qdrant_data:/qdrant/storage
+    networks:
+      - spd_backend
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      - /srv/grc/ollama_models:/root/.ollama
+    networks:
+      - spd_backend
+    profiles:
+      - local-ai
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - /srv/grc/prometheus_data:/prometheus
+    networks:
+      - spd_backend
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:10.2.0
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASS}
+      - GF_AUTH_ANONYMOUS_ENABLED=false   # Autenticación obligatoria
+      - GF_SERVER_ROOT_URL=https://${GRC_DOMAIN}/grafana
+    volumes:
+      - /srv/grc/grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    networks:
+      - spd_backend
+    restart: unless-stopped
+
+  # mailhog, adminer, redis-commander y flower NO existen en producción
+
+networks:
+  spd_frontend:
+    driver: bridge
+  spd_backend:
+    driver: bridge
+
+volumes:
+  uploads_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /srv/grc/uploads
+  reports_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /srv/grc/reports

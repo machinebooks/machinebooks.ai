@@ -1,0 +1,41 @@
+# Extraído de: LibroDevSecOps/cap-29-futuro-seguridad-autonoma.md
+# future_ready_pipeline.yaml — Principios arquitectónicos para 2028+
+pipeline_principles:
+  desacoplamiento:
+    description: >
+      Cada componente del pipeline (scanner, triaje, remediación,
+      verificación) se comunica por interfaces estándar.
+      Cambiar el modelo de IA o la herramienta de escaneo no
+      requiere reescribir el pipeline.
+    implementation: "APIs REST + eventos asincrónicos + SARIF"
+
+  gobernanza_por_politicas:
+    description: >
+      Las decisiones de autonomía, priorización y escalado
+      se definen en políticas (OPA/Rego), no en código.
+      Cambiar el comportamiento del pipeline es cambiar una política,
+      no redesplegar un agente.
+    implementation: "OPA + Git para versionado de políticas"
+
+  observabilidad_completa:
+    description: >
+      Cada decisión de cada agente se registra con contexto,
+      timestamp, modelo usado y justificación.
+      La auditoría forense de cualquier decisión es posible
+      sin reconstruir el estado del sistema.
+    implementation: "OpenTelemetry + Prometheus + log estructurado"
+
+  diversidad_de_motores:
+    description: >
+      No depender de un solo modelo de IA ni de un solo proveedor
+      de herramientas de seguridad.
+      Si Claude no está disponible, el pipeline degrada a Semgrep
+      estático, no se detiene.
+    implementation: "Fallback chain: agente Claude → reglas estáticas"
+
+  human_in_the_loop_escalable:
+    description: >
+      El circuito humano no es un cuello de botella sino un
+      mecanismo de apelación y calibración.
+      El humano interviene por excepción, no por defecto.
+    implementation: "Notificación contextual + approval con timeout"

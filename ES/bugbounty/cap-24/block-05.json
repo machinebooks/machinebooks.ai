@@ -1,0 +1,19 @@
+# Extraído de: LibroBugBounty/cap-24-caso-sunshine.md
+{
+  "timestamp": "2026-03-31T14:30:00Z",
+  "target": "localhost:47990",
+  "credentials": "admin:admin",
+  "config": {
+    "platform": "windows",
+    "version": "2025.924.154138"
+  },
+  "service": "NT AUTHORITY\\SYSTEM",
+  "listening": "0.0.0.0:47990 (network accessible)",
+  "vulnerabilities": [
+    "Default credentials admin:admin",
+    "API allows adding apps with arbitrary commands",
+    "Commands execute as SYSTEM",
+    "Config persists to disk in Program Files",
+    "4 ports on 0.0.0.0 (47984, 47989, 47990, 48010)"
+  ]
+}

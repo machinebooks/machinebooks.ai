@@ -1,0 +1,49 @@
+# Extraído de: LibroConsultor/cap-23-confidencialidad.md
+# project_security_config.yaml
+project:
+  name: "Assessment cumplimiento ENS"
+  client_sector: "sector_publico"
+  security_level: "alto"  # bajo, medio, alto
+
+classification:
+  # Nivel mínimo por defecto para todo contenido del proyecto
+  default_level: "confidential"
+
+  # Entidades del proyecto que deben sanitizarse siempre
+  project_entities:
+    - name: "Nombre de la entidad"
+      category: "org"
+    - name: "Nombre del responsable TIC"
+      category: "persona"
+    - name: "192.168.1.0/24"
+      category: "ip_range"
+
+  # Términos que elevan automáticamente a "restricted"
+  restricted_terms:
+    - "vulnerabilidad crítica"
+    - "incidente de seguridad"
+    - "brecha de datos"
+    - "acceso no autorizado"
+
+routing:
+  # Para nivel "alto" ENS, forzar local en datos restringidos
+  restricted: "local_only"
+  confidential: "api_sanitized"
+  internal: "api_direct"
+  public: "api_direct"
+
+  # Modelo local para datos restringidos
+  local_model: "llama3:70b"
+  local_endpoint: "http://localhost:11434"
+
+  # API para el resto
+  api_model: "claude-sonnet-4-6"
+
+audit:
+  # Registrar todas las decisiones de clasificación
+  log_classifications: true
+  # Retener logs durante la vigencia del contrato + 2 años
+  retention_days: 1095
+  # Notificar al lead si se detecta dato restringido
+  alert_on_restricted: true
+  alert_email: "lead@consultora.ejemplo.com"

@@ -1,0 +1,15 @@
+# Extraído de: LibroUsuario/cap-09-conectar-todo.md
+{
+  "mcpServers": {
+    "slack": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-slack"
+      ],
+      "env": {
+        "SLACK_TOKEN": "xoxp-tu-token-aqui"
+      }
+    }
+  }
+}

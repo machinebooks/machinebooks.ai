@@ -1,0 +1,29 @@
+# Extraído de: LibroCyberrange/cap-03-arquitecto-cyber-range.md
+# Flujo de trabajo diario del arquitecto
+# Ejemplo didáctico: flujo operativo
+
+mañana:
+  - Revisar código generado por agentes en sesiones previas
+  - Ejecutar tests de integración sobre cambios recientes
+  - Verificar que las migraciones de base de datos son correctas
+  - Comprobar logs de auditoría por eventos CRITICAL o WARNING
+
+desarrollo:
+  - Definir intención precisa con restricciones de seguridad
+  - Claude Code genera código con reglas del CLAUDE.md activas
+  - Revisión línea por línea de endpoints con datos de usuario
+  - Revisión con mentalidad ofensiva de configuraciones de red
+  - Tests funcionales + tests adversariales para cada endpoint nuevo
+  - Commit solo después de pasar checklist de seguridad
+
+revisión_ia:
+  - Revisar escenarios generados por Claude antes de despliegue
+  - Verificar playbooks de Ansible contra la checklist
+  - Validar que las IPs, credenciales y paths son correctos
+  - Probar el escenario manualmente antes de publicarlo
+
+cierre:
+  - Security sweep del código generado durante el día
+  - Actualizar CLAUDE.md con patrones problemáticos encontrados
+  - Actualizar reglas de seguridad si se detectó un patrón nuevo
+  - Documentar decisiones de diseño tomadas durante la sesión

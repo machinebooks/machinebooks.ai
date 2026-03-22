@@ -1,0 +1,135 @@
+# Extraído de: LibroDevSecOps/cap-17-aiact-pipeline.md
+# .github/workflows/ai-act-compliance.yml
+name: AI Act Compliance Gate
+
+on:
+  pull_request:
+    paths:
+      - 'ai-systems/**'
+      - 'ai-system-manifest.yaml'
+      - 'agents/**'
+
+jobs:
+  ai-act-compliance:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install anthropic pyyaml
+
+      - name: Classify AI system risk
+        id: classify
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python scripts/ai_act_classify.py \
+            --manifest ai-system-manifest.yaml \
+            --output classification.json
+
+          # Extraer nivel de riesgo para el gate
+          RISK_LEVEL=$(python -c "import json; print(json.load(open('classification.json'))['risk_level'])")
+          echo "risk_level=$RISK_LEVEL" >> "$GITHUB_OUTPUT"
+
+      - name: Run compliance checklist
+        if: steps.classify.outputs.risk_level == 'high'
+        id: checklist
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python scripts/ai_act_checklist.py \
+            --classification classification.json \
+            --artifacts-dir pipeline-artifacts/ \
+            --output compliance-report.json
+
+          # Contar checks fallidos
+          FAILED=$(python -c "
+          import json
+          checks = json.load(open('compliance-report.json'))['checks']
+          print(sum(1 for c in checks if c['status'] == 'failed'))
+          ")
+          echo "failed_checks=$FAILED" >> "$GITHUB_OUTPUT"
+
+      - name: Generate technical documentation
+        if: steps.classify.outputs.risk_level == 'high'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python scripts/ai_act_doc_generator.py \
+            --manifest ai-system-manifest.yaml \
+            --classification classification.json \
+            --checklist compliance-report.json \
+            --output docs/ai-act-technical-doc.md
+
+      - name: Upload compliance artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-act-compliance
+          path: |
+            classification.json
+            compliance-report.json
+            docs/ai-act-technical-doc.md
+
+      - name: Comment PR with compliance summary
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const classification = JSON.parse(
+              fs.readFileSync('classification.json', 'utf8')
+            );
+
+            let body = `## 🏛️ AI Act Compliance Report\n\n`;
+            body += `**Nivel de riesgo:** ${classification.risk_level}\n`;
+            body += `**Confianza:** ${(classification.confidence * 100).toFixed(0)}%\n`;
+            body += `**Justificación:** ${classification.rationale}\n\n`;
+
+            if (fs.existsSync('compliance-report.json')) {
+              const report = JSON.parse(
+                fs.readFileSync('compliance-report.json', 'utf8')
+              );
+              const checks = report.checks;
+              const passed = checks.filter(c => c.status === 'passed').length;
+              const failed = checks.filter(c => c.status === 'failed').length;
+              const warnings = checks.filter(c => c.status === 'warning').length;
+
+              body += `### Compliance Checklist\n`;
+              body += `| Estado | Artículo | Requisito |\n`;
+              body += `|--------|----------|----------|\n`;
+              checks.forEach(c => {
+                const icon = c.status === 'passed' ? '✅'
+                  : c.status === 'failed' ? '❌' : '⚠️';
+                body += `| ${icon} | ${c.article} | ${c.requirement} |\n`;
+              });
+              body += `\n**Resultado:** ${passed} cumplidos, ${failed} no cumplidos, ${warnings} advertencias\n`;
+            }
+
+            body += `\n---\n*Generado por AI Act Compliance Gate*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+      - name: Enforce compliance gate
+        if: steps.classify.outputs.risk_level == 'high'
+        run: |
+          FAILED=${{ steps.checklist.outputs.failed_checks }}
+          if [ "$FAILED" -gt 0 ]; then
+            echo "::error::AI Act compliance gate FAILED: $FAILED checks no cumplidos"
+            echo "Revise el informe de compliance en los artefactos del workflow"
+            exit 1
+          fi

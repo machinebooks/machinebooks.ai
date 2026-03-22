@@ -1,0 +1,47 @@
+# Extraído de: LibroTecnico/cap-16-react-ia.md
+# Fragmento relevante del docker-compose.yml
+services:
+  app-principal:
+    build:
+      context: ./frontend/app-principal
+      dockerfile: Dockerfile
+    volumes:
+      - app_principal_dist:/dist
+
+  app-analytics:
+    build:
+      context: ./frontend/app-analytics
+      dockerfile: Dockerfile
+    volumes:
+      - app_analytics_dist:/dist
+
+  app-admin:
+    build:
+      context: ./frontend/app-admin
+      dockerfile: Dockerfile
+    volumes:
+      - app_admin_dist:/dist
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infra/nginx/platform.conf:/etc/nginx/conf.d/default.conf
+      - app_principal_dist:/var/www/app-principal/dist:ro
+      - app_analytics_dist:/var/www/app-analytics/dist:ro
+      - app_admin_dist:/var/www/app-admin/dist:ro
+      - ./infra/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - app-principal
+      - app-analytics
+      - app-admin
+    # Nota: depends_on solo garantiza el inicio del contenedor,
+    # no la finalización del build. En producción se añade
+    # un healthcheck o script de espera.
+
+volumes:
+  app_principal_dist:
+  app_analytics_dist:
+  app_admin_dist:

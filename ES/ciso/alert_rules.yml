@@ -1,0 +1,46 @@
+# Extraído de: LibroCISO/cap-22-observabilidad-siem.md
+# alert_rules.yml - Reglas de alerta Prometheus
+groups:
+  - name: grc_security_alerts
+    rules:
+      # Múltiples fallos de autenticación (posible brute force)
+      - alert: HighAuthFailureRate
+        expr: sum(rate(http_requests_total{handler="/api/v1/auth/login",status="401"}[5m])) > 0.5
+        for: 2m
+        labels:
+          severity: critical
+          compliance: "ENS op.exp.8, NIS2 Art.21"
+        annotations:
+          summary: "Tasa alta de fallos de autenticación"
+          description: "Más de 30 fallos de login por minuto durante 2 minutos"
+
+      # Latencia LLM degradada (impacto en servicio de IA)
+      - alert: LLMLatencyHigh
+        expr: histogram_quantile(0.95, rate(grc_llm_latency_seconds_bucket[5m])) > 30
+        for: 5m
+        labels:
+          severity: warning
+          compliance: "AI Act Art.12"
+        annotations:
+          summary: "Latencia de LLM por encima del umbral"
+          description: "El percentil 95 de latencia LLM supera los 30 segundos"
+
+      # Cola Celery acumulando tareas (posible bloqueo)
+      - alert: CeleryQueueBacklog
+        expr: grc_celery_tasks_active{queue="ai"} > 50
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Cola de IA con backlog elevado"
+          description: "Más de 50 tareas pendientes en cola AI durante 10 minutos"
+
+      # Tasa de errores 5xx elevada
+      - alert: HighErrorRate
+        expr: sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          compliance: "ENS op.mon"
+        annotations:
+          summary: "Tasa de errores 5xx superior al 5%"

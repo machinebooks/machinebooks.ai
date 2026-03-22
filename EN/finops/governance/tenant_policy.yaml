@@ -1,0 +1,31 @@
+# Source: The FinOps Engineer and the Machine -- Chapter 20
+# Pattern: Tenant-level policy overrides
+
+# policies/tenants/tenant-001.yaml
+# Policy override for a specific tenant
+# Changes from global must be documented with justification
+
+tenant_id: "tenant-001"
+tenant_name: "Enterprise Client A"
+inherits: "global"               # inherits the global policy
+
+# Specific overrides for this tenant
+budgets:
+  monthly_total_eur: 150.0       # global monthly limit
+  alert_threshold: 0.75          # earlier alert: sensitive client
+  task_budgets:
+    offer_generation:
+      monthly_eur: 80.0          # this tenant generates many offers
+    compliance_report:
+      monthly_eur: 50.0
+
+model_routing_overrides:
+  # This tenant has access to Opus for risk analysis
+  - task_type: "risk_analysis"
+    model: "claude-opus-4-6"
+    max_output_tokens: 6000
+    rationale: "Approved by contract. See ticket #4421."
+
+throttling:
+  requests_per_minute_per_user: 10   # more tolerant than global (5)
+  requests_per_hour_per_tenant: 500

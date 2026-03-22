@@ -1,0 +1,77 @@
+# Extraído de: LibroDevSecOps/cap-12-dast-inteligente.md
+# zap-automation-plan.yaml — generado por el agente DAST
+env:
+  contexts:
+    - name: "api-target"
+      urls:
+        - "https://staging.ejemplo.com"
+      includePaths:
+        - "https://staging.ejemplo.com/api/.*"
+      excludePaths:
+        - "https://staging.ejemplo.com/api/health"
+      authentication:
+        method: "json"
+        parameters:
+          loginPageUrl: "https://staging.ejemplo.com/api/auth/login"
+          loginRequestUrl: "https://staging.ejemplo.com/api/auth/login"
+          loginRequestBody: '{"email":"{%username%}","password":"{%password%}"}'
+        verification:
+          method: "response"
+          pollUrl: "https://staging.ejemplo.com/api/auth/me"
+          pollFrequency: 60
+      sessionManagement:
+        method: "headers"
+        parameters:
+          - header: "Authorization"
+            value: "Bearer {%token%}"
+      users:
+        - name: "test-user"
+          credentials:
+            username: "dast-scanner@ejemplo.com"
+            password: "${ZAP_TEST_PASSWORD}"
+
+jobs:
+  # Importar especificación OpenAPI como mapa de endpoints
+  - type: openapi
+    parameters:
+      apiUrl: "https://staging.ejemplo.com/api/openapi.json"
+      context: "api-target"
+
+  # Escaneo activo con plugins seleccionados por endpoint
+  - type: activeScan
+    parameters:
+      context: "api-target"
+      user: "test-user"
+      maxRuleDurationInMins: 2
+      maxScanDurationInMins: 30
+    policyDefinition:
+      defaultStrength: "low"
+      defaultThreshold: "medium"
+      rules:
+        # SQL Injection — prioridad alta
+        - id: 40018
+          strength: "high"
+          threshold: "low"
+        # XSS Reflected — prioridad media
+        - id: 40012
+          strength: "medium"
+          threshold: "medium"
+        # Path Traversal — prioridad alta
+        - id: 6
+          strength: "high"
+          threshold: "low"
+        # Remote File Inclusion — prioridad media
+        - id: 7
+          strength: "medium"
+          threshold: "medium"
+        # Server Side Request Forgery — prioridad alta
+        - id: 40046
+          strength: "high"
+          threshold: "low"
+
+  # Exportar resultados en JSON para el agente de análisis
+  - type: report
+    parameters:
+      template: "traditional-json"
+      reportDir: "/zap/results/"
+      reportFile: "zap-report.json"

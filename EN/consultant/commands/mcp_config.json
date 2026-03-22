@@ -1,0 +1,28 @@
+{
+  "mcpServers": {
+    "doc-repository": {
+      "command": "node",
+      "args": ["./mcp-servers/doc-repository/index.js"],
+      "env": {
+        "QDRANT_URL": "http://localhost:6333",
+        "COLLECTION": "corporate-knowledge"
+      }
+    },
+    "crm-connector": {
+      "command": "python",
+      "args": ["./mcp-servers/crm-connector/server.py"],
+      "env": {
+        "CRM_API_URL": "https://api.example.com/crm/v2",
+        "CRM_API_KEY": "<YOUR_API_KEY>"
+      }
+    },
+    "pm-tools": {
+      "command": "node",
+      "args": ["./mcp-servers/pm-tools/index.js"],
+      "env": {
+        "PM_API_URL": "https://api.example.com/pm/v1",
+        "PM_TOKEN": "<YOUR_PM_TOKEN>"
+      }
+    }
+  }
+}

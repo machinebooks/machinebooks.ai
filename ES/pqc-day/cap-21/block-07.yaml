@@ -1,0 +1,5 @@
+# Extraído de: LibroPQC/cap-21-docker.md
+command: >
+  celery -A app.celery_app beat
+  --loglevel=${LOG_LEVEL:-info}
+  --schedule=/tmp/celerybeat-schedule

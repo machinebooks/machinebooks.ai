@@ -1,0 +1,58 @@
+# Extraído de: LibroDevSecOps/cap-15-seguridad-agentes.md
+# docker-compose.agents.yml
+services:
+  triage-agent:
+    image: pipeline-agents:latest
+    command: python -m agents.triage
+    read_only: true                    # Sistema de ficheros solo lectura
+    security_opt:
+      - no-new-privileges:true         # Sin escalada de privilegios
+    cap_drop:
+      - ALL                            # Eliminar todas las capabilities
+    cap_add:
+      - NET_RAW                        # Solo lo mínimo para DNS
+    networks:
+      - agent-network
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - AGENT_MAX_TOKENS=100000
+      - AGENT_MAX_TOOL_CALLS=200
+    tmpfs:
+      - /tmp:size=100M                 # Espacio temporal limitado
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"                  # Máximo 1 CPU
+          memory: 512M                 # Máximo 512 MB RAM
+        reservations:
+          memory: 256M
+
+  remediation-agent:
+    image: pipeline-agents:latest
+    command: python -m agents.remediation
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    networks:
+      - agent-network
+      - git-network                    # Acceso a API de Git
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}   # Token con scope limitado
+      - AGENT_MAX_TOKENS=80000
+      - AGENT_MAX_TOOL_CALLS=50
+    tmpfs:
+      - /tmp:size=200M
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 1G
+
+networks:
+  agent-network:
+    internal: true                     # Sin acceso a internet
+  git-network:
+    driver: bridge                     # Acceso solo a API de Git

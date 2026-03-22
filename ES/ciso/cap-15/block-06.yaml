@@ -1,0 +1,51 @@
+# Extraído de: LibroCISO/cap-15-autenticacion-capas.md
+# Bloque server para mTLS (puerto 443 con verificación de cliente)
+server {
+    listen 443 ssl;
+    server_name grc.ejemplo.com;
+
+    # Certificado del servidor
+    ssl_certificate     /etc/nginx/ssl/server.crt;
+    ssl_certificate_key /etc/nginx/ssl/server.key;
+
+    # Configuración TLS robusta
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256;
+    ssl_prefer_server_ciphers on;
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:SSL:10m;
+
+    # --- mTLS: verificación de certificado del cliente ---
+    # ssl_client_certificate apunta a la CA (o bundle de CAs) que emite
+    # los certificados de los usuarios
+    ssl_client_certificate /etc/nginx/ssl/trusted-client-ca.pem;
+
+    # "optional" permite que clientes sin certificado accedan (usarán JWT)
+    # "on" exigiría certificado a todos — solo para despliegues clasificados
+    ssl_verify_client optional;
+
+    # Profundidad de la cadena de certificación (CA raíz + intermedias)
+    ssl_verify_depth 3;
+
+    # OCSP stapling para verificación de revocación del servidor
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    ssl_trusted_certificate /etc/nginx/ssl/ca-chain.pem;
+
+    location / {
+        proxy_pass http://backend:8000;
+
+        # Pasar datos del certificado del cliente al backend
+        proxy_set_header X-Client-Cert       $ssl_client_cert;
+        proxy_set_header X-Client-Verify     $ssl_client_verify;
+        proxy_set_header X-Client-S-DN       $ssl_client_s_dn;
+        proxy_set_header X-Client-I-DN       $ssl_client_i_dn;
+        proxy_set_header X-Client-Serial     $ssl_client_serial;
+
+        # Headers estándar
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}

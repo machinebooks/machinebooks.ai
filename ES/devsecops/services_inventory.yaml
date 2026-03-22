@@ -1,0 +1,14 @@
+# Extraído de: LibroDevSecOps/cap-02-anatomia-vulnerabilidad.md
+# services_inventory.yaml
+services:
+  reports-api:
+    name: "API de informes"
+    internet_facing: true
+    data_classification: "confidential"
+    compensating_controls:
+      - "WAF con reglas OWASP CRS"
+      - "Rate limiting: 100 req/min por IP"
+    user_count: 450
+    compliance_requirements:
+      - "RGPD"
+      - "ENS nivel medio"

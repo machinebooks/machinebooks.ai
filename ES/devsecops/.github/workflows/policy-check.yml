@@ -1,0 +1,61 @@
+# Extraído de: LibroDevSecOps/cap-21-policy-as-code.md
+# .github/workflows/policy-check.yml
+name: Policy Check
+on:
+  pull_request:
+    paths:
+      - 'k8s/**'
+      - 'docker/**'
+      - 'ai-config/**'
+
+jobs:
+  opa-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout policy repo
+        uses: actions/checkout@v4
+        with:
+          repository: nuestra-org/security-policies
+          path: policies
+          token: ${{ secrets.POLICY_REPO_TOKEN }}
+
+      - name: Install OPA
+        run: |
+          curl -L -o opa https://openpolicyagent.org/downloads/v0.68.0/opa_linux_amd64_static
+          chmod +x opa && sudo mv opa /usr/local/bin/
+
+      - name: Run policy tests
+        run: |
+          opa test ./policies/policies ./policies/tests -v
+
+      - name: Evaluate Kubernetes manifests
+        run: |
+          for manifest in k8s/*.yaml; do
+            echo "--- Evaluando: $manifest ---"
+            result=$(opa eval \
+              --data policies/policies/kubernetes/ \
+              --data policies/data/ \
+              --input "$manifest" \
+              "data.kubernetes.container_security.deny" \
+              --format pretty)
+            if [ "$result" != "[]" ]; then
+              echo "VIOLACION en $manifest: $result"
+              exit 1
+            fi
+          done
+
+      - name: Evaluate deployment gates
+        run: |
+          # Generar input de gates a partir de artefactos del pipeline
+          python scripts/generate_gate_input.py > gate_input.json
+          result=$(opa eval \
+            --data policies/policies/pipeline/ \
+            --input gate_input.json \
+            "data.pipeline.deployment_gates.deny" \
+            --format pretty)
+          if [ "$result" != "[]" ]; then
+            echo "Gate fallido: $result"
+            exit 1
+          fi

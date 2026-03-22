@@ -1,0 +1,46 @@
+# Extraído de: LibroTecnico/cap-21-cicd.md
+# .github/workflows/deploy.yml
+# Despliegue a producción con aprobación manual
+
+name: Despliegue a producción
+
+on:
+  workflow_dispatch:  # Despliegue manual desde la interfaz de GitHub
+    inputs:
+      environment:
+        description: "Entorno de despliegue"
+        required: true
+        default: "production"
+        type: choice
+        options: [production, staging]
+      services:
+        description: "Servicios a desplegar (vacío = todos)"
+        required: false
+        type: string
+
+jobs:
+  deploy:
+    name: Desplegar en ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}  # Requiere aprobación configurada en GitHub
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar clave SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.PROD_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          # Añadir el host al known_hosts para evitar confirmación interactiva
+          ssh-keyscan -H ${{ secrets.PROD_HOST }} >> ~/.ssh/known_hosts
+          # NOTA: En producción, verificar fingerprint del host previamente conocido
+
+      - name: Copiar fichero de configuración Docker Compose
+        run: |
+          scp -i ~/.ssh/deploy_key \
+            docker-compose.prod.yml \
+            deploy@${{ secrets.PROD_HOST }}:/opt/plataforma/
+

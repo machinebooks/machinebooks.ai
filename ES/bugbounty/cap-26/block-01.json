@@ -1,0 +1,12 @@
+# Extraído de: LibroBugBounty/cap-26-caso-discord.md
+{
+  "timestamp": "2026-03-31T12:22:31.793Z",
+  "poc": "Discord ASAR RCE",
+  "user": "hunter",
+  "hostname": "workstation",
+  "pid": 11792,
+  "execPath": "C:\\Users\\hunter\\AppData\\Local\\Discord\\app-1.0.9230\\Discord.exe",
+  "electronVersion": "37.6.0",
+  "nodeVersion": "22.19.0",
+  "chromeVersion": "138.0.7204.251"
+}

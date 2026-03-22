@@ -1,0 +1,59 @@
+# Source: The Consultant and the Machine -- Chapter 29
+# Pattern: Practice evolution metrics
+
+# Example: continuous decision system for cloud cost management
+# Designed by consultant, operated by client
+sistema_decision:
+  nombre: "Cloud cost monitor - Financial Entity"
+  version: "2.1"
+
+  fuentes_datos:
+    - tipo: "aws_cost_explorer"
+      frecuencia: "diaria"
+      granularidad: "servicio"
+    - tipo: "azure_cost_management"
+      frecuencia: "diaria"
+      granularidad: "resource_group"
+    - tipo: "presupuestos_internos"
+      frecuencia: "mensual"
+      fuente: "erp_cliente"
+
+  agentes:
+    - nombre: "detector_anomalias"
+      modelo: "claude-haiku-4-5"  # Low cost for high frequency
+      frecuencia: "cada_6_horas"
+      umbral_alerta: "desviacion > 15% vs media_30_dias"
+      accion: "notificar_equipo_finops"
+
+    - nombre: "analizador_tendencias"
+      modelo: "claude-sonnet-4-6"
+      frecuencia: "semanal"
+      output: "informe_tendencias_con_recomendaciones"
+      accion: "enviar_a_cfo + consultor_revisar"
+
+    - nombre: "optimizador_rightsizing"
+      modelo: "claude-sonnet-4-6"
+      frecuencia: "quincenal"
+      input: "metricas_utilizacion_recursos"
+      output: "recomendaciones_rightsizing_priorizadas"
+      accion: "crear_tickets_en_jira"
+
+  decisiones_automaticas:  # No human intervention
+    - "alert if daily spend > 120% of budget"
+    - "pause development environments outside business hours"
+    - "archive snapshots > 90 days without access"
+
+  decisiones_humanas:  # Require consultant or client
+    - "switch from reserved to on-demand instances"
+    - "migrate service between cloud providers"
+    - "renegotiate annual commitments"
+    - "approve investments > €10,000"
+
+  recalibracion:
+    frecuencia: "trimestral"
+    responsable: "consultor_senior"
+    metricas_eficacia:
+      - "falsos_positivos_por_mes"
+      - "tiempo_medio_deteccion_anomalia"
+      - "ahorro_mensual_atribuible"
+      - "satisfaccion_equipo_cliente"

@@ -1,0 +1,44 @@
+# Extraído de: LibroCyberrange/cap-01-que-es-cyber-range.md
+# Flujo de un ciberejercicio en el Cyber Range
+# Ejemplo didáctico: flujo operativo
+
+1_preparacion:
+  organizador:
+    - Selecciona o genera escenario (template JSON + playbooks Ansible)
+    - Define workzones con recursos y VLANs
+    - Asigna equipos (red/blue/purple) a workzones
+    - Configura retos CTF con flags dinámicas
+    - Establece duración y reglas del ejercicio
+
+2_despliegue:
+  plataforma:
+    - Clona VMs desde templates en Proxmox (linked clone)
+    - Levanta pfSense por workzone con reglas de firewall
+    - Ejecuta playbooks Ansible para configurar servicios
+    - Genera flags únicas por equipo (SHA256 + random)
+    - Publica escenario en el canvas de topología
+
+3_ejecucion:
+  equipo_rojo:
+    - Accede a sus VMs vía consola VNC en navegador
+    - Ejecuta ataques usando ActionTemplates con MITRE T-codes
+    - El sistema registra cada acción con timestamp
+  equipo_azul:
+    - Monitoriza, detecta y responde a las amenazas
+    - Captura flags para demostrar detección/mitigación
+    - Recibe coaching IA adaptativo (pistas sin respuestas)
+  plataforma:
+    - Streaming en tiempo real de logs y eventos (WebSocket)
+    - Scoreboard actualizado en vivo
+    - Registro de auditoría con severidad por evento
+
+4_evaluacion:
+  plataforma:
+    - Scoreboard final con desglose por flag, hint y first-blood
+    - Mapping automático a MITRE ATT&CK por técnica usada
+    - Skills y badges actualizados por participante
+    - Informe de rendimiento exportable
+  organizador:
+    - After-Action Review con métricas objetivas
+    - Identificación de gaps de competencias
+    - Input para diseño del siguiente ejercicio

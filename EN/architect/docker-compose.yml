@@ -1,0 +1,282 @@
+# =============================================================================
+# The Architect and the Machine — Docker Compose (simplified)
+# Chapter 20: 17 services across 5 layers
+#
+# This is a didactic excerpt. The full production file has 400+ lines
+# with resource limits, healthchecks, and production overrides.
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # Layer 1: Databases (Chapter 5 — 3 schemas)
+  # ---------------------------------------------------------------------------
+  mysql_ops:
+    image: mysql:8.0
+    container_name: plataforma_mysql_ops
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: operations_db
+      MYSQL_USER: ${MYSQL_OPS_USER}
+      MYSQL_PASSWORD: ${MYSQL_OPS_PASSWORD}
+    volumes:
+      - mysql_ops_data:/var/lib/mysql
+    networks:
+      - plataforma_backend
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  mysql_analytics:
+    image: mysql:8.0
+    container_name: plataforma_mysql_analytics
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: analytics_db
+    volumes:
+      - mysql_analytics_data:/var/lib/mysql
+    networks:
+      - plataforma_backend
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+          cpus: '1.5'
+
+  # ---------------------------------------------------------------------------
+  # Layer 2: Cache & Message Broker
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: plataforma_redis
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    networks:
+      - plataforma_backend
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # ---------------------------------------------------------------------------
+  # Layer 3: Search & Vectors (Chapters 12, 13)
+  # ---------------------------------------------------------------------------
+  qdrant:
+    image: qdrant/qdrant:v1.7.4
+    container_name: plataforma_qdrant
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - plataforma_backend
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2.0'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.6
+    container_name: plataforma_meilisearch
+    environment:
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY}
+      MEILI_ENV: production
+    volumes:
+      - meili_data:/meili_data
+    networks:
+      - plataforma_backend
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  # ---------------------------------------------------------------------------
+  # Layer 4: Application Services
+  # ---------------------------------------------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: plataforma_backend
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=mysql_ops
+      - REDIS_URL=${REDIS_URL}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - AI_SERVICE_URL=http://ai_service:8001
+    networks:
+      - plataforma_backend
+    depends_on:
+      mysql_ops:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  ai_service:
+    build:
+      context: ./ai_service
+      dockerfile: Dockerfile
+    container_name: plataforma_ai_service
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - QDRANT_HOST=qdrant
+      - QDRANT_PORT=6333
+      - REDIS_URL=${REDIS_URL}
+      - AI_SERVICE_API_KEY=${AI_SERVICE_API_KEY}
+      - LOG_LEVEL=${LOG_LEVEL}
+    networks:
+      - plataforma_backend
+    depends_on:
+      qdrant:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2.0'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: on-failure:3
+
+  # ---------------------------------------------------------------------------
+  # Layer 4b: Celery Workers (Chapter 8)
+  # ---------------------------------------------------------------------------
+  celery_default:
+    build: ./backend
+    container_name: plataforma_celery_default
+    command: celery -A tasks worker -Q default,sync,crm,priority -c 4 --loglevel=info
+    environment:
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+    networks:
+      - plataforma_backend
+    depends_on:
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+  celery_ai:
+    build: ./backend
+    container_name: plataforma_celery_ai
+    command: celery -A tasks worker -Q ai,documents -c 2 --loglevel=info
+    environment:
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    networks:
+      - plataforma_backend
+    depends_on:
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  celery_beat:
+    build: ./backend
+    container_name: plataforma_celery_beat
+    command: celery -A tasks beat --loglevel=info
+    environment:
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+    networks:
+      - plataforma_backend
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  # ---------------------------------------------------------------------------
+  # Layer 4c: RPA (Chapter 10)
+  # ---------------------------------------------------------------------------
+  selenium_hub:
+    image: selenium/hub:4.27
+    container_name: plataforma_selenium_hub
+    networks:
+      - plataforma_backend
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  selenium_chrome:
+    image: selenium/node-chrome:4.27
+    container_name: plataforma_selenium_chrome
+    shm_size: 2gb
+    environment:
+      - SE_EVENT_BUS_HOST=selenium_hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+    networks:
+      - plataforma_backend
+    depends_on:
+      - selenium_hub
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  # ---------------------------------------------------------------------------
+  # Layer 5: Reverse Proxy (Chapter 17)
+  # ---------------------------------------------------------------------------
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: plataforma_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - plataforma_backend
+    depends_on:
+      - backend
+      - ai_service
+
+# =============================================================================
+# Volumes & Networks
+# =============================================================================
+volumes:
+  mysql_ops_data:
+  mysql_analytics_data:
+  redis_data:
+  qdrant_data:
+  meili_data:
+
+networks:
+  plataforma_backend:
+    driver: bridge

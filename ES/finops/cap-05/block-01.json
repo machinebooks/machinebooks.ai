@@ -1,0 +1,28 @@
+# Extraído de: LibroFinOps/cap-05-tagging-cloud.md
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "RequireEnvironmentTagOnEC2",
+      "Effect": "Deny",
+      "Action": ["ec2:RunInstances"],
+      "Resource": "arn:aws:ec2:*:*:instance/*",
+      "Condition": {
+        "Null": {
+          "aws:RequestTag/environment": "true"
+        }
+      }
+    },
+    {
+      "Sid": "RequireTeamTagOnEC2",
+      "Effect": "Deny",
+      "Action": ["ec2:RunInstances"],
+      "Resource": "arn:aws:ec2:*:*:instance/*",
+      "Condition": {
+        "Null": {
+          "aws:RequestTag/team": "true"
+        }
+      }
+    }
+  ]
+}

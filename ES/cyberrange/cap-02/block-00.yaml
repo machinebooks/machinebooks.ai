@@ -1,0 +1,98 @@
+# Extraído de: LibroCyberrange/cap-02-ciberejercicios.md
+# Ejemplo didáctico: configuración de escenario de ciberejercicio
+# Fichero: patrones/escenarios/ejercicio_ransomware_ad.yaml
+
+exercise:
+  name: "Respuesta a ransomware con compromiso de Active Directory"
+  type: "hybrid"                     # tabletop | live_fire | hybrid | purple_team
+  duration_hours: 8
+  difficulty: "advanced"             # beginner | intermediate | advanced | expert
+
+  # Objetivos medibles (NIST SP 800-84: todo ejercicio necesita objetivos)
+  objectives:
+    - id: "OBJ-01"
+      description: "Detectar movimiento lateral en menos de 30 minutos"
+      metric: "time_to_detect_lateral_movement"
+      threshold_minutes: 30
+      mitre_tactic: "TA0008"         # Lateral Movement
+    - id: "OBJ-02"
+      description: "Aislar segmento comprometido en menos de 15 minutos"
+      metric: "time_to_isolate"
+      threshold_minutes: 15
+    - id: "OBJ-03"
+      description: "Comunicar incidente a dirección según procedimiento"
+      metric: "crisis_communication_score"
+      threshold_percent: 80
+
+  # Infraestructura del escenario
+  topology:
+    networks:
+      - name: "corporate_lan"
+        cidr: "10.10.1.0/24"
+        description: "Red corporativa con estaciones de trabajo"
+      - name: "server_dmz"
+        cidr: "10.10.2.0/24"
+        description: "DMZ con servidores expuestos"
+      - name: "ad_segment"
+        cidr: "10.10.3.0/24"
+        description: "Segmento de Active Directory"
+
+    vms:
+      - name: "dc01"
+        template: "windows-server-2022-dc"
+        network: "ad_segment"
+        ip: "10.10.3.10"
+        role: "domain_controller"
+        vulnerabilities:
+          - "kerberoasting_service_account"
+          - "asreproast_user"
+      - name: "ws01"
+        template: "windows-11-workstation"
+        network: "corporate_lan"
+        ip: "10.10.1.20"
+        role: "user_workstation"
+      - name: "siem01"
+        template: "wazuh-server-4.x"
+        network: "server_dmz"
+        ip: "10.10.2.50"
+        role: "siem"
+      - name: "kali01"
+        template: "kali-2024"
+        network: "corporate_lan"
+        ip: "10.10.1.100"
+        role: "attacker"
+        assigned_to: "red_team"
+
+  # Cronograma de inyecciones (para facilitador)
+  injects:
+    - time_offset_minutes: 0
+      target: "tabletop"
+      content: "El SOC recibe una alerta de tráfico anómalo desde la red corporativa."
+    - time_offset_minutes: 45
+      target: "technical"
+      action: "execute_attack_chain"
+      playbook: "scenario_ad_compromise.yml"
+    - time_offset_minutes: 120
+      target: "tabletop"
+      content: "Un medio de comunicación contacta al departamento de prensa."
+    - time_offset_minutes: 180
+      target: "technical"
+      action: "deploy_ransomware"
+      playbook: "scenario_ransomware_deploy.yml"
+
+  # Evaluación
+  scoring:
+    model: "weighted"                # simple | weighted | competitive
+    categories:
+      - name: "detection"
+        weight: 0.30
+        flags: ["flag_lateral_detected", "flag_exfil_detected"]
+      - name: "response"
+        weight: 0.30
+        flags: ["flag_segment_isolated", "flag_malware_contained"]
+      - name: "communication"
+        weight: 0.20
+        manual_evaluation: true
+      - name: "forensics"
+        weight: 0.20
+        flags: ["flag_ioc_extracted", "flag_timeline_complete"]

@@ -1,0 +1,71 @@
+# Extraído de: LibroFinOps/cap-11-presupuestos-circuit-breakers.md
+{
+  "budgets": [
+    {
+      "name": "global_monthly",
+      "scope": "global",
+      "scope_id": null,
+      "period": "monthly",
+      "limit_usd": 200.00,
+      "alert_threshold": 0.80,
+      "throttle_threshold": 0.95,
+      "block_threshold": 1.00,
+      "description": "Presupuesto global mensual para todos los servicios LLM"
+    },
+    {
+      "name": "proposal_section_daily",
+      "scope": "service",
+      "scope_id": "proposal_section",
+      "period": "daily",
+      "limit_usd": 12.00,
+      "alert_threshold": 0.75,
+      "throttle_threshold": 0.90,
+      "block_threshold": 1.00,
+      "description": "Generación de secciones de propuesta — servicio de mayor consumo"
+    },
+    {
+      "name": "index_updater_daily",
+      "scope": "service",
+      "scope_id": "index_updater",
+      "period": "daily",
+      "limit_usd": 5.00,
+      "alert_threshold": 0.80,
+      "throttle_threshold": 0.95,
+      "block_threshold": 1.00,
+      "description": "Actualización de índices — servicio donde ocurrió el incidente"
+    },
+    {
+      "name": "chat_assistant_daily",
+      "scope": "service",
+      "scope_id": "chat_assistant",
+      "period": "daily",
+      "limit_usd": 8.00,
+      "alert_threshold": 0.80,
+      "throttle_threshold": 0.95,
+      "block_threshold": 1.10,
+      "description": "Asistente conversacional — block_threshold alto (nunca bloquear al usuario)"
+    },
+    {
+      "name": "risk_evaluator_daily",
+      "scope": "service",
+      "scope_id": "risk_evaluator",
+      "period": "daily",
+      "limit_usd": 15.00,
+      "alert_threshold": 0.80,
+      "throttle_threshold": 0.95,
+      "block_threshold": 1.00,
+      "description": "Evaluación de riesgo con opus — presupuesto alto por coste del modelo"
+    },
+    {
+      "name": "default_user_daily",
+      "scope": "user",
+      "scope_id": "__default__",
+      "period": "daily",
+      "limit_usd": 5.00,
+      "alert_threshold": 0.80,
+      "throttle_threshold": 0.95,
+      "block_threshold": 1.00,
+      "description": "Límite diario por usuario — se aplica a todos los usuarios por defecto"
+    }
+  ]
+}

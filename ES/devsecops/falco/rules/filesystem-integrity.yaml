@@ -1,0 +1,24 @@
+# Extraído de: LibroDevSecOps/cap-18-runtime-security.md
+# falco/rules/filesystem-integrity.yaml
+- rule: Escritura en directorio de sistema desde contenedor
+  desc: >
+    Ningún contenedor de aplicación debería escribir en /bin,
+    /sbin, /usr/bin, /usr/sbin, /etc/passwd o /etc/shadow.
+    Este patrón indica instalación de backdoor o escalada de
+    privilegios.
+  condition: >
+    open_write
+    and container
+    and not user.name = "root"
+    and (fd.name startswith /bin/
+      or fd.name startswith /sbin/
+      or fd.name startswith /usr/bin/
+      or fd.name startswith /usr/sbin/
+      or fd.name = /etc/passwd
+      or fd.name = /etc/shadow)
+  output: >
+    Escritura en directorio de sistema desde contenedor
+    (usuario=%user.name contenedor=%container.name
+    fichero=%fd.name imagen=%container.image.repository)
+  priority: CRITICAL
+  tags: [container, filesystem, mitre_persistence]

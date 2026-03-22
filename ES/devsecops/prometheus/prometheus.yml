@@ -1,0 +1,8 @@
+# Extraído de: LibroDevSecOps/cap-18-runtime-security.md
+# prometheus/prometheus.yml — scrape config para Falco
+scrape_configs:
+  - job_name: "falco"
+    static_configs:
+      - targets: ["falco-exporter:9376"]
+    scrape_interval: 15s
+    metrics_path: /metrics

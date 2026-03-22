@@ -1,0 +1,32 @@
+# Extraído de: LibroFinOps/cap-07-dashboards.md
+# grafana/alerts/budget-alert.yaml
+groups:
+  - name: finops-budget
+    rules:
+      - alert: LLMBudgetWarning
+        expr: |
+          SELECT SUM(total_cost_usd) FROM llm_usage_logs
+          WHERE MONTH(timestamp) = MONTH(NOW())
+          AND YEAR(timestamp) = YEAR(NOW())
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: >
+            Gasto LLM al {{ $value | printf "%.0f" }}%
+            del presupuesto mensual
+          description: >
+            El gasto ha superado el umbral de alerta (80%).
+
+      - alert: LLMBudgetExceeded
+        expr: |
+          SELECT SUM(total_cost_usd) FROM llm_usage_logs
+          WHERE MONTH(timestamp) = MONTH(NOW())
+          AND YEAR(timestamp) = YEAR(NOW())
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Presupuesto LLM agotado"
+          description: >
+            El middleware bloquea nuevas llamadas LLM.

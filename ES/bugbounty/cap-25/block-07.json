@@ -1,0 +1,20 @@
+# Extraído de: LibroBugBounty/cap-25-caso-wand.md
+{
+  "files": {
+    "index.html": {
+      "offset": "0",
+      "size": 45230,
+      "integrity": {
+        "algorithm": "SHA256",
+        "hash": "a1b2c3d4...",
+        "blockSize": 4194304,
+        "blocks": ["a1b2c3d4..."]
+      }
+    },
+    "main.js": {
+      "offset": "45230",
+      "size": 12890,
+      "integrity": { "..." }
+    }
+  }
+}

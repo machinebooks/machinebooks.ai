@@ -1,0 +1,17 @@
+# Extraído de: LibroUsuario/cap-09-conectar-todo.md
+{
+  "mcpServers": {
+    "jira": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-jira"
+      ],
+      "env": {
+        "JIRA_URL": "https://tu-empresa.atlassian.net",
+        "JIRA_EMAIL": "tu.email@empresa.com",
+        "JIRA_API_TOKEN": "tu-token-api-aqui"
+      }
+    }
+  }
+}

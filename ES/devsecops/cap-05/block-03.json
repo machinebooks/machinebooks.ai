@@ -1,0 +1,23 @@
+# Extraído de: LibroDevSecOps/cap-05-sca-sbom.md
+{
+  "matches": [
+    {
+      "vulnerability": {
+        "id": "CVE-2024-XXXXX",
+        "severity": "High",
+        "cvss": [{"version": "3.1", "vector": "...", "metrics": {"baseScore": 8.1}}],
+        "description": "Arbitrary code execution via crafted YAML input",
+        "fix": {"versions": ["2.10.1"], "state": "fixed"}
+      },
+      "artifact": {
+        "name": "pyyaml",
+        "version": "6.0.1",
+        "type": "python",
+        "locations": [{"path": "requirements.txt"}]
+      },
+      "relatedVulnerabilities": [
+        {"id": "GHSA-xxxx-yyyy-zzzz", "severity": "High"}
+      ]
+    }
+  ]
+}

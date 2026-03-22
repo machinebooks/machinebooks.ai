@@ -1,0 +1,38 @@
+# Extraído de: LibroConsultor/cap-27-caso-tecnologia.md
+# Stack de consultoría de arquitectura aumentada
+herramientas_analisis:
+  analisis_codigo:
+    agente: "claude-sonnet-4-6"
+    input: "metadatos de repositorio (estructura, dependencias, métricas)"
+    output: "mapa de dependencias, deuda técnica, complejidad migratoria"
+    coste_tipico: "$8-15 por proyecto"
+
+  evaluacion_tecnologica:
+    agente: "claude-sonnet-4-6"
+    input: "alternativas + criterios ponderados + contexto cliente"
+    output: "matriz de evaluación con justificaciones"
+    coste_tipico: "$5-10 por evaluación"
+
+  estimacion_esfuerzo:
+    agente: "claude-opus-4-6"
+    input: "servicio + complejidad + histórico de proyectos"
+    output: "estimación tri-punto con factores de riesgo"
+    coste_tipico: "$15-25 por proyecto"
+
+  generacion_informe:
+    agente: "claude-sonnet-4-6"
+    input: "hallazgos + plantilla + contexto"
+    output: "borrador de informe por secciones"
+    coste_tipico: "$30-50 por informe"
+
+validacion_humana:
+  - "Arquitecto líder valida cada output antes de incluirlo en entregable"
+  - "Doble check con herramientas de análisis estático (SonarQube, dependency-check)"
+  - "Entrevistas con stakeholders para factores no técnicos"
+  - "Revisión de datos de coste contra contratos reales del cliente"
+
+confidencialidad:
+  - "Metadatos sin datos personales a API"
+  - "Snippets anonimizados para análisis de patrones"
+  - "Residencia de datos en región europea"
+  - "Ningún código fuente completo abandona el entorno local"

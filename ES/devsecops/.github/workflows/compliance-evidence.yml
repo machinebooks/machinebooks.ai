@@ -1,0 +1,54 @@
+# Extraído de: LibroDevSecOps/cap-28-caso-compliance.md
+# .github/workflows/compliance-evidence.yml
+name: Compliance Evidence Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  generate-evidence:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: SAST - Semgrep (evidencia mp.sw.1)
+        run: |
+          semgrep scan --config=auto --sarif \
+            --output=evidence/sast-report.sarif
+          # Firmar artefacto con hash
+          sha256sum evidence/sast-report.sarif \
+            > evidence/sast-report.sarif.sha256
+
+      - name: SCA - SBOM + Grype (evidencia mp.sw.1, op.exp.2)
+        run: |
+          syft . -o cyclonedx-json \
+            > evidence/sbom.cdx.json
+          grype sbom:evidence/sbom.cdx.json \
+            --output sarif > evidence/sca-report.sarif
+          sha256sum evidence/sbom.cdx.json \
+            > evidence/sbom.cdx.json.sha256
+
+      - name: Container scan - Trivy (evidencia op.exp.2)
+        run: |
+          trivy image --format sarif \
+            --output evidence/container-report.sarif \
+            ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          sha256sum evidence/container-report.sarif \
+            > evidence/container-report.sarif.sha256
+
+      - name: Secret scan - Gitleaks (evidencia op.acc.6)
+        run: |
+          gitleaks detect --report-format sarif \
+            --report-path evidence/secrets-report.sarif
+          sha256sum evidence/secrets-report.sarif \
+            > evidence/secrets-report.sarif.sha256
+
+      - name: Upload evidence to S3
+        run: |
+          EVIDENCE_PATH="s3://compliance-evidence/\
+          ${{ github.repository }}/\
+          $(date +%Y-%m-%d)/${{ github.sha }}/"
+          aws s3 cp evidence/ "$EVIDENCE_PATH" --recursive

@@ -1,0 +1,33 @@
+# Extraído de: LibroDevSecOps/cap-19-observabilidad-seguridad.md
+# docker-compose.observability.yml
+services:
+  security-metrics:
+    build: ./security-metrics-exporter
+    ports:
+      - "9110:9110"
+    volumes:
+      - ./scan-results:/data/scan-results:ro
+    environment:
+      - METRICS_PORT=9110
+      - SCAN_RESULTS_DIR=/data/scan-results
+
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+
+  grafana:
+    image: grafana/grafana:10.4.0
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+
+volumes:
+  prometheus-data:

@@ -1,0 +1,20 @@
+# Extraído de: LibroFinOps/cap-20-policy-as-code.md
+# policies/exceptions/tenant-001-exception-2025-Q2.yaml
+# Excepción temporal — cierre fiscal Q2
+# Aprobado por: CFO + FinOps Lead
+# Ticket: #5892
+# Fecha de aprobación: 2025-06-15
+# Expiración automática: 2025-07-15
+
+tenant_id: "tenant-001"
+exception_type: "temporary_budget_override"
+reason: "Cierre fiscal Q2. Incremento temporal de compliance_report."
+approved_by: ["cfo@empresa.com", "finops@empresa.com"]
+valid_until: "2025-07-15T23:59:59Z"
+auto_revert: true   # al expirar, vuelve a la política base
+
+overrides:
+  budgets:
+    task_budgets:
+      compliance_report:
+        monthly_eur: 120.0  # el doble del límite habitual

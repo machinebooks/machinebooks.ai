@@ -1,0 +1,27 @@
+# Extraído de: LibroConsultor/cap-10-estimacion-esfuerzos.md
+# Flujo de preventa con estimación calibrada
+flujo_preventa:
+  paso_1_analisis_rfp:
+    herramienta: agente_rfp        # Capítulo 8
+    output: requisitos_estructurados
+
+  paso_2_estimacion:
+    herramienta: agente_estimacion  # Este capítulo
+    input:
+      - requisitos_estructurados
+      - estimacion_base_consultor   # El consultor da su cifra primero
+    output: estimacion_calibrada
+
+  paso_3_propuesta:
+    herramienta: agente_propuestas  # Capítulo 9
+    input:
+      - requisitos_estructurados
+      - estimacion_calibrada
+    output: borrador_propuesta
+
+  paso_4_revision:
+    responsable: director_practica  # Siempre humano
+    input:
+      - borrador_propuesta
+      - estimacion_calibrada
+    output: propuesta_final

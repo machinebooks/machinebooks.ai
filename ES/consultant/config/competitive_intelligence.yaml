@@ -1,0 +1,57 @@
+# Extraído de: LibroConsultor/cap-11-inteligencia-competitiva.md
+# Configuración del pipeline de inteligencia competitiva
+# config/competitive_intelligence.yaml
+
+fuentes:
+  adjudicaciones:
+    url_base: "https://contrataciondelestado.es/sindicacion"
+    cpv_codes:
+      - "72000000"  # Servicios TI y consultoría
+      - "72200000"  # Programación y consultoría
+      - "72220000"  # Consultoría de sistemas
+      - "79410000"  # Consultoría de gestión
+    cadencia: "semanal"
+    historico_meses: 24
+
+  empleo:
+    portales: ["linkedin_public", "infojobs"]
+    empresas_monitorizadas:
+      - nombre: "Competidor A"
+        web_servicios: "https://www.competidor-a.com/servicios"
+      - nombre: "Competidor B"
+        web_servicios: "https://www.competidor-b.com/soluciones"
+    cadencia: "semanal"
+
+  regulacion:
+    fuentes:
+      - "diario_oficial_ue"
+      - "boe_tecnologia"
+      - "european_ai_office"
+      - "enisa_publicaciones"
+    dominios: ["ia", "ciberseguridad", "proteccion_datos", "cloud"]
+    cadencia: "diaria"
+
+  tecnologia:
+    fuentes:
+      - "arxiv_cs_ai"
+      - "blogs_tecnicos"  # Anthropic, AWS, Azure, GCP blogs
+      - "conferencias_proximas"
+    cadencia: "semanal"
+
+analisis:
+  modelo: "claude-opus-4-6"  # Modelo potente para correlaciones
+  cadencia_informe: "quincenal"
+  alertas_tiempo_real: true
+  umbral_alerta: "media"  # alta, media, baja
+
+integracion:
+  rag_conocimiento: true
+  sistema_rfps: true
+  notificaciones: "email"
+  destinatarios: ["equipo_comercial", "socios"]
+
+etica:
+  solo_informacion_publica: true
+  respetar_robots_txt: true
+  no_perfilado_personas: true
+  log_accesos: true  # Trazabilidad de qué se consulta

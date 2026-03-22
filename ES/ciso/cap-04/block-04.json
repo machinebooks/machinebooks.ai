@@ -1,0 +1,28 @@
+# Extraído de: LibroCISO/cap-04-registro-tratamientos.md
+{
+  "name": "Gestión de nóminas",
+  "purposes": ["Cálculo y pago de nóminas", "Cumplimiento obligaciones fiscales y laborales"],
+  "legal_basis": "legal_obligation",
+  "legal_basis_confidence": "alta",
+  "legal_basis_detail": "Art. 6.1.c RGPD — Obligación legal del empleador (ET, LGSS, LIRPF)",
+  "data_subject_categories": ["empleados"],
+  "personal_data_categories": [
+    "identificativos", "contacto", "económico-financieros",
+    "profesionales", "seguridad_social", "datos_bancarios"
+  ],
+  "special_categories": false,
+  "recipients": [
+    "Gestoría externa (encargado del tratamiento)",
+    "AEAT (obligación legal)",
+    "TGSS (obligación legal)"
+  ],
+  "international_transfers": false,
+  "retention_period": "Mínimo 4 años (prescripción fiscal Art. 66 LGT)",
+  "retention_criteria": "Obligación legal de conservación fiscal y laboral",
+  "security_measures": [
+    "cifrado_reposo", "control_acceso_rbac",
+    "copias_seguridad", "registro_accesos"
+  ],
+  "dpia_required": false,
+  "risk_level": "medium"
+}

@@ -1,0 +1,20 @@
+# Extraído de: LibroDevSecOps/cap-23-excepciones-deuda.md
+{
+  "total_active_exceptions": 18,
+  "total_debt_score": 42.3,
+  "debt_by_severity": {
+    "critical": 0,
+    "high": 28.5,
+    "medium": 11.8,
+    "low": 2.0
+  },
+  "debt_by_service": {
+    "api-gateway": 15.2,
+    "payment-service": 12.1,
+    "notification-service": 8.4,
+    "internal-admin": 6.6
+  },
+  "average_exception_age_days": 47.3,
+  "expired_unresolved": 3,
+  "health": "warning"
+}

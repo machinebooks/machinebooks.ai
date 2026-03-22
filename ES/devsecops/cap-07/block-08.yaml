@@ -1,0 +1,55 @@
+# Extraído de: LibroDevSecOps/cap-07-contenedores.md
+name: Container Security
+on:
+  pull_request:
+    paths:
+      - 'Dockerfile'
+      - 'requirements.txt'
+      - 'src/**'
+
+permissions:
+  contents: read
+  id-token: write  # Necesario para keyless signing con cosign
+
+jobs:
+  build-scan-sign:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: |
+          docker build -t mi-app:${{ github.sha }} .
+
+      - name: Trivy image scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'mi-app:${{ github.sha }}'
+          format: 'json'
+          output: 'trivy-image.json'
+          severity: 'HIGH,CRITICAL'
+          exit-code: '1'  # Falla el pipeline si hay hallazgos
+
+      - name: Trivy config scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'config'
+          scan-ref: '.'
+          format: 'json'
+          output: 'trivy-config.json'
+          severity: 'HIGH,CRITICAL'
+
+      - name: Analyze with Claude agent
+        if: always()
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python scripts/analyze_trivy.py
+
+      - name: Sign image with cosign
+        if: success()
+        uses: sigstore/cosign-installer@v3
+
+      - name: Keyless sign
+        if: success()
+        run: |
+          cosign sign --yes mi-app:${{ github.sha }}

@@ -1,0 +1,77 @@
+# Extraído de: LibroCyberrange/cap-17-generacion-escenarios-ia.md
+# Playbook generado por Claude para inyección de vulnerabilidad
+# Escenario: AD Lateral Movement Lab — Kerberos Edition
+# Vulnerabilidad: Cuenta de servicio SQL con SPN y contraseña débil
+---
+- name: Configurar cuenta de servicio SQL vulnerable a Kerberoasting
+  hosts: dc01
+  gather_facts: false
+  tags:
+    - vulnerability_injection
+    - kerberoasting
+
+  vars:
+    domain: "cyberlab.local"
+    service_account: "svc_sql"
+    service_password: "Summer2024!"
+    spn: "MSSQLSvc/srv01.cyberlab.local:1433"
+
+  tasks:
+    # Crear cuenta de servicio con contraseña débil
+    # La contraseña es intencionalmente débil para que sea crackeable
+    # con hashcat y un diccionario estándar (rockyou.txt)
+    - name: Crear cuenta de servicio SQL en Active Directory
+      win_domain_user:
+        name: "{{ service_account }}"
+        password: "{{ service_password }}"
+        state: present
+        password_never_expires: true
+        user_cannot_change_password: true
+        description: "Service account for SQL Server"
+        groups:
+          - "Domain Users"
+
+    # Registrar SPN — esto es lo que habilita Kerberoasting
+    # Un atacante puede solicitar un ticket TGS para este SPN
+    # y crackearlo offline para obtener la contraseña
+    - name: Registrar SPN para la cuenta de servicio
+      win_shell: |
+        setspn -A {{ spn }} {{ domain }}\{{ service_account }}
+      register: spn_result
+
+    # Otorgar permisos de replicación (para DCSync en flag-3)
+    # Esto simula un error de configuración donde la cuenta de
+    # servicio tiene más permisos de los necesarios
+    - name: Otorgar permisos de replicación al servicio SQL
+      win_shell: |
+        Import-Module ActiveDirectory
+        $acl = Get-Acl "AD:\DC=cyberlab,DC=local"
+        $sid = (Get-ADUser {{ service_account }}).SID
+        # Replicating Directory Changes
+        $guid1 = [GUID]"1131f6aa-9c07-11d1-f79f-00c04fc2dcd2"
+        # Replicating Directory Changes All
+        $guid2 = [GUID]"1131f6ad-9c07-11d1-f79f-00c04fc2dcd2"
+        $ace1 = New-Object System.DirectoryServices.ActiveDirectoryAccessRule(
+          $sid, "ExtendedRight", "Allow", $guid1)
+        $ace2 = New-Object System.DirectoryServices.ActiveDirectoryAccessRule(
+          $sid, "ExtendedRight", "Allow", $guid2)
+        $acl.AddAccessRule($ace1)
+        $acl.AddAccessRule($ace2)
+        Set-Acl "AD:\DC=cyberlab,DC=local" $acl
+
+    # Verificación: confirmar que la vulnerabilidad es explotable
+    - name: Verificar que el SPN está registrado y es consultable
+      win_shell: |
+        setspn -L {{ service_account }}
+      register: verify_spn
+      failed_when: "'{{ spn }}' not in verify_spn.stdout"
+
+    - name: Verificar que la cuenta tiene permisos de replicación
+      win_shell: |
+        Import-Module ActiveDirectory
+        $acl = Get-Acl "AD:\DC=cyberlab,DC=local"
+        $acl.Access | Where-Object {
+          $_.IdentityReference -like "*{{ service_account }}*"
+        } | Measure-Object | Select-Object -ExpandProperty Count
+      register: verify_acl
+      failed_when: verify_acl.stdout | int < 2

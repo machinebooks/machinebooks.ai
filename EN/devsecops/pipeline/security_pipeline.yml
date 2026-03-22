@@ -1,0 +1,42 @@
+# Source: The DevSecOps and the Machine -- Chapter 1
+# Pattern: Initial GitHub Actions security pipeline with Semgrep
+
+# .github/workflows/security-pipeline.yml
+name: Security Pipeline
+on:
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+  pull-requests: write  # To comment findings on the PR
+
+jobs:
+  sast-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Semgrep SAST
+        id: semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/owasp-top-ten
+            p/python
+          generateSarif: true
+
+      - name: Save SARIF results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: semgrep-results
+          path: semgrep.sarif
+
+      - name: Send findings to intelligent triage
+        if: always()
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/triage_findings.py semgrep.sarif

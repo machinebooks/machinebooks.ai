@@ -1,0 +1,21 @@
+# Extraído de: LibroCyberrange/interludio-testing-cyber-range.md
+# pytest.ini / pyproject.toml — Configuración de pytest
+
+[tool.pytest.ini_options]
+markers = [
+    "unit: Tests sin dependencias externas (rápidos, CI/CD)",
+    "integration: Tests contra Proxmox y MySQL reales (lentos, requieren infra)",
+    "e2e: Tests de ciclo de vida completo de un ejercicio",
+    "security: Tests de aislamiento y controles de seguridad",
+]
+asyncio_mode = "auto"
+timeout = 60  # Timeout por defecto; integration/e2e lo sobreescriben
+
+# Ejecución rápida (CI/CD, sin infraestructura):
+#   pytest -m "unit" --timeout=10
+#
+# Ejecución completa (con Proxmox disponible):
+#   pytest -m "unit or integration" --timeout=300
+#
+# Solo tests de seguridad (antes de un ejercicio):
+#   pytest -m "security" --timeout=180

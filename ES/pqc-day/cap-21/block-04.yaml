@@ -1,0 +1,6 @@
+# Extraído de: LibroPQC/cap-21-docker.md
+depends_on:
+  pqc_mysql:
+    condition: service_healthy
+  pqc_redis:
+    condition: service_healthy

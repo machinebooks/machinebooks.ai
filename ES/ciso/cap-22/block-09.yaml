@@ -1,0 +1,11 @@
+# Extraído de: LibroCISO/cap-22-observabilidad-siem.md
+otel-collector:
+  image: otel/opentelemetry-collector-contrib:0.96.0
+  volumes:
+    - ./config/otel-collector.yml:/etc/otelcol/config.yaml:ro
+  ports:
+    - "4317:4317"   # gRPC para recibir traces
+  networks:
+    - monitoring
+    - backend
+  restart: unless-stopped

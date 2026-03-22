@@ -1,0 +1,14 @@
+# Extraído de: LibroUsuario/cap-11-email-inteligente.md
+{
+  "mcpServers": {
+    "gmail": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-gmail"],
+      "env": {
+        "GMAIL_CLIENT_ID": "<tu-client-id>",
+        "GMAIL_CLIENT_SECRET": "<tu-client-secret>",
+        "GMAIL_REDIRECT_URI": "http://localhost:3000/callback"
+      }
+    }
+  }
+}

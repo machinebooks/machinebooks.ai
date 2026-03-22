@@ -1,0 +1,96 @@
+# Extraído de: LibroPQC/cap-04-requisito-arquitectura.md
+# Ejemplo didáctico: patrones/docker/docker-compose.yml
+services:
+  # Base de datos — única instancia, multi-tenant por organización
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: <TU_ROOT_PASSWORD>
+      MYSQL_DATABASE: pqc_platform
+      MYSQL_USER: pqc_user
+      MYSQL_PASSWORD: <TU_DB_PASSWORD>
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Broker de mensajes y caché
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  # Backend Flask — API REST multi-tenant
+  backend:
+    build: ./backend
+    environment:
+      FLASK_ENV: production
+      DATABASE_URL: mysql+pymysql://pqc_user:<TU_DB_PASSWORD>@mysql/pqc_platform
+      REDIS_URL: redis://redis:6379/0
+      JWT_SECRET_KEY: <TU_SECRET_KEY>
+      ANTHROPIC_API_KEY: <set-in-vault>
+    ports:
+      - "5000:5000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - upload_data:/app/uploads
+
+  # Worker Celery — ejecuta análisis en segundo plano
+  worker:
+    build: ./backend
+    command: celery -A app.celery_app worker -l info -c 2
+    environment:
+      DATABASE_URL: mysql+pymysql://pqc_user:<TU_DB_PASSWORD>@mysql/pqc_platform
+      REDIS_URL: redis://redis:6379/0
+      ANTHROPIC_API_KEY: <set-in-vault>
+    depends_on:
+      - mysql
+      - redis
+
+  # Beat Celery — programa análisis recurrentes
+  beat:
+    build: ./backend
+    command: celery -A app.celery_app beat -l info
+    environment:
+      DATABASE_URL: mysql+pymysql://pqc_user:<TU_DB_PASSWORD>@mysql/pqc_platform
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - mysql
+      - redis
+
+  # Frontend React — SPA servida por Nginx
+  frontend:
+    build: ./frontend
+    volumes:
+      - frontend_build:/app/build
+
+  # Reverse proxy — punto de entrada único
+  nginx:
+    image: nginx:1.25-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+      - frontend_build:/usr/share/nginx/html:ro
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  mysql_data:
+  redis_data:
+  upload_data:
+  frontend_build:

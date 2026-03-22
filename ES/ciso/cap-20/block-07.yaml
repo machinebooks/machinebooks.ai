@@ -1,0 +1,8 @@
+# Extraído de: LibroCISO/cap-20-docker-compose.md
+# MySQL: verifica que acepta comandos, no solo que el puerto está abierto
+healthcheck:
+  test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+  interval: 10s
+  timeout: 5s
+  retries: 10
+  start_period: 30s    # Da 30s de gracia para inicialización

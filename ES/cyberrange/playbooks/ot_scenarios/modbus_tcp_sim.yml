@@ -1,0 +1,103 @@
+# Extraído de: LibroCyberrange/cap-13-escenarios-topologias.md
+# playbooks/ot_scenarios/modbus_tcp_sim.yml
+- name: Deploy Modbus TCP Simulation Environment
+  hosts: ot_devices
+  become: true  # Necesario: instalar paquetes y crear usuarios del sistema
+  vars:
+    modbus_port: 502
+    slave_id: 1
+    num_registers: 100
+    num_coils: 64
+    sim_user: modbussim
+    sim_dir: /opt/modbus-sim
+
+  tasks:
+    - name: Install Python3 and pip
+      apt:
+        name: [python3, python3-pip, python3-venv]
+        state: present
+        update_cache: true
+
+    - name: Create simulation directory
+      file:
+        path: "{{ sim_dir }}"
+        state: directory
+        owner: "{{ sim_user }}"
+        mode: "0755"
+
+    - name: Install pymodbus in virtual environment
+      pip:
+        name: pymodbus[serial]>=3.5.0
+        virtualenv: "{{ sim_dir }}/venv"
+
+    - name: Deploy Modbus Slave (Server) script
+      copy:
+        dest: "{{ sim_dir }}/modbus_slave.py"
+        owner: "{{ sim_user }}"
+        mode: "0755"
+        content: |
+          #!/usr/bin/env python3
+          """Modbus TCP Slave - Simula un PLC con registros y coils."""
+          import asyncio, random, logging
+          from pymodbus.server import StartAsyncTcpServer
+          from pymodbus.datastore import (
+              ModbusSequentialDataBlock,
+              ModbusSlaveContext,
+              ModbusServerContext,
+          )
+
+          log = logging.getLogger("modbus_slave")
+
+          async def update_values(context):
+              """Simula valores cambiantes: temperatura, presión, caudal."""
+              while True:
+                  slave = context[{{ slave_id }}]
+                  values = slave.getValues(3, 0, {{ num_registers }})
+                  # Temperatura (reg 0-9): 20-80°C con drift
+                  for i in range(10):
+                      current = values[i] if values[i] > 0 else 4500
+                      values[i] = max(2000, min(8000, current + random.randint(-50, 50)))
+                  # Presión (reg 10-19): 100-500 PSI
+                  for i in range(10, 20):
+                      current = values[i] if values[i] > 0 else 30000
+                      values[i] = max(10000, min(50000, current + random.randint(-100, 100)))
+                  slave.setValues(3, 0, values)
+                  await asyncio.sleep(2)
+
+          async def run_server():
+              hr = ModbusSequentialDataBlock(0, [0] * {{ num_registers }})
+              co = ModbusSequentialDataBlock(0, [0] * {{ num_coils }})
+              ctx = ModbusSlaveContext(di=co, co=co, hr=hr, ir=hr)
+              server_ctx = ModbusServerContext(
+                  slaves={ {{ slave_id }}: ctx }, single=False
+              )
+              asyncio.create_task(update_values(server_ctx))
+              await StartAsyncTcpServer(
+                  context=server_ctx,
+                  address=("0.0.0.0", {{ modbus_port }})
+              )
+
+          if __name__ == "__main__":
+              asyncio.run(run_server())
+
+    - name: Deploy systemd service for Modbus Slave
+      copy:
+        dest: /etc/systemd/system/modbus-slave.service
+        content: |
+          [Unit]
+          Description=Modbus TCP Slave Simulator
+          After=network.target
+          [Service]
+          Type=simple
+          User={{ sim_user }}
+          ExecStart={{ sim_dir }}/venv/bin/python {{ sim_dir }}/modbus_slave.py
+          Restart=always
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Enable and start Modbus Slave
+      systemd:
+        name: modbus-slave
+        enabled: true
+        state: started
+        daemon_reload: true

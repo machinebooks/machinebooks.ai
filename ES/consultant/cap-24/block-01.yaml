@@ -1,0 +1,42 @@
+# Extraído de: LibroConsultor/cap-24-cuando-no-usar-ia.md
+# Protocolo de transparencia sobre uso de IA en entregables
+# Se aplica a todo documento entregado al cliente
+
+transparency_levels:
+  level_1_proactive:
+    description: "Comunicar uso de IA sin que el cliente pregunte"
+    when:
+      - "Cliente ha expresado interés en IA"
+      - "Contrato incluye cláusula de innovación"
+      - "Sector tecnológico o cliente early adopter"
+    message_template: >
+      Este entregable combina análisis automatizado con IA
+      y revisión experta de nuestro equipo. La IA nos permite
+      cubrir más superficie de análisis; el criterio profesional
+      garantiza la relevancia de las conclusiones.
+
+  level_2_responsive:
+    description: "Explicar uso de IA solo cuando el cliente pregunte"
+    when:
+      - "Cliente neutral respecto a IA"
+      - "Sector regulado sin posición explícita sobre IA"
+      - "Relación comercial nueva"
+    message_template: >
+      Utilizamos herramientas de IA como parte de nuestro proceso
+      de análisis, del mismo modo que utilizamos herramientas de
+      búsqueda, bases de datos y software de análisis. Todo output
+      pasa por revisión profesional antes de formar parte del entregable.
+
+  level_3_minimal:
+    description: "Mención general sin detalle de herramientas específicas"
+    when:
+      - "Cliente con postura negativa declarada sobre IA"
+      - "Sector con restricciones contractuales sobre IA"
+      - "Contrato con cláusula de trabajo exclusivamente humano"
+    message_template: >
+      Nuestro equipo aplica las mejores herramientas disponibles
+      en cada fase del análisis. Todo entregable refleja el criterio
+      profesional de los consultores asignados al proyecto.
+    warning: >
+      ATENCIÓN: Si el contrato prohíbe explícitamente el uso de IA,
+      NO usar IA en ninguna fase del proyecto. Escalar a dirección.

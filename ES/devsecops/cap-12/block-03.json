@@ -1,0 +1,36 @@
+# Extraído de: LibroDevSecOps/cap-12-dast-inteligente.md
+{
+  "endpoint": "/api/users",
+  "method": "POST",
+  "priority": "alta",
+  "tests": [
+    {
+      "category": "sql_injection",
+      "parameter": "email",
+      "payloads": [
+        "test@example.com' OR '1'='1",
+        "test@example.com'; WAITFOR DELAY '0:0:5'--",
+        "test@example.com' UNION SELECT null,null,null--"
+      ],
+      "expected_vulnerable_response": "error SQL, tiempo de respuesta >5s, datos inesperados",
+      "expected_safe_response": "400 con mensaje de validación genérico"
+    },
+    {
+      "category": "broken_access_control",
+      "parameter": "role",
+      "payloads": ["admin", "superadmin", "root"],
+      "expected_vulnerable_response": "200 con rol privilegiado asignado",
+      "expected_safe_response": "403 o 400 rechazando rol no autorizado"
+    },
+    {
+      "category": "mass_assignment",
+      "parameter": "_body_extra_fields",
+      "payloads": [
+        {"email": "test@example.com", "name": "Test", "role": "user", "is_admin": true},
+        {"email": "test@example.com", "name": "Test", "role": "user", "id": 1}
+      ],
+      "expected_vulnerable_response": "200 aceptando campos no documentados",
+      "expected_safe_response": "campos extra ignorados o rechazados"
+    }
+  ]
+}

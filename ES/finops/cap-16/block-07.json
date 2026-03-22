@@ -1,0 +1,25 @@
+# Extraído de: LibroFinOps/cap-16-forecasting.md
+{
+  "statistical_base_usd": 48800,
+  "adjusted_forecast_usd": 74500,
+  "range_low_usd": 68000,
+  "range_high_usd": 92000,
+  "confidence_level": "medium",
+  "adjustments": [
+    {
+      "factor": "Black Friday + Cyber Monday",
+      "impact_usd": 19400,
+      "reasoning": "Año anterior: +$18.500 sobre el gasto base"
+    },
+    {
+      "factor": "Nuevo servicio de recomendaciones sin prueba de carga",
+      "impact_usd": 6300,
+      "reasoning": "Incertidumbre alta: rango $3.000-$15.000"
+    }
+  ],
+  "executive_summary": "Forecast noviembre: $74.500, superior a la tendencia base de $48.800 por Black Friday/Cyber Monday. Rango amplio ($68K-$92K) por incertidumbre del nuevo servicio de recomendaciones bajo carga real.",
+  "key_uncertainties": [
+    "Comportamiento del servicio de recomendaciones bajo carga real",
+    "Posibles promociones adicionales que amplíen el tráfico"
+  ]
+}

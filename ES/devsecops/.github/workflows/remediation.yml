@@ -1,0 +1,44 @@
+# Extraído de: LibroDevSecOps/cap-11-remediacion-automatica.md
+# .github/workflows/remediation.yml
+name: Security Remediation Agent
+on:
+  workflow_run:
+    workflows: ["Security Triage"]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  remediate:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Descargar plan de acción del triaje
+        uses: actions/download-artifact@v4
+        with:
+          name: triage-action-plan
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Instalar dependencias del agente
+        run: |
+          pip install anthropic PyGithub opa-python
+
+      - name: Ejecutar agente de remediación
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python remediation_orchestrator.py \
+            --action-plan triage-action-plan.json \
+            --output remediation-report.json \
+            --max-fixes-per-run 20
+
+      - name: Publicar informe de remediación
+        uses: actions/upload-artifact@v4
+        with:
+          name: remediation-report
+          path: remediation-report.json

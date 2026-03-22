@@ -1,0 +1,44 @@
+# Extraído de: LibroConsultor/cap-03-consultor-potenciado.md
+# .claude/commands/prepare-meeting.md
+# Propósito: preparar un briefing estructurado antes de una reunión con cliente
+
+Prepara un briefing para la reunión con el cliente.
+
+## Inputs esperados
+El usuario proporcionará:
+- Nombre o referencia del cliente
+- Objetivo de la reunión
+- Asistentes conocidos y sus roles
+- Contexto adicional relevante
+
+## Instrucciones
+
+1. **Busca contexto histórico.** Consulta la base de conocimiento para
+   encontrar proyectos anteriores con este cliente, entregables previos,
+   decisiones documentadas y lecciones aprendidas.
+
+2. **Análisis regulatorio.** Identifica los frameworks normativos aplicables
+   al sector del cliente (ENS, ISO 27001, DORA, AI Act, NIS2, RGPD)
+   y resume los cambios relevantes desde el último contacto.
+
+3. **Prepara agenda sugerida.** Propone una agenda de 60 minutos con:
+   - 5 min: contexto y objetivo
+   - 20 min: presentación de análisis/hallazgos
+   - 20 min: discusión y preguntas
+   - 10 min: próximos pasos y compromisos
+   - 5 min: cierre
+
+4. **Genera briefing.** Documento de 2-3 páginas con:
+   - Contexto del cliente (sector, tamaño, regulación)
+   - Historial con nuestra práctica
+   - Puntos de fricción conocidos
+   - Objetivos del cliente para esta reunión
+   - Nuestra posición y recomendación
+   - Preguntas que debemos hacer
+   - Preguntas que nos pueden hacer y respuestas preparadas
+
+5. **Señala riesgos.** Lista de temas sensibles a evitar o manejar
+   con cuidado en la reunión.
+
+## Formato de salida
+Documento Markdown estructurado, listo para revisar en 10 minutos.

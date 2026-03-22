@@ -1,0 +1,36 @@
+# Source: The Consultant and the Machine -- Chapter 27
+# Pattern: Technology case deliverables config
+
+# Report generation pipeline configuration
+pipeline_informe:
+  modelo: "claude-sonnet-4-6"
+  secciones:
+    - id: "resumen_ejecutivo"
+      generacion: "manual"  # Consultant writes this
+      motivo: "Requires political judgment and strategic prioritization"
+    - id: "estado_actual"
+      generacion: "agente"
+      fuente: "resultados_analisis_codigo"
+      plantilla: "templates/estado_actual.md"
+      revision: "obligatoria"
+    - id: "evaluacion_alternativas"
+      generacion: "agente"
+      fuente: "resultados_evaluacion_tecnologica"
+      plantilla: "templates/evaluacion_alternativas.md"
+      revision: "obligatoria"
+    - id: "roadmap_migracion"
+      generacion: "hibrido"  # Agent generates base, consultant adjusts
+      fuente: "estimaciones + contexto_stakeholders"
+      revision: "obligatoria"
+    - id: "estimacion_costes"
+      generacion: "agente"
+      fuente: "resultados_estimacion"
+      plantilla: "templates/estimacion_costes.md"
+      revision: "obligatoria"
+    - id: "recomendaciones"
+      generacion: "manual"  # Human judgment
+      motivo: "Requires weighing non-technical factors"
+    - id: "anexos_tecnicos"
+      generacion: "agente"
+      fuente: "metadatos + analisis_detallado"
+      revision: "validacion_tecnica"

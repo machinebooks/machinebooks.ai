@@ -1,0 +1,29 @@
+# Extraído de: LibroFinOps/cap-20-policy-as-code.md
+# policies/tenants/tenant-001.yaml
+# Override de política para un tenant específico
+# Cambios respecto a global deben documentarse con justificación
+
+tenant_id: "tenant-001"
+tenant_name: "Cliente Enterprise A"
+inherits: "global"               # hereda la política global
+
+# Overrides específicos para este tenant
+budgets:
+  monthly_total_eur: 150.0       # límite mensual global
+  alert_threshold: 0.75          # alerta más temprana: cliente sensible
+  task_budgets:
+    offer_generation:
+      monthly_eur: 80.0          # este tenant genera muchas ofertas
+    compliance_report:
+      monthly_eur: 50.0
+
+model_routing_overrides:
+  # Este tenant tiene acceso a Opus para análisis de riesgo
+  - task_type: "risk_analysis"
+    model: "claude-opus-4-6"
+    max_output_tokens: 6000
+    rationale: "Aprobado por contrato. Ver ticket #4421."
+
+throttling:
+  requests_per_minute_per_user: 10   # más tolerante que el global (5)
+  requests_per_hour_per_tenant: 500

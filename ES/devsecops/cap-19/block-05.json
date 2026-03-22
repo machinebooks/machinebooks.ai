@@ -1,0 +1,80 @@
+# Extraído de: LibroDevSecOps/cap-19-observabilidad-seguridad.md
+{
+  "dashboard": {
+    "title": "DevSecOps — Security Lead",
+    "uid": "devsecops-security-lead",
+    "tags": ["security", "devsecops", "lead"],
+    "panels": [
+      {
+        "title": "MTTR por severidad (últimos 30 días)",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(devsecops_mttr_seconds_bucket{severity=\"critical\"}[7d]))",
+            "legendFormat": "Critical (p50)"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(devsecops_mttr_seconds_bucket{severity=\"high\"}[7d]))",
+            "legendFormat": "High (p50)"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s",
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 172800},
+                {"color": "red", "value": 604800}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "title": "Hallazgos abiertos por servicio",
+        "type": "barchart",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+        "targets": [
+          {
+            "expr": "sum by (service, severity) (devsecops_findings_open_total)",
+            "legendFormat": "{{service}} - {{severity}}"
+          }
+        ]
+      },
+      {
+        "title": "Fix Rate semanal",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 8},
+        "targets": [
+          {
+            "expr": "sum(increase(devsecops_findings_remediated_total[7d])) / sum(increase(devsecops_findings_detected_total[7d])) * 100"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": null},
+                {"color": "yellow", "value": 50},
+                {"color": "green", "value": 75}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "title": "Tasa de falsos positivos por herramienta",
+        "type": "piechart",
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 8},
+        "targets": [
+          {
+            "expr": "sum by (tool) (increase(devsecops_false_positives_total[7d])) / sum by (tool) (increase(devsecops_findings_detected_total[7d])) * 100"
+          }
+        ]
+      }
+    ]
+  }
+}

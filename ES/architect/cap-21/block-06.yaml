@@ -1,0 +1,23 @@
+# Extraído de: LibroTecnico/cap-21-cicd.md
+# Fragmento: construcción selectiva por servicio modificado
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      ai_service: ${{ steps.filter.outputs.ai_service }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+            ai_service:
+              - 'ai_service/**'
+
+  build-backend:
+    needs: changes
+    if: ${{ needs.changes.outputs.backend == 'true' }}
+    # ... resto del job

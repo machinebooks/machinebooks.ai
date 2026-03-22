@@ -1,0 +1,8 @@
+# Extraído de: LibroPQC/cap-06-seguridad-auditoria.md
+# Ejemplo didáctico: patrones/docker/docker-compose.yml — Secretos como variables
+backend:
+  environment:
+    JWT_SECRET_KEY: <TU_JWT_SECRET>
+    ENCRYPTION_KEY: <TU_ENCRYPTION_KEY>
+    AI_PROVIDER: azure_ai_foundry
+    AZURE_AI_FOUNDRY_KEY: <set-in-vault>

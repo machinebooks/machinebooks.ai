@@ -1,0 +1,33 @@
+# Extraído de: LibroFinOps/cap-12-agente-coste-cloud.md
+# docker-compose.cloud-agent.yml
+services:
+  mcp-billing:
+    build: ./cloud_billing_mcp
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_DEFAULT_REGION=us-east-1
+      - AZURE_TENANT_ID=${AZURE_TENANT_ID}
+      - AZURE_CLIENT_ID=${AZURE_CLIENT_ID}
+      - AZURE_CLIENT_SECRET=${AZURE_CLIENT_SECRET}
+      - CACHE_TTL_MONTHLY=14400   # 4 horas
+      - CACHE_TTL_DAILY=1800      # 30 minutos
+    ports:
+      - "8090:8090"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8090/health"]
+      interval: 30s
+      timeout: 5s
+
+  cloud-cost-agent:
+    build: ./cloud_cost_agent
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - MCP_BILLING_URL=http://mcp-billing:8090
+    depends_on:
+      mcp-billing:
+        condition: service_healthy
+    ports:
+      - "8091:8091"
+    restart: unless-stopped

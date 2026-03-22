@@ -1,0 +1,20 @@
+# Extraído de: LibroFinOps/cap-20-policy-as-code.md
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DenyExpensiveInstancesWithoutTag",
+      "Effect": "Deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "*",
+      "Condition": {
+        "StringNotLike": {
+          "aws:RequestTag/finops-approved": "true"
+        },
+        "ForAnyValue:StringLike": {
+          "ec2:InstanceType": ["p4d.*", "p5.*", "g5.*"]
+        }
+      }
+    }
+  ]
+}

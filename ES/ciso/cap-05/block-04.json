@@ -1,0 +1,52 @@
+# Extraído de: LibroCISO/cap-05-dpia-derechos.md
+{
+  "description": "El tratamiento consiste en la recopilación y análisis automatizado de datos de rendimiento de empleados (indicadores de productividad, asistencia, evaluaciones de supervisores, objetivos cumplidos) para generar puntuaciones predictivas de rendimiento futuro. Los datos provienen de tres sistemas internos y se procesan mediante un modelo de machine learning que genera una puntuación de 0 a 100...",
+  "necessity": "La finalidad declarada (mejora de la gestión del talento) es legítima. Sin embargo, la proporcionalidad requiere análisis: ¿es necesario un modelo predictivo para esta finalidad, o bastaría con métricas descriptivas? El principio de minimización (Art. 5.1.c) exige que los datos tratados sean adecuados, pertinentes y limitados...",
+  "risks": {
+    "narrative": "Se identifican cinco riesgos principales para los derechos y libertades de los empleados evaluados...",
+    "identified": [
+      {
+        "risk": "Decisiones laborales basadas en predicciones incorrectas del modelo",
+        "likelihood": "media",
+        "impact": "alto",
+        "affected_right": "Art. 22 — Derecho a no ser objeto de decisiones automatizadas"
+      },
+      {
+        "risk": "Sesgo algorítmico que discrimine por género, edad u origen",
+        "likelihood": "media",
+        "impact": "alto",
+        "affected_right": "Art. 21 CE — Derecho a la no discriminación"
+      },
+      {
+        "risk": "Falta de transparencia sobre los criterios del modelo",
+        "likelihood": "alta",
+        "impact": "medio",
+        "affected_right": "Art. 13-14 RGPD — Derecho a la información"
+      }
+    ]
+  },
+  "measures": {
+    "narrative": "Se proponen medidas técnicas y organizativas para cada riesgo...",
+    "proposed": [
+      {
+        "measure": "Implementar supervisión humana obligatoria antes de cualquier decisión laboral basada en la puntuación predictiva",
+        "risk_addressed": "Decisiones laborales basadas en predicciones incorrectas",
+        "status": "planned"
+      },
+      {
+        "measure": "Auditoría semestral del modelo para detectar sesgos por variables protegidas",
+        "risk_addressed": "Sesgo algorítmico discriminatorio",
+        "status": "planned"
+      }
+    ]
+  },
+  "gt29_criteria": [
+    "scoring",
+    "automated_decisions",
+    "vulnerable_data_subjects",
+    "innovative_technology"
+  ],
+  "residual_risk_level": "medium",
+  "requires_prior_consultation": false,
+  "confidence": "media"
+}

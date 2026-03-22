@@ -1,0 +1,27 @@
+# Source: The FinOps Engineer and the Machine -- Chapter 3
+# Pattern: Cloud cost configuration by service
+
+# config/cloud_costs.yaml (excerpt: 5 of 17 services)
+# For production, this file is generated from AWS Cost Explorer.
+
+monthly_costs:
+  "2025-03":
+    services:
+      ai-service:
+        type: compute
+        cost_eur: 360
+        notes: "Claude agents, highest CPU/RAM consumption"
+      db:
+        type: storage
+        cost_eur: 210
+        notes: "MySQL 8.0, 100 GB SSD"
+      qdrant:
+        type: storage
+        cost_eur: 180
+        notes: "Vector DB, high-speed SSD for latency < 50 ms"
+      redis:
+        type: compute
+        cost_eur: 90
+      worker-llm:
+        type: compute
+        cost_eur: 180

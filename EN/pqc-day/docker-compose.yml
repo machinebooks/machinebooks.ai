@@ -1,0 +1,40 @@
+# PQC-Day and the Machine — Root docker-compose.yml
+# Simplified version referencing the full example in cap-21/
+#
+# For the complete 7-service configuration with healthchecks,
+# volumes, and network, see cap-21/docker-compose.yml
+#
+# This file provides a minimal setup for running examples locally.
+#
+# Usage: docker compose up -d
+
+services:
+  pqc_mysql:
+    image: mysql:8.0
+    container_name: pqc_example_mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-pqc_platform}
+      MYSQL_USER: ${MYSQL_USER:-pqc_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-pqc_password}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 5
+
+  pqc_redis:
+    image: redis:7-alpine
+    container_name: pqc_example_redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      retries: 3
+
+volumes:
+  mysql_data:

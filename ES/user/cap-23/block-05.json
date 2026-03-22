@@ -1,0 +1,11 @@
+# Extraído de: LibroUsuario/cap-23-tareas-recurrentes.md
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "write_file",
+        "command": "echo 'Archivo modificado: se ha registrado el cambio en el log'"
+      }
+    ]
+  }
+}

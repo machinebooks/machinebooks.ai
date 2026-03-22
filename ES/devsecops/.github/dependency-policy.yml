@@ -1,0 +1,38 @@
+# Extraído de: LibroDevSecOps/cap-05-sca-sbom.md
+# .github/dependency-policy.yml
+# Política de dependencias del proyecto
+policy:
+  version: "1.0"
+
+  licenses:
+    allowed:
+      - MIT
+      - Apache-2.0
+      - BSD-2-Clause
+      - BSD-3-Clause
+      - ISC
+      - PSF-2.0
+    blocked:
+      - AGPL-3.0-only
+      - AGPL-3.0-or-later
+      - GPL-3.0-only      # Salvo excepción aprobada
+      - SSPL-1.0
+    review_required:
+      - GPL-2.0-only
+      - LGPL-2.1-only
+      - MPL-2.0
+
+  vulnerabilities:
+    block_on:
+      - severity: critical
+        max_age_days: 0    # Bloqueo inmediato
+      - severity: high
+        max_age_days: 7    # 7 días para parchear
+    warn_on:
+      - severity: medium
+        max_age_days: 30
+
+  supply_chain:
+    require_known_license: true
+    max_transitive_depth: 5   # Alerta si una dep tiene >5 niveles
+    block_deprecated: true     # Bloquear paquetes deprecated

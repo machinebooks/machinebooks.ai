@@ -1,0 +1,7 @@
+# Extraído de: LibroCISO/cap-20-docker-compose.md
+# En docker-compose.prod.yml, para cada servicio
+logging:
+  driver: json-file
+  options:
+    max-size: "50m"     # Rotar al llegar a 50 MB
+    max-file: "5"       # Mantener máximo 5 ficheros

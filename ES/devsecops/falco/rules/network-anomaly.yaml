@@ -1,0 +1,21 @@
+# Extraído de: LibroDevSecOps/cap-18-runtime-security.md
+# falco/rules/network-anomaly.yaml
+- rule: Conexión saliente a puerto no estándar desde contenedor
+  desc: >
+    Detecta conexiones TCP salientes a puertos que no son
+    80, 443, 8080, 8443, 5432, 3306, 6379, 9200.
+    Puertos inesperados pueden indicar reverse shell,
+    C2 o exfiltración.
+  condition: >
+    outbound
+    and container
+    and not (fd.sport in (80, 443, 8080, 8443, 5432,
+             3306, 6379, 9200, 6333, 9090, 9091))
+    and evt.type = connect
+  output: >
+    Conexión saliente a puerto no estándar
+    (contenedor=%container.name imagen=%container.image.repository
+    destino=%fd.sip:%fd.sport protocolo=%fd.l4proto
+    proceso=%proc.name)
+  priority: WARNING
+  tags: [container, network, mitre_exfiltration]

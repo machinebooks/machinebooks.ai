@@ -1,0 +1,37 @@
+# Extraído de: LibroDevSecOps/cap-21-policy-as-code.md
+# ConstraintTemplate: contenedores no privilegiados
+apiVersion: templates.gatekeeper.sh/v1
+kind: ConstraintTemplate
+metadata:
+  name: k8sdenyprivileged
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sDenyPrivileged
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8sdenyprivileged
+
+        violation[{"msg": msg}] {
+          container := input.review.object.spec.containers[_]
+          container.securityContext.privileged
+          msg := sprintf(
+            "Contenedor '%s' no puede ejecutarse en modo privilegiado",
+            [container.name]
+          )
+        }
+---
+# Constraint: aplicar la plantilla a todos los namespaces excepto kube-system
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sDenyPrivileged
+metadata:
+  name: deny-privileged-containers
+spec:
+  enforcementAction: deny
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    excludedNamespaces: ["kube-system", "gatekeeper-system"]

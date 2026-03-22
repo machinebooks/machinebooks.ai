@@ -1,0 +1,29 @@
+# Extraído de: LibroDevSecOps/cap-17-aiact-pipeline.md
+# ai-system-manifest.yaml — Metadatos del sistema de IA
+system:
+  name: "agente-triaje-sast"
+  version: "2.1.0"
+  description: "Agente que triaja hallazgos SAST y prioriza por riesgo real"
+
+purpose:
+  domain: "ciberseguridad"
+  use_case: "triaje automático de vulnerabilidades de código"
+  decision_impact: "priorización de tareas de remediación"
+  affects_natural_persons: false
+
+ai_components:
+  models:
+    - provider: "anthropic"
+      model: "claude-sonnet-4-6"
+      type: "api"
+  data_sources:
+    - type: "code_repository"
+      contains_personal_data: false
+    - type: "sast_findings"
+      contains_personal_data: false
+  autonomy_level: "human-in-the-loop"  # autonomous | human-in-the-loop | human-on-the-loop
+
+deployment:
+  environment: "ci_cd_pipeline"
+  users: "equipo_desarrollo"
+  geographic_scope: "EU"

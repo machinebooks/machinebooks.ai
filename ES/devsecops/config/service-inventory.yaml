@@ -1,0 +1,29 @@
+# Extraído de: LibroDevSecOps/cap-09-agente-triaje.md
+# config/service-inventory.yaml
+services:
+  api-gateway:
+    internet_facing: true
+    requires_auth: false   # Endpoints públicos + autenticados
+    waf_protected: true
+    data_classification: "confidential"
+    criticality: "high"
+    owner_team: "platform"
+    compliance_scope: ["rgpd", "ens-alto"]
+
+  payment-service:
+    internet_facing: false  # Solo accesible desde api-gateway
+    requires_auth: true
+    waf_protected: false
+    data_classification: "restricted"  # Datos de tarjetas
+    criticality: "critical"
+    owner_team: "payments"
+    compliance_scope: ["pci-dss", "rgpd"]
+
+  internal-logger:
+    internet_facing: false
+    requires_auth: true
+    waf_protected: false
+    data_classification: "internal"
+    criticality: "low"
+    owner_team: "platform"
+    compliance_scope: []

@@ -1,0 +1,76 @@
+# Extraído de: LibroCyberrange/cap-25-despliegue-produccion.md
+# Ejemplo didáctico: patrones/docker/cyber-range-compose.yml
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-}
+        VITE_API_PROTOCOL: ${VITE_API_PROTOCOL:-}
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-15173}:80"
+    depends_on:
+      - backend
+    networks:
+      - cyberrange_net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    environment:
+      DATABASE_URL: mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+    volumes:
+      - cyberrange_uploads_data:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy    # No arranca hasta que MySQL responda
+      redis:
+        condition: service_healthy    # No arranca hasta que Redis responda
+    networks:
+      - cyberrange_net
+
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - cyberrange_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cyberrange_net
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - cyberrange_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cyberrange_net
+
+networks:
+  cyberrange_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.31.99.0/24       # Subnet fija para evitar conflictos

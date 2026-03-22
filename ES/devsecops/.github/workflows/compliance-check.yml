@@ -1,0 +1,55 @@
+# Extraído de: LibroDevSecOps/cap-22-compliance-continuo.md
+# .github/workflows/compliance-check.yml
+name: Compliance Continuous Check
+
+on:
+  push:
+    branches: [main, develop]
+  schedule:
+    # Evaluación diaria incluso sin commits
+    - cron: '0 6 * * *'
+
+jobs:
+  compliance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Recolectar evidencias del último pipeline
+        run: |
+          python -m compliance.collector \
+            --reports-dir reports/ \
+            --evidence-store evidence/ \
+            --run-id "${{ github.run_id }}" \
+            --commit-sha "${{ github.sha }}"
+
+      - name: Evaluar compliance
+        run: |
+          python -m compliance.evaluator \
+            --mappings compliance-mappings/ \
+            --evidence-store evidence/ \
+            --output compliance-report.json
+
+      - name: Detectar deriva
+        run: |
+          python -m compliance.drift_detector \
+            --current compliance-report.json \
+            --previous evidence/last-assessment.json \
+            --output drift-report.json
+
+      - name: Alertar si hay deriva crítica
+        if: always()
+        run: |
+          python -m compliance.alert \
+            --drift-report drift-report.json \
+            --severity-threshold high \
+            --notify-channel security-team
+
+      - name: Publicar informe como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: compliance-report-${{ github.run_id }}
+          path: |
+            compliance-report.json
+            drift-report.json
+          retention-days: 365

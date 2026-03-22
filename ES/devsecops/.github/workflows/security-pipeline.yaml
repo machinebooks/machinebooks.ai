@@ -1,0 +1,55 @@
+# Extraído de: LibroDevSecOps/cap-09-agente-triaje.md
+# .github/workflows/security-pipeline.yaml (fragmento)
+  triage:
+    needs: [sast, sca, container-scan]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Descargar resultados de escaneo
+        uses: actions/download-artifact@v4
+        with:
+          pattern: scan-results-*
+          merge-multiple: true
+          path: ./scan-results/
+
+      - name: Ejecutar agente de triaje
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python scripts/triage_agent.py \
+            --findings-dir ./scan-results/ \
+            --output ./triage-report.json \
+            --model claude-haiku-4-5
+
+      - name: Publicar resumen en PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = JSON.parse(
+              fs.readFileSync('./triage-report.json', 'utf8')
+            );
+            const immediate = report.immediate_action.length;
+            const planned = report.planned_action.length;
+            const backlog = report.backlog.length;
+            const body = `## Triaje de seguridad\n\n` +
+              `| Categoría | Hallazgos |\n` +
+              `|---|---|\n` +
+              `| Acción inmediata | ${immediate} |\n` +
+              `| Acción planificada | ${planned} |\n` +
+              `| Backlog | ${backlog} |\n\n` +
+              `${report.summary}`;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+      - name: Gate de seguridad
+        run: |
+          python scripts/check_gate.py \
+            --report ./triage-report.json \
+            --max-immediate 0 \
+            --fail-on-immediate

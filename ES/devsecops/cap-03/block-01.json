@@ -1,0 +1,36 @@
+# Extraído de: LibroDevSecOps/cap-03-mapa-superficie-ataque.md
+[
+  {
+    "name": "container:api-gateway",
+    "category": "container",
+    "source_file": "docker-compose.yml",
+    "exposed": true,
+    "metadata": {
+      "image": "nginx:1.25-alpine",
+      "ports": ["443:443", "80:80"],
+      "volumes": ["./nginx.conf:/etc/nginx/nginx.conf:ro"],
+      "privileged": false
+    }
+  },
+  {
+    "name": "llm_endpoint:chat_service:anthropic_api",
+    "category": "llm_endpoint",
+    "source_file": "src/services/chat_service.py",
+    "exposed": true,
+    "metadata": {"api_type": "anthropic_api", "occurrences": 3}
+  },
+  {
+    "name": "secret:ANTHROPIC_API_KEY",
+    "category": "secret",
+    "source_file": ".github/workflows/deploy.yml",
+    "exposed": false,
+    "metadata": {"referenced_in": ".github/workflows/deploy.yml"}
+  },
+  {
+    "name": "rag_corpus:document_indexer:qdrant",
+    "category": "rag_corpus",
+    "source_file": "src/indexer/document_indexer.py",
+    "exposed": false,
+    "metadata": {"vector_store": "qdrant"}
+  }
+]

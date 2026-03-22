@@ -1,0 +1,33 @@
+# Source: The FinOps Engineer and the Machine -- Chapter 5
+# Pattern: Tagging policy configuration
+
+# config/tagging-policy.yaml
+required_tags:
+  - key: environment
+    allowed_values: [prod, staging, dev, sandbox]
+    description: "Resource execution environment"
+
+  - key: team
+    allowed_values: [backend, frontend, data, platform, security]
+    description: "Resource owner team"
+
+  - key: service
+    description: "Service or component name"
+    # No closed list: value is free but the tag is mandatory
+
+  - key: cost-center
+    allowed_values: [CC-PLATAFORMA, CC-DATOS, CC-INFRA, CC-SEGURIDAD]
+    description: "Accounting cost center"
+
+optional_tags:
+  - key: owner
+    description: "Technical owner email"
+
+  - key: expiry-date
+    description: "ISO deletion date for temporary resources"
+    format: "YYYY-MM-DD"
+
+enforcement:
+  missing_tag: block          # block deployment if mandatory tag missing
+  invalid_value: warn         # warn if value not in allowed_values
+  retroactive_audit: weekly   # frequency of existing inventory audit

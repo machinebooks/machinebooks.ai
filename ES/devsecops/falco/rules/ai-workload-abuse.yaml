@@ -1,0 +1,24 @@
+# Extraído de: LibroDevSecOps/cap-18-runtime-security.md
+# falco/rules/ai-workload-abuse.yaml
+- rule: Ráfaga de conexiones al proveedor de LLM
+  desc: >
+    Un contenedor que realiza más de 50 conexiones HTTPS
+    al proveedor de modelos en un intervalo de 10 segundos
+    puede indicar abuso del endpoint de inferencia:
+    scraping de datos, ataque de denegación de servicio
+    económico (token flooding) o exfiltración.
+  condition: >
+    outbound
+    and container
+    and fd.sip in (api.anthropic.com)
+    and evt.type = connect
+    and container.name startswith "inference-"
+  output: >
+    Ráfaga de conexiones al proveedor LLM detectada
+    (contenedor=%container.name conexiones/intervalo=sospechoso
+    proceso=%proc.name destino=%fd.sip:%fd.sport)
+  priority: WARNING
+  tags: [ai_workload, token_abuse, mitre_impact]
+
+- list: llm_provider_domains
+  items: [api.anthropic.com, api.openai.com]

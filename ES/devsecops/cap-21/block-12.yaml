@@ -1,0 +1,17 @@
+# Extraído de: LibroDevSecOps/cap-21-policy-as-code.md
+# Configuración de OPA para descargar bundles
+services:
+  policy-server:
+    url: https://policy.ejemplo.com
+
+bundles:
+  security:
+    service: policy-server
+    resource: /bundles/security/latest
+    polling:
+      min_delay_seconds: 30
+      max_delay_seconds: 120
+
+decision_logs:
+  service: policy-server
+  resource: /logs

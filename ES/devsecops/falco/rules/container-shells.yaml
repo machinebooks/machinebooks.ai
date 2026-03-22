@@ -1,0 +1,23 @@
+# Extraído de: LibroDevSecOps/cap-18-runtime-security.md
+# falco/rules/container-shells.yaml
+- rule: Shell interactivo en contenedor de producción
+  desc: >
+    Detecta la ejecución de bash, sh, zsh u otros shells
+    interactivos dentro de un contenedor que no es de debugging.
+    Un shell interactivo en producción es un indicador fuerte
+    de compromiso o de práctica operativa insegura.
+  condition: >
+    spawned_process
+    and container
+    and container.image.repository != "busybox"
+    and not container.name startswith "debug-"
+    and proc.name in (bash, sh, zsh, csh, ksh, dash)
+    and proc.tty != 0
+  output: >
+    Shell interactivo detectado en contenedor de producción
+    (usuario=%user.name contenedor=%container.name
+    imagen=%container.image.repository
+    proceso=%proc.name pid=%proc.pid
+    terminal=%proc.tty comando=%proc.cmdline)
+  priority: WARNING
+  tags: [container, shell, mitre_execution]

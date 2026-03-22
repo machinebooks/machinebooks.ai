@@ -1,0 +1,47 @@
+# Extraído de: LibroDevSecOps/cap-22-compliance-continuo.md
+# compliance-mappings/cross-framework-map.yaml
+cross_mappings:
+  - domain: "Codificación segura"
+    controls:
+      ISO27001: "A.8.28"
+      ENS: "mp.sw.1"
+      SOC2: "CC8.1"
+    shared_evidence:
+      - sast_scan
+      - code_review
+
+  - domain: "Gestión de configuración"
+    controls:
+      ISO27001: "A.8.9"
+      ENS: "op.exp.3"
+      SOC2: "CC6.1"
+    shared_evidence:
+      - container_scan
+      - policy_check
+
+  - domain: "Gestión de cambios"
+    controls:
+      ISO27001: "A.8.32"
+      ENS: "op.exp.5"
+      SOC2: "CC8.1"
+    shared_evidence:
+      - ci_gate
+      - code_review
+
+  - domain: "Gestión de vulnerabilidades"
+    controls:
+      ISO27001: "A.8.8"
+      ENS: "op.exp.4"
+      SOC2: "CC7.1"
+    shared_evidence:
+      - sca_scan
+      - container_scan
+      - sast_scan
+
+  - domain: "Protección de credenciales"
+    controls:
+      ISO27001: "A.8.5"
+      ENS: "op.acc.6"
+      SOC2: "CC6.1"
+    shared_evidence:
+      - secret_scan

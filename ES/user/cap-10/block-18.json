@@ -1,0 +1,14 @@
+# Extraído de: LibroUsuario/cap-10-construir-tu-conector-mcp.md
+{
+  "mcpServers": {
+    "gestion-empresa": {
+      "command": "C:\\Users\\TU_USUARIO\\mcp-servers\\mi-conector\\venv\\Scripts\\python.exe",
+      "args": [
+        "C:\\Users\\TU_USUARIO\\mcp-servers\\mi-conector\\servidor.py"
+      ],
+      "env": {
+        "API_TOKEN": "tu-token-real-aqui"
+      }
+    }
+  }
+}

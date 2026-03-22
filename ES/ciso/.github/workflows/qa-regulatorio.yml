@@ -1,0 +1,58 @@
+# Extraído de: LibroCISO/cap-23-testing-grc.md
+# .github/workflows/qa-regulatorio.yml
+name: QA Regulatorio
+on: [push, pull_request]
+
+jobs:
+  tests-unitarios:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tests unitarios backend
+        run: pytest tests/unit/ -v --tb=short
+      - name: Tests unitarios frontend
+        run: npx vitest run --reporter=verbose
+
+  tests-integracion:
+    needs: tests-unitarios
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: test
+          MYSQL_DATABASE: grc_test
+      redis:
+        image: redis:7
+    steps:
+      - name: Tests de integración
+        run: pytest tests/integration/ -v
+
+  qa-regulatorio:
+    needs: tests-integracion
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        modulo: [privacy, ai_act, dora, nis2, ens, tprm, compliance]
+    steps:
+      - name: QA ${{ matrix.modulo }}
+        run: pytest tests/qa/qa_${{ matrix.modulo }}.py -v -m regulatory
+        # GATE: si cualquier módulo regulatorio falla, el pipeline falla
+
+  e2e-entregables:
+    needs: qa-regulatorio
+    runs-on: ubuntu-latest
+    steps:
+      - name: E2E generación de entregables
+        run: pytest tests/e2e/ -v -m e2e
+      - name: E2E Playwright
+        run: npx playwright test
+      - name: Accesibilidad axe-core
+        run: npx playwright test tests/accessibility/
+
+  deploy-gate:
+    needs: [qa-regulatorio, e2e-entregables]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verificar gates
+        run: echo "Todos los tests regulatorios pasaron — despliegue autorizado"

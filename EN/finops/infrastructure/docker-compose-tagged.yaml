@@ -1,0 +1,28 @@
+# Source: The FinOps Engineer and the Machine -- Chapter 5
+# Pattern: Docker Compose with FinOps labels
+
+# docker-compose.yml — FinOps labels on services
+services:
+  api:
+    image: plataforma-api:latest
+    labels:
+      - "finops.environment=prod"
+      - "finops.team=backend"
+      - "finops.service=api"
+      - "finops.cost-center=CC-PLATAFORMA"
+
+  ai-service:
+    image: plataforma-ai:latest
+    labels:
+      - "finops.environment=prod"
+      - "finops.team=backend"
+      - "finops.service=ai-service"
+      - "finops.cost-center=CC-PLATAFORMA"
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    labels:
+      - "finops.environment=prod"
+      - "finops.team=platform"
+      - "finops.service=vector-db"
+      - "finops.cost-center=CC-INFRA"

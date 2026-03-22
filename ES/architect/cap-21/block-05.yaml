@@ -1,0 +1,22 @@
+# Extraído de: LibroTecnico/cap-21-cicd.md
+  build-ai-service:
+    name: Construir imagen servicio IA
+    runs-on: ubuntu-latest
+    # Estructura análoga a backend, con contexto ai_service/
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Autenticar en registro
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Construir y publicar imagen ai_service
+        uses: docker/build-push-action@v5
+        with:
+          context: ai_service/
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-ai:${{ github.sha }}

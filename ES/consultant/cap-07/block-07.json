@@ -1,0 +1,29 @@
+# Extraído de: LibroConsultor/cap-07-claude-code-consultoria.md
+{
+  "mcpServers": {
+    "doc-repository": {
+      "command": "node",
+      "args": ["./mcp-servers/doc-repository/index.js"],
+      "env": {
+        "QDRANT_URL": "http://localhost:6333",
+        "COLLECTION": "corporate-knowledge"
+      }
+    },
+    "crm-connector": {
+      "command": "python",
+      "args": ["./mcp-servers/crm-connector/server.py"],
+      "env": {
+        "CRM_API_URL": "https://api.ejemplo.com/crm/v2",
+        "CRM_API_KEY": "<set-in-vault>"
+      }
+    },
+    "pm-tools": {
+      "command": "node",
+      "args": ["./mcp-servers/pm-tools/index.js"],
+      "env": {
+        "PM_API_URL": "https://api.ejemplo.com/pm/v1",
+        "PM_TOKEN": "<TU_PM_TOKEN>"
+      }
+    }
+  }
+}

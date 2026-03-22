@@ -1,0 +1,59 @@
+# Extraído de: LibroDevSecOps/cap-24-security-champions.md
+# champion-toolkit.yaml
+# Checklist que el champion ejecuta en cada sprint
+
+sprint_checklist:
+  - id: review_findings
+    description: "Revisar hallazgos priorizados del sprint"
+    frequency: "inicio de sprint"
+    action: |
+      1. Abrir dashboard de hallazgos del equipo
+      2. Revisar los marcados como CRITICAL y HIGH
+      3. Para cada uno: validar que el fix sugerido es correcto
+      4. Asignar al desarrollador del código afectado
+      5. Marcar con fecha límite (CRITICAL: 48h, HIGH: 1 semana)
+
+  - id: check_exceptions
+    description: "Revisar excepciones de seguridad vigentes"
+    frequency: "inicio de sprint"
+    action: |
+      1. Consultar excepciones activas del equipo (véase Cap. 23)
+      2. Verificar fechas de expiración
+      3. Escalar las que vencen en los próximos 14 días
+
+  - id: training_review
+    description: "Completar módulos de formación pendientes"
+    frequency: "semanal"
+    action: |
+      Revisar módulos generados por hallazgos de la semana.
+      Tiempo estimado: 15-20 minutos.
+
+  - id: team_awareness
+    description: "Compartir un aprendizaje de seguridad con el equipo"
+    frequency: "quincenal"
+    action: |
+      En la retro o standup, compartir un hallazgo interesante
+      del sprint: qué se encontró, por qué importaba, cómo se resolvió.
+      Máximo 5 minutos.
+
+# Mapa de escalación
+escalation_paths:
+  - trigger: "Hallazgo CRITICAL sin fix sugerido"
+    action: "Escalar a equipo de seguridad en canal #security-escalation"
+    sla: "4 horas"
+
+  - trigger: "Sospecha de secret expuesto en producción"
+    action: "Rotación inmediata + notificación a security lead"
+    sla: "1 hora"
+
+  - trigger: "Hallazgo en dependencia sin parche disponible"
+    action: "Abrir excepción temporal con análisis de riesgo"
+    sla: "24 horas"
+
+  - trigger: "Duda técnica que el bot no resuelve"
+    action: "Agendar sesión 1:1 con ingeniero de seguridad"
+    sla: "48 horas"
+
+  - trigger: "Hallazgo relacionado con prompt injection o AI security"
+    action: "Escalar a equipo de seguridad - requiere revisión especializada"
+    sla: "24 horas"

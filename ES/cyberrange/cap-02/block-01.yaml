@@ -1,0 +1,41 @@
+# Extraído de: LibroCyberrange/cap-02-ciberejercicios.md
+# Ejemplo didáctico: playbook compuesto para escenario de ejercicio
+# Fichero: patrones/playbooks/scenario_ad_compromise.yml
+
+---
+- name: "Escenario: Compromiso de Active Directory con ransomware"
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    # Fase 1: Infraestructura base
+    - name: "Configurar dominio corporativo"
+      import_playbook: dc_base.yml
+
+    # Fase 2: Monitorización (el blue team debe poder detectar)
+    - name: "Instalar servidor SIEM"
+      import_playbook: wazuh_install_server.yml
+
+    - name: "Conectar agentes SIEM en endpoints"
+      import_playbook: wazuh_install_agent.yml
+
+    # Fase 3: Vulnerabilidades del escenario
+    - name: "Configurar cuenta de servicio vulnerable a Kerberoasting"
+      import_playbook: kerberoasting_service_account.yml
+
+    - name: "Configurar usuario vulnerable a AS-REP Roasting"
+      import_playbook: asreproast_user.yml
+
+    - name: "Exponer credenciales en Group Policy Preferences"
+      import_playbook: gpp_passwords.yml
+
+    - name: "Desactivar firma SMB para permitir relay"
+      import_playbook: smb_signing_disabled.yml
+
+    # Fase 4: Datos sensibles para exfiltración
+    - name: "Generar documentos sensibles en comparticiones SMB"
+      import_playbook: expose_sensitive_documents_smb.yml
+
+    # Fase 5: Verificación de estado
+    - name: "Validar que todos los servicios están operativos"
+      import_playbook: validate_scenario_health.yml

@@ -1,0 +1,27 @@
+# Extraído de: LibroFinOps/cap-07-dashboards.md
+{
+  "title": "LLM Cost vs Latency (24h)",
+  "type": "timeseries",
+  "targets": [
+    {
+      "datasource": {"type": "mysql", "uid": "app-mysql"},
+      "rawSql": "SELECT DATE_FORMAT(timestamp, '%Y-%m-%d %H:%i:00') AS time, AVG(latency_ms) AS latency_ms, SUM(total_cost_usd) AS cost_usd FROM llm_usage_logs WHERE timestamp >= NOW() - INTERVAL 24 HOUR GROUP BY time ORDER BY time",
+      "format": "time_series"
+    }
+  ],
+  "fieldConfig": {
+    "overrides": [
+      {
+        "matcher": {"id": "byName", "options": "latency_ms"},
+        "properties": [{"id": "unit", "value": "ms"}]
+      },
+      {
+        "matcher": {"id": "byName", "options": "cost_usd"},
+        "properties": [
+          {"id": "unit", "value": "currencyUSD"},
+          {"id": "custom.axisPlacement", "value": "right"}
+        ]
+      }
+    ]
+  }
+}

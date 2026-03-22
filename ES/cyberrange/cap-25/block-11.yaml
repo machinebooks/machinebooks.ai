@@ -1,0 +1,47 @@
+# Extraído de: LibroCyberrange/cap-25-despliegue-produccion.md
+# Ejemplo didáctico: patrones/docker/ot-iot-compose.yml
+services:
+  modbus-plc-01:
+    build: ./modbus-sim
+    container_name: cr-modbus-plc-01
+    ports:
+      - "502:502"
+    environment:
+      MODBUS_PORT: 502
+      SLAVE_ID: 1
+      NUM_REGISTERS: 100
+      NUM_COILS: 64
+    networks:
+      ot_network:
+        ipv4_address: 10.0.3.10      # IP fija en red industrial simulada
+
+  opcua-server:
+    build: ./opcua-server
+    container_name: cr-opcua-server
+    ports:
+      - "4840:4840"
+    networks:
+      ot_network:
+        ipv4_address: 10.0.2.10
+
+  mqtt-broker:
+    build: ./mqtt-broker
+    container_name: cr-mqtt-broker
+    ports:
+      - "1883:1883"                    # MQTT estándar
+      - "9001:9001"                    # MQTT sobre WebSocket
+    networks:
+      iot_network:
+        ipv4_address: 192.168.50.10
+
+networks:
+  ot_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.0.0/16         # Red industrial simulada
+  iot_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.50.0/24     # Red IoT simulada

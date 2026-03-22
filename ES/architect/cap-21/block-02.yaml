@@ -1,0 +1,61 @@
+# Extraído de: LibroTecnico/cap-21-cicd.md
+  test-backend:
+    name: Tests backend
+    runs-on: ubuntu-latest
+    needs: lint-backend  # Solo ejecutar si el lint pasa
+
+    services:
+      # MySQL temporal para los tests de integración
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: test_password  # Credenciales de test efímeras — en producción usar ${{ secrets.* }}
+          MYSQL_DATABASE: test_db
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+      # Redis temporal para los tests de Celery
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Instalar dependencias del backend
+        run: |
+          cd backend
+          pip install -r requirements.txt
+          pip install pytest pytest-cov pytest-flask
+
+      - name: Ejecutar migraciones en base de datos de test
+        env:
+          DATABASE_URL: mysql+pymysql://root:test_password@localhost/test_db
+        run: |
+          cd backend
+          flask db upgrade
+
+      - name: Ejecutar tests con cobertura
+        env:
+          FLASK_ENV: testing
+          DATABASE_URL: mysql+pymysql://root:test_password@localhost/test_db
+          REDIS_URL: redis://localhost:6379/0
+          SECRET_KEY: test-secret-key-no-production
+        run: |
+          cd backend
+          pytest tests/ -v --cov=. --cov-report=xml \
+            --cov-fail-under=40  # Umbral mínimo de cobertura
+

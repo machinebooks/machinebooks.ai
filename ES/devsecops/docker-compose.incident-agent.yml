@@ -1,0 +1,35 @@
+# Extraído de: LibroDevSecOps/cap-20-respuesta-incidentes.md
+# docker-compose.incident-agent.yml
+services:
+  incident-agent:
+    build: ./incident-agent
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - FALCO_GRPC_ENDPOINT=falco:5060
+      - SBOM_API_URL=http://sbom-service:8080
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
+      - PROMETHEUS_URL=http://prometheus:9090
+      - MAX_ACTIONS_PER_INCIDENT=10
+      - APPROVAL_TIMEOUT_SECONDS=300
+      - MODEL=claude-sonnet-4-6
+    volumes:
+      - ./runbooks:/app/runbooks:ro  # Runbooks como código, solo lectura
+      - incident-logs:/app/logs      # Logs persistentes para auditoría
+    networks:
+      - security-net
+    deploy:
+      resources:
+        limits:
+          memory: 512M  # Limitar recursos del agente
+    restart: unless-stopped
+    depends_on:
+      - falco
+      - sbom-service
+      - prometheus
+
+volumes:
+  incident-logs:
+
+networks:
+  security-net:
+    external: true

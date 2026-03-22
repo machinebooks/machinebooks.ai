@@ -1,0 +1,123 @@
+# Extraído de: LibroTecnico/cap-04-requisito-arquitectura.md
+# docker-compose.yml — Arquitectura de 17 servicios (versión simplificada para ilustrar estructura)
+services:
+  # ======================================================
+  # CAPA DE DATOS — Solo accesible desde backend_net
+  # ======================================================
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init:/docker-entrypoint-initdb.d  # 3 schemas en la inicialización
+    mem_limit: 4g
+    networks: [data_net]
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
+    mem_limit: 512m
+    networks: [data_net]
+
+  qdrant:
+    image: qdrant/qdrant:v1.7.4
+    volumes:
+      - qdrant_data:/qdrant/storage
+    mem_limit: 8g
+    networks: [data_net]
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.6
+    environment:
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY}
+    mem_limit: 2g
+    networks: [data_net]
+
+  # ======================================================
+  # CAPA DE APLICACIÓN — Accesible desde backend_net
+  # ======================================================
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: mysql+pymysql://${DB_USER}:${DB_PASSWORD}@mysql/${DB_NAME}
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+      AI_SERVICE_URL: http://ai_service:8000
+      AI_SERVICE_API_KEY: ${AI_SERVICE_API_KEY}
+    depends_on: [mysql, redis]
+    mem_limit: 2g
+    networks: [backend_net, data_net]
+
+  ai_service:
+    build: ./ai_service
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      QDRANT_URL: http://qdrant:6333
+    depends_on: [qdrant, redis, backend]
+    mem_limit: 4g
+    networks: [backend_net, data_net]
+
+  # ======================================================
+  # CAPA DE WORKERS — Mismo build que backend, colas distintas
+  # ======================================================
+  celery_default:
+    build: ./backend
+    command: celery -A celery_app worker -Q default,documents,sync -c 4
+    depends_on: [mysql, redis]
+    networks: [backend_net, data_net]
+
+  celery_ai:
+    build: ./backend
+    command: celery -A celery_app worker -Q ai,priority -c 2
+    depends_on: [mysql, redis, ai_service]
+    networks: [backend_net, data_net]
+
+  celery_automation:
+    build: ./backend
+    command: celery -A celery_app worker -Q automation -c 1
+    networks: [backend_net, rpa_net]  # Sin acceso a data_net — aislado
+
+  celery_beat:
+    build: ./backend
+    command: celery -A celery_app beat --loglevel=info
+    networks: [backend_net, data_net]
+
+  # ======================================================
+  # CAPA DE FRONTALES — Builds estáticos independientes
+  # ======================================================
+  frontend:
+    build: ./frontend
+    networks: [frontend_net]
+
+  analytics_frontend:
+    build: ./analytics/frontend
+    networks: [frontend_net]
+
+  admin_frontend:
+    build: ./admin/frontend
+    networks: [frontend_net]
+
+  # ======================================================
+  # PROXY INVERSO — Punto de entrada único
+  # ======================================================
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on: [backend, ai_service, frontend]
+    networks: [frontend_net, backend_net]
+
+# ======================================================
+# REDES — Principio de mínimo privilegio
+# ======================================================
+networks:
+  frontend_net:    # Nginx + frontales — expuesta al exterior
+    driver: bridge
+  backend_net:     # Backend + AI service + workers — solo desde Nginx
+    driver: bridge
+  data_net:        # MySQL + Redis + Qdrant + Meilisearch — solo desde backend
+    driver: bridge
+  rpa_net:         # Selenium Grid — aislada de datos
+    driver: bridge

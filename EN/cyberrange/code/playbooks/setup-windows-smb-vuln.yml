@@ -1,0 +1,117 @@
+# Companion code for "The Cyber Range and the Machine" — Chapter 13
+# Ansible playbook: set up a vulnerable Windows VM for SMB exploitation training.
+# This is STARTER code — review and adapt for your Cyber Range environment.
+#
+# Vulnerabilities configured:
+# - SMBv1 enabled (deprecated, exploitable)
+# - Weak local admin password
+# - Windows Firewall exceptions for SMB
+# - CTF flag planted in C:\flag.txt
+#
+# Prerequisites:
+# - Windows VM template with WinRM enabled for Ansible
+# - pywinrm installed on the Ansible control node
+---
+- name: Setup Windows SMB Vulnerability Lab
+  hosts: target
+  gather_facts: yes
+  vars:
+    challenge_flag: "{{ flag_value | default('CYBERRANGE{placeholder_replace_me}') }}"
+    weak_user: trainee
+    weak_password: Password1!
+    ansible_connection: winrm
+    ansible_winrm_transport: ntlm
+    ansible_port: 5986
+
+  tasks:
+    # -- Enable SMBv1 (Chapter 13: intentionally vulnerable) -----------------
+    - name: Enable SMBv1 protocol (vulnerable — training only)
+      win_feature:
+        name: FS-SMB1
+        state: present
+      register: smb1_result
+
+    - name: Enable SMBv1 client
+      win_shell: |
+        Set-SmbServerConfiguration -EnableSMB1Protocol $true -Force
+        sc.exe config lanmanworkstation depend= bowser/mrxsmb10/mrxsmb20/nsi
+
+    # -- Create vulnerable local user ----------------------------------------
+    - name: Create training user with weak password
+      win_user:
+        name: "{{ weak_user }}"
+        password: "{{ weak_password }}"
+        state: present
+        groups:
+          - Users
+          - "Remote Desktop Users"
+        password_never_expires: yes
+
+    # -- Configure firewall for SMB access -----------------------------------
+    - name: Allow SMB through Windows Firewall
+      win_firewall_rule:
+        name: "CyberRange-SMB-Training"
+        direction: in
+        action: allow
+        localport: "445"
+        protocol: tcp
+        state: present
+        enabled: yes
+
+    - name: Allow NetBIOS through Windows Firewall
+      win_firewall_rule:
+        name: "CyberRange-NetBIOS-Training"
+        direction: in
+        action: allow
+        localport: "137-139"
+        protocol: tcp
+        state: present
+        enabled: yes
+
+    # -- Create SMB share with weak permissions ------------------------------
+    - name: Create shared folder
+      win_file:
+        path: C:\SharedDocs
+        state: directory
+
+    - name: Create SMB share with Everyone access
+      win_shell: |
+        New-SmbShare -Name "SharedDocs" -Path "C:\SharedDocs" `
+          -FullAccess "Everyone" -ErrorAction SilentlyContinue
+
+    - name: Add decoy files to share
+      win_copy:
+        dest: C:\SharedDocs\README.txt
+        content: |
+          Company Documents — Confidential
+          The admin keeps important files in a secure location.
+          But not everything is as secure as it seems...
+
+    # -- Disable security features (Chapter 13: weaken defenses) -------------
+    - name: Disable Windows Defender real-time protection
+      win_shell: |
+        Set-MpPreference -DisableRealtimeMonitoring $true
+
+    # -- Plant the flag (Chapter 12: dynamic flag injection) -----------------
+    - name: Plant CTF flag
+      win_copy:
+        dest: C:\flag.txt
+        content: "{{ challenge_flag }}"
+
+    - name: Restrict flag file to Administrators only
+      win_shell: |
+        icacls "C:\flag.txt" /inheritance:r /grant:r "Administrators:F"
+
+    # -- Breadcrumb for reconnaissance --------------------------------------
+    - name: Create hint in shared folder
+      win_copy:
+        dest: C:\SharedDocs\notes.txt
+        content: |
+          TODO: disable SMBv1 before production deployment
+          Admin password policy needs to be enforced
+          Flag location: only admins know...
+
+    # -- Reboot if SMBv1 feature was installed -------------------------------
+    - name: Reboot if needed
+      win_reboot:
+      when: smb1_result.reboot_required | default(false)

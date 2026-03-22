@@ -1,0 +1,8 @@
+# Extraído de: LibroDevSecOps/cap-21-policy-as-code.md
+{
+  "approved_registries": [
+    "ghcr.io/nuestra-org/",
+    "registry.ejemplo.com/",
+    "docker.io/library/"
+  ]
+}

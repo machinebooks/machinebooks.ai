@@ -1,0 +1,27 @@
+# Extraído de: LibroDevSecOps/cap-08-orquestacion-pipeline.md
+# .github/workflows/weekly-security-report.yml
+name: Weekly Security Report
+
+on:
+  schedule:
+    - cron: "0 8 * * 1"    # Lunes a las 08:00 UTC
+  workflow_dispatch:         # Ejecución manual
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install anthropic
+
+      - name: Generate weekly report
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/weekly_security_report.py

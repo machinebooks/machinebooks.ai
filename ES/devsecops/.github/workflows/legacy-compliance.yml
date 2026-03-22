@@ -1,0 +1,49 @@
+# Extraído de: LibroDevSecOps/cap-28-caso-compliance.md
+# .github/workflows/legacy-compliance.yml
+name: Legacy Module Compliance Scan
+
+on:
+  schedule:
+    - cron: '0 2 * * 1'  # Cada lunes a las 02:00
+  workflow_dispatch:       # Ejecución manual bajo demanda
+
+jobs:
+  scan-legacy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout legacy repo (mirror desde SVN)
+        uses: actions/checkout@v4
+        with:
+          repository: org/legacy-tramitacion-mirror
+
+      - name: SAST Java - Semgrep
+        run: |
+          semgrep scan --config=auto \
+            --config=p/java-security-audit \
+            --sarif --output=evidence/legacy-sast.sarif
+          sha256sum evidence/legacy-sast.sarif \
+            > evidence/legacy-sast.sarif.sha256
+
+      - name: SCA Java - Grype sobre pom.xml
+        run: |
+          # Generar SBOM desde pom.xml
+          syft dir:. -o cyclonedx-json \
+            > evidence/legacy-sbom.cdx.json
+          grype sbom:evidence/legacy-sbom.cdx.json \
+            --output sarif > evidence/legacy-sca.sarif
+          sha256sum evidence/legacy-sbom.cdx.json \
+            > evidence/legacy-sbom.cdx.json.sha256
+
+      - name: Config audit - Tomcat
+        run: |
+          python scripts/audit_tomcat_config.py \
+            --config tomcat/conf/server.xml \
+            --output evidence/tomcat-config-audit.json
+          sha256sum evidence/tomcat-config-audit.json \
+            > evidence/tomcat-config-audit.json.sha256
+
+      - name: Upload legacy evidence
+        run: |
+          aws s3 cp evidence/ \
+            "s3://compliance-evidence/legacy-module/\
+          $(date +%Y-%m-%d)/" --recursive

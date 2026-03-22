@@ -1,0 +1,15 @@
+# Extraído de: LibroCISO/cap-22-observabilidad-siem.md
+# docker-compose.yml (extracto)
+prometheus:
+  image: prom/prometheus:v2.51.0
+  volumes:
+    - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    - ./config/alert_rules.yml:/etc/prometheus/alert_rules.yml:ro
+    - prometheus_data:/prometheus
+  command:
+    - "--config.file=/etc/prometheus/prometheus.yml"
+    - "--storage.tsdb.retention.time=30d"
+    - "--web.enable-lifecycle"
+  networks:
+    - monitoring
+  restart: unless-stopped

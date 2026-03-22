@@ -1,0 +1,49 @@
+# Source: The FinOps Engineer and the Machine -- Chapter 20
+# Pattern: Global FinOps policy definition
+
+# policies/global.yaml
+# Global policy — applies to all tenants unless specifically overridden
+# Reviewed: 2025-Q1 | Approved by: FinOps team
+
+version: "1.4"
+effective_date: "2025-01-15"
+approved_by: "finops_team"
+
+defaults:
+  currency: EUR
+  period: monthly
+  alert_threshold: 0.80          # alert at 80% of budget
+  action_at_limit: throttle      # throttle | block | alert_only
+  throttle_requests_per_minute: 5
+
+model_routing:
+  # Routing rules by task type
+  # First matching rule wins
+  rules:
+    - task_type: "simple_query"
+      model: "claude-haiku-4-5"
+      max_output_tokens: 512
+      rationale: "Simple queries do not require an advanced model"
+
+    - task_type: "offer_generation"
+      model: "claude-sonnet-4-6"
+      max_input_tokens: 8000
+      max_output_tokens: 4000
+      rationale: "Offer generation: quality > cost"
+
+    - task_type: "compliance_report"
+      model: "claude-opus-4-6"
+      max_input_tokens: 16000
+      max_output_tokens: 8000
+      rationale: "Regulatory reports: maximum quality required"
+
+    - task_type: "*"              # catch-all
+      model: "claude-sonnet-4-6"
+      max_output_tokens: 2000
+
+fallback:
+  # If the primary model does not respond or the budget is exhausted
+  strategy: fallback_model
+  fallback_model: "claude-haiku-4-5"
+  max_retries: 2
+  on_exhaustion: block           # block | fallback_to_cached | error_informado

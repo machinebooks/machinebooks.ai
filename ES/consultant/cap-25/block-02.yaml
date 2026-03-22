@@ -1,0 +1,52 @@
+# Extraído de: LibroConsultor/cap-25-confianza-cliente.md
+# Configuración del framework de transparencia
+# adaptable por sector y regulación aplicable
+transparency_framework:
+  version: "2.0"
+  default_position: "calibrated"  # opaque | full | calibrated | contractual
+
+  layers:
+    proposal:
+      required: true
+      template: "methodology_and_tools_section.md"
+      min_words: 50
+
+    kickoff:
+      required: true
+      duration_minutes: 15
+      materials: "ai_demystification_deck.pdf"
+
+    deliverable:
+      required: true
+      note_template: "methodology_note.md"
+      reviewer_attribution: true
+
+  audit:
+    frequency: "per_deliverable"
+    checks:
+      - methodology_note_present
+      - reviewer_named
+      - unedited_ai_patterns
+    escalation: "project_lead"
+
+  metrics:
+    track:
+      - proposal_declaration_rate
+      - deliverable_note_rate
+      - kickoff_session_rate
+      - renewal_rate
+      - uncontrolled_discovery_incidents
+    dashboard: "transparency_metrics.json"
+    review_cycle: "quarterly"
+
+  sector_overrides:
+    public_sector:
+      position: "contractual"
+      additional_annex: "ai_methodology_annex.md"
+      data_protocol_reference: "chapter_23_classification"
+    financial:
+      position: "contractual"
+      regulator_disclosure: true
+    healthcare:
+      position: "contractual"
+      ethics_committee_notification: true

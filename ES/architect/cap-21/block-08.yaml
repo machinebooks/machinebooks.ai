@@ -1,0 +1,46 @@
+# Extraído de: LibroTecnico/cap-21-cicd.md
+      - name: Ejecutar despliegue en servidor
+        run: |
+          ssh -i ~/.ssh/deploy_key deploy@${{ secrets.PROD_HOST }} << 'ENDSSH'
+            set -e  # Salir si cualquier comando falla
+
+            cd /opt/plataforma
+
+            # Hacer pull de las nuevas imágenes
+            docker compose -f docker-compose.prod.yml pull
+
+            # Aplicar migraciones de base de datos antes de actualizar el servicio
+            # (patrón expand-contract para migraciones compatibles hacia atrás)
+            docker compose -f docker-compose.prod.yml run --rm backend \
+              flask db upgrade
+
+            # Actualizar servicios sin tiempo de inactividad donde es posible
+            docker compose -f docker-compose.prod.yml up -d \
+              --no-deps \
+              --remove-orphans \
+              backend ai_service celery_worker celery_beat
+
+            # Actualizar frontend con cero downtime (Nginx sirve durante la actualización)
+            docker compose -f docker-compose.prod.yml up -d --no-deps \
+              frontend_ops frontend_analytics frontend_admin nginx
+
+            # Verificar que los servicios críticos están sanos
+            sleep 15
+            docker compose -f docker-compose.prod.yml ps
+          ENDSSH
+
+      - name: Verificar despliegue
+        run: |
+          ssh -i ~/.ssh/deploy_key deploy@${{ secrets.PROD_HOST }} << 'ENDSSH'
+            # Comprobar que el health check de la plataforma responde
+            response=$(curl -s -o /dev/null -w "%{http_code}" \
+              http://localhost/api/health/quick)
+
+            if [ "$response" != "200" ]; then
+              echo "ERROR: El health check devuelve $response. Iniciando rollback."
+              exit 1
+            fi
+
+            echo "Despliegue verificado correctamente."
+          ENDSSH
+

@@ -1,0 +1,10 @@
+# Extraído de: LibroDevSecOps/cap-06-secretos.md
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.21.2
+    hooks:
+      - id: gitleaks
+        name: "Secret scanning (Gitleaks)"
+        # Solo escanea los cambios staged, no todo el historial
+        args: ["protect", "--staged", "--verbose"]

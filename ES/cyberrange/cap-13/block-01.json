@@ -1,0 +1,135 @@
+# Extraído de: LibroCyberrange/cap-13-escenarios-topologias.md
+{
+  "topology_config": {
+    "zones": [
+      {
+        "name": "Internet / External",
+        "network": "203.0.113.0/24",
+        "nodes": [
+          {
+            "name": "Attacker-C2",
+            "type": "server",
+            "os": "Kali Linux",
+            "ip": "203.0.113.100",
+            "description": "Servidor C2 del atacante (simulado)"
+          }
+        ]
+      },
+      {
+        "name": "DMZ",
+        "network": "172.16.1.0/24",
+        "nodes": [
+          {
+            "name": "Web-Server",
+            "type": "server",
+            "os": "Ubuntu 22.04",
+            "ip": "172.16.1.10",
+            "description": "Servidor web público (Apache + PHP)"
+          },
+          {
+            "name": "Mail-Server",
+            "type": "server",
+            "os": "Ubuntu 22.04",
+            "ip": "172.16.1.20",
+            "description": "Servidor de correo (Postfix + Dovecot)"
+          },
+          {
+            "name": "VPN-Gateway",
+            "type": "firewall",
+            "os": "pfSense",
+            "ip": "172.16.1.1",
+            "description": "Gateway VPN para acceso remoto"
+          }
+        ]
+      },
+      {
+        "name": "Corporate LAN",
+        "network": "192.168.10.0/24",
+        "nodes": [
+          {
+            "name": "DC-01",
+            "type": "server",
+            "os": "Windows Server 2022",
+            "ip": "192.168.10.10",
+            "description": "Domain Controller principal (AD DS, DNS, DHCP)"
+          },
+          {
+            "name": "DC-02",
+            "type": "server",
+            "os": "Windows Server 2022",
+            "ip": "192.168.10.11",
+            "description": "Domain Controller secundario"
+          },
+          {
+            "name": "SIEM-Server",
+            "type": "server",
+            "os": "Ubuntu 22.04",
+            "ip": "192.168.10.30",
+            "description": "SIEM (Wazuh/ELK) para monitorización"
+          },
+          {
+            "name": "WS-Admin",
+            "type": "workstation",
+            "os": "Windows 11",
+            "ip": "192.168.10.100",
+            "description": "Estación admin IT (comprometida)"
+          }
+        ]
+      },
+      {
+        "name": "Server VLAN",
+        "network": "192.168.20.0/24",
+        "nodes": [
+          {
+            "name": "DB-Server",
+            "type": "server",
+            "os": "Ubuntu 22.04",
+            "ip": "192.168.20.10",
+            "description": "Base de datos MySQL con datos financieros"
+          },
+          {
+            "name": "App-Server",
+            "type": "server",
+            "os": "Ubuntu 22.04",
+            "ip": "192.168.20.20",
+            "description": "Servidor de aplicaciones internas"
+          }
+        ]
+      }
+    ],
+    "connections": [
+      {"from": "Attacker-C2", "to": "Web-Server", "type": "internet"},
+      {"from": "Web-Server", "to": "App-Server", "type": "firewall_rule"},
+      {"from": "WS-Admin", "to": "DC-01", "type": "ldap"},
+      {"from": "WS-Admin", "to": "Attacker-C2", "type": "c2_beacon"},
+      {"from": "App-Server", "to": "DB-Server", "type": "mysql"},
+      {"from": "SIEM-Server", "to": "all", "type": "syslog"}
+    ],
+    "firewalls": [
+      {
+        "name": "FW-Perimeter",
+        "between": ["Internet", "DMZ"],
+        "rules": "Allow 80,443,25,587 inbound. NAT to internal"
+      },
+      {
+        "name": "FW-Internal",
+        "between": ["DMZ", "Corporate LAN"],
+        "rules": "Allow SMTP relay, LDAP auth. Block direct access"
+      },
+      {
+        "name": "FW-Servers",
+        "between": ["Corporate LAN", "Server VLAN"],
+        "rules": "Allow app ports, Block RDP/SSH from workstations"
+      }
+    ],
+    "attack_path": [
+      "1. Spear phishing a WS-Admin",
+      "2. Ejecución de macro → reverse shell al C2",
+      "3. Harvesting de credenciales (Mimikatz)",
+      "4. Pass-the-Hash hacia DC-01",
+      "5. Kerberoasting de cuentas de servicio",
+      "6. Movimiento lateral a DB-Server",
+      "7. Exfiltración de datos vía DNS tunneling"
+    ]
+  }
+}

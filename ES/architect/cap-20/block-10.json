@@ -1,0 +1,21 @@
+# Extraído de: LibroTecnico/cap-20-docker.md
+{
+  "status": "healthy",
+  "mode": "full",
+  "timestamp": 1741872000.123,
+  "checks": {
+    "mysql_ops":        { "status": "healthy", "latency_ms": 2.1 },
+    "mysql_core":       { "status": "healthy", "latency_ms": 1.8 },
+    "mysql_analytics":  { "status": "healthy", "latency_ms": 3.4 },
+    "redis":            { "status": "healthy", "latency_ms": 0.9,
+                          "used_memory_mb": 187.3, "connected_clients": 24 },
+    "ai_service":       { "status": "healthy", "latency_ms": 45.2 },
+    "meilisearch":      { "status": "healthy", "latency_ms": 12.7 },
+    "qdrant":           { "status": "healthy", "latency_ms": 8.3 },
+    "celery_workers":   { "status": "healthy", "active_workers": 4,
+                          "latency_ms": 320.5 },
+    "frontend_ops":     { "status": "healthy", "latency_ms": 4.1 },
+    "frontend_analytics":{ "status": "healthy", "latency_ms": 3.8 },
+    "frontend_admin":   { "status": "healthy", "latency_ms": 3.9 }
+  }
+}

@@ -1,0 +1,29 @@
+# Source: The Consultant and the Machine -- Chapter 10
+# Pattern: Estimation pipeline integration config
+
+# Pre-sales flow with calibrated estimation
+flujo_preventa:
+  paso_1_analisis_rfp:
+    herramienta: agente_rfp        # Chapter 8
+    output: requisitos_estructurados
+
+  paso_2_estimacion:
+    herramienta: agente_estimacion  # This chapter
+    input:
+      - requisitos_estructurados
+      - estimacion_base_consultor   # Consultant gives their figure first
+    output: estimacion_calibrada
+
+  paso_3_propuesta:
+    herramienta: agente_propuestas  # Chapter 9
+    input:
+      - requisitos_estructurados
+      - estimacion_calibrada
+    output: borrador_propuesta
+
+  paso_4_revision:
+    responsable: director_practica  # Always human
+    input:
+      - borrador_propuesta
+      - estimacion_calibrada
+    output: propuesta_final

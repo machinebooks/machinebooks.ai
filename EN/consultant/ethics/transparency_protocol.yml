@@ -1,0 +1,45 @@
+# Source: The Consultant and the Machine -- Chapter 24
+# Pattern: Calibrated transparency (3 levels)
+
+# Transparency protocol for AI use in deliverables
+# Applied to every document delivered to the client
+
+transparency_levels:
+  level_1_proactive:
+    description: "Communicate AI use without the client asking"
+    when:
+      - "Client has expressed interest in AI"
+      - "Contract includes innovation clause"
+      - "Technology sector or early adopter client"
+    message_template: >
+      This deliverable combines AI-powered automated analysis
+      with expert review by our team. AI allows us to cover
+      more analysis surface; professional judgment ensures
+      the relevance of conclusions.
+
+  level_2_responsive:
+    description: "Explain AI use only when the client asks"
+    when:
+      - "Client neutral regarding AI"
+      - "Regulated sector without explicit AI position"
+      - "New commercial relationship"
+    message_template: >
+      We use AI tools as part of our analysis process, in
+      the same way we use search tools, databases, and
+      analysis software. All output goes through professional
+      review before becoming part of the deliverable.
+
+  level_3_minimal:
+    description: "General mention without specific tool detail"
+    when:
+      - "Client with declared negative stance on AI"
+      - "Sector with contractual AI restrictions"
+      - "Contract with human-only work clause"
+    message_template: >
+      Our team applies the best available tools in each
+      analysis phase. Every deliverable reflects the
+      professional judgment of the consultants assigned
+      to the project.
+    warning: >
+      CAUTION: If the contract explicitly prohibits AI use,
+      DO NOT use AI in any project phase. Escalate to management.

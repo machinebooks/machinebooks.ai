@@ -1,0 +1,23 @@
+# Extraído de: LibroFinOps/cap-20-policy-as-code.md
+# policies/global.yaml (sección de alertas)
+alerts:
+  budget_warning:
+    threshold: 0.70          # 70% → informativa al equipo FinOps
+    channel: slack_finops
+    message: "Tenant {tenant_id} al {pct}% del presupuesto"
+
+  budget_alert:
+    threshold: 0.85          # 85% → urgente al manager del tenant
+    channel: email_manager
+    auto_action: throttle_5rpm
+
+  budget_critical:
+    threshold: 0.95          # 95% → crítica a dirección
+    channel: [slack_finops, email_manager, email_admin]
+    auto_action: throttle_2rpm
+    require_acknowledgement: true
+
+  budget_exhausted:
+    threshold: 1.00          # 100% → bloqueo y notificación
+    channel: [slack_finops, email_manager, email_admin, pagerduty]
+    auto_action: block

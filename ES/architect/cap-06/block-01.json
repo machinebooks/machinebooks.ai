@@ -1,0 +1,14 @@
+# Extraído de: LibroTecnico/cap-06-iam-seguridad.md
+{
+  "clients": ["read", "write"],
+  "proposals": ["read", "write", "delete"],
+  "documents": ["read", "write", "upload"],
+  "opportunities": ["read"],
+  "reports": ["read", "generate"],
+  "ai_modules_access": [
+    "document_analyzer",
+    "proposal_generator",
+    "cv_analyzer",
+    "copilot_chat"
+  ]
+}

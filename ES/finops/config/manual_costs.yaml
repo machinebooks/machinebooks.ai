@@ -1,0 +1,20 @@
+# Extraído de: LibroFinOps/cap-03-mapa-costes.md
+# config/manual_costs.yaml
+# Imputaciones de coste no medibles automáticamente.
+# Se revisa y actualiza al inicio de cada mes por el responsable FinOps.
+
+monthly:
+  "2025-03":
+    # Personas: FTE x tarifa mensual x fracción dedicada al proyecto
+    # 1 ingeniero senior (0.4 FTE) + 0.5 FTE ingeniería junior + 0.1 FTE producto
+    people_eur: 3200
+
+    # Herramientas y licencias del proyecto
+    # Grafana Cloud Pro: 180 € | Sentry Business: 120 €
+    # GitHub Actions (minutos extra): 45 € | Otros: 55 €
+    tools_eur: 400
+
+    # Overhead: fracción de servicios compartidos + auditoría
+    # VPN corporativa (fracción): 60 € | Soporte proveedor: 80 €
+    # Revisión de seguridad trimestral (prorrateo): 60 €
+    overhead_eur: 200

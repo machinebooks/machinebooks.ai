@@ -1,0 +1,118 @@
+# Companion code for "The Cyber Range and the Machine" — Chapter 13
+# Ansible playbook: set up a vulnerable Ubuntu VM for SSH exploitation training.
+# This is STARTER code — review and adapt for your Cyber Range environment.
+#
+# Vulnerabilities configured:
+# - Weak SSH credentials (password auth enabled)
+# - Outdated SSH config allowing deprecated algorithms
+# - SUID binary for privilege escalation
+# - CTF flag planted in /root/flag.txt
+---
+- name: Setup Ubuntu SSH Vulnerability Lab
+  hosts: target
+  become: true
+  vars:
+    challenge_flag: "{{ flag_value | default('CYBERRANGE{placeholder_replace_me}') }}"
+    weak_user: trainee
+    weak_password: password123
+
+  tasks:
+    # -- Base setup ----------------------------------------------------------
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install required packages
+      apt:
+        name:
+          - openssh-server
+          - python3
+          - nmap
+          - net-tools
+        state: present
+
+    # -- Create vulnerable user (Chapter 13: weak credentials) ---------------
+    - name: Create training user with weak password
+      user:
+        name: "{{ weak_user }}"
+        password: "{{ weak_password | password_hash('sha512') }}"
+        shell: /bin/bash
+        groups: sudo
+        append: yes
+
+    # -- Weaken SSH configuration (Chapter 13: insecure defaults) ------------
+    - name: Configure SSH with vulnerable settings
+      copy:
+        dest: /etc/ssh/sshd_config.d/vulnerable.conf
+        content: |
+          # INTENTIONALLY VULNERABLE — Cyber Range training only
+          PermitRootLogin yes
+          PasswordAuthentication yes
+          PermitEmptyPasswords no
+          MaxAuthTries 10
+          # Allow deprecated key exchange (for training)
+          KexAlgorithms +diffie-hellman-group1-sha1
+        mode: "0644"
+      notify: Restart SSH
+
+    # -- SUID binary for privilege escalation (Chapter 13) -------------------
+    - name: Copy vulnerable SUID binary
+      copy:
+        dest: /usr/local/bin/backup-tool
+        content: |
+          #!/bin/bash
+          # "Backup tool" with SUID — exploitable for privesc
+          if [ "$1" == "--help" ]; then
+            echo "Usage: backup-tool <source> <destination>"
+            exit 0
+          fi
+          cp "$1" "$2" 2>/dev/null
+        mode: "4755"
+        owner: root
+        group: root
+
+    # -- Plant the flag (Chapter 12: dynamic flag injection) -----------------
+    - name: Plant CTF flag
+      copy:
+        dest: /root/flag.txt
+        content: "{{ challenge_flag }}"
+        mode: "0400"
+        owner: root
+        group: root
+
+    # -- Breadcrumb hints (Chapter 18: guided learning) ----------------------
+    - name: Create hint file in user home
+      copy:
+        dest: "/home/{{ weak_user }}/README.txt"
+        content: |
+          Welcome to the SSH Exploitation Lab.
+          Your objective: read the file /root/flag.txt.
+          Hint: not everything with special permissions is safe.
+        owner: "{{ weak_user }}"
+        group: "{{ weak_user }}"
+        mode: "0644"
+
+    # -- Service banner for reconnaissance -----------------------------------
+    - name: Set SSH banner
+      copy:
+        dest: /etc/ssh/banner.txt
+        content: |
+          ************************************************************
+          *  CYBER RANGE — Authorized training environment only      *
+          *  All actions are logged and monitored                     *
+          ************************************************************
+        mode: "0644"
+
+    - name: Enable SSH banner
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?Banner'
+        line: 'Banner /etc/ssh/banner.txt'
+      notify: Restart SSH
+
+  handlers:
+    - name: Restart SSH
+      service:
+        name: sshd
+        state: restarted

@@ -1,0 +1,8 @@
+# Extraído de: LibroDevSecOps/cap-01-pipeline-inseguro.md
+{
+  "is_true_positive": true,
+  "confidence": "high",
+  "risk_score": 8,
+  "explanation": "Verdadero positivo. Aunque existe sanitización manual (reemplazo de comillas y punto y coma), esta es insuficiente. Un atacante puede usar codificación Unicode o secuencias de escape para evadir el filtro. La query se construye por interpolación de f-string, no con parámetros preparados. El endpoint es público (no tiene decorador de autenticación visible en el contexto).",
+  "suggested_fix": "Usar parámetros preparados: db.execute(text('SELECT id, name FROM items WHERE name LIKE :q'), {'q': f'%{sanitized_q}%'}). Eliminar la sanitización manual, que da falsa sensación de seguridad."
+}

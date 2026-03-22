@@ -1,0 +1,54 @@
+# Extraído de: LibroConsultor/cap-12-auditorias-automatizadas.md
+# audit_config.yaml — Configuración de auditoría multi-framework
+frameworks:
+  iso27001:
+    name: "ISO/IEC 27001:2022"
+    controls_file: "frameworks/iso27001_annexA.json"
+    system_context: >
+      Auditor certificado ISO 27001 Lead Auditor. Evalúa controles
+      del Anexo A según la versión 2022 del estándar. Considera
+      los 93 controles organizados en 4 categorías: organizativos,
+      personas, físicos y tecnológicos.
+    severity_mapping:
+      mandatory_control_missing: "alta"
+      partial_implementation: "media"
+      documentation_gap: "baja"
+
+  ens:
+    name: "Esquema Nacional de Seguridad (ENS)"
+    controls_file: "frameworks/ens_controles.json"
+    system_context: >
+      Auditor ENS con conocimiento de las medidas de seguridad
+      del RD 311/2022. Evalúa según la categoría del sistema
+      (BÁSICA, MEDIA, ALTA) y diferencia medidas organizativas,
+      operacionales y de protección.
+    severity_mapping:
+      mandatory_control_missing: "alta"
+      partial_implementation: "media"
+      documentation_gap: "baja"
+
+  dora:
+    name: "Digital Operational Resilience Act (DORA)"
+    controls_file: "frameworks/dora_requirements.json"
+    system_context: >
+      Auditor especializado en DORA. Evalúa los cinco pilares:
+      gestión de riesgo TIC, notificación de incidentes, pruebas
+      de resiliencia, gestión de terceros TIC y compartición de
+      información. Contexto: entidades financieras del ámbito UE.
+
+  ai_act:
+    name: "Reglamento Europeo de IA (AI Act)"
+    controls_file: "frameworks/ai_act_requirements.json"
+    system_context: >
+      Auditor de cumplimiento del AI Act. Evalúa clasificación
+      de riesgo del sistema de IA, requisitos de transparencia,
+      gestión de datos de entrenamiento, supervisión humana y
+      documentación técnica. Aplica según nivel de riesgo.
+
+audit_settings:
+  triage_model: "claude-haiku-4-5"
+  evaluation_model: "claude-sonnet-4-6"
+  finding_model: "claude-sonnet-4-6"
+  max_documents_per_control: 5
+  max_tokens_per_evaluation: 2048
+  human_review_required: true  # NUNCA desactivar

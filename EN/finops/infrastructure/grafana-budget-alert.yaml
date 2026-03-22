@@ -1,0 +1,34 @@
+# Source: The FinOps Engineer and the Machine -- Chapter 7
+# Pattern: Grafana alert rules for budget monitoring
+
+# grafana/alerts/budget-alert.yaml
+groups:
+  - name: finops-budget
+    rules:
+      - alert: LLMBudgetWarning
+        expr: |
+          SELECT SUM(total_cost_usd) FROM llm_usage_logs
+          WHERE MONTH(timestamp) = MONTH(NOW())
+          AND YEAR(timestamp) = YEAR(NOW())
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: >
+            LLM spend at {{ $value | printf "%.0f" }}%
+            of monthly budget
+          description: >
+            Spend has exceeded the alert threshold (80%).
+
+      - alert: LLMBudgetExceeded
+        expr: |
+          SELECT SUM(total_cost_usd) FROM llm_usage_logs
+          WHERE MONTH(timestamp) = MONTH(NOW())
+          AND YEAR(timestamp) = YEAR(NOW())
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "LLM budget exhausted"
+          description: >
+            The middleware blocks new LLM calls.

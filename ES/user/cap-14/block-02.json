@@ -1,0 +1,14 @@
+# Extraído de: LibroUsuario/cap-14-gestion-de-proyectos.md
+{
+  "mcpServers": {
+    "jira": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-jira"],
+      "env": {
+        "JIRA_URL": "https://tu-empresa.atlassian.net",
+        "JIRA_EMAIL": "tu-email@empresa.com",
+        "JIRA_API_TOKEN": "<tu-api-token-jira>"
+      }
+    }
+  }
+}

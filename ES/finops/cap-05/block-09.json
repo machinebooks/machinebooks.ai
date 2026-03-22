@@ -1,0 +1,25 @@
+# Extraído de: LibroFinOps/cap-05-tagging-cloud.md
+{
+  "mode": "Indexed",
+  "policyRule": {
+    "if": {
+      "field": "tags['environment']",
+      "exists": "false"
+    },
+    "then": {
+      "effect": "modify",
+      "details": {
+        "operations": [
+          {
+            "operation": "addOrReplace",
+            "field": "tags['environment']",
+            "value": "[resourceGroup().tags['environment']]"
+          }
+        ],
+        "roleDefinitionIds": [
+          "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+        ]
+      }
+    }
+  }
+}

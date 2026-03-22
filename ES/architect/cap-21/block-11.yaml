@@ -1,0 +1,19 @@
+# Extraído de: LibroTecnico/cap-21-cicd.md
+# Fragmento de docker-compose.prod.yml
+# Muestra cómo cargar variables de entorno desde fichero en el servidor
+
+services:
+  backend:
+    image: ghcr.io/plataforma/plataforma-backend:latest
+    env_file:
+      - .env.prod         # Fichero en el servidor, nunca en el repositorio
+    environment:
+      - FLASK_ENV=production
+      - FLASK_DEBUG=0
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health/quick"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

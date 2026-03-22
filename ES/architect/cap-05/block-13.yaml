@@ -1,0 +1,44 @@
+# Extraído de: LibroTecnico/cap-05-diseno-base-datos.md
+# Configuración MySQL optimizada para carga mixta OLTP + analytics
+# Servidor: 44 GB RAM, 8 cores, SSD NVMe
+# Coexiste con: FastAPI (AI service), 4 workers Celery, Redis, Meilisearch, Qdrant, Nginx
+mysql:
+  # --- Rendimiento de InnoDB ---
+  innodb_buffer_pool_size: 4G
+  # Conservador (10% de RAM) por coexistencia con otros servicios
+  # Ajustar hasta 8-12G si MySQL es el único servicio en el servidor
+  innodb_buffer_pool_instances: 4
+  # Divide el buffer pool en 4 regiones para reducir contención de mutex
+  innodb_log_file_size: 256M
+  # Redo logs más grandes → menos checkpoints → mejor throughput de escritura
+  innodb_flush_log_at_trx_commit: 2
+  # 1 = durabilidad máxima (cada tx a disco)
+  # 2 = flush cada segundo (puede perder 1s de tx en crash OS — aceptable para nuestro caso)
+  innodb_read_io_threads: 8
+  # Máximo InnoDB para lecturas paralelas (analytics)
+  innodb_write_io_threads: 4
+  # Escrituras concurrentes de Celery workers
+
+  # --- Conexiones ---
+  max_connections: 500
+  # 4 workers Celery × 50 pool_size = 200 conexiones base
+  # + API Flask × 50 pool_size = 200
+  # + admin y herramientas = 100 de margen
+  wait_timeout: 600          # Cerrar conexiones inactivas tras 10 minutos
+  interactive_timeout: 600
+
+  # --- Consultas lentas ---
+  slow_query_log: 1
+  slow_query_log_file: /var/log/mysql/slow.log
+  long_query_time: 1         # Umbral: 1 segundo
+  log_queries_not_using_indexes: 1  # Detectar consultas sin índice
+
+  # --- Seguridad ---
+  require_secure_transport: ON
+  # TLS obligatorio para todas las conexiones (incluidas locales al mismo host)
+  default_authentication_plugin: caching_sha2_password
+  # Autenticación moderna con hashing SHA-256
+  local_infile: 0
+  # Deshabilitar LOAD DATA LOCAL INFILE (vector de ataque conocido)
+  general_log: 0
+  # Desactivado en producción (registro de TODAS las queries — enorme volumen)

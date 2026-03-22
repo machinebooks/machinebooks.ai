@@ -1,0 +1,29 @@
+# Extraído de: LibroDevSecOps/cap-18-runtime-security.md
+# docker-compose.security.yml — Falco + exporter para métricas
+services:
+  falco:
+    image: falcosecurity/falco:0.38.1
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock:ro
+      - /proc:/host/proc:ro
+      - /etc:/host/etc:ro
+      - ./falco/rules:/etc/falco/rules.d  # Reglas custom
+      - ./falco/falco.yaml:/etc/falco/falco.yaml
+    environment:
+      - FALCO_BPF_PROBE=""  # Usar modern_ebpf
+    ports:
+      - "8765:8765"   # HTTP output
+    networks:
+      - security-net
+
+  falco-exporter:
+    image: falcosecurity/falco-exporter:0.9.1
+    depends_on:
+      - falco
+    environment:
+      - FALCO_GRPC_ADDR=falco:5060
+    ports:
+      - "9376:9376"  # Prometheus metrics
+    networks:
+      - security-net

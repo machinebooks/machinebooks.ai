@@ -1,0 +1,75 @@
+# Extraído de: LibroCISO/cap-08-marcos-cumplimiento.md
+{
+  "code": "ENS",
+  "name": "Esquema Nacional de Seguridad",
+  "version": "RD 311/2022",
+  "category": "national",
+  "description": "Marco obligatorio para el sector público español",
+  "official_url": "https://www.boe.es/eli/es/rd/2022/05/03/311",
+  "total_controls": 75,
+  "controls": [
+    {
+      "code": "org",
+      "name": "Marco organizativo",
+      "level": 0,
+      "children": [
+        {
+          "code": "org.1",
+          "name": "Política de seguridad",
+          "level": 1,
+          "description": "Definición de la política de seguridad del organismo",
+          "level_requirements": {
+            "BASICA": "aplica",
+            "MEDIA": "aplica",
+            "ALTA": "aplica"
+          }
+        },
+        {
+          "code": "org.2",
+          "name": "Normativa de seguridad",
+          "level": 1,
+          "level_requirements": {
+            "BASICA": "aplica",
+            "MEDIA": "aplica",
+            "ALTA": "aplica"
+          }
+        }
+      ]
+    },
+    {
+      "code": "mp",
+      "name": "Medidas de protección",
+      "level": 0,
+      "children": [
+        {
+          "code": "mp.com",
+          "name": "Protección de las comunicaciones",
+          "level": 0,
+          "children": [
+            {
+              "code": "mp.com.1",
+              "name": "Perímetro seguro",
+              "level": 1,
+              "level_requirements": {
+                "BASICA": "no aplica",
+                "MEDIA": "aplica",
+                "ALTA": "aplica"
+              }
+            },
+            {
+              "code": "mp.com.2",
+              "name": "Protección de la confidencialidad",
+              "level": 1,
+              "description": "Cifrado de comunicaciones",
+              "level_requirements": {
+                "BASICA": "no aplica",
+                "MEDIA": "aplica",
+                "ALTA": "aplica"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

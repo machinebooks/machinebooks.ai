@@ -1,0 +1,46 @@
+# Extraído de: LibroTecnico/cap-20-docker.md
+# Ejemplo didáctico: patrones/docker/mysql-multi-instancia.yml
+services:
+  mysql_ops:
+    image: mysql:8.0
+    container_name: plataforma_mysql_ops
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: operations_db
+      MYSQL_USER: ${MYSQL_OPS_USER}
+      MYSQL_PASSWORD: ${MYSQL_OPS_PASSWORD}
+    volumes:
+      - mysql_ops_data:/var/lib/mysql
+      - ./config/mysql/ops.cnf:/etc/mysql/conf.d/custom.cnf:ro
+    networks:
+      - plataforma_backend
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost",
+             "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  mysql_analytics:
+    image: mysql:8.0
+    container_name: plataforma_mysql_analytics
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: analytics_db
+    volumes:
+      - mysql_analytics_data:/var/lib/mysql
+      # Configuración específica: más buffer pool para consultas analíticas
+      - ./config/mysql/analytics.cnf:/etc/mysql/conf.d/custom.cnf:ro
+    deploy:
+      resources:
+        limits:
+          memory: 3G   # más RAM porque ejecuta queries analíticas complejas
+          cpus: '1.5'

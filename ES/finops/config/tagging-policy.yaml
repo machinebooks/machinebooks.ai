@@ -1,0 +1,31 @@
+# Extraído de: LibroFinOps/cap-05-tagging-cloud.md
+# config/tagging-policy.yaml
+required_tags:
+  - key: environment
+    allowed_values: [prod, staging, dev, sandbox]
+    description: "Entorno de ejecución del recurso"
+
+  - key: team
+    allowed_values: [backend, frontend, data, platform, security]
+    description: "Equipo propietario del recurso"
+
+  - key: service
+    description: "Nombre del servicio o componente"
+    # Sin lista cerrada: el valor es libre pero el tag es obligatorio
+
+  - key: cost-center
+    allowed_values: [CC-PLATAFORMA, CC-DATOS, CC-INFRA, CC-SEGURIDAD]
+    description: "Centro de coste contable"
+
+optional_tags:
+  - key: owner
+    description: "Email del responsable técnico"
+
+  - key: expiry-date
+    description: "Fecha ISO de eliminación para recursos temporales"
+    format: "YYYY-MM-DD"
+
+enforcement:
+  missing_tag: block          # bloquea el despliegue si falta tag obligatorio
+  invalid_value: warn         # advierte si el valor no está en allowed_values
+  retroactive_audit: weekly   # frecuencia de la auditoría de inventario existente

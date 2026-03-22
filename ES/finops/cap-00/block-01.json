@@ -1,0 +1,15 @@
+# Extraído de: LibroFinOps/apendice-b-apis-coste-cloud.md
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Effect": "Allow",
+    "Action": [
+      "ce:GetCostAndUsage",
+      "ce:GetCostForecast",
+      "ce:GetReservationUtilization",
+      "ce:GetSavingsPlansUtilization",
+      "ce:GetRightsizingRecommendation"
+    ],
+    "Resource": "*"
+  }]
+}

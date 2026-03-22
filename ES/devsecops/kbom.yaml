@@ -1,0 +1,46 @@
+# Extraído de: LibroDevSecOps/cap-16-data-poisoning-rag.md
+# kbom.yaml — Knowledge Bill of Materials
+version: "1.0"
+generated: "2026-03-29T10:00:00Z"
+corpus:
+  name: "normativa-seguridad"
+  collection: "qdrant-normativa-v2"
+  total_documents: 3412
+  total_chunks: 28940
+
+sources:
+  - id: "src-001"
+    type: "regulatory"
+    name: "Esquema Nacional de Seguridad (ENS)"
+    version: "RD 311/2022"
+    documents: 47
+    last_updated: "2026-01-15"
+    trust_level: "high"
+    validation_status: "approved"
+
+  - id: "src-002"
+    type: "standard"
+    name: "ISO/IEC 27001:2022"
+    documents: 12
+    last_updated: "2025-11-20"
+    trust_level: "high"
+    validation_status: "approved"
+
+  - id: "src-003"
+    type: "internal"
+    name: "Políticas internas de seguridad"
+    documents: 89
+    last_updated: "2026-03-28"
+    trust_level: "medium"
+    validation_status: "approved"
+
+integrity:
+  last_audit: "2026-03-29T02:00:00Z"
+  documents_quarantined: 2
+  anomalies_detected: 3
+  corpus_health: "healthy"
+
+access_control:
+  levels_defined: ["public", "internal", "confidential", "restricted"]
+  groups_defined: 12
+  documents_without_classification: 0

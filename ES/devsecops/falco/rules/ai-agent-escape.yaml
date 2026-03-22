@@ -1,0 +1,24 @@
+# Extraído de: LibroDevSecOps/cap-18-runtime-security.md
+# falco/rules/ai-agent-escape.yaml
+- rule: Ejecución de herramienta de sistema desde contenedor de agente
+  desc: >
+    Los contenedores de agentes Claude ejecutan Python y
+    las tools declaradas en su configuración. Si un proceso
+    de agente invoca curl, wget, nc, nmap o herramientas
+    de red, puede indicar que el agente ha sido manipulado
+    por prompt injection para ejecutar comandos no autorizados.
+  condition: >
+    spawned_process
+    and container
+    and container.name startswith "agent-"
+    and proc.name in (curl, wget, nc, ncat, nmap, dig,
+         host, ssh, scp, rsync, python3)
+    and not proc.pname = "supervisord"
+  output: >
+    Herramienta de sistema ejecutada desde contenedor de agente
+    (contenedor=%container.name herramienta=%proc.name
+    padre=%proc.pname cmdline=%proc.cmdline
+    usuario=%user.name)
+  priority: CRITICAL
+  tags: [ai_workload, agent_escape, prompt_injection,
+         mitre_execution]

@@ -1,0 +1,95 @@
+# Extraído de: LibroCyberrange/cap-21-entrenar-soc.md
+# Ejemplo didáctico: configuración del escenario SOC-001
+# patrones/soc/scenarios/agent-misclassification.yaml
+
+scenario:
+  id: "SOC-001"
+  name: "El agente que falla: APT como falso positivo"
+  difficulty: "advanced"
+  target_tier: "L3-L4"
+  duration_minutes: 120
+
+  # Infraestructura del escenario
+  infrastructure:
+    workzone_template: "soc-enterprise-medium"
+    machines:
+      - role: "siem"
+        template: "elk-8.12-preconfigured"
+        resources: { vcpu: 4, ram_gb: 16, disk_gb: 100 }
+      - role: "edr-server"
+        template: "wazuh-4.8-manager"
+        resources: { vcpu: 2, ram_gb: 8, disk_gb: 50 }
+      - role: "dc"
+        template: "windows-server-2022-ad"
+        resources: { vcpu: 2, ram_gb: 8, disk_gb: 60 }
+      - role: "file-server"
+        template: "windows-server-2022-fs"
+        resources: { vcpu: 2, ram_gb: 4, disk_gb: 80 }
+      - role: "attacker"
+        template: "kali-2024-headless"
+        resources: { vcpu: 2, ram_gb: 4, disk_gb: 30 }
+
+    # Herramientas disponibles para el analista
+    analyst_tools:
+      siem: "elastic-security"
+      edr: "wazuh"
+      threat_intel: "misp-simulated"
+      ticketing: "integrated-irp"  # Sistema de tickets de incidentes
+
+  # Configuración del agente de IA
+  ai_agent:
+    model: "claude-sonnet-4-6"
+    role: "triage_tier0"
+    system_prompt_file: "prompts/soc-triage-agent.md"
+    # Inyección deliberada del error
+    deliberate_errors:
+      - trigger_alert_range: [40, 60]  # Alerta entre la 40 y la 60
+        error_type: "false_negative_apt"
+        confidence_override: 0.84
+        misclassification: "false_positive"
+        actual_classification: "true_positive_apt"
+        attacker_progression:
+          - phase: "lateral_movement"
+            delay_after_error_minutes: 0
+          - phase: "persistence"
+            delay_after_error_minutes: 30
+          - phase: "privilege_escalation"
+            delay_after_error_minutes: 60
+          - phase: "data_exfiltration"
+            delay_after_error_minutes: 90
+
+  # Flujo de alertas
+  alert_stream:
+    total_alerts: 120
+    alerts_per_hour: 60
+    true_positive_ratio: 0.18  # 18% son reales (realista)
+    noise_profile: "enterprise-medium"
+    # Incluye tráfico legítimo, escaneos benignos,
+    # actualizaciones de software, backups programados
+
+  # Métricas de evaluación
+  scoring:
+    metrics:
+      - name: "mttd_agent_error"
+        description: "Tiempo hasta detectar el error del agente"
+        weight: 0.35
+        thresholds:
+          excellent: 15   # minutos
+          good: 30
+          acceptable: 60
+          fail: 90
+      - name: "false_negative_rate"
+        description: "Alertas maliciosas no detectadas"
+        weight: 0.25
+        thresholds:
+          excellent: 0.0
+          good: 0.05
+          acceptable: 0.10
+          fail: 0.20
+      - name: "escalation_accuracy"
+        description: "Precisión en las decisiones de escalado"
+        weight: 0.20
+      - name: "agent_improvement_proposal"
+        description: "Calidad de la propuesta de mejora del agente"
+        weight: 0.20
+        evaluation: "claude-rubric"  # Evaluado por Claude

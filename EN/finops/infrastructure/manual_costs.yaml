@@ -1,0 +1,22 @@
+# Source: The FinOps Engineer and the Machine -- Chapter 3
+# Pattern: Manual cost imputations config
+
+# config/manual_costs.yaml
+# Cost allocations that cannot be measured automatically.
+# Reviewed and updated at the start of each month by the FinOps lead.
+
+monthly:
+  "2025-03":
+    # People: FTE x monthly rate x fraction dedicated to the project
+    # 1 senior engineer (0.4 FTE) + 0.5 FTE junior engineer + 0.1 FTE product
+    people_eur: 3200
+
+    # Project tools and licenses
+    # Grafana Cloud Pro: 180 € | Sentry Business: 120 €
+    # GitHub Actions (extra minutes): 45 € | Other: 55 €
+    tools_eur: 400
+
+    # Overhead: fraction of shared services + audit
+    # Corporate VPN (fraction): 60 € | Provider support: 80 €
+    # Quarterly security review (prorated): 60 €
+    overhead_eur: 200

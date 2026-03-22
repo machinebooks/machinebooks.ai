@@ -1,0 +1,74 @@
+# Source: The FinOps Engineer and the Machine -- Chapter 9
+# Pattern: Celery Beat schedule for periodic tasks
+
+# celery_beat_schedule.yaml
+# Periodic task configuration for Celery Beat
+# Loaded at worker startup: celery -A app beat --schedule=celery_beat_schedule
+
+beat_schedule:
+  # === WINDOW 1: Nightly (2:00-3:00 AM) — Daily document analysis ===
+  process-nightly-batch:
+    task: tasks.batch_processing.process_nightly_batch
+    schedule:
+      crontab:
+        hour: 2
+        minute: 0
+    description: >
+      Sends new bid documents from the day to the Batch API.
+      Average cost: $2.40/night (50% discount on $4.80 standard).
+
+  poll-batch-results:
+    task: tasks.batch_processing.poll_all_pending_batches
+    schedule:
+      crontab:
+        minute: "*/30"   # every 30 minutes, 24/7
+    description: >
+      Checks the status of all in-progress batches.
+      Cost: $0 (HTTP polling only, no LLM calls).
+
+  # === WINDOW 2: Weekly (Monday 3:00-4:00 AM) — Executive summaries ===
+  weekly-summary-batch:
+    task: tasks.batch_processing.generate_weekly_summaries
+    schedule:
+      crontab:
+        hour: 3
+        minute: 0
+        day_of_week: 1  # Monday
+    description: >
+      Generates weekly activity summaries for all active projects.
+      Average cost: $1.80/week (15-25 projects x sonnet batch).
+
+  weekly-cost-report:
+    task: tasks.reporting.generate_weekly_cost_report
+    schedule:
+      crontab:
+        hour: 3
+        minute: 30
+        day_of_week: 1  # Monday, 30 min after summaries
+    description: >
+      Weekly FinOps report: spend by service, trend, alerts.
+      Does not use LLM — only aggregates LLMUsageLog data.
+
+  # === WINDOW 3: Monthly (1st of month, 4:00-6:00 AM) — Semantic re-indexing ===
+  monthly-index-update:
+    task: tasks.batch_processing.update_semantic_index
+    schedule:
+      crontab:
+        hour: 4
+        minute: 0
+        day_of_month: 1
+    description: >
+      Re-indexes all documents in the Qdrant semantic index.
+      Intensive task: 2,000-5,000 documents. Average cost: $8.50/month
+      (with batch 50% discount). Without batch it would be $17.00.
+
+  monthly-budget-review:
+    task: tasks.reporting.generate_monthly_budget_review
+    schedule:
+      crontab:
+        hour: 5
+        minute: 0
+        day_of_month: 1
+    description: >
+      Monthly budget report: utilization, trends, forecast.
+      Sent to the CFO and the AI lead.

@@ -1,0 +1,51 @@
+# Extraído de: LibroDevSecOps/cap-22-compliance-continuo.md
+# compliance-mappings/ens-alto.yaml
+framework: ENS
+version: "RD311/2022"
+level: alto
+mappings:
+  - control_id: "op.exp.3"
+    title: "Gestión de la configuración de seguridad"
+    category: technical
+    automation_level: full
+    evidence_sources:
+      - type: container_scan
+        description: "Configuración de contenedores validada por Trivy"
+        artifact_pattern: "reports/trivy/*.json"
+        pass_criteria: "no_misconfigurations"
+      - type: policy_check
+        description: "Políticas OPA de infraestructura"
+        artifact_pattern: "reports/opa/*.json"
+        pass_criteria: "all_policies_pass"
+
+  - control_id: "op.exp.5"
+    title: "Gestión de cambios"
+    category: technical
+    automation_level: full
+    evidence_sources:
+      - type: ci_gate
+        description: "Todo cambio pasa por pipeline con gates"
+        artifact_pattern: "reports/pipeline-runs/*.json"
+        pass_criteria: "all_changes_gated"
+      - type: code_review
+        description: "Revisión obligatoria antes de merge"
+        artifact_pattern: "reports/reviews/*.json"
+        pass_criteria: "review_required_and_approved"
+
+  - control_id: "mp.sw.1"
+    title: "Desarrollo de aplicaciones"
+    category: technical
+    automation_level: full
+    evidence_sources:
+      - type: sast_scan
+        description: "SAST en cada PR"
+        artifact_pattern: "reports/sast/*.json"
+        pass_criteria: "zero_critical_findings"
+      - type: sca_scan
+        description: "Análisis de dependencias"
+        artifact_pattern: "reports/sca/*.json"
+        pass_criteria: "no_critical_dependencies"
+      - type: secret_scan
+        description: "Escaneo de secretos"
+        artifact_pattern: "reports/secrets/*.json"
+        pass_criteria: "no_secrets_detected"

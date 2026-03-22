@@ -1,0 +1,43 @@
+# Extraído de: LibroDevSecOps/cap-19-observabilidad-seguridad.md
+# prometheus-alerts.yml
+groups:
+  - name: devsecops_security
+    rules:
+      # Alerta solo si hay hallazgos CRÍTICOS abiertos más de 24h
+      - alert: CriticalFindingsOverdue
+        expr: >
+          (devsecops_findings_open_total{severity="critical"} > 0)
+          and on()
+          (time() - devsecops_findings_open_total{severity="critical"} > 86400)
+        for: 1h
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "{{ $labels.service }}: hallazgo crítico abierto >24h"
+          action: "Revisar en Grafana: /d/devsecops-security-lead"
+
+      # Fix rate por debajo del umbral durante 3 días consecutivos
+      - alert: LowFixRate
+        expr: >
+          (sum(increase(devsecops_findings_remediated_total[7d]))
+          / sum(increase(devsecops_findings_detected_total[7d])))
+          < 0.5
+        for: 72h
+        labels:
+          severity: warning
+        annotations:
+          summary: "Fix rate semanal por debajo del 50%"
+          description: "El equipo remedia menos de la mitad de hallazgos detectados"
+
+      # MTTR de hallazgos critical supera SLA de 72 horas
+      - alert: MTTRBreachCritical
+        expr: >
+          histogram_quantile(0.50,
+            rate(devsecops_mttr_seconds_bucket{severity="critical"}[7d])
+          ) > 259200
+        for: 1h
+        labels:
+          severity: critical
+        annotations:
+          summary: "MTTR de hallazgos críticos supera 72 horas"

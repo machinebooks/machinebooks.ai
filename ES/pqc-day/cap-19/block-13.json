@@ -1,0 +1,27 @@
+# Extraído de: LibroPQC/cap-19-dashboard.md
+{
+  "total_clients": 12,
+  "total_users": 8,
+  "total_analysis": 47,
+  "active_analysis": 3,
+  "total_findings": 284,
+  "critical_findings": 23,
+  "pqc_readiness_avg": 62.4,
+  "clients_by_status": { "active": 10, "inactive": 2 },
+  "findings_by_severity": {
+    "critical": 23, "high": 67, "medium": 112, "low": 82
+  },
+  "findings_by_category": {
+    "pqc": { "total": 156, "critical": 18, "high": 42, "medium": 58, "low": 38 },
+    "owasp": { "total": 89, "critical": 3, "high": 19, "medium": 41, "low": 26 },
+    "cloud": { "total": 39, "critical": 2, "high": 6, "medium": 13, "low": 18 }
+  },
+  "recent_analysis": [
+    {
+      "id": 47, "name": "Scan repo-backend",
+      "client_name": "Cliente A", "status": "completed",
+      "pqc_score": 71.2, "created_at": "2025-11-15T09:30:00Z"
+    }
+  ],
+  "organization": { "name": "Consultora Alpha", "plan": "enterprise" }
+}

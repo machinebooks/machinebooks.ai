@@ -1,0 +1,39 @@
+# Extraído de: LibroTecnico/cap-20-docker.md
+# Ejemplo didáctico: patrones/docker/ai-service.yml
+  ai_service:
+    build:
+      context: ./ai_service
+      dockerfile: Dockerfile
+    container_name: plataforma_ai_service
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - QDRANT_HOST=qdrant
+      - QDRANT_PORT=6333
+      - QDRANT_API_KEY=${QDRANT_API_KEY}
+      - REDIS_URL=${REDIS_URL}
+      - AI_SERVICE_API_KEY=${AI_SERVICE_API_KEY}
+      - LOG_LEVEL=INFO
+    volumes:
+      # Directorio de modelos locales (Ollama, LM Studio)
+      - ai_models_cache:/app/models_cache
+    networks:
+      - plataforma_backend
+    depends_on:
+      qdrant:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 4G        # El límite más alto: cadenas RAG + contexto grande
+          cpus: '2.0'
+        reservations:
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s   # FastAPI + LangChain tarda en arrancar
+    restart: on-failure:3

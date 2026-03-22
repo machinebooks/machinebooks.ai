@@ -1,0 +1,41 @@
+# Extraído de: LibroDevSecOps/cap-06-secretos.md
+# .gitleaks.toml — Configuración de Gitleaks para el Pipeline
+title = "Reglas de secret scanning del Pipeline DevSecOps"
+
+# Regla custom: tokens de Anthropic (Claude API)
+[[rules]]
+id = "anthropic-api-key"
+description = "API key de Anthropic (Claude)"
+regex = '''sk-ant-[a-zA-Z0-9_-]{80,}'''
+tags = ["api-key", "anthropic"]
+keywords = ["sk-ant-"]
+
+# Regla custom: tokens internos del Pipeline
+[[rules]]
+id = "internal-service-token"
+description = "Token de servicio interno del Pipeline"
+regex = '''PIPELINE_TOKEN_[A-Z0-9]{32,}'''
+tags = ["token", "internal"]
+keywords = ["PIPELINE_TOKEN_"]
+
+# Regla custom: cadenas de conexión a bases de datos
+[[rules]]
+id = "database-connection-string"
+description = "Cadena de conexión con credenciales embebidas"
+regex = '''(?i)(mysql|postgres|mongodb|redis):\/\/[^:]+:[^@]+@[^\/]+'''
+tags = ["database", "connection-string"]
+
+# Permitir ficheros de ejemplo y documentación
+[allowlist]
+paths = [
+    '''\.gitleaks\.toml$''',
+    '''docs/examples/.*''',
+    '''tests/fixtures/.*\.example$''',
+]
+
+# Permitir valores conocidos como seguros
+regexes = [
+    '''EXAMPLE_KEY_[A-Z0-9]+''',
+    '''<set-in-vault>''',
+    '''sk-ant-xxxx.*''',
+]

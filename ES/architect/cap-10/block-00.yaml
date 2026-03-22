@@ -1,0 +1,40 @@
+# Extraído de: LibroTecnico/cap-10-automatizacion-rpa.md
+# Ejemplo didáctico: patrones/automation/docker-compose-selenium.yml
+
+  selenium-hub:
+    image: selenium/hub:4.27
+    container_name: selenium-hub
+    ports:
+      - "4444:4444"   # Puerto de la consola web del Grid
+      - "4443:4443"   # Puerto de eventos
+      - "4442:4442"   # Puerto de comandos
+    environment:
+      - SE_NODE_MAX_SESSIONS=3
+      - SE_SESSION_REQUEST_TIMEOUT=300
+      - SE_SESSION_RETRY_INTERVAL=5
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4444/wd/hub/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  selenium-node-chrome-1:
+    image: selenium/node-chrome:4.27
+    container_name: selenium-node-chrome-1
+    shm_size: 2gb              # Crítico: sin esto Chrome crashea de forma intermitente
+    depends_on:
+      selenium-hub:
+        condition: service_healthy
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - SE_NODE_MAX_SESSIONS=1         # Un bot por nodo para evitar interferencias
+      - SE_VNC_NO_PASSWORD=1           # ⚠ SOLO DESARROLLO — En producción: eliminar o usar SE_VNC_PASSWORD=<secreto>
+      - SE_SCREEN_WIDTH=1920
+      - SE_SCREEN_HEIGHT=1080
+    networks:
+      - app-network
+    mem_limit: 2g              # Límite de memoria por nodo

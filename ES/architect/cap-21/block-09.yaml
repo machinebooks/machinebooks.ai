@@ -1,0 +1,11 @@
+# Extraído de: LibroTecnico/cap-21-cicd.md
+      - name: Rollback automático si el despliegue falla
+        if: failure()
+        run: |
+          echo "Despliegue fallido. Iniciando rollback a la versión anterior."
+          ssh -i ~/.ssh/deploy_key deploy@${{ secrets.PROD_HOST }} << 'ENDSSH'
+            cd /opt/plataforma
+            # Restaurar la última configuración funcional conocida
+            git stash
+            docker compose -f docker-compose.prod.yml up -d
+          ENDSSH

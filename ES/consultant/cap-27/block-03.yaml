@@ -1,0 +1,34 @@
+# Extraído de: LibroConsultor/cap-27-caso-tecnologia.md
+# Configuración del pipeline de generación de informe
+pipeline_informe:
+  modelo: "claude-sonnet-4-6"
+  secciones:
+    - id: "resumen_ejecutivo"
+      generacion: "manual"  # El consultor escribe esto
+      motivo: "Requiere juicio político y priorización estratégica"
+    - id: "estado_actual"
+      generacion: "agente"
+      fuente: "resultados_analisis_codigo"
+      plantilla: "templates/estado_actual.md"
+      revision: "obligatoria"
+    - id: "evaluacion_alternativas"
+      generacion: "agente"
+      fuente: "resultados_evaluacion_tecnologica"
+      plantilla: "templates/evaluacion_alternativas.md"
+      revision: "obligatoria"
+    - id: "roadmap_migracion"
+      generacion: "hibrido"  # Agente genera base, consultor ajusta
+      fuente: "estimaciones + contexto_stakeholders"
+      revision: "obligatoria"
+    - id: "estimacion_costes"
+      generacion: "agente"
+      fuente: "resultados_estimacion"
+      plantilla: "templates/estimacion_costes.md"
+      revision: "obligatoria"
+    - id: "recomendaciones"
+      generacion: "manual"  # Juicio humano
+      motivo: "Requiere ponderación de factores no técnicos"
+    - id: "anexos_tecnicos"
+      generacion: "agente"
+      fuente: "metadatos + analisis_detallado"
+      revision: "validacion_tecnica"

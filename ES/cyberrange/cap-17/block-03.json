@@ -1,0 +1,121 @@
+# Extraído de: LibroCyberrange/cap-17-generacion-escenarios-ia.md
+{
+  "name": "AD Lateral Movement Lab — Kerberos Edition",
+  "description": "Escenario de movimiento lateral en un dominio Active Directory con tres flags progresivas. El participante debe explotar vulnerabilidades en la configuración de Kerberos y servicios del dominio para escalar privilegios desde un usuario sin privilegios hasta Domain Admin.",
+  "category": "red-team",
+  "difficulty": "intermediate",
+  "topology_config": {
+    "nodes": [
+      {"id": "dc01", "template_id": 12, "role": "Domain Controller",
+       "network": "corp-net", "ip": "10.10.1.10"},
+      {"id": "srv01", "template_id": 14, "role": "SQL Server",
+       "network": "corp-net", "ip": "10.10.1.20"},
+      {"id": "ws01", "template_id": 15, "role": "Workstation",
+       "network": "corp-net", "ip": "10.10.1.100"},
+      {"id": "ws02", "template_id": 15, "role": "Workstation",
+       "network": "corp-net", "ip": "10.10.1.101"},
+      {"id": "kali01", "template_id": 8, "role": "Attacker",
+       "network": "attack-net", "ip": "10.10.2.50"},
+      {"id": "wazuh01", "template_id": 22, "role": "SIEM",
+       "network": "mgmt-net", "ip": "10.10.3.10"}
+    ],
+    "networks": [
+      {"id": "corp-net", "cidr": "10.10.1.0/24", "vlan": 110,
+       "description": "Red corporativa con DC y workstations"},
+      {"id": "attack-net", "cidr": "10.10.2.0/24", "vlan": 111,
+       "description": "Red del atacante con acceso limitado a corp-net"},
+      {"id": "mgmt-net", "cidr": "10.10.3.0/24", "vlan": 112,
+       "description": "Red de gestión para SIEM"}
+    ],
+    "routing": [
+      {"from": "attack-net", "to": "corp-net", "ports": [445, 135, 139, 389, 88]},
+      {"from": "corp-net", "to": "mgmt-net", "ports": [1514, 1515, 55000]}
+    ]
+  },
+  "vm_configs": [
+    {
+      "node_id": "dc01",
+      "template_id": 12,
+      "cpu": 4,
+      "ram_mb": 8192,
+      "disk_gb": 60,
+      "playbooks": [
+        "windows_playbooks/disable_smb_signing.yml",
+        "windows_playbooks/weak_password_policy.yml"
+      ],
+      "custom_config": {
+        "domain_name": "cyberlab.local",
+        "domain_admin_password": "GENERATED_AT_DEPLOY",
+        "service_accounts": [
+          {"name": "svc_sql", "spn": "MSSQLSvc/srv01.cyberlab.local:1433",
+           "password": "Summer2024!", "kerberoastable": true},
+          {"name": "svc_backup", "asreproastable": true}
+        ]
+      }
+    },
+    {
+      "node_id": "srv01",
+      "template_id": 14,
+      "cpu": 2,
+      "ram_mb": 4096,
+      "disk_gb": 40,
+      "playbooks": [
+        "windows_playbooks/weak_service_permissions.yml"
+      ]
+    },
+    {
+      "node_id": "kali01",
+      "template_id": 8,
+      "cpu": 2,
+      "ram_mb": 4096,
+      "disk_gb": 30,
+      "playbooks": [],
+      "custom_config": {
+        "tools_preinstalled": ["impacket", "bloodhound", "crackmapexec", "rubeus"]
+      }
+    }
+  ],
+  "flags": [
+    {
+      "id": "flag-1",
+      "description": "Obtener el hash del servicio SQL via Kerberoasting",
+      "location": "dc01",
+      "technique": "Kerberoasting (T1558.003)",
+      "points": 200,
+      "hint_1": "¿Qué cuentas de servicio tienen SPN configurado?",
+      "hint_2": "impacket-GetUserSPNs puede ayudarte",
+      "flag_type": "dynamic"
+    },
+    {
+      "id": "flag-2",
+      "description": "Acceder al servidor SQL con las credenciales obtenidas",
+      "location": "srv01",
+      "technique": "Valid Accounts (T1078)",
+      "points": 300,
+      "hint_1": "El hash que obtuviste... ¿es crackeable?",
+      "hint_2": "hashcat -m 13100 con rockyou.txt",
+      "flag_type": "dynamic"
+    },
+    {
+      "id": "flag-3",
+      "description": "Obtener Domain Admin mediante DCSync",
+      "location": "dc01",
+      "technique": "DCSync (T1003.006)",
+      "points": 500,
+      "hint_1": "svc_sql tiene permisos interesantes en el dominio...",
+      "hint_2": "secretsdump.py con las credenciales del servicio SQL",
+      "flag_type": "dynamic"
+    }
+  ],
+  "mitre_mapping": [
+    {"technique_id": "T1558.003", "tactic": "Credential Access",
+     "name": "Kerberoasting", "phase": "flag-1"},
+    {"technique_id": "T1078", "tactic": "Persistence",
+     "name": "Valid Accounts", "phase": "flag-2"},
+    {"technique_id": "T1003.006", "tactic": "Credential Access",
+     "name": "OS Credential Dumping: DCSync", "phase": "flag-3"}
+  ],
+  "storyline": "Un auditor de seguridad ha sido contratado para evaluar la seguridad del dominio Active Directory de CyberLab Corp. Se le ha proporcionado acceso a la red desde una máquina Kali Linux. Su objetivo: demostrar que un atacante con acceso a la red puede escalar privilegios hasta Domain Admin explotando configuraciones inseguras en los servicios de Kerberos.",
+  "estimated_deploy_time": 12,
+  "tags": ["active-directory", "kerberos", "lateral-movement", "red-team"]
+}

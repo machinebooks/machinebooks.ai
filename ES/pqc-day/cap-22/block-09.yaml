@@ -1,0 +1,47 @@
+# Extraído de: LibroPQC/cap-22-celery.md
+  # Worker Celery — ejecuta análisis asíncronos
+  pqc_celery_worker:
+    build: ./backend
+    command: >
+      celery -A app.celery_app worker
+      --loglevel=info
+      --concurrency=2
+      --queues=repository_analysis,certificate_scanning,cloud_audit,ai_analysis
+      --max-tasks-per-child=50
+    environment:
+      DATABASE_URL: mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@pqc_mysql:3306/${MYSQL_DATABASE}
+      REDIS_URL: redis://pqc_redis:6379/0
+      CELERY_BROKER_URL: redis://pqc_redis:6379/0
+      CELERY_RESULT_BACKEND: redis://pqc_redis:6379/1
+    volumes:
+      - temp_data:/tmp
+    depends_on:
+      pqc_redis:
+        condition: service_healthy
+      pqc_mysql:
+        condition: service_healthy
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  # Beat Celery — programa tareas recurrentes
+  pqc_celery_beat:
+    build: ./backend
+    command: >
+      celery -A app.celery_app beat
+      --loglevel=info
+      --schedule=/tmp/celerybeat-schedule
+    environment:
+      DATABASE_URL: mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@pqc_mysql:3306/${MYSQL_DATABASE}
+      REDIS_URL: redis://pqc_redis:6379/0
+      CELERY_BROKER_URL: redis://pqc_redis:6379/0
+    depends_on:
+      pqc_redis:
+        condition: service_healthy
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M

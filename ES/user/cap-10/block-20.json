@@ -1,0 +1,14 @@
+# Extraído de: LibroUsuario/cap-10-construir-tu-conector-mcp.md
+{
+  "mcpServers": {
+    "base-datos-empresa": {
+      "command": "C:\\Users\\TU_USUARIO\\mcp-servers\\mi-conector\\venv\\Scripts\\python.exe",
+      "args": [
+        "C:\\Users\\TU_USUARIO\\mcp-servers\\mi-conector\\servidor_bd.py"
+      ],
+      "env": {
+        "DB_PATH": "C:\\datos\\empresa.db"
+      }
+    }
+  }
+}

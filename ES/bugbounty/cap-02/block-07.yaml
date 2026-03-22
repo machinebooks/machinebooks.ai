@@ -1,0 +1,28 @@
+# Extraído de: LibroBugBounty/cap-02-stack-hunter.md
+version: "3.8"
+
+services:
+  security-lab:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aegis-security-lab
+    hostname: seclab
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./results:/lab/results      # Resultados del anÃ¡lisis
+      - ./scripts:/lab/scripts      # Scripts (editables desde host)
+      - ./drivers:/lab/drivers:ro   # Binarios a analizar (lectura)
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    cap_add:
+      - NET_RAW      # Para paquetes raw con scapy
+      - NET_ADMIN     # Para herramientas de red
+    networks:
+      - labnet
+    working_dir: /lab
+
+networks:
+  labnet:
+    driver: bridge

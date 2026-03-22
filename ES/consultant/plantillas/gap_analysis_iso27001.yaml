@@ -1,0 +1,58 @@
+# Extraído de: LibroConsultor/cap-06-generacion-entregables.md
+# plantillas/gap_analysis_iso27001.yaml
+template:
+  id: "gap-analysis-iso27001-v3"
+  version: "3.2.1"
+  last_updated: "2026-02-15"
+  document_type: "gap_analysis"
+  framework: "ISO 27001:2022"
+
+  voice:
+    formality: "alta"
+    assertiveness: "directa"  # No hedging en hallazgos
+    person: "tercera"         # "Se observa" no "Hemos observado"
+    prohibited_terms:
+      - "podría considerarse"
+      - "sería recomendable quizás"
+      - "no del todo alineado"
+    preferred_terms:
+      brecha: "gap"
+      remediación: "medida correctiva"
+      riesgo_residual: "riesgo remanente"
+
+  sections:
+    - id: "resumen_ejecutivo"
+      max_words: 500
+      instructions: >
+        Resumir los hallazgos principales en 3-5 párrafos.
+        Incluir: número total de controles evaluados, porcentaje
+        de cumplimiento global, las 3 brechas más críticas,
+        esfuerzo estimado total de remediación. Tono: directo,
+        sin alarma pero sin minimizar.
+      requires_human_review: true
+
+    - id: "metodologia"
+      max_words: 300
+      instructions: >
+        Describir el enfoque: controles evaluados, fuentes de
+        evidencia, criterios de evaluación, escala de madurez.
+      static_content: true  # Se genera una vez, no cambia
+
+    - id: "hallazgos_detallados"
+      max_words: null  # Variable según controles
+      per_control: true
+      instructions: >
+        Para cada control: estado (cumple/cumple parcialmente/
+        no cumple), evidencias recopiladas, descripción de la
+        brecha si aplica, riesgo asociado, remediación propuesta
+        con esfuerzo estimado (horas, coste, plazo).
+      requires_human_review: false  # Revisión por muestreo
+
+    - id: "plan_remediacion"
+      max_words: 800
+      instructions: >
+        Priorizar remediaciones por criticidad y esfuerzo.
+        Agrupar en quick wins (< 2 semanas), medio plazo
+        (1-3 meses) y largo plazo (3-12 meses). Incluir
+        dependencias entre remediaciones.
+      requires_human_review: true

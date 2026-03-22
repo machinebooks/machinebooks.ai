@@ -1,0 +1,17 @@
+# Extraído de: LibroUsuario/cap-23-tareas-recurrentes.md
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "write_file",
+        "command": "bash /home/usuario/scripts/notificar-cambio.sh"
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "command": "bash /home/usuario/scripts/registrar-finalizacion.sh"
+      }
+    ]
+  }
+}

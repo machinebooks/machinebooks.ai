@@ -1,0 +1,38 @@
+# Source: The Consultant and the Machine -- Chapter 26
+# Pattern: Daily audit preparation config
+
+# Briefing for interview - Infrastructure Manager
+# Auto-generated from Phase 1-2 findings
+
+interviewee: "Infrastructure and Operations Manager"
+date: "2025-11-12"
+estimated_duration: "90 min"
+
+controls_to_verify:
+  - id: "A.8.8"
+    name: "Management of technical vulnerabilities"
+    documentary_status: "partial"
+    detected_gap: >
+      Vulnerability management policy exists but does not
+      document remediation timelines differentiated by
+      criticality. Last registered scan: 4 months ago.
+    suggested_questions:
+      - "How often do you run vulnerability scans?"
+      - "Is there an internal SLA for patching critical vulnerabilities?"
+      - "Can you show the current vulnerability status dashboard?"
+
+  - id: "A.8.9"
+    name: "Configuration management"
+    documentary_status: "non_compliant"
+    detected_gap: >
+      No evidence of centralized configuration management
+      found. Servers use manual configurations according
+      to interviews from the previous cycle.
+    suggested_questions:
+      - "Have you implemented any configuration management tool?"
+      - "How do you ensure a production configuration doesn't differ from baseline?"
+
+contextual_notes:
+  - "The infrastructure team is in the process of migrating to Azure"
+  - "The previous audit identified this area as non-compliant"
+  - "Possible resistance: the team was critical of previous findings"

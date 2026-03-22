@@ -1,0 +1,57 @@
+# Extraído de: LibroDevSecOps/cap-12-dast-inteligente.md
+# .github/workflows/dast-scan.yml
+name: DAST Inteligente
+on:
+  workflow_run:
+    workflows: ["Deploy to Staging"]
+    types: [completed]
+
+jobs:
+  dast-scan:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Esperar disponibilidad de staging
+        run: |
+          for i in $(seq 1 30); do
+            if curl -s -o /dev/null -w "%{http_code}" \
+              https://staging.ejemplo.com/api/health | grep -q "200"; then
+              echo "Staging disponible"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "Staging no disponible tras 5 minutos"
+          exit 1
+
+      - name: Analizar OpenAPI y generar plan
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python scripts/dast/generate_scan_plan.py
+
+      - name: Ejecutar ZAP con plan dirigido
+        env:
+          ZAP_TEST_PASSWORD: ${{ secrets.ZAP_TEST_PASSWORD }}
+        run: python scripts/dast/run_zap_scan.py
+
+      - name: Analizar resultados con Claude
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python scripts/dast/analyze_results.py
+
+      - name: Publicar informe
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dast-report
+          path: results/dast-report.json
+
+      - name: Gate de seguridad
+        run: |
+          REAL_FINDINGS=$(jq '.summary.real' results/dast-analysis.json)
+          if [ "$REAL_FINDINGS" -gt 0 ]; then
+            echo "::error::DAST encontró $REAL_FINDINGS vulnerabilidades confirmadas"
+            exit 1
+          fi

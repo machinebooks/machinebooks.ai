@@ -1,0 +1,204 @@
+# Extraído de: LibroPQC/cap-21-docker.md
+# docker-compose.yml — Plataforma PQC: 7 servicios
+# Definición completa del entorno de desarrollo y producción
+
+services:
+
+  # --- CAPA DE DATOS ---
+
+  pqc_mysql:
+    image: mysql:8.0
+    container_name: pqc_mysql
+    restart: unless-stopped
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"      # Configurable, default 3306
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-pqc_db}
+      MYSQL_USER: ${MYSQL_USER:-pqc_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
+    volumes:
+      - mysql_data:/var/lib/mysql       # Persistencia de datos
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost",
+             "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s                 # MySQL necesita tiempo para init
+    networks:
+      - pqc_network
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --innodb-buffer-pool-size=256M
+      --max-connections=100
+      --slow-query-log=1
+      --long-query-time=2
+
+  pqc_redis:
+    image: redis:7-alpine
+    container_name: pqc_redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data               # Persistencia RDB
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    networks:
+      - pqc_network
+    command: >
+      redis-server
+      --save 60 1000
+      --loglevel warning
+      --maxmemory 128mb
+      --maxmemory-policy allkeys-lru
+
+  # --- CAPA DE APLICACIÓN ---
+
+  pqc_backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: pqc_backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-5000}:5000"
+    environment:
+      FLASK_APP: ${FLASK_APP:-app}
+      FLASK_ENV: ${FLASK_ENV:-development}
+      DATABASE_URL: >-
+        mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@pqc_mysql:3306/${MYSQL_DATABASE}
+      REDIS_URL: redis://pqc_redis:6379/0
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    volumes:
+      - ./backend:/app                 # Mount para desarrollo (hot reload)
+      - backend_logs:/app/logs         # Logs persistentes
+    depends_on:
+      pqc_mysql:
+        condition: service_healthy     # Espera a que MySQL responda
+      pqc_redis:
+        condition: service_healthy     # Espera a que Redis responda
+    networks:
+      - pqc_network
+    command: >
+      gunicorn --bind 0.0.0.0:5000
+      --workers ${GUNICORN_WORKERS:-4}
+      --timeout 120
+      --access-logfile /app/logs/access.log
+      --error-logfile /app/logs/error.log
+      app:create_app()
+
+  pqc_celery_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: pqc_celery_worker
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: >-
+        mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@pqc_mysql:3306/${MYSQL_DATABASE}
+      REDIS_URL: redis://pqc_redis:6379/0
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    volumes:
+      - ./backend:/app
+      - backend_logs:/app/logs
+    depends_on:
+      pqc_mysql:
+        condition: service_healthy
+      pqc_redis:
+        condition: service_healthy
+    networks:
+      - pqc_network
+    command: >
+      celery -A app.celery_app worker
+      --loglevel=${LOG_LEVEL:-info}
+      --concurrency=${CELERY_CONCURRENCY:-2}
+      -Q repository_analysis,certificate_scanning,cloud_audit,ai_analysis
+
+  pqc_celery_beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: pqc_celery_beat
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: >-
+        mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@pqc_mysql:3306/${MYSQL_DATABASE}
+      REDIS_URL: redis://pqc_redis:6379/0
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    volumes:
+      - ./backend:/app
+    depends_on:
+      pqc_mysql:
+        condition: service_healthy
+      pqc_redis:
+        condition: service_healthy
+    networks:
+      - pqc_network
+    command: >
+      celery -A app.celery_app beat
+      --loglevel=${LOG_LEVEL:-info}
+      --schedule=/tmp/celerybeat-schedule
+
+  # --- CAPA DE PRESENTACIÓN ---
+
+  pqc_frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: pqc_frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-/api}
+      VITE_WS_URL: ${VITE_WS_URL:-ws://localhost:8080}
+    volumes:
+      - ./frontend:/app                # Mount para desarrollo
+      - /app/node_modules              # Excluir node_modules del mount
+    networks:
+      - pqc_network
+    command: npm run dev -- --host 0.0.0.0 --port 3000
+
+  pqc_nginx:
+    image: nginx:1.25-alpine
+    container_name: pqc_nginx
+    restart: unless-stopped
+    ports:
+      - "${NGINX_PORT:-8080}:8080"     # Punto de entrada único
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+    depends_on:
+      - pqc_backend
+      - pqc_frontend
+    networks:
+      - pqc_network
+
+# --- VOLÚMENES NOMBRADOS ---
+
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
+  backend_logs:
+    driver: local
+
+# --- RED ---
+
+networks:
+  pqc_network:
+    driver: bridge
+    name: pqc_network

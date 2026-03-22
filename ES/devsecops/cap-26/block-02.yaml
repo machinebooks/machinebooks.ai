@@ -1,0 +1,17 @@
+# Extraído de: LibroDevSecOps/cap-26-caso-pipeline.md
+  sca-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generar SBOM con Syft
+        uses: anchore/sbom-action@v0
+        with:
+          format: cyclonedx-json
+          output-file: sbom.cdx.json
+      - name: Escanear con Grype
+        uses: anchore/scan-action@v4
+        with:
+          sbom: sbom.cdx.json
+          fail-build: true
+          severity-cutoff: high
+          output-format: json

@@ -1,0 +1,70 @@
+# Extraído de: LibroDevSecOps/cap-09-agente-triaje.md
+{
+  "total_findings": 247,
+  "triage_timestamp": "2026-03-29T08:47:00Z",
+  "immediate_action": [
+    {
+      "finding_id": "SAST-042",
+      "title": "SQL injection en endpoint /api/users/search",
+      "service": "api-gateway",
+      "priority_score": 92,
+      "reasoning": "Inyección SQL en endpoint público sin autenticación. El parámetro 'q' se concatena directamente al query sin sanitización. El servicio es internet-facing y procesa datos confidenciales. Exploit trivial con sqlmap.",
+      "exploitability": "high",
+      "exposure": "internet-facing, no-auth, waf-bypass-possible",
+      "business_impact": "Acceso a datos personales de usuarios. Riesgo RGPD.",
+      "fix_recommendation": "Usar query parametrizado con SQLAlchemy ORM",
+      "fix_complexity": "medium",
+      "estimated_hours": 4,
+      "assigned_team": "platform"
+    },
+    {
+      "finding_id": "SCA-017",
+      "title": "CVE-2026-1234 en requests 2.28.0 — SSRF via redirect",
+      "service": "payment-service",
+      "priority_score": 87,
+      "reasoning": "CVE con exploit público y EPSS 0.72. El servicio de pagos usa requests para llamar a pasarelas externas. Un atacante podría redirigir peticiones a servicios internos. Versión corregida disponible: 2.31.0.",
+      "exploitability": "high",
+      "exposure": "internal, but processes external URLs",
+      "business_impact": "Acceso lateral a servicios internos desde payment-service.",
+      "fix_recommendation": "Actualizar requests a >=2.31.0",
+      "fix_complexity": "trivial",
+      "estimated_hours": 0.5,
+      "assigned_team": "payments"
+    }
+  ],
+  "planned_action": [
+    {
+      "finding_id": "CONT-008",
+      "title": "Imagen base python:3.11 con 12 CVEs conocidas",
+      "service": "worker-service",
+      "priority_score": 55,
+      "reasoning": "Las CVEs afectan a librerías del sistema que worker-service no utiliza directamente. Ninguna tiene exploit público. Migrar a python:3.11-slim reduce la superficie.",
+      "fix_recommendation": "Cambiar base image a python:3.11-slim-bookworm",
+      "fix_complexity": "low",
+      "estimated_hours": 1,
+      "assigned_team": "platform"
+    }
+  ],
+  "backlog": [
+    {
+      "finding_id": "SAST-089",
+      "title": "Uso de MD5 para hash de cache keys",
+      "service": "internal-logger",
+      "priority_score": 18,
+      "reasoning": "MD5 se usa para generar claves de caché, no para seguridad criptográfica. El servicio es interno y no procesa datos sensibles. Riesgo real: ninguno.",
+      "fix_recommendation": "Reemplazar con hashlib.sha256 cuando se refactorice el módulo",
+      "fix_complexity": "trivial",
+      "estimated_hours": 0.25,
+      "assigned_team": "platform"
+    }
+  ],
+  "systemic_issues": [
+    {
+      "pattern": "requests library outdated across 6 services",
+      "affected_services": ["api-gateway", "payment-service", "auth-service", "worker-service", "notification-service", "report-service"],
+      "recommendation": "Actualización coordinada de requests en todos los servicios. Considerar dependabot o renovate para automatizar actualizaciones futuras.",
+      "single_fix": true
+    }
+  ],
+  "summary": "De 247 hallazgos: 12 requieren acción inmediata, 34 acción planificada, 201 van a backlog. Se detectó 1 problema sistémico (dependencia requests desactualizada en 6 servicios). Tiempo estimado de remediación para acciones inmediatas: 22 horas-persona."
+}

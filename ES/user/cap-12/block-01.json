@@ -1,0 +1,23 @@
+# Extraído de: LibroUsuario/cap-12-calendario-y-tareas.md
+{
+  "mcpServers": {
+    "gmail": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-gmail"],
+      "env": {
+        "GMAIL_CLIENT_ID": "<tu-client-id>",
+        "GMAIL_CLIENT_SECRET": "<tu-client-secret>",
+        "GMAIL_REDIRECT_URI": "http://localhost:3000/callback"
+      }
+    },
+    "google-calendar": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-google-calendar"],
+      "env": {
+        "GOOGLE_CLIENT_ID": "<tu-client-id>",
+        "GOOGLE_CLIENT_SECRET": "<tu-client-secret>",
+        "GOOGLE_REDIRECT_URI": "http://localhost:3000/callback"
+      }
+    }
+  }
+}

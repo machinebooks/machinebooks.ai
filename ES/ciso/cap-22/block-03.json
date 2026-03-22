@@ -1,0 +1,69 @@
+# Extraído de: LibroCISO/cap-22-observabilidad-siem.md
+{
+  "dashboard": {
+    "title": "GRC Platform - Compliance Overview",
+    "panels": [
+      {
+        "title": "Latencia API por endpoint (p95)",
+        "type": "timeseries",
+        "targets": [{
+          "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job='grc-backend'}[5m]))",
+          "legendFormat": "{{handler}}"
+        }],
+        "description": "Evidencia op.mon del ENS: monitorización del rendimiento"
+      },
+      {
+        "title": "Llamadas a LLM por proveedor/modelo",
+        "type": "stat",
+        "targets": [{
+          "expr": "sum(rate(grc_llm_requests_total[1h])) by (provider, model)",
+          "legendFormat": "{{provider}}/{{model}}"
+        }],
+        "description": "Evidencia AI Act Art. 12: registro de uso de sistemas IA"
+      },
+      {
+        "title": "Latencia LLM (p95)",
+        "type": "gauge",
+        "targets": [{
+          "expr": "histogram_quantile(0.95, rate(grc_llm_latency_seconds_bucket[5m]))",
+          "legendFormat": "{{provider}}/{{model}}"
+        }],
+        "thresholds": [
+          {"value": 5, "color": "green"},
+          {"value": 15, "color": "orange"},
+          {"value": 30, "color": "red"}
+        ]
+      },
+      {
+        "title": "Tokens consumidos (última hora)",
+        "type": "stat",
+        "targets": [{
+          "expr": "sum(increase(grc_llm_tokens_total[1h])) by (provider, direction)",
+          "legendFormat": "{{provider}} {{direction}}"
+        }],
+        "description": "Seguimiento de consumo para gobernanza de costes IA"
+      },
+      {
+        "title": "Tareas Celery activas por cola",
+        "type": "bargauge",
+        "targets": [{
+          "expr": "grc_celery_tasks_active",
+          "legendFormat": "{{queue}}"
+        }]
+      },
+      {
+        "title": "Errores HTTP 5xx (últimas 24h)",
+        "type": "stat",
+        "targets": [{
+          "expr": "sum(increase(http_requests_total{status=~'5..'}[24h]))",
+          "legendFormat": "5xx totales"
+        }],
+        "thresholds": [
+          {"value": 0, "color": "green"},
+          {"value": 10, "color": "orange"},
+          {"value": 50, "color": "red"}
+        ]
+      }
+    ]
+  }
+}

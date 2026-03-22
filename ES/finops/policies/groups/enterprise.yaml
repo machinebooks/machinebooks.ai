@@ -1,0 +1,22 @@
+# Extraído de: LibroFinOps/cap-20-policy-as-code.md
+# policies/groups/enterprise.yaml
+# Grupo de política para clientes enterprise
+# Los tenants de este grupo heredan de aquí, no de global
+
+group_id: "enterprise"
+inherits: "global"
+
+# Configuración común a todos los tenants enterprise
+budgets:
+  monthly_total_eur: 300.0        # presupuesto más alto
+  alert_threshold: 0.85           # alerta más tardía
+  action_at_limit: alert_only     # solo alertar, no bloquear
+
+model_routing:
+  rules:
+    - task_type: "*"              # acceso a modelos más avanzados
+      model: "claude-opus-4-6"
+      max_output_tokens: 6000
+
+throttling:
+  requests_per_minute_per_user: 20  # más tolerante

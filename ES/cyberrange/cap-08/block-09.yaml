@@ -1,0 +1,49 @@
+# Extraído de: LibroCyberrange/cap-08-workzones.md
+# Ejemplo didáctico: templates/workzone-redblue.yaml
+
+workzone_template:
+  name: "Red vs Blue - Estándar"
+  description: "Plantilla para ejercicios red team vs blue team"
+
+  resources:
+    cpu_limit: 24
+    memory_limit_mb: 32768     # 32 GB
+    storage_limit_gb: 300
+    max_vms: 8
+
+  network:
+    vlan_range: [100, 999]     # Rango de VLANs disponibles
+    subnet_mask: 24            # /24 por defecto
+    internet_enabled: false    # Sin internet por defecto
+    dhcp_enabled: true
+
+  lifecycle:
+    mode: "cyberrange"
+    default_ttl_hours: 8
+    max_ttl_hours: 48          # Máximo extendible
+    auto_cleanup: true
+    warning_before_expiry_min: 30
+
+  pfsense:
+    template_vmid: 9000        # Template de pfSense en Proxmox
+    min_ram_mb: 512
+    min_cpu: 1
+
+  default_vms:
+    - name: "attacker"
+      template: "kali-2024"
+      cpu: 2
+      ram_mb: 4096
+      network: "attack_net"
+
+    - name: "defender"
+      template: "ubuntu-soc"
+      cpu: 2
+      ram_mb: 2048
+      network: "defense_net"
+
+    - name: "target"
+      template: "dvwa-latest"
+      cpu: 2
+      ram_mb: 2048
+      network: "dmz"

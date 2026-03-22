@@ -1,0 +1,4 @@
+# Extraído de: LibroPQC/cap-21-docker.md
+volumes:
+  - ./frontend:/app
+  - /app/node_modules              # Excluir node_modules del mount

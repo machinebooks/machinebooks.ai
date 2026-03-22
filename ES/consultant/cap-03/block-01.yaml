@@ -1,0 +1,19 @@
+# Extraído de: LibroConsultor/cap-03-consultor-potenciado.md
+# .claude/commands/quick-analysis.md
+# Propósito: análisis rápido de un documento del cliente
+
+Analiza el documento proporcionado y genera un resumen ejecutivo
+con hallazgos estructurados.
+
+## Instrucciones
+
+1. Lee el documento completo.
+2. Identifica: tipo de documento, autor, fecha, alcance.
+3. Extrae los puntos clave en máximo 10 bullets.
+4. Señala inconsistencias internas o ambigüedades.
+5. Cruza con frameworks normativos relevantes si aplica.
+6. Genera preguntas que el consultor debería hacer al cliente.
+7. Estima esfuerzo de trabajo derivado (horas-consultor).
+
+## Formato
+Resumen ejecutivo de 1 página + hallazgos detallados + preguntas.

@@ -1,0 +1,45 @@
+# Extraído de: LibroTecnico/cap-21-cicd.md
+# .github/workflows/ci.yml
+# Flujo de integración continua: lint, type-check y tests
+
+name: Integración Continua
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  lint-backend:
+    name: Análisis estático backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"  # Cachear dependencias pip entre ejecuciones
+
+      - name: Instalar dependencias de análisis
+        run: |
+          pip install flake8 flake8-bugbear flake8-docstrings
+          pip install bandit  # Análisis de seguridad estático
+
+      - name: Ejecutar flake8
+        run: |
+          # Excluir migraciones Alembic (generadas automáticamente)
+          flake8 backend/ --exclude=database/migrations/ \
+            --max-line-length=120 \
+            --extend-ignore=E203,W503
+
+      - name: Ejecutar análisis de seguridad
+        run: |
+          # bandit detecta patrones de seguridad comunes: secretos hardcodeados,
+          # uso inseguro de subprocess, deserialización peligrosa
+          bandit -r backend/ -ll --exclude=backend/tests/ -q
+

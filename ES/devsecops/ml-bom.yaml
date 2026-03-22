@@ -1,0 +1,63 @@
+# Extraído de: LibroDevSecOps/cap-14-supply-chain-modelos.md
+# ml-bom.yaml — Inventario de modelos desplegados
+version: "1.0"
+generated: "2026-03-29T10:00:00Z"
+pipeline: "DevSecOps Pipeline v2.4"
+
+models:
+  - id: "embeddings-gte-large"
+    name: "gte-large-en-v1.5"
+    source: "huggingface:Alibaba-NLP/gte-large-en-v1.5"
+    version: "main@abc1234"
+    format: "safetensors"
+    risk_level: "safe"
+    sha256: "a1b2c3d4e5f6..."
+    size_mb: 1340
+    deployment: "kubernetes/ml-embeddings"
+    verified_date: "2026-03-15"
+    verified_by: "model-validation-pipeline"
+    model_card_reviewed: true
+    license: "Apache-2.0"
+    use_case: "Embeddings para RAG de documentación"
+
+  - id: "claude-sonnet-api"
+    name: "claude-sonnet-4-6"
+    source: "api:anthropic"
+    version: "claude-sonnet-4-6-20250514"
+    format: "api"
+    risk_level: "provider-managed"
+    deployment: "api-gateway/claude-proxy"
+    verified_date: "2026-03-01"
+    verified_by: "api-contract-review"
+    model_card_reviewed: true
+    license: "Commercial API"
+    use_case: "Triaje, code review, remediación"
+
+  - id: "ocr-trocr-base"
+    name: "trocr-base-handwritten"
+    source: "huggingface:microsoft/trocr-base-handwritten"
+    version: "main@def5678"
+    format: "pytorch_model.bin"
+    risk_level: "high"
+    sha256: "f7e8d9c0b1a2..."
+    size_mb: 892
+    deployment: "kubernetes/ocr-service"
+    verified_date: "2026-02-20"
+    verified_by: "model-validation-pipeline"
+    model_card_reviewed: true
+    license: "MIT"
+    use_case: "OCR de formularios escaneados"
+    notes: "Formato pickle — migración a SafeTensors pendiente"
+
+policy:
+  max_age_days: 90           # Modelo sin reverificar > 90 días: alerta
+  allowed_formats:
+    - safetensors
+    - onnx
+    - api
+  blocked_formats:
+    - pickle
+    - joblib
+  require_model_card: true
+  require_hash_verification: true
+  require_license_review: true

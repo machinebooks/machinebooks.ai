@@ -1,0 +1,139 @@
+# Source: The DevSecOps and the Machine -- Chapter 18
+# Pattern: Falco rules for containers and AI workloads
+
+# falco/rules/container-shells.yaml
+- rule: Shell interactivo en contenedor de producción
+  desc: >
+    Detecta la ejecución de bash, sh, zsh u otros shells
+    interactivos dentro de un contenedor que no es de debugging.
+    Un shell interactivo en producción es un indicador fuerte
+    de compromiso o de práctica operativa insegura.
+  condition: >
+    spawned_process
+    and container
+    and container.image.repository != "busybox"
+    and not container.name startswith "debug-"
+    and proc.name in (bash, sh, zsh, csh, ksh, dash)
+    and proc.tty != 0
+  output: >
+    Shell interactivo detectado en contenedor de producción
+    (usuario=%user.name contenedor=%container.name
+    imagen=%container.image.repository
+    proceso=%proc.name pid=%proc.pid
+    terminal=%proc.tty comando=%proc.cmdline)
+  priority: WARNING
+  tags: [container, shell, mitre_execution]
+
+# falco/rules/filesystem-integrity.yaml
+- rule: Escritura en directorio de sistema desde contenedor
+  desc: >
+    Ningún contenedor de aplicación debería escribir en /bin,
+    /sbin, /usr/bin, /usr/sbin, /etc/passwd o /etc/shadow.
+    Este patrón indica instalación de backdoor o escalada de
+    privilegios.
+  condition: >
+    open_write
+    and container
+    and not user.name = "root"
+    and (fd.name startswith /bin/
+      or fd.name startswith /sbin/
+      or fd.name startswith /usr/bin/
+      or fd.name startswith /usr/sbin/
+      or fd.name = /etc/passwd
+      or fd.name = /etc/shadow)
+  output: >
+    Escritura en directorio de sistema desde contenedor
+    (usuario=%user.name contenedor=%container.name
+    fichero=%fd.name imagen=%container.image.repository)
+  priority: CRITICAL
+  tags: [container, filesystem, mitre_persistence]
+
+# falco/rules/network-anomaly.yaml
+- rule: Conexión saliente a puerto no estándar desde contenedor
+  desc: >
+    Detecta conexiones TCP salientes a puertos que no son
+    80, 443, 8080, 8443, 5432, 3306, 6379, 9200.
+    Puertos inesperados pueden indicar reverse shell,
+    C2 o exfiltración.
+  condition: >
+    outbound
+    and container
+    and not (fd.sport in (80, 443, 8080, 8443, 5432,
+             3306, 6379, 9200, 6333, 9090, 9091))
+    and evt.type = connect
+  output: >
+    Conexión saliente a puerto no estándar
+    (contenedor=%container.name imagen=%container.image.repository
+    destino=%fd.sip:%fd.sport protocolo=%fd.l4proto
+    proceso=%proc.name)
+  priority: WARNING
+  tags: [container, network, mitre_exfiltration]
+
+# falco/rules/ai-workload-abuse.yaml
+- rule: Ráfaga de conexiones al proveedor de LLM
+  desc: >
+    Un contenedor que realiza más de 50 conexiones HTTPS
+    al proveedor de modelos en un intervalo de 10 segundos
+    puede indicar abuso del endpoint de inferencia:
+    scraping de datos, ataque de denegación de servicio
+    económico (token flooding) o exfiltración.
+  condition: >
+    outbound
+    and container
+    and fd.sip in (api.anthropic.com)
+    and evt.type = connect
+    and container.name startswith "inference-"
+  output: >
+    Ráfaga de conexiones al proveedor LLM detectada
+    (contenedor=%container.name conexiones/intervalo=sospechoso
+    proceso=%proc.name destino=%fd.sip:%fd.sport)
+  priority: WARNING
+  tags: [ai_workload, token_abuse, mitre_impact]
+
+- list: llm_provider_domains
+  items: [api.anthropic.com, api.openai.com]
+
+# falco/rules/ai-vector-store.yaml
+- rule: Acceso al almacén de vectores desde contenedor no autorizado
+  desc: >
+    Solo los contenedores de inferencia y de indexación
+    deberían conectar al servicio de Qdrant (puerto 6333).
+    Un contenedor de API gateway o de frontend que accede
+    directamente al almacén vectorial es un indicador
+    de movimiento lateral o de exfiltración de datos RAG.
+  condition: >
+    outbound
+    and container
+    and fd.sport = 6333
+    and not container.name in (inference-service,
+         indexer-service, rag-worker)
+  output: >
+    Acceso al almacén vectorial desde contenedor no autorizado
+    (contenedor=%container.name imagen=%container.image.repository
+    destino=%fd.sip:%fd.sport proceso=%proc.name)
+  priority: CRITICAL
+  tags: [ai_workload, data_exfiltration, rag_security]
+
+# falco/rules/ai-agent-escape.yaml
+- rule: Ejecución de herramienta de sistema desde contenedor de agente
+  desc: >
+    Los contenedores de agentes Claude ejecutan Python y
+    las tools declaradas en su configuración. Si un proceso
+    de agente invoca curl, wget, nc, nmap o herramientas
+    de red, puede indicar que el agente ha sido manipulado
+    por prompt injection para ejecutar comandos no autorizados.
+  condition: >
+    spawned_process
+    and container
+    and container.name startswith "agent-"
+    and proc.name in (curl, wget, nc, ncat, nmap, dig,
+         host, ssh, scp, rsync, python3)
+    and not proc.pname = "supervisord"
+  output: >
+    Herramienta de sistema ejecutada desde contenedor de agente
+    (contenedor=%container.name herramienta=%proc.name
+    padre=%proc.pname cmdline=%proc.cmdline
+    usuario=%user.name)
+  priority: CRITICAL
+  tags: [ai_workload, agent_escape, prompt_injection,
+         mitre_execution]

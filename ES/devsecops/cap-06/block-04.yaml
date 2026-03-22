@@ -1,0 +1,40 @@
+# Extraído de: LibroDevSecOps/cap-06-secretos.md
+  claude-secret-analysis:
+    name: "Claude — análisis semántico de secretos"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Solo necesitamos el diff
+      - name: Generar diff de la PR
+        run: |
+          git diff ${{ github.event.pull_request.base.sha }}..HEAD > pr_diff.txt
+      - name: Analizar con Claude
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python scripts/claude_secret_scanner.py pr_diff.txt \
+            --output findings.json \
+            --min-confidence medium
+      - name: Publicar resultados como comentario
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const findings = JSON.parse(
+              fs.readFileSync('findings.json', 'utf8')
+            );
+            if (findings.length > 0) {
+              const body = findings.map(f =>
+                `**${f.confidence}** — \`${f.file}:${f.line}\`\n` +
+                `> ${f.reason}\n` +
+                `> Recomendación: ${f.recommendation}`
+              ).join('\n\n');
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: `## Análisis de secretos (Claude)\n\n${body}`
+              });
+            }

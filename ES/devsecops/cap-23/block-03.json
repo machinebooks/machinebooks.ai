@@ -1,0 +1,13 @@
+# Extraído de: LibroDevSecOps/cap-23-excepciones-deuda.md
+{
+  "risk_score": 35,
+  "exploitability_analysis": "CVE-2024-32004 requiere acceso a la red interna y un payload de deserialización específico. El servicio está protegido por mTLS y el API gateway rechaza payloads mayores de 256 KB, lo que limita los vectores de ataque conocidos para esta CVE.",
+  "compensating_controls": [
+    "Añadir regla WAF que bloquee payloads con firmas de deserialización Java conocidas",
+    "Configurar alerta en Falco para syscalls anómalas del proceso del servicio afectado",
+    "Limitar el TTL de las sesiones del servicio a 15 minutos para reducir la ventana de explotación post-compromiso"
+  ],
+  "recommendation": "approve_with_controls",
+  "suggested_expiry_days": 60,
+  "reasoning": "El riesgo residual es bajo dado el aislamiento de red y la autenticación mTLS. Los controles compensatorios sugeridos reducen la probabilidad de explotación y mejoran la detección en caso de intento. Se recomienda un plazo de 60 días, coincidente con la próxima ventana de actualización de dependencias del servicio."
+}

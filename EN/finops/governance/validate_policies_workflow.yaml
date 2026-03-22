@@ -1,0 +1,69 @@
+# Source: The FinOps Engineer and the Machine -- Chapter 20
+# Pattern: GitHub Actions workflow for policy validation
+
+# .github/workflows/validate-policies.yml
+name: Validate and deploy FinOps policies
+
+on:
+  pull_request:
+    paths: ["policies/**"]
+  push:
+    branches: [main]
+    paths: ["policies/**"]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2   # to compare with the previous commit
+
+      - name: Validate YAML syntax
+        run: |
+          python scripts/validate_yaml_schema.py policies/
+
+      - name: Detect budget changes >20%
+        id: budget_check
+        run: |
+          python scripts/check_budget_increases.py \
+            --old HEAD~1 \
+            --new HEAD \
+            --threshold 0.20
+
+      - name: Block if FinOps approval is missing
+        if: steps.budget_check.outputs.requires_approval == 'true'
+        run: |
+          echo "::error::This PR increases budgets >20%."
+          echo "Requires FinOps team approval."
+          exit 1
+
+      - name: Simulate cost impact
+        run: |
+          python scripts/simulate_policy_impact.py \
+            --policies policies/ \
+            --usage-data data/last_30_days.json
+
+  deploy-staging:
+    needs: validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync policies to staging
+        run: |
+          rsync -av policies/ ${{ secrets.STAGING_POLICIES_PATH }}/
+
+      - name: Verify application in staging (15 min)
+        run: |
+          python scripts/verify_policy_application.py \
+            --env staging --minutes 15
+
+  deploy-production:
+    needs: deploy-staging
+    environment: production    # requires manual approval in GitHub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync policies to production
+        run: |
+          rsync -av policies/ ${{ secrets.PROD_POLICIES_PATH }}/
+          echo "Policies deployed: $(date -u)" >> deployment.log

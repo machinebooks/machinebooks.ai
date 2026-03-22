@@ -1,0 +1,67 @@
+# Extraído de: LibroUsuario/cap-09-conectar-todo.md
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "C:\\Users\\TU_USUARIO\\Documents"
+      ]
+    },
+    "gmail": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-gmail"
+      ],
+      "env": {
+        "GMAIL_CREDENTIALS_PATH": "C:\\Users\\TU_USUARIO\\mcp-credentials\\gmail-credentials.json",
+        "GMAIL_TOKEN_PATH": "C:\\Users\\TU_USUARIO\\mcp-credentials\\gmail-token.json"
+      }
+    },
+    "google-drive": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-google-drive"
+      ],
+      "env": {
+        "GOOGLE_CREDENTIALS_PATH": "C:\\Users\\TU_USUARIO\\mcp-credentials\\gmail-credentials.json",
+        "GOOGLE_TOKEN_PATH": "C:\\Users\\TU_USUARIO\\mcp-credentials\\gdrive-token.json"
+      }
+    },
+    "slack": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-slack"
+      ],
+      "env": {
+        "SLACK_TOKEN": "xoxp-tu-token-aqui"
+      }
+    },
+    "github": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+        "GITHUB_TOKEN": "ghp_tu_token_personal_aqui"
+      }
+    },
+    "jira": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-jira"
+      ],
+      "env": {
+        "JIRA_URL": "https://tu-empresa.atlassian.net",
+        "JIRA_EMAIL": "tu.email@empresa.com",
+        "JIRA_API_TOKEN": "tu-token-api-aqui"
+      }
+    }
+  }
+}

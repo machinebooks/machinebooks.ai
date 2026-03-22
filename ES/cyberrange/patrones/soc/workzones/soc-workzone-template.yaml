@@ -1,0 +1,99 @@
+# Extraído de: LibroCyberrange/cap-21-entrenar-soc.md
+# Ejemplo didáctico: workzone SOC con herramientas reales
+# patrones/soc/workzones/soc-workzone-template.yaml
+
+workzone:
+  name: "soc-enterprise-medium"
+  description: "Workzone SOC con Elastic Security y Wazuh"
+
+  networks:
+    - name: "corporate"
+      vlan_id: 100
+      subnet: "10.100.0.0/24"
+      description: "Red corporativa simulada"
+    - name: "dmz"
+      vlan_id: 200
+      subnet: "10.200.0.0/24"
+      description: "DMZ con servicios expuestos"
+    - name: "soc"
+      vlan_id: 300
+      subnet: "10.300.0.0/24"
+      description: "Red del SOC (aislada)"
+    - name: "attacker"
+      vlan_id: 666
+      subnet: "172.16.0.0/24"
+      description: "Red del atacante (oculta al defensor)"
+
+  machines:
+    # --- Infraestructura SIEM ---
+    - name: "elk-node"
+      template: "ubuntu-22.04-elk"
+      network: "soc"
+      ip: "10.300.0.10"
+      resources:
+        vcpu: 4
+        ram_gb: 16
+        disk_gb: 100
+      provisioning:
+        ansible_playbook: "playbooks/deploy-elk-soc.yaml"
+        config:
+          elasticsearch_heap: "8g"
+          kibana_plugins:
+            - "securitySolution"
+          # Indices preconfigurados para el escenario
+          preload_indices:
+            - "filebeat-corporate"
+            - "winlogbeat-corporate"
+            - "packetbeat-dmz"
+
+    # --- EDR ---
+    - name: "wazuh-manager"
+      template: "ubuntu-22.04-wazuh"
+      network: "soc"
+      ip: "10.300.0.20"
+      resources:
+        vcpu: 2
+        ram_gb: 8
+        disk_gb: 50
+      provisioning:
+        ansible_playbook: "playbooks/deploy-wazuh-manager.yaml"
+
+    # --- Endpoints corporativos ---
+    - name: "dc01"
+      template: "windows-server-2022-ad"
+      network: "corporate"
+      ip: "10.100.0.10"
+      agents: ["wazuh", "sysmon"]
+
+    - name: "fs01"
+      template: "windows-server-2022-fs"
+      network: "corporate"
+      ip: "10.100.0.20"
+      agents: ["wazuh", "sysmon"]
+      data:
+        # Datos simulados sensibles para el escenario
+        nis2_regulated: true
+        sample_data: "financial-records-simulated"
+
+    - name: "ws-analyst"
+      template: "windows-11-soc-analyst"
+      network: "soc"
+      ip: "10.300.0.100"
+      description: "Estación del analista — acceso a SIEM/EDR"
+      agents: ["wazuh"]
+      # El analista accede a esta máquina via VNC en el navegador
+      vnc_enabled: true
+
+  # Generación de tráfico de fondo (ruido realista)
+  traffic_generation:
+    profile: "enterprise-500-users"
+    # Simula actividad normal: navegación, email,
+    # transferencias de ficheros, backups, actualizaciones
+    legitimate_events_per_minute: 200
+    noise_types:
+      - "web_browsing"
+      - "email_exchange"
+      - "file_transfers"
+      - "software_updates"
+      - "backup_jobs"
+      - "admin_maintenance"

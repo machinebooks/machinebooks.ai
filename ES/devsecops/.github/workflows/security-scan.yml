@@ -1,0 +1,33 @@
+# Extraído de: LibroDevSecOps/cap-19-observabilidad-seguridad.md
+# .github/workflows/security-scan.yml (fragmento)
+jobs:
+  sast:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Semgrep
+        run: semgrep --config auto --json -o semgrep-results.json .
+      - name: Report metrics
+        run: |
+          curl -X POST http://security-metrics:9110/ingest \
+            -H "Content-Type: application/json" \
+            -d @semgrep-results.json \
+            --data-urlencode "tool=semgrep" \
+            --data-urlencode "stage=commit" \
+            --data-urlencode "service=${{ github.event.repository.name }}"
+
+  sca:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate SBOM
+        run: syft . -o cyclonedx-json > sbom.json
+      - name: Scan vulnerabilities
+        run: grype sbom:sbom.json -o json > grype-results.json
+      - name: Report metrics
+        run: |
+          curl -X POST http://security-metrics:9110/ingest \
+            -H "Content-Type: application/json" \
+            -d @grype-results.json \
+            --data-urlencode "tool=grype" \
+            --data-urlencode "stage=build"

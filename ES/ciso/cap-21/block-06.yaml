@@ -1,0 +1,129 @@
+# Extraído de: LibroCISO/cap-21-celery-async.md
+services:
+  # Worker para tareas de IA — más memoria, timeouts largos
+  worker-ai:
+    build: ./backend
+    command: >
+      celery -A app.celery_app worker
+      --queues=ai
+      --concurrency=2
+      --max-tasks-per-child=50
+      --loglevel=info
+      --hostname=worker-ai@%h
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - DATABASE_URL=mysql+pymysql://grc_user:***@mysql:3306/grc_db
+    deploy:
+      resources:
+        limits:
+          memory: 2G  # IA necesita más RAM para prompts largos
+    depends_on:
+      - redis
+      - mysql
+    networks:
+      - backend-net
+    restart: unless-stopped
+
+  # Worker para emails — ligero, rápido
+  worker-email:
+    build: ./backend
+    command: >
+      celery -A app.celery_app worker
+      --queues=email
+      --concurrency=4
+      --max-tasks-per-child=200
+      --loglevel=info
+      --hostname=worker-email@%h
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    depends_on:
+      - redis
+      - mysql
+    networks:
+      - backend-net
+    restart: unless-stopped
+
+  # Worker para informes — memoria moderada
+  worker-reports:
+    build: ./backend
+    command: >
+      celery -A app.celery_app worker
+      --queues=reports
+      --concurrency=2
+      --max-tasks-per-child=20
+      --loglevel=info
+      --hostname=worker-reports@%h
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    depends_on:
+      - redis
+      - mysql
+    networks:
+      - backend-net
+    restart: unless-stopped
+
+  # Worker para mantenimiento y notificaciones — compartido
+  worker-ops:
+    build: ./backend
+    command: >
+      celery -A app.celery_app worker
+      --queues=maintenance,notifications
+      --concurrency=2
+      --max-tasks-per-child=100
+      --loglevel=info
+      --hostname=worker-ops@%h
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    depends_on:
+      - redis
+      - mysql
+    networks:
+      - backend-net
+    restart: unless-stopped
+
+  # Beat scheduler — un solo proceso, siempre
+  celery-beat:
+    build: ./backend
+    command: >
+      celery -A app.celery_app beat
+      --loglevel=info
+      --pidfile=/tmp/celerybeat.pid
+      --schedule=/var/run/celery/celerybeat-schedule
+    volumes:
+      - celerybeat-data:/var/run/celery
+    depends_on:
+      - redis
+    networks:
+      - backend-net
+    restart: unless-stopped
+
+  # Flower para monitorización (solo en desarrollo/staging)
+  flower:
+    build: ./backend
+    command: >
+      celery -A app.celery_app flower
+      --port=5555
+      --basic_auth=admin:${FLOWER_PASSWORD}
+      --persistent=True
+      --db=/var/flower/flower.db
+    ports:
+      - "5555:5555"
+    volumes:
+      - flower-data:/var/flower
+    depends_on:
+      - redis
+    networks:
+      - backend-net
+    restart: unless-stopped
+    profiles:
+      - monitoring  # Solo se arranca con --profile monitoring
+
+volumes:
+  celerybeat-data:
+  flower-data:

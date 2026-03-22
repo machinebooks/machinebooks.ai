@@ -1,0 +1,34 @@
+# Extraído de: LibroDevSecOps/cap-07-contenedores.md
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-image-registries
+spec:
+  validationFailureAction: Enforce
+  rules:
+    - name: validate-registries
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: "Solo se permiten imágenes de ghcr.io/org/"
+        pattern:
+          spec:
+            containers:
+              - image: "ghcr.io/org/*:*"
+    - name: deny-latest-tag
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: "El tag 'latest' no está permitido"
+        deny:
+          conditions:
+            any:
+              - key: "{{ request.object.spec.containers[].image }}"
+                operator: AnyIn
+                value: "*:latest"

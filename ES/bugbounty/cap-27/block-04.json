@@ -1,0 +1,7 @@
+# Extraído de: LibroBugBounty/cap-27-caso-whatsapp.md
+{"type":"ws_connect","url":"wss://web.whatsapp.com/ws/chat"}
+{"type":"ws_send","size":43}
+{"type":"ws_recv","size":350}
+{"type":"ws_send","size":379}
+{"type":"ws_recv","size":698}
+{"type":"fetch","url":"https://crashlogs.whatsapp.net/wa_fls_upload_check?type=crashlog&access_token=[REDACTED]"}

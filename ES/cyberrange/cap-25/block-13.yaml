@@ -1,0 +1,16 @@
+# Extraído de: LibroCyberrange/cap-25-despliegue-produccion.md
+# Ejemplo didáctico: patrones/docker/health-checks.yml
+db:
+  healthcheck:
+    test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+    interval: 10s       # Verificar cada 10 segundos
+    timeout: 5s         # Si no responde en 5 segundos, considerar fallo
+    retries: 5          # 5 fallos consecutivos = unhealthy
+    start_period: 30s   # No empezar a verificar hasta 30s después del arranque
+
+redis:
+  healthcheck:
+    test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+    interval: 10s
+    timeout: 5s
+    retries: 5

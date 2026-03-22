@@ -1,0 +1,72 @@
+# Extraído de: LibroFinOps/cap-09-cache-prompt-batch.md
+# celery_beat_schedule.yaml
+# Configuración de tareas periódicas para Celery Beat
+# Se carga al arrancar el worker: celery -A app beat --schedule=celery_beat_schedule
+
+beat_schedule:
+  # === VENTANA 1: Nightly (2:00-3:00 AM) — Análisis de documentos del día ===
+  process-nightly-batch:
+    task: tasks.batch_processing.process_nightly_batch
+    schedule:
+      crontab:
+        hour: 2
+        minute: 0
+    description: >
+      Envía al Batch API los documentos de licitación nuevos del día.
+      Coste medio: $2.40/noche (50 % descuento sobre $4.80 estandar).
+
+  poll-batch-results:
+    task: tasks.batch_processing.poll_all_pending_batches
+    schedule:
+      crontab:
+        minute: "*/30"   # cada 30 minutos, 24/7
+    description: >
+      Comprueba el estado de todos los batches en curso.
+      Coste: $0 (solo polling HTTP, sin llamadas LLM).
+
+  # === VENTANA 2: Weekly (lunes 3:00-4:00 AM) — Resumenes ejecutivos ===
+  weekly-summary-batch:
+    task: tasks.batch_processing.generate_weekly_summaries
+    schedule:
+      crontab:
+        hour: 3
+        minute: 0
+        day_of_week: 1  # lunes
+    description: >
+      Genera resúmenes de actividad semanal para todos los proyectos activos.
+      Coste medio: $1.80/semana (15-25 proyectos x sonnet batch).
+
+  weekly-cost-report:
+    task: tasks.reporting.generate_weekly_cost_report
+    schedule:
+      crontab:
+        hour: 3
+        minute: 30
+        day_of_week: 1  # lunes, 30 min después de los resúmenes
+    description: >
+      Informe FinOps semanal: gasto por servicio, tendencia, alertas.
+      No usa LLM — solo agrega datos del LLMUsageLog.
+
+  # === VENTANA 3: Monthly (día 1, 4:00-6:00 AM) — Re-indexación semántica ===
+  monthly-index-update:
+    task: tasks.batch_processing.update_semantic_index
+    schedule:
+      crontab:
+        hour: 4
+        minute: 0
+        day_of_month: 1
+    description: >
+      Re-indexa todos los documentos del índice semántico de Qdrant.
+      Tarea intensiva: 2.000-5.000 documentos. Coste medio: $8.50/mes
+      (con batch descuento 50 %). Sin batch seria $17.00.
+
+  monthly-budget-review:
+    task: tasks.reporting.generate_monthly_budget_review
+    schedule:
+      crontab:
+        hour: 5
+        minute: 0
+        day_of_month: 1
+    description: >
+      Informe mensual de presupuestos: utilización, tendencias, forecast.
+      Se envia al CFO y al responsable de IA.

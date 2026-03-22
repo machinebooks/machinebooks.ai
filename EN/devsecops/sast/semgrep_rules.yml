@@ -1,0 +1,26 @@
+# Source: The DevSecOps and the Machine -- Chapter 2
+# Pattern: Custom Semgrep rules (SQL injection, XSS, SSRF taint analysis)
+
+rules:
+  - id: python-sql-injection-format-string
+    patterns:
+      - pattern: |
+          $CURSOR.execute(f"...{$VAR}...")
+      - pattern-not: |
+          $CURSOR.execute(f"...{$CONST}...", ...)
+    message: >
+      Possible SQL injection: an f-string is used to build the query
+      passed to cursor.execute(). An attacker can manipulate the value of
+      the interpolated variable to alter the SQL query.
+      Use parameterized queries: cursor.execute("SELECT ... WHERE col = ?", (value,))
+    severity: ERROR
+    languages: [python]
+    metadata:
+      cwe:
+        - "CWE-89: Improper Neutralization of Special Elements used in an SQL Command"
+      owasp:
+        - "A03:2021 - Injection"
+      confidence: HIGH
+      impact: HIGH
+      references:
+        - https://owasp.org/Top10/A03_2021-Injection/

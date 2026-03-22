@@ -1,0 +1,45 @@
+# Extraído de: LibroDevSecOps/cap-26-caso-pipeline.md
+name: Security Pipeline
+on:
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  sast:
+    runs-on: ubuntu-latest
+    # ... (Semgrep, como antes)
+
+  sca:
+    runs-on: ubuntu-latest
+    # ... (Syft + Grype, como antes)
+
+  secrets:
+    runs-on: ubuntu-latest
+    # ... (Gitleaks, como antes)
+
+  containers:
+    runs-on: ubuntu-latest
+    # ... (Trivy, como antes)
+
+  triage:
+    needs: [sast, sca, secrets, containers]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar artefactos
+        uses: actions/download-artifact@v4
+      - name: Ejecutar agente de triaje
+        run: python scripts/triage_agent.py --input artifacts/
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      - name: Publicar resultado como comentario en PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('triage-report.md', 'utf8');
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: report
+            });

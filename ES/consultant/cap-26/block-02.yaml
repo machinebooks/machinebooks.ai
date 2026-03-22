@@ -1,0 +1,36 @@
+# Extraído de: LibroConsultor/cap-26-caso-seguridad.md
+# Briefing para entrevista - Responsable de Infraestructura
+# Generado automáticamente a partir de hallazgos Fases 1-2
+
+entrevistado: "Responsable de Infraestructura y Operaciones"
+fecha: "2025-11-12"
+duracion_estimada: "90 min"
+
+controles_a_verificar:
+  - id: "A.8.8"
+    nombre: "Management of technical vulnerabilities"
+    estado_documental: "parcial"
+    brecha_detectada: >
+      La política de gestión de vulnerabilidades existe pero
+      no documenta plazos de remediación diferenciados por
+      criticidad. Último escaneo registrado: hace 4 meses.
+    preguntas_sugeridas:
+      - "¿Con qué frecuencia ejecutan escaneos de vulnerabilidades?"
+      - "¿Existe un SLA interno para parchear vulnerabilidades críticas?"
+      - "¿Pueden mostrar el dashboard de estado actual de vulnerabilidades?"
+
+  - id: "A.8.9"
+    nombre: "Configuration management"
+    estado_documental: "no conforme"
+    brecha_detectada: >
+      No se encontró evidencia de gestión de configuración
+      centralizada. Los servidores usan configuraciones
+      manuales según entrevistas del ciclo anterior.
+    preguntas_sugeridas:
+      - "¿Han implementado alguna herramienta de gestión de configuración?"
+      - "¿Cómo garantizan que una configuración en producción no difiere del baseline?"
+
+notas_contextuales:
+  - "El equipo de infraestructura está en proceso de migración a Azure"
+  - "La auditoría anterior identificó esta área como no conforme"
+  - "Posible resistencia: el equipo fue crítico con los hallazgos previos"

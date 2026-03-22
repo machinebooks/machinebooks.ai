@@ -1,0 +1,66 @@
+# Extraído de: LibroDevSecOps/cap-14-supply-chain-modelos.md
+# .github/workflows/model-validation.yml
+name: Model Supply Chain Validation
+on:
+  push:
+    paths:
+      - 'models/**'
+      - 'ml-bom.yaml'
+  workflow_dispatch:
+    inputs:
+      model_repo:
+        description: 'Hugging Face repo ID'
+        required: true
+      model_file:
+        description: 'Nombre del fichero de pesos'
+        required: true
+
+jobs:
+  validate-model:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install huggingface-hub pyyaml anthropic
+
+      # Gate 1: Verificar formato ANTES de descargar
+      - name: Check format policy
+        run: |
+          python -c "
+          import yaml
+          bom = yaml.safe_load(open('ml-bom.yaml'))
+          blocked = set(bom['policy']['blocked_formats'])
+          for m in bom['models']:
+              fmt = m.get('format', 'unknown')
+              if fmt in blocked:
+                  print(f'BLOCKED: {m[\"id\"]} usa formato {fmt}')
+                  exit(1)
+          print('Format check passed')
+          "
+
+      # Gate 2: Verificar integridad (hash SHA-256)
+      - name: Verify model integrity
+        run: python scripts/verify_model_integrity.py
+
+      # Gate 3: Escanear formato de serialización
+      - name: Scan serialization format
+        run: python scripts/analyze_model_format.py
+
+      # Gate 4: Auditar ML-BOM completo
+      - name: Audit ML-BOM compliance
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python scripts/audit_ml_bom.py
+
+      # Gate 5: Generar informe y notificar
+      - name: Generate audit report
+        if: always()
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python scripts/generate_model_report.py

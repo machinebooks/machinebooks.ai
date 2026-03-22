@@ -1,0 +1,25 @@
+# Extraído de: LibroFinOps/cap-03-mapa-costes.md
+# config/cloud_costs.yaml (extracto: 5 servicios de los 17)
+# Para producción, este fichero se genera desde AWS Cost Explorer.
+
+monthly_costs:
+  "2025-03":
+    services:
+      ai-service:
+        type: compute
+        cost_eur: 360
+        notes: "Agentes Claude, mayor consumo de CPU/RAM"
+      db:
+        type: storage
+        cost_eur: 210
+        notes: "MySQL 8.0, 100 GB SSD"
+      qdrant:
+        type: storage
+        cost_eur: 180
+        notes: "Vector DB, SSD alta velocidad para latencia < 50 ms"
+      redis:
+        type: compute
+        cost_eur: 90
+      worker-llm:
+        type: compute
+        cost_eur: 180

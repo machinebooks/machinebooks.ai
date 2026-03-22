@@ -1,0 +1,23 @@
+# Extraído de: LibroFinOps/cap-20-policy-as-code.md
+# policies/quality.yaml
+# Política de calidad mínima de respuestas LLM
+
+quality_thresholds:
+  minimum_quality_score: 0.60
+  quality_degradation_window_hours: 24
+  quality_degradation_threshold: 0.50
+  action_on_degradation: switch_to_backup_provider
+
+# Política de detección de contenido sensible
+content_policies:
+  pii_detection:
+    enabled: true
+    patterns: ["dni", "credit_card", "iban", "passport"]
+    action: require_review_before_sending
+    log_detected_patterns: false   # no registrar datos por RGPD
+
+# Política de uso justo por usuario
+fair_use:
+  individual_user_daily_multiplier: 10.0
+  action_on_excess: throttle_until_tomorrow
+  notify_tenant_admin: true

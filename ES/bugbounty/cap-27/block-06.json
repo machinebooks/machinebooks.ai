@@ -1,0 +1,27 @@
+# Extraído de: LibroBugBounty/cap-27-caso-whatsapp.md
+{
+  "data_counts": {
+    "contacts": 835,
+    "chats": 139,
+    "messages": 283,
+    "groups": 12,
+    "signal_identity_keys": 264,
+    "signal_prekeys": 1624,
+    "signal_sessions": 4,
+    "signal_signed_prekey": 1,
+    "signal_meta": 8,
+    "device_list": 215,
+    "sync_keys": 10,
+    "profile_pics": 73,
+    "auth_tokens": 3,
+    "db_encryption_keys": 2,
+    "blocklist": 11,
+    "verified_businesses": 78,
+    "websocket_events": 504,
+    "media_cdn_urls": 28
+  },
+  "countries_detected": [
+    "ES (+34)", "UK (+44)", "US (+1)", "NL (+31)",
+    "FR (+33)", "CO (+57)", "UY (+598)", "PE (+51)"
+  ]
+}

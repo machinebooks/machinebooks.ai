@@ -1,0 +1,25 @@
+# Extraído de: LibroDevSecOps/cap-26-caso-pipeline.md
+# .github/workflows/security-sast.yml
+name: SAST Scan
+on:
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  semgrep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Semgrep scan
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/default
+            p/owasp-top-ten
+            p/python
+            p/typescript
+          generateSarif: true
+      - name: Upload SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep.sarif

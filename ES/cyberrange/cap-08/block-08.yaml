@@ -1,0 +1,44 @@
+# Extraído de: LibroCyberrange/cap-08-workzones.md
+# Salida del advisor para un ejercicio red vs blue
+cpu_limit: 16
+memory_limit_mb: 24576   # 24 GB
+storage_limit_gb: 200
+vm_count: 6
+vms:
+  - name: dc01
+    role: "Domain Controller (Windows Server 2022)"
+    cpu: 4
+    ram_mb: 4096
+    disk_gb: 40
+  - name: webserver
+    role: "Servidor web vulnerable (Linux)"
+    cpu: 2
+    ram_mb: 2048
+    disk_gb: 20
+  - name: siem
+    role: "Wazuh Manager (Linux)"
+    cpu: 4
+    ram_mb: 8192
+    disk_gb: 80
+  - name: attacker
+    role: "Kali Linux (red team)"
+    cpu: 2
+    ram_mb: 4096
+    disk_gb: 30
+  - name: defender
+    role: "SOC workstation (blue team)"
+    cpu: 2
+    ram_mb: 2048
+    disk_gb: 20
+  - name: pfsense
+    role: "Firewall de workzone"
+    cpu: 1
+    ram_mb: 512
+    disk_gb: 8
+reasoning: >
+  El DC requiere 4 GB mínimo para AD DS. El SIEM es el
+  componente más exigente en RAM por la indexación de logs.
+  Se incluye margen del 15% sobre el total para picos.
+internet_required: false
+estimated_duration_hours: 8
+recommended_ttl_hours: 12

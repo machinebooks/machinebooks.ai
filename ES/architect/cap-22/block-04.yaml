@@ -1,0 +1,24 @@
+# Extraído de: LibroTecnico/cap-22-observabilidad.md
+# Fragmento de docker-compose.yml — servicio Flower
+flower:
+  image: mher/flower:2.0
+  command: >
+    celery
+    --broker=redis://:${REDIS_PASSWORD}@redis:6379/0
+    flower
+    --port=5555
+    --basic_auth=${FLOWER_USER}:${FLOWER_PASSWORD}
+    --url_prefix=flower
+    --max_tasks=10000          # Historial en memoria
+    --persistent=True          # Persiste estado entre reinicios
+    --db=/data/flower.db
+  volumes:
+    - flower_data:/data
+  ports:
+    - "127.0.0.1:5555:5555"   # Acceso externo vía Nginx con autenticación, no directo
+  depends_on:
+    - redis
+  environment:
+    - CELERY_BROKER_URL=redis://:${REDIS_PASSWORD}@redis:6379/0
+    - CELERY_RESULT_BACKEND=redis://:${REDIS_PASSWORD}@redis:6379/0
+  restart: unless-stopped

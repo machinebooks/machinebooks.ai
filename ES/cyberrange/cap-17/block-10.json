@@ -1,0 +1,30 @@
+# Extraído de: LibroCyberrange/cap-17-generacion-escenarios-ia.md
+{
+  "title": "Behind the Filter",
+  "category": "web",
+  "difficulty": "medium",
+  "points": 300,
+  "description": "La API de CyberLab Corp tiene un endpoint de búsqueda que parece bien protegido. El WAF bloquea los payloads clásicos. Pero todo filtro tiene excepciones...",
+  "hints": [
+    {
+      "level": 1,
+      "text": "¿Has probado codificaciones alternativas para los caracteres bloqueados?",
+      "cost": 50
+    },
+    {
+      "level": 2,
+      "text": "El WAF no filtra comentarios inline de MySQL: /*!50000UNION*/",
+      "cost": 100
+    },
+    {
+      "level": 3,
+      "text": "Usa /*!50000UNION*/ /*!50000SELECT*/ con extractvalue() para exfiltrar datos sin SELECT directo",
+      "cost": 150
+    }
+  ],
+  "mitre_mapping": [
+    {"technique_id": "T1190", "name": "Exploit Public-Facing Application"}
+  ],
+  "solution_writeup": "El endpoint /api/search acepta un parámetro 'q' que se concatena en una query SQL...",
+  "flag_type": "dynamic"
+}

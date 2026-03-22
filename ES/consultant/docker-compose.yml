@@ -1,0 +1,18 @@
+# Extraído de: LibroConsultor/cap-04-rag-conocimiento.md
+# docker-compose.yml — RAG para consultoría
+version: "3.8"
+services:
+  qdrant:
+    image: qdrant/qdrant:v1.12.1
+    ports:
+      - "6333:6333"    # API REST
+      - "6334:6334"    # gRPC
+    volumes:
+      - qdrant_data:/qdrant/storage
+    environment:
+      QDRANT__SERVICE__GRPC_PORT: 6334
+    restart: unless-stopped
+
+volumes:
+  qdrant_data:
+    driver: local

@@ -1,0 +1,32 @@
+# Extraído de: LibroDevSecOps/cap-04-sast-inteligente.md
+rules:
+  - id: ssrf-requests-fastapi
+    mode: taint
+    pattern-sources:
+      - patterns:
+          - pattern: |
+              @app.$METHOD($PATH)
+              def $FUNC(..., $PARAM: $TYPE, ...):
+                  ...
+          - focus-metavariable: $PARAM
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: requests.get($URL, ...)
+              - pattern: requests.post($URL, ...)
+              - pattern: httpx.get($URL, ...)
+              - pattern: httpx.post($URL, ...)
+          - focus-metavariable: $URL
+    pattern-sanitizers:
+      - pattern: urllib.parse.urlparse(...)
+      - pattern: validate_url(...)
+    message: >
+      Posible SSRF: un parámetro de endpoint FastAPI se usa como
+      URL en una petición HTTP sin validación. Un atacante podría
+      acceder a servicios internos (metadata, bases de datos).
+    severity: ERROR
+    languages: [python]
+    metadata:
+      cwe: ["CWE-918"]
+      owasp: ["A10:2021"]
+      confidence: HIGH

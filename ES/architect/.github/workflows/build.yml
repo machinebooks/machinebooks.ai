@@ -1,0 +1,60 @@
+# Extraído de: LibroTecnico/cap-21-cicd.md
+# .github/workflows/build.yml
+# Construcción y publicación de imágenes Docker
+
+name: Construcción de imágenes
+
+on:
+  push:
+    branches: [main]
+
+env:
+  REGISTRY: ghcr.io  # GitHub Container Registry
+  IMAGE_PREFIX: ${{ github.repository_owner }}/plataforma
+
+jobs:
+  build-backend:
+    name: Construir imagen backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Autenticar en registro de contenedores
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}  # Token automático de GitHub Actions
+
+      - name: Extraer metadatos para la imagen
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-backend
+          tags: |
+            type=sha,prefix=,suffix=,format=short
+            type=ref,event=branch
+            latest
+
+      - name: Configurar caché de capas Docker
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-backend-${{ hashFiles('backend/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-backend-
+
+      - name: Construir y publicar imagen backend
+        uses: docker/build-push-action@v5
+        with:
+          context: backend/
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+          build-args: |
+            PYTHON_VERSION=3.11
+

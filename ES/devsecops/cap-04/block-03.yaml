@@ -1,0 +1,22 @@
+# Extraído de: LibroDevSecOps/cap-04-sast-inteligente.md
+rules:
+  - id: xss-react-dangerous-html
+    patterns:
+      - pattern: |
+          <$COMPONENT dangerouslySetInnerHTML={{__html: $EXPR}} />
+      - pattern-not-inside: |
+          const $EXPR = DOMPurify.sanitize(...)
+      - metavariable-pattern:
+          metavariable: $EXPR
+          pattern-not: |
+            "..."
+    message: >
+      XSS potencial: dangerouslySetInnerHTML recibe una expresión
+      que no ha sido sanitizada con DOMPurify. Solo es seguro si
+      el contenido es un literal de string o fue sanitizado previamente.
+    severity: WARNING
+    languages: [typescript, tsx]
+    metadata:
+      cwe: ["CWE-79"]
+      owasp: ["A03:2021"]
+      confidence: MEDIUM

@@ -1,0 +1,66 @@
+# Extraído de: LibroDevSecOps/cap-22-compliance-continuo.md
+# compliance-mappings/iso27001-2022.yaml
+framework: ISO27001
+version: "2022"
+mappings:
+  - control_id: "A.5.1"
+    title: "Políticas de seguridad de la información"
+    category: organizational
+    automation_level: partial
+    evidence_sources:
+      - type: policy_check
+        description: "Políticas OPA versionadas en Git"
+        artifact_pattern: "policies/*.rego"
+        check: "git log --since='6 months ago' -- policies/"
+    manual_evidence:
+      - "Acta de revisión por dirección"
+
+  - control_id: "A.8.9"
+    title: "Gestión de la configuración"
+    category: technical
+    automation_level: full
+    evidence_sources:
+      - type: sast_scan
+        description: "Escaneo Semgrep sin hallazgos críticos"
+        artifact_pattern: "reports/sast/*.json"
+        pass_criteria: "zero_critical_findings"
+      - type: container_scan
+        description: "Trivy sin CVEs críticas en imágenes"
+        artifact_pattern: "reports/trivy/*.json"
+        pass_criteria: "no_critical_cve"
+      - type: policy_check
+        description: "Políticas OPA de configuración aprobadas"
+        artifact_pattern: "reports/opa/*.json"
+        pass_criteria: "all_policies_pass"
+
+  - control_id: "A.8.25"
+    title: "Ciclo de vida de desarrollo seguro"
+    category: technical
+    automation_level: full
+    evidence_sources:
+      - type: ci_gate
+        description: "Pipeline con gates de seguridad activos"
+        artifact_pattern: "reports/pipeline-runs/*.json"
+        pass_criteria: "security_gates_enabled"
+      - type: code_review
+        description: "PR con revisión de seguridad aprobada"
+        artifact_pattern: "reports/reviews/*.json"
+        pass_criteria: "security_review_approved"
+      - type: sca_scan
+        description: "SCA sin dependencias con CVE crítica"
+        artifact_pattern: "reports/sca/*.json"
+        pass_criteria: "no_critical_dependencies"
+
+  - control_id: "A.8.28"
+    title: "Codificación segura"
+    category: technical
+    automation_level: full
+    evidence_sources:
+      - type: sast_scan
+        description: "Semgrep con reglas de codificación segura"
+        artifact_pattern: "reports/sast/*.json"
+        pass_criteria: "secure_coding_rules_pass"
+      - type: code_review
+        description: "Revisión de seguridad en PR"
+        artifact_pattern: "reports/reviews/*.json"
+        pass_criteria: "security_review_approved"

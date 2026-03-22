@@ -1,0 +1,71 @@
+# Extraído de: LibroCyberrange/cap-28-futuro-agentes-ia.md
+# Template de gemelo digital para despliegue automatizado
+# Ejemplo didáctico: templates/digital_twin.yaml
+
+digital_twin:
+  name: "twin-{{ organization_id }}"
+  source: "infrastructure_model"  # Generado por el agente de inventario
+
+  network_topology:
+    zones:
+      - name: "corporate_lan"
+        vlan_id: 110
+        subnet: "10.10.10.0/24"
+        firewall: "pfsense-twin-corp"
+      - name: "dmz"
+        vlan_id: 120
+        subnet: "10.10.20.0/24"
+        firewall: "pfsense-twin-dmz"
+      - name: "ot_network"
+        vlan_id: 130
+        subnet: "10.10.30.0/24"
+        firewall: "pfsense-twin-ot"
+        isolated: true  # Sin acceso a Internet simulado
+
+  hosts:
+    - template: "windows-server-2022-ad"
+      role: "domain_controller"
+      zone: "corporate_lan"
+      ip: "10.10.10.10"
+      # Vulnerabilidades inyectadas (equivalentes, no reales)
+      vulnerabilities:
+        - cwe: "CWE-269"  # Escalada de privilegios
+          technique: "T1078.002"  # Valid Accounts: Domain
+          difficulty: 3
+
+    - template: "ubuntu-22-web"
+      role: "web_server"
+      zone: "dmz"
+      ip: "10.10.20.10"
+      services:
+        - "nginx:1.24"
+        - "php:8.1"
+        - "mysql:8.0"
+      vulnerabilities:
+        - cwe: "CWE-89"  # SQL Injection
+          technique: "T1190"  # Exploit Public-Facing Application
+          difficulty: 2
+
+    - template: "windows-10-workstation"
+      role: "analyst_workstation"
+      zone: "corporate_lan"
+      count: 5  # 5 estaciones idénticas
+      ip_range: "10.10.10.50-54"
+
+  traffic_generation:
+    legitimate:
+      - type: "web_browsing"
+        sources: "analyst_workstation"
+        targets: "web_server"
+        intensity: "medium"  # Peticiones/minuto configurables
+      - type: "dns_queries"
+        pattern: "corporate_normal"
+      - type: "email_traffic"
+        pattern: "business_hours"
+
+  scoring:
+    objectives:
+      - "Detectar el movimiento lateral de DMZ a LAN corporativa"
+      - "Identificar la técnica de escalada de privilegios en el DC"
+      - "Contener el ataque antes de la exfiltración de datos"
+    time_limit_minutes: 120

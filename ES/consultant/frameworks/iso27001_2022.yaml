@@ -1,0 +1,34 @@
+# Extraído de: LibroConsultor/cap-13-gap-analysis.md
+# frameworks/iso27001_2022.yaml
+framework: ISO27001
+version: "2022"
+controls:
+  - id: "A.5.1"
+    title: "Políticas de seguridad de la información"
+    category: "Organizativas"
+    description: >
+      Se debe definir un conjunto de políticas de seguridad,
+      aprobadas por dirección, publicadas y comunicadas.
+    cross_references:
+      - "ENS:org.1"
+      - "NIS2:Art.21.2.a"
+
+  - id: "A.8.8"
+    title: "Gestión de vulnerabilidades técnicas"
+    category: "Tecnológicas"
+    description: >
+      Se deben obtener datos sobre vulnerabilidades técnicas,
+      evaluar la exposición y tomar medidas oportunas.
+    cross_references:
+      - "ENS:op.exp.4"
+      - "NIS2:Art.21.2.e"
+
+  - id: "A.5.31"
+    title: "Requisitos legales, estatutarios y contractuales"
+    category: "Organizativas"
+    description: >
+      Identificar y documentar los requisitos legales
+      y contractuales relevantes para la seguridad.
+    cross_references:
+      - "ENS:org.4"
+      - "AI_ACT:Art.9"
