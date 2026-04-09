@@ -1,0 +1,21 @@
+# Extraido de: LibroAISafety/cap-13-prompt-injection.md
+# Ejemplo de política de restricción de capacidades
+# para un agente que procesa documentos externos
+
+agent_policy:
+  cuando_procesa_datos_externos:
+    tool_use: desactivado        # No puede invocar herramientas
+    code_execution: desactivado  # No puede ejecutar código
+    output_format: solo_texto    # No puede generar JSON/YAML ejecutable
+    max_output_tokens: 2000      # Limita la longitud de la respuesta
+
+  cuando_responde_al_usuario_directo:
+    tool_use: restringido        # Solo herramientas autorizadas
+    code_execution: sandbox      # En entorno aislado
+    output_format: cualquiera
+    max_output_tokens: 8000
+
+  siempre:
+    logging: completo            # Registrar toda interacción
+    audit_trail: habilitado
+    human_in_the_loop: acciones_destructivas

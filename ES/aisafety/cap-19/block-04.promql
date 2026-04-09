@@ -1,0 +1,6 @@
+# Extraido de: LibroAISafety/cap-19-observabilidad.md
+topk(10,
+  sum by (user_id) (
+    increase(ai_security_injection_attempts_total[1h])
+  )
+)

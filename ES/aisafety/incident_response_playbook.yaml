@@ -1,0 +1,32 @@
+# Extraido de: LibroAISafety/cap-10-governance-operativa.md
+# incident_response_playbook.yaml — Playbook de respuesta a incidentes IA
+fase_contencion:
+  severidad_critica:
+    # El sistema genera contenido peligroso, filtra datos sensibles,
+    # o ejecuta acciones no autorizadas
+    acciones:
+      - "Desactivar el sistema inmediatamente"
+      - "Notificar al responsable de AI Safety y al CISO"
+      - "Preservar logs completos antes de cualquier cambio"
+      - "Notificar a las autoridades si aplica (RGPD 72h, NIS2 24h)"
+    tiempo_objetivo: "15 minutos"
+
+  severidad_alta:
+    # El modelo da respuestas incorrectas con frecuencia,
+    # los guardrails tienen una tasa anómala de activación
+    acciones:
+      - "Activar modo degradado (desactivar tool use)"
+      - "Reforzar guardrails con reglas temporales"
+      - "Notificar al responsable de AI Safety"
+      - "Iniciar investigación de causa raíz"
+    tiempo_objetivo: "1 hora"
+
+  severidad_media:
+    # Cambio detectado en el comportamiento del modelo,
+    # incremento en falsos positivos, degradación de calidad
+    acciones:
+      - "Documentar la anomalía con evidencia"
+      - "Verificar si el proveedor ha cambiado el modelo"
+      - "Ajustar umbrales de alerta si es necesario"
+      - "Programar revisión para las próximas 24 horas"
+    tiempo_objetivo: "4 horas"

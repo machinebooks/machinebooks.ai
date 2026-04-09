@@ -1,0 +1,27 @@
+# Extracted from: LibroAISafety/ch-14-infrastructure.md
+# mcp_security_policy.yaml — Security policy for MCP servers
+mcp_servers:
+  approval:
+    required: true
+    process: "The AI Safety Engineer evaluates the server before installation"
+    criteria:
+      - "Source code available and reviewable"
+      - "Identifiable author or organization"
+      - "Last update < 6 months"
+      - "No access to sensitive data without justification"
+
+  isolation:
+    network: "Each MCP server in its own network namespace"
+    filesystem: "Access only to declared and approved paths"
+    credentials: "Credentials managed by the client, not the server"
+
+  monitoring:
+    logging: "Record every tool invocation with parameters"
+    alerts:
+      - "Tool invoked with parameters containing sensitive paths"
+      - "Tool that sends data to undeclared endpoints"
+      - "Server that registers tools with colliding names"
+
+  revocation:
+    immediate: "The user can disconnect a server without restarting"
+    automatic: "Servers that generate alerts are automatically disconnected"

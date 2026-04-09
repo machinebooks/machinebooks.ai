@@ -1,0 +1,10 @@
+# Extraido de: LibroAISafety/cap-19-observabilidad.md
+# Percentil 95 de latencia para respuestas bloqueadas
+histogram_quantile(0.95,
+  rate(ai_security_generation_seconds_bucket{blocked="true"}[1h])
+)
+
+# Percentil 95 de latencia para respuestas normales
+histogram_quantile(0.95,
+  rate(ai_security_generation_seconds_bucket{blocked="false"}[1h])
+)

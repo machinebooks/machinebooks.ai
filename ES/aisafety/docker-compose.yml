@@ -1,0 +1,24 @@
+# Extraido de: LibroAISafety/cap-17-mcp-seguridad.md
+# docker-compose.yml — Servidor MCP con aislamiento
+services:
+  mcp-filesystem:
+    image: mcp-server-filesystem:verified-1.2.3
+    read_only: true            # Sistema de ficheros solo lectura
+    security_opt:
+      - no-new-privileges:true # Sin escalada de privilegios
+    cap_drop:
+      - ALL                    # Eliminar todas las capabilities
+    volumes:
+      - ./project:/workspace:ro  # Solo el directorio del proyecto, solo lectura
+      - /tmp/mcp-fs:/tmp         # Directorio temporal efímero
+    networks:
+      - mcp-isolated           # Red dedicada sin acceso a internet
+    deploy:
+      resources:
+        limits:
+          memory: 256M         # Límite de memoria
+          cpus: "0.5"          # Límite de CPU
+
+networks:
+  mcp-isolated:
+    internal: true             # Sin acceso a internet

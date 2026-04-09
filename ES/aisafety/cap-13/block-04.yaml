@@ -1,0 +1,16 @@
+# Extraido de: LibroAISafety/cap-13-prompt-injection.md
+# Política de sanitización inter-agente
+# Cada transición entre agentes valida el output
+pipeline:
+  agente_busqueda -> agente_analisis:
+    formato_esperado: json
+    campos_permitidos: ["titulo", "resumen", "url", "fecha"]
+    max_longitud_resumen: 500
+    sanitizar_html: true
+    strip_instrucciones: true  # Eliminar patrones de instrucción
+
+  agente_analisis -> agente_accion:
+    formato_esperado: json
+    campos_permitidos: ["accion", "parametros", "justificacion"]
+    acciones_permitidas: ["enviar_email", "crear_ticket"]
+    requiere_confirmacion_humana: true

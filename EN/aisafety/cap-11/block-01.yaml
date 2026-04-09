@@ -1,0 +1,23 @@
+# Extracted from: LibroAISafety/ch-11-red-teaming.md
+# Scoping template for AI red teaming
+engagement:
+  name: "RT-2026-04-ModelX"
+  system: "Customer service chatbot with RAG"
+  model: "claude-sonnet-4-6"
+  scope:
+    - model_via_api: true
+    - web_interface: true
+    - integrations: ["RAG_documents", "CRM_read"]
+    - tool_use: ["search_docs", "get_customer_info"]
+  categories:
+    - direct_prompt_injection: in_scope
+    - indirect_prompt_injection: in_scope  # via RAG documents
+    - jailbreaking: in_scope
+    - data_extraction: in_scope
+    - goal_hijacking: in_scope  # relevant due to tool use
+    - semantic_dos: out_of_scope
+  criteria:
+    minimum_reproducibility: 0.3  # 30% successful attempts
+    severity: "OWASP_LLM_Top10"
+  duration_days: 5
+  responsible_disclosure: true

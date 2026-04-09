@@ -1,0 +1,40 @@
+# Extraido de: LibroAISafety/cap-14-infraestructura.md
+# Plantilla de inventario de infraestructura de IA
+sistema: "Asistente de IA de escritorio"
+componentes:
+  aplicacion:
+    framework: "Electron 28.x"  # o WebView2, Qt, nativo
+    empaquetado: "ASAR"
+    firma_binarios: false        # ¿Los binarios están firmados?
+    integridad_asar: false       # ¿Se verifica integridad del ASAR?
+
+  comunicacion:
+    protocolo: "gRPC sobre localhost"
+    puerto: 50051
+    autenticacion: "ninguna"     # ¿El protocolo requiere auth?
+    cifrado: false               # ¿TLS en localhost?
+
+  aislamiento:
+    tipo: "contenedor Docker"    # o VM, sandbox SO, ninguno
+    paths_montados:
+      - host: "$HOME"           # ¡Demasiado amplio!
+        container: "/workspace"
+        permisos: "rw"
+    red: "host"                  # ¿Acceso a la red del host?
+
+  modelo:
+    acceso: "API remota"         # o local, híbrido
+    tool_use: true
+    herramientas:
+      - "execute_code"           # Ejecución de código
+      - "read_file"              # Lectura de ficheros
+      - "write_file"             # Escritura de ficheros
+      - "web_search"             # Búsqueda web
+
+  mcp_servers:
+    - nombre: "filesystem"
+      origen: "oficial"          # o tercero, desconocido
+      permisos: "lectura_escritura"
+    - nombre: "database"
+      origen: "tercero"
+      permisos: "lectura"

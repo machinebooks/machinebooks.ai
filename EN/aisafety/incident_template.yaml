@@ -1,0 +1,31 @@
+# Extracted from: LibroAISafety/ch-08-transparency.md
+# incident_template.yaml — AI incident registry template
+incident:
+  id: "AI-INC-2026-042"
+  system: "customer-support-assistant"
+  severity: "medium"
+  detected_by: "guardrail_output_filter"
+  timestamp: "2026-03-15T14:32:00Z"
+  
+  description: >
+    The system generated a response that included
+    internal pricing data not intended for the client.
+    The output filter detected the pattern and blocked
+    the response before delivery.
+    
+  root_cause: >
+    The RAG context included an internal pricing document
+    that should not have been indexed in the support
+    assistant's vector database.
+    
+  impact: "None — blocked by guardrail"
+  
+  actions_taken:
+    - "Removed pricing document from vector database"
+    - "Added exclusion rule for documents classified as 'internal-pricing'"
+    - "Review of all indexed documents (completed)"
+    
+  lessons_learned: >
+    The document indexing process did not validate
+    confidentiality classification. A mandatory
+    verification step has been added.

@@ -1,0 +1,30 @@
+# Extraido de: LibroAISafety/cap-22-arquitectura-segura.md
+# Prometheus alerting rules para seguridad de IA
+groups:
+  - name: ai_security
+    rules:
+      - alert: HighInjectionAttempts
+        expr: rate(ai_injection_blocked_total[5m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Tasa elevada de intentos de inyección bloqueados"
+
+      - alert: GuardrailBypassDetected
+        expr: ai_guardrail_bypass_total > 0
+        for: 0m    # alerta inmediata
+        labels:
+          severity: critical
+        annotations:
+          summary: "Bypass de guardrail detectado — revisar inmediatamente"
+
+      - alert: AnomalousToolUsage
+        expr: >
+          ai_tool_calls_total{tool="query_database"}
+          / ai_sessions_total > 15
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Uso anómalo de herramientas por sesión"

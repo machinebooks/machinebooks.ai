@@ -1,0 +1,33 @@
+# Extracted from: LibroAISafety/ch-23-safety-program.md
+# AI Safety program metrics dashboard
+# Implemented with Grafana on Prometheus metrics
+
+panels:
+  - title: "Evaluation coverage"
+    type: gauge
+    query: >
+      ai_systems_with_security_review
+      / ai_systems_total * 100
+    thresholds:
+      - value: 50
+        color: red
+      - value: 80
+        color: yellow
+      - value: 95
+        color: green
+
+  - title: "AI security incidents (last 30 days)"
+    type: stat
+    query: >
+      increase(ai_security_incidents_total[30d])
+
+  - title: "Mean time to containment"
+    type: stat
+    query: >
+      avg(ai_incident_containment_duration_hours)
+    unit: hours
+
+  - title: "Systems without evaluation (>90 days)"
+    type: table
+    query: >
+      ai_systems_info{last_review_days_ago > 90}

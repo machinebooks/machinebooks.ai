@@ -1,0 +1,21 @@
+# Extracted from: LibroAISafety/ch-13-prompt-injection.md
+# Example capability restriction policy
+# for an agent processing external documents
+
+agent_policy:
+  when_processing_external_data:
+    tool_use: disabled           # Cannot invoke tools
+    code_execution: disabled     # Cannot execute code
+    output_format: text_only     # Cannot generate executable JSON/YAML
+    max_output_tokens: 2000      # Limits response length
+
+  when_responding_to_direct_user:
+    tool_use: restricted         # Only authorized tools
+    code_execution: sandbox      # In isolated environment
+    output_format: any
+    max_output_tokens: 8000
+
+  always:
+    logging: complete            # Log every interaction
+    audit_trail: enabled
+    human_in_the_loop: destructive_actions

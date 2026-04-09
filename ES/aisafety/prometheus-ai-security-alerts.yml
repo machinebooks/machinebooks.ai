@@ -1,0 +1,64 @@
+# Extraido de: LibroAISafety/cap-19-observabilidad.md
+# prometheus-ai-security-alerts.yml
+groups:
+  - name: ai_security
+    rules:
+      # Alerta 1: Campaña de injection activa
+      - alert: AIInjectionCampaign
+        expr: |
+          sum(rate(ai_security_injection_attempts_total{
+            severity="high"}[10m])) > 0.5
+        for: 5m
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "Campaña de injection de alta severidad"
+          description: >
+            Más de 0.5 intentos/s de injection de alta severidad
+            durante 5 minutos. Verificar logs de seguridad
+            e iniciar protocolo de respuesta.
+
+      # Alerta 2: Fuga de PII
+      - alert: AIPIILeakage
+        expr: |
+          increase(ai_security_pii_detections_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "PII detectada en respuestas del modelo"
+          description: >
+            El modelo ha incluido datos personales en una respuesta.
+            Revisar el log de seguridad y evaluar el impacto.
+
+      # Alerta 3: System prompt modificado
+      - alert: AISystemPromptTampered
+        expr: |
+          changes(ai_security_system_prompt_info[5m]) > 0
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "System prompt modificado sin despliegue"
+          description: >
+            El hash del system prompt ha cambiado fuera de un
+            ciclo de despliegue autorizado. Posible manipulación.
+
+      # Alerta 4: Anomalía en uso de herramientas
+      - alert: AIToolAbuseDetected
+        expr: |
+          sum(rate(ai_security_tool_invocations_total{
+            result="blocked"}[10m]))
+          /
+          sum(rate(ai_security_tool_invocations_total[10m])) > 0.3
+        for: 5m
+        labels:
+          severity: warning
+          team: security
+        annotations:
+          summary: "Tasa anómala de herramientas bloqueadas"
+          description: >
+            Más del 30% de invocaciones de herramientas están
+            siendo bloqueadas. Posible intento de tool abuse.

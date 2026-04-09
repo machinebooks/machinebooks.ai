@@ -1,0 +1,41 @@
+# Extracted from: LibroAISafety/ch-15-sabotage-risks.md
+# Control policy for autonomous agents
+# Applicable to any agent framework
+
+agent_controls:
+  # Principle: autonomy proportional to reversibility
+  autonomous_actions:
+    - type: "read"
+      supervision: none
+      example: "query API, read file, search for information"
+
+    - type: "generation"
+      supervision: complete_log
+      example: "generate draft, create analysis, propose changes"
+
+    - type: "reversible_modification"
+      supervision: post_hoc_confirmation
+      example: "create branch, write temporary file"
+
+    - type: "irreversible_modification"
+      supervision: prior_human_confirmation
+      example: "send email, modify production DB, deploy"
+
+  operational_limits:
+    max_iterations_per_task: 50    # Prevent agent loops
+    max_tokens_per_task: 500000   # Cost limit
+    max_tools_per_step: 5         # Limit action breadth
+    timeout_minutes: 30           # Time limit
+
+  anomaly_detection:
+    - pattern: "repetitive_loop"
+      description: "The agent repeats the same action >3 times"
+      action: "pause_and_alert"
+
+    - pattern: "privilege_escalation"
+      description: "The agent requests unforeseen tools"
+      action: "block_and_alert"
+
+    - pattern: "goal_drift"
+      description: "Actions diverge from the original objective"
+      action: "pause_and_request_confirmation"

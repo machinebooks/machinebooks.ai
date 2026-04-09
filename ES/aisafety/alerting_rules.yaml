@@ -1,0 +1,68 @@
+# Extraido de: LibroAISafety/cap-10-governance-operativa.md
+# alerting_rules.yaml — Alertas de AI Safety para Grafana
+groups:
+  - name: ai_safety_alerts
+    rules:
+      - alert: GuardrailSpikeDetected
+        expr: >
+          rate(ai_guardrail_input_triggers_total[1h]) 
+          > 2 * avg_over_time(
+            rate(ai_guardrail_input_triggers_total[1h])[7d:1h]
+          )
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: >
+            Incremento anómalo en activación de guardrails
+            para {{ $labels.system }}
+          description: >
+            La tasa de activación de guardrails ha superado
+            el doble de la media de 7 días durante 15 minutos.
+            Investigar si hay un cambio en patrones de uso
+            o un ataque en curso.
+
+      - alert: SecurityEvalExpiring
+        expr: ai_eval_days_remaining < 7
+        for: 1h
+        labels:
+          severity: critical
+        annotations:
+          summary: >
+            Evaluación de seguridad a punto de expirar
+            para {{ $labels.system }}
+          description: >
+            La evaluación de seguridad expira en menos de
+            7 días. Programar evaluación actualizada.
+
+      - alert: ModelBehaviorShift
+        expr: >
+          abs(
+            ai_model_refusal_rate 
+            - avg_over_time(ai_model_refusal_rate[7d])
+          ) > 0.05
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: >
+            Cambio en tasa de rechazo del modelo
+            para {{ $labels.system }}
+          description: >
+            La tasa de rechazo ha cambiado más de 5 puntos
+            porcentuales respecto a la media de 7 días.
+            Posible cambio de versión del modelo por
+            el proveedor.
+
+      - alert: ComplianceViolation
+        expr: ai_compliance_status == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: >
+            Violación de política detectada
+            para {{ $labels.system }}
+          description: >
+            La regla {{ $labels.policy_rule }} no se cumple.
+            El sistema no es deployable hasta que se corrija.

@@ -1,0 +1,31 @@
+# Extraido de: LibroAISafety/cap-08-transparencia.md
+# incident_template.yaml — Plantilla de registro de incidentes IA
+incident:
+  id: "AI-INC-2026-042"
+  system: "asistente-soporte-cliente"
+  severity: "medium"
+  detected_by: "guardrail_output_filter"
+  timestamp: "2026-03-15T14:32:00Z"
+  
+  description: >
+    El sistema generó una respuesta que incluía
+    datos internos de pricing no destinados al cliente.
+    El filtro de output detectó el patrón y bloqueó
+    la respuesta antes de entregarla.
+    
+  root_cause: >
+    El contexto RAG incluyó un documento de pricing
+    interno que no debería estar indexado en la base
+    vectorial del asistente de soporte.
+    
+  impact: "Ninguno — bloqueado por guardrail"
+  
+  actions_taken:
+    - "Eliminado documento de pricing de la base vectorial"
+    - "Añadida regla de exclusión para documentos de clase 'internal-pricing'"
+    - "Revisión de todos los documentos indexados (completada)"
+    
+  lessons_learned: >
+    El proceso de indexación de documentos no validaba
+    la clasificación de confidencialidad. Se ha añadido
+    un paso de verificación obligatorio.

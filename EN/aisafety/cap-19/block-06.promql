@@ -1,0 +1,14 @@
+# Extracted from: LibroAISafety/ch-19-observability.md
+(
+  sum by (tool_name) (
+    rate(ai_security_tool_invocations_total[1h])
+  )
+  -
+  sum by (tool_name) (
+    rate(ai_security_tool_invocations_total[1h] offset 7d)
+  )
+)
+/
+sum by (tool_name) (
+  rate(ai_security_tool_invocations_total[1h] offset 7d)
+)

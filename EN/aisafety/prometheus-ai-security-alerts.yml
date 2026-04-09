@@ -1,0 +1,64 @@
+# Extracted from: LibroAISafety/ch-19-observability.md
+# prometheus-ai-security-alerts.yml
+groups:
+  - name: ai_security
+    rules:
+      # Alert 1: Active injection campaign
+      - alert: AIInjectionCampaign
+        expr: |
+          sum(rate(ai_security_injection_attempts_total{
+            severity="high"}[10m])) > 0.5
+        for: 5m
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "High-severity injection campaign"
+          description: >
+            More than 0.5 attempts/s of high-severity injection
+            for 5 minutes. Check security logs
+            and initiate response protocol.
+
+      # Alert 2: PII leakage
+      - alert: AIPIILeakage
+        expr: |
+          increase(ai_security_pii_detections_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "PII detected in model responses"
+          description: >
+            The model has included personal data in a response.
+            Review the security log and assess the impact.
+
+      # Alert 3: System prompt modified
+      - alert: AISystemPromptTampered
+        expr: |
+          changes(ai_security_system_prompt_info[5m]) > 0
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "System prompt modified without deployment"
+          description: >
+            The system prompt hash has changed outside of an
+            authorized deployment cycle. Possible manipulation.
+
+      # Alert 4: Tool usage anomaly
+      - alert: AIToolAbuseDetected
+        expr: |
+          sum(rate(ai_security_tool_invocations_total{
+            result="blocked"}[10m]))
+          /
+          sum(rate(ai_security_tool_invocations_total[10m])) > 0.3
+        for: 5m
+        labels:
+          severity: warning
+          team: security
+        annotations:
+          summary: "Anomalous blocked tool rate"
+          description: >
+            More than 30% of tool invocations are being
+            blocked. Possible tool abuse attempt.

@@ -1,0 +1,46 @@
+# Extraido de: LibroAISafety/cap-07-responsible-scaling.md
+# risk_levels.yaml — Clasificación interna de riesgo de sistemas IA
+levels:
+  tier_1:
+    name: "Bajo riesgo"
+    description: "IA asistiva sin acceso a datos sensibles ni capacidad de acción"
+    examples:
+      - "Chatbot de FAQ interno"
+      - "Clasificador de tickets de soporte"
+      - "Generador de borradores de email"
+    controls:
+      - "Filtros de contenido estándar del proveedor"
+      - "Logging de interacciones (sin PII)"
+      - "Revisión trimestral de uso"
+    approval: "Responsable de equipo"
+    
+  tier_2:
+    name: "Riesgo medio"
+    description: "IA con acceso a datos internos o capacidad de modificar sistemas"
+    examples:
+      - "Agente RAG sobre documentación confidencial"
+      - "Asistente de código con acceso a repositorios"
+      - "Analista de datos con acceso a BD de producción (lectura)"
+    controls:
+      - "Guardrails de input y output dedicados"
+      - "Auditoría mensual de interacciones"
+      - "Evaluación de prompt injection trimestral"
+      - "Control de acceso por rol"
+      - "PII detection en contexto"
+    approval: "CISO + Responsable de datos"
+    
+  tier_3:
+    name: "Alto riesgo"
+    description: "IA autónoma con capacidad de acción sobre sistemas críticos"
+    examples:
+      - "Agente que ejecuta cambios en infraestructura"
+      - "Sistema de aprobación automática de operaciones"
+      - "Agente con acceso a APIs externas de pago"
+    controls:
+      - "Todos los controles de Tier 2"
+      - "Human-in-the-loop obligatorio para acciones destructivas"
+      - "Red teaming antes de despliegue y semestral"
+      - "Monitorización continua con alertas en tiempo real"
+      - "Sandbox de ejecución con permisos mínimos"
+      - "Auditoría externa anual"
+    approval: "Comité de seguridad + Dirección"

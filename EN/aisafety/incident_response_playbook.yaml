@@ -1,0 +1,32 @@
+# Extracted from: LibroAISafety/ch-10-operational-governance.md
+# incident_response_playbook.yaml — AI incident response playbook
+containment_phase:
+  critical_severity:
+    # The system generates dangerous content, leaks sensitive data,
+    # or executes unauthorized actions
+    actions:
+      - "Deactivate the system immediately"
+      - "Notify the AI Safety lead and the CISO"
+      - "Preserve complete logs before any changes"
+      - "Notify authorities if applicable (GDPR 72h, NIS2 24h)"
+    target_time: "15 minutes"
+
+  high_severity:
+    # The model gives incorrect responses frequently,
+    # guardrails have an anomalous activation rate
+    actions:
+      - "Activate degraded mode (deactivate tool use)"
+      - "Reinforce guardrails with temporary rules"
+      - "Notify the AI Safety lead"
+      - "Initiate root cause investigation"
+    target_time: "1 hour"
+
+  medium_severity:
+    # Change detected in model behavior,
+    # increase in false positives, quality degradation
+    actions:
+      - "Document the anomaly with evidence"
+      - "Verify if the provider has changed the model"
+      - "Adjust alert thresholds if necessary"
+      - "Schedule review for the next 24 hours"
+    target_time: "4 hours"

@@ -1,0 +1,24 @@
+# Extraido de: LibroAISafety/cap-19-observabilidad.md
+{
+  "event_type": "ai_security_incident",
+  "timestamp": "2026-03-15T14:32:00Z",
+  "system_id": "asistente-soporte-v3",
+  "model": "claude-sonnet-4-6",
+  "model_version_hash": "sha256:a1b2c3...",
+  "system_prompt_hash": "sha256:d4e5f6...",
+  "incident": {
+    "category": "prompt_injection_success",
+    "severity": "high",
+    "user_id_hash": "sha256:789abc...",
+    "session_id": "sess-12345",
+    "detection_method": "guardrail_output",
+    "detection_latency_ms": 1200,
+    "impact": "respuesta_manipulada_entregada"
+  },
+  "context": {
+    "rag_documents_in_context": 3,
+    "tools_invoked": ["search_docs", "format_response"],
+    "guardrails_active": ["pii_filter", "injection_detector"],
+    "guardrails_triggered": ["injection_detector"]
+  }
+}

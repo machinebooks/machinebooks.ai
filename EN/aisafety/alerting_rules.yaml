@@ -1,0 +1,67 @@
+# Extracted from: LibroAISafety/ch-10-operational-governance.md
+# alerting_rules.yaml — AI Safety alerts for Grafana
+groups:
+  - name: ai_safety_alerts
+    rules:
+      - alert: GuardrailSpikeDetected
+        expr: >
+          rate(ai_guardrail_input_triggers_total[1h]) 
+          > 2 * avg_over_time(
+            rate(ai_guardrail_input_triggers_total[1h])[7d:1h]
+          )
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: >
+            Anomalous increase in guardrail activation
+            for {{ $labels.system }}
+          description: >
+            The guardrail activation rate has exceeded
+            twice the 7-day average for 15 minutes.
+            Investigate whether there is a change in usage
+            patterns or an ongoing attack.
+
+      - alert: SecurityEvalExpiring
+        expr: ai_eval_days_remaining < 7
+        for: 1h
+        labels:
+          severity: critical
+        annotations:
+          summary: >
+            Security evaluation about to expire
+            for {{ $labels.system }}
+          description: >
+            The security evaluation expires in less than
+            7 days. Schedule an updated evaluation.
+
+      - alert: ModelBehaviorShift
+        expr: >
+          abs(
+            ai_model_refusal_rate 
+            - avg_over_time(ai_model_refusal_rate[7d])
+          ) > 0.05
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: >
+            Change in model rejection rate
+            for {{ $labels.system }}
+          description: >
+            The rejection rate has changed more than 5
+            percentage points from the 7-day average.
+            Possible model version change by the provider.
+
+      - alert: ComplianceViolation
+        expr: ai_compliance_status == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: >
+            Policy violation detected
+            for {{ $labels.system }}
+          description: >
+            Rule {{ $labels.policy_rule }} is not met.
+            The system is not deployable until corrected.

@@ -1,0 +1,27 @@
+# Extraido de: LibroAISafety/cap-14-infraestructura.md
+# mcp_security_policy.yaml — Política de seguridad para servidores MCP
+servidores_mcp:
+  aprobacion:
+    requerida: true
+    proceso: "El AI Safety Engineer evalúa el servidor antes de la instalación"
+    criterios:
+      - "Código fuente disponible y revisable"
+      - "Autor o organización identificable"
+      - "Última actualización < 6 meses"
+      - "Sin acceso a datos sensibles sin justificación"
+
+  aislamiento:
+    red: "Cada servidor MCP en su propio namespace de red"
+    filesystem: "Acceso solo a los paths declarados y aprobados"
+    credenciales: "Credenciales gestionadas por el cliente, no por el servidor"
+
+  monitorizacion:
+    logging: "Registrar toda invocación de herramienta con parámetros"
+    alertas:
+      - "Herramienta invocada con parámetros que contienen paths sensibles"
+      - "Herramienta que envía datos a endpoints no declarados"
+      - "Servidor que registra herramientas con nombres que colisionan"
+
+  revocacion:
+    inmediata: "El usuario puede desconectar un servidor sin reiniciar"
+    automatica: "Servidores que generan alertas se desconectan automáticamente"

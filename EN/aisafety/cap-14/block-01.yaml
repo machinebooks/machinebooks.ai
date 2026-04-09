@@ -1,0 +1,40 @@
+# Extracted from: LibroAISafety/ch-14-infrastructure.md
+# AI infrastructure inventory template
+system: "AI desktop assistant"
+components:
+  application:
+    framework: "Electron 28.x"  # or WebView2, Qt, native
+    packaging: "ASAR"
+    binary_signing: false        # Are binaries signed?
+    asar_integrity: false        # Is ASAR integrity verified?
+
+  communication:
+    protocol: "gRPC over localhost"
+    port: 50051
+    authentication: "none"       # Does the protocol require auth?
+    encryption: false            # TLS on localhost?
+
+  isolation:
+    type: "Docker container"     # or VM, OS sandbox, none
+    mounted_paths:
+      - host: "$HOME"           # Too broad!
+        container: "/workspace"
+        permissions: "rw"
+    network: "host"              # Access to host network?
+
+  model:
+    access: "Remote API"         # or local, hybrid
+    tool_use: true
+    tools:
+      - "execute_code"           # Code execution
+      - "read_file"              # File reading
+      - "write_file"             # File writing
+      - "web_search"             # Web search
+
+  mcp_servers:
+    - name: "filesystem"
+      origin: "official"         # or third_party, unknown
+      permissions: "read_write"
+    - name: "database"
+      origin: "third_party"
+      permissions: "read"

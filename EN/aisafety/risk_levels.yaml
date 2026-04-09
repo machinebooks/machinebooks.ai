@@ -1,0 +1,46 @@
+# Extracted from: LibroAISafety/ch-07-responsible-scaling.md
+# risk_levels.yaml — Internal risk classification for AI systems
+levels:
+  tier_1:
+    name: "Low risk"
+    description: "Assistive AI without access to sensitive data or action capability"
+    examples:
+      - "Internal FAQ chatbot"
+      - "Support ticket classifier"
+      - "Email draft generator"
+    controls:
+      - "Provider's standard content filters"
+      - "Interaction logging (without PII)"
+      - "Quarterly usage review"
+    approval: "Team lead"
+    
+  tier_2:
+    name: "Medium risk"
+    description: "AI with access to internal data or ability to modify systems"
+    examples:
+      - "RAG agent on confidential documentation"
+      - "Code assistant with repository access"
+      - "Data analyst with production DB access (read)"
+    controls:
+      - "Dedicated input and output guardrails"
+      - "Monthly interaction audit"
+      - "Quarterly prompt injection evaluation"
+      - "Role-based access control"
+      - "PII detection in context"
+    approval: "CISO + Data owner"
+    
+  tier_3:
+    name: "High risk"
+    description: "Autonomous AI with action capability on critical systems"
+    examples:
+      - "Agent executing infrastructure changes"
+      - "Automatic operation approval system"
+      - "Agent with access to external payment APIs"
+    controls:
+      - "All Tier 2 controls"
+      - "Mandatory human-in-the-loop for destructive actions"
+      - "Red teaming before deployment and semi-annually"
+      - "Continuous monitoring with real-time alerts"
+      - "Execution sandbox with minimal permissions"
+      - "Annual external audit"
+    approval: "Security committee + Executive leadership"

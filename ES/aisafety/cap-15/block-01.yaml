@@ -1,0 +1,41 @@
+# Extraido de: LibroAISafety/cap-15-sabotaje-riesgos.md
+# Política de controles para agentes autónomos
+# Aplicable a cualquier framework de agentes
+
+agent_controls:
+  # Principio: autonomía proporcional a reversibilidad
+  acciones_autonomas:
+    - tipo: "lectura"
+      supervision: ninguna
+      ejemplo: "consultar API, leer fichero, buscar información"
+
+    - tipo: "generacion"
+      supervision: log_completo
+      ejemplo: "generar borrador, crear análisis, proponer cambios"
+
+    - tipo: "modificacion_reversible"
+      supervision: confirmacion_post_hoc
+      ejemplo: "crear branch, escribir fichero temporal"
+
+    - tipo: "modificacion_irreversible"
+      supervision: confirmacion_previa_humana
+      ejemplo: "enviar email, modificar BD producción, desplegar"
+
+  limites_operativos:
+    max_iteraciones_por_tarea: 50    # Prevenir agent loops
+    max_tokens_por_tarea: 500000     # Límite de coste
+    max_herramientas_por_paso: 5     # Limitar la amplitud de acciones
+    timeout_minutos: 30              # Límite temporal
+
+  deteccion_anomalias:
+    - patron: "bucle_repetitivo"
+      descripcion: "El agente repite la misma acción >3 veces"
+      accion: "pausar_y_alertar"
+
+    - patron: "escalada_privilegios"
+      descripcion: "El agente solicita herramientas no previstas"
+      accion: "bloquear_y_alertar"
+
+    - patron: "goal_drift"
+      descripcion: "Las acciones divergen del objetivo original"
+      accion: "pausar_y_solicitar_confirmacion"

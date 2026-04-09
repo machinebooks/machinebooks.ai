@@ -1,0 +1,62 @@
+# Extraido de: LibroAISafety/cap-09-regulacion.md
+# ai_act_high_risk_checklist.yaml
+system: "nombre-del-sistema"
+classification: "high_risk"
+last_assessment: "2026-03-15"
+
+article_9_risk_management:
+  risk_identification: true
+  risk_analysis: true
+  risk_mitigation_measures: true
+  residual_risk_documentation: true
+  testing_throughout_lifecycle: true
+  notes: "Evaluación de riesgos documentada en risk-assessment-v2.pdf"
+
+article_10_data_governance:
+  training_data_documented: true
+  data_quality_metrics_defined: true
+  bias_detection_implemented: true
+  data_provenance_tracked: true
+  notes: "Usamos modelo de proveedor; datos de fine-tuning documentados"
+
+article_11_technical_documentation:
+  system_description: true
+  design_specifications: true
+  monitoring_capabilities: true
+  risk_management_reference: true
+  change_log_maintained: true
+  notes: "Documentación técnica en Confluence, versionada"
+
+article_12_record_keeping:
+  automatic_logging: true
+  log_retention_period: "5 years"
+  log_integrity_assured: true
+  traceability_enabled: true
+  notes: "Logs en sistema centralizado con hash de integridad"
+
+article_13_transparency:
+  user_informed_of_ai: true
+  capabilities_documented: true
+  limitations_documented: true
+  instructions_for_use: true
+
+article_14_human_oversight:
+  human_in_the_loop: true
+  override_capability: true
+  operator_training: true
+  monitoring_dashboard: true
+  notes: "Dashboard con intervención manual posible en tiempo real"
+
+article_15_accuracy_robustness:
+  accuracy_metrics_defined: true
+  robustness_testing: true
+  cybersecurity_measures: true
+  adversarial_testing: true
+  notes: "Red teaming trimestral, pentest anual"
+
+conformity_assessment:
+  self_assessment_completed: true
+  third_party_required: false
+  ce_marking: false
+  eu_database_registered: false
+  notes: "Pendiente registro en base de datos UE (plazo 2027)"

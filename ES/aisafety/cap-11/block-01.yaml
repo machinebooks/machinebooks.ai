@@ -1,0 +1,23 @@
+# Extraido de: LibroAISafety/cap-11-red-teaming.md
+# Plantilla de scoping para red teaming de IA
+engagement:
+  nombre: "RT-2026-04-ModeloX"
+  sistema: "Chatbot de atención al cliente con RAG"
+  modelo: "claude-sonnet-4-6"
+  alcance:
+    - modelo_via_api: true
+    - interfaz_web: true
+    - integraciones: ["RAG_documentos", "CRM_lectura"]
+    - tool_use: ["search_docs", "get_customer_info"]
+  categorias:
+    - prompt_injection_directa: in_scope
+    - prompt_injection_indirecta: in_scope  # via documentos RAG
+    - jailbreaking: in_scope
+    - data_extraction: in_scope
+    - goal_hijacking: in_scope  # relevante por tool use
+    - dos_semantico: out_of_scope
+  criterios:
+    reproducibilidad_minima: 0.3  # 30% de intentos exitosos
+    severidad: "OWASP_LLM_Top10"
+  duracion_dias: 5
+  responsable_disclosure: true

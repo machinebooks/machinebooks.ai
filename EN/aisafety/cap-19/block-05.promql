@@ -1,0 +1,6 @@
+# Extracted from: LibroAISafety/ch-19-observability.md
+sum by (guardrail_type) (
+  rate(ai_security_guardrail_activations_total{action="blocked"}[6h])
+)
+/
+sum(rate(ai_security_generation_seconds_count[6h]))

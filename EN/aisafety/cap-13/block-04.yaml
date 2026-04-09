@@ -1,0 +1,16 @@
+# Extracted from: LibroAISafety/ch-13-prompt-injection.md
+# Inter-agent sanitization policy
+# Each transition between agents validates output
+pipeline:
+  search_agent -> analysis_agent:
+    expected_format: json
+    allowed_fields: ["title", "summary", "url", "date"]
+    max_summary_length: 500
+    sanitize_html: true
+    strip_instructions: true  # Remove instruction patterns
+
+  analysis_agent -> action_agent:
+    expected_format: json
+    allowed_fields: ["action", "parameters", "justification"]
+    allowed_actions: ["send_email", "create_ticket"]
+    requires_human_confirmation: true

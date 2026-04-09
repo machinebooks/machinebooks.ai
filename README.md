@@ -22,6 +22,7 @@ Each book documents how a specific professional profile builds enterprise system
 | 8 | *The Consultant and the Machine* | *El Consultor y la Máquina* | [`EN/consultant/`](EN/consultant/) | [`ES/consultant/`](ES/consultant/) |
 | 9 | *The DevSecOps and the Machine* | *El DevSecOps y la Máquina* | [`EN/devsecops/`](EN/devsecops/) | [`ES/devsecops/`](ES/devsecops/) |
 | 10 | *The Bug Bounty Hunter and the Machine* (in editing) | *El Bug Bounty Hunter y la Máquina* (en edición) | [`EN/bugbounty/`](EN/bugbounty/) | [`ES/bugbounty/`](ES/bugbounty/) |
+| 11 | *AI Safety Engineer and the Machine* | *AI Safety Engineer y la Máquina* | [`EN/aisafety/`](EN/aisafety/) | [`ES/aisafety/`](ES/aisafety/) |
 
 All books are available on Amazon in Spanish and English. Visit **[machinebooks.ai](https://machinebooks.ai/)** for details, sample chapters, and purchase links.
 

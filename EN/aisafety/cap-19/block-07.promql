@@ -1,0 +1,10 @@
+# Extracted from: LibroAISafety/ch-19-observability.md
+# 95th percentile of latency for blocked responses
+histogram_quantile(0.95,
+  rate(ai_security_generation_seconds_bucket{blocked="true"}[1h])
+)
+
+# 95th percentile of latency for normal responses
+histogram_quantile(0.95,
+  rate(ai_security_generation_seconds_bucket{blocked="false"}[1h])
+)
