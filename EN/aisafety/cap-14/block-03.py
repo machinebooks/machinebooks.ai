@@ -1,6 +1,6 @@
 # Extracted from: LibroAISafety/ch-14-infrastructure.md
-# Didactic reconnaissance script for attack surface
-# of an AI desktop application on Windows
+# Didactic attack surface reconnaissance script
+# for an AI desktop application on Windows
 # NOTE: This code is educational, not an attack tool
 
 import subprocess
@@ -18,9 +18,9 @@ class ProcessInfo:
 
 def recon_surface(app_name: str) -> dict:
     """
-    Gathers information about the attack surface
+    Collects information about the attack surface
     of a running application.
-    Requires administrator privileges.
+    Requires administrator permissions to run.
     """
     surface = {
         "processes": [],
@@ -43,7 +43,7 @@ def recon_surface(app_name: str) -> dict:
     # 4. Identify loaded DLLs without valid signature
     # surface["unsigned_dlls"] = find_unsigned_dlls(app_name)
 
-    # 5. Detect services that persist after closing the app
+    # 5. Detect services persisting after closing the app
     # surface["persistent_services"] = find_persistent_services(app_name)
 
     return surface

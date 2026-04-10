@@ -3,7 +3,7 @@ import time
 from collections import defaultdict
 
 class ToolRateLimiter:
-    """Rate limiting per tool and per session."""
+    """Per-tool and per-session rate limiting."""
 
     def __init__(self, default_rpm: int = 30):
         self._limits: dict[str, int] = {}  # tool_name -> max RPM
@@ -18,7 +18,7 @@ class ToolRateLimiter:
         key = f"{session_id}:{tool_name}"
         now = time.monotonic()
         limit = self._limits.get(tool_name, self._default_rpm)
-        # Clean calls from more than 60 seconds ago
+        # Clean calls older than 60 seconds
         self._calls[key] = [t for t in self._calls[key] if now - t < 60]
         if len(self._calls[key]) >= limit:
             return False

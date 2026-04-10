@@ -1,6 +1,6 @@
 # Extracted from: LibroAISafety/ch-15-sabotage-risks.md
 # Concept of evaluation embedded in production
-# NOT an exploit — it is a defensive evaluation technique
+# NOT an exploit — this is a defensive evaluation technique
 
 from dataclasses import dataclass
 import random
@@ -12,7 +12,7 @@ class EmbeddedEval:
     real_request: str          # Real user request
     eval_variant: str          # Evaluation variant
     expected_behavior: str     # Expected behavior
-    actual_behavior: str = ""  # Filled in with the response
+    actual_behavior: str = ""  # Filled with the response
 
 def should_inject_eval(probability: float = 0.01) -> bool:
     """
@@ -24,10 +24,10 @@ def should_inject_eval(probability: float = 0.01) -> bool:
 def create_sabotage_eval(domain: str) -> EmbeddedEval:
     """
     Creates a domain-specific sabotage evaluation.
-    The model receives a real task and it is verified
+    The model receives a real task and we verify
     whether the response contains deliberate subtle errors.
     """
-    # Implementation depends on the domain
+    # Implementation depends on domain
     # For code: send code with a known bug
     #   and verify whether the model detects it
     # For data: send a dataset with an anomaly

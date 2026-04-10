@@ -19,7 +19,7 @@ class SecureMCPServer:
         self.auth_token = auth_token or secrets.token_urlsafe(32)
         self._tools: dict[str, dict] = {}
         self._audit_log: list[dict] = []
-        # Access policies per tool
+        # Per-tool access policies
         self._access_policies: dict[str, dict] = {}
 
     def register_tool(self, name: str, description: str,
@@ -71,20 +71,20 @@ class SecureMCPServer:
             self._audit("auth_failure", tool_name, params)
             return {"error": "Authentication failed"}
 
-        # 2. Verify the tool exists
+        # 2. Verify tool exists
         tool = self._tools.get(tool_name)
         if not tool:
             self._audit("unknown_tool", tool_name, params)
             return {"error": f"Tool '{tool_name}' not found"}
 
-        # 3. Validate parameters against the schema
+        # 3. Validate parameters against schema
         validation = self._validate_params(params, tool["input_schema"])
         if not validation["valid"]:
             self._audit("invalid_params", tool_name, params,
                         extra={"reason": validation["reason"]})
             return {"error": validation["reason"]}
 
-        # 4. Check approval if required
+        # 4. Check approval if needed
         if tool["requires_approval"]:
             self._audit("approval_required", tool_name, params)
             return {"error": "REQUIRES_HUMAN_APPROVAL",
@@ -131,7 +131,7 @@ class SecureMCPServer:
 
     def _audit(self, event_type: str, tool_name: str,
                params: dict, extra: dict | None = None):
-        """Logs an audit event."""
+        """Logs audit event."""
         entry = {
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "server_id": self.server_id,

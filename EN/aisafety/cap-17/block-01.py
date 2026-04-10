@@ -15,7 +15,7 @@ class ServerPolicy:
     data_classification: DataClassification
     # Servers to which data from this server can flow
     allowed_targets: list[str] = field(default_factory=list)
-    # Tools blocked for this server
+    # Blocked tools for this server
     blocked_tools: list[str] = field(default_factory=list)
 
 class MCPIsolationProxy:
@@ -23,7 +23,7 @@ class MCPIsolationProxy:
 
     def __init__(self):
         self._policies: dict[str, ServerPolicy] = {}
-        # Tracks which server each datum in the context came from
+        # Tracks which server each datum in the context comes from
         self._data_provenance: dict[str, str] = {}
 
     def register_server(self, policy: ServerPolicy):
@@ -37,24 +37,24 @@ class MCPIsolationProxy:
         target_policy = self._policies.get(target_server)
 
         if not source_policy or not target_policy:
-            return False, "Server not registered"
+            return False, "Unregistered server"
 
-        # Restricted data does not flow to any external server
+        # RESTRICTED data does not flow to any external server
         if (source_policy.data_classification
                 == DataClassification.RESTRICTED):
             return False, "RESTRICTED data cannot flow externally"
 
-        # Check allowed destination list
+        # Check allowed destinations list
         if target_server not in source_policy.allowed_targets:
             return False, (f"Flow {source_server} -> {target_server}"
                            " not authorized")
 
-        # Confidential data does not flow to servers with lower
-        # classification
+        # CONFIDENTIAL data does not flow to servers with
+        # lower classification
         if (source_policy.data_classification
                 == DataClassification.CONFIDENTIAL
                 and target_policy.data_classification
                 == DataClassification.PUBLIC):
-            return False, "CONFIDENTIAL data cannot flow to PUBLIC server"
+            return False, "CONFIDENTIAL data does not flow to PUBLIC server"
 
         return True, "Flow authorized"

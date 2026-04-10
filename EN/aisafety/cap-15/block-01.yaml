@@ -7,10 +7,10 @@ agent_controls:
   autonomous_actions:
     - type: "read"
       supervision: none
-      example: "query API, read file, search for information"
+      example: "query API, read file, search information"
 
     - type: "generation"
-      supervision: complete_log
+      supervision: full_log
       example: "generate draft, create analysis, propose changes"
 
     - type: "reversible_modification"
@@ -24,7 +24,7 @@ agent_controls:
   operational_limits:
     max_iterations_per_task: 50    # Prevent agent loops
     max_tokens_per_task: 500000   # Cost limit
-    max_tools_per_step: 5         # Limit action breadth
+    max_tools_per_step: 5         # Limit breadth of actions
     timeout_minutes: 30           # Time limit
 
   anomaly_detection:

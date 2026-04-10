@@ -1,46 +1,47 @@
 # Extracted from: LibroAISafety/ch-18-rag-security.md
 import hashlib
-from typing import Optional
+import json
+from datetime import datetime, timezone
 
-class DocumentWatermarker:
-    """Inserts unique markers into documents before indexing."""
+class RAGIntegrityMonitor:
+    """Monitors vector database integrity."""
 
-    # Zero-width Unicode characters used as markers
-    ZERO_WIDTH_CHARS = [
-        "\u200b",  # Zero-width space
-        "\u200c",  # Zero-width non-joiner
-        "\u200d",  # Zero-width joiner
-        "\ufeff",  # Zero-width no-break space
-    ]
+    def __init__(self, vector_store):
+        self.vector_store = vector_store
+        self._baseline_hashes: dict[str, str] = {}
 
-    def watermark(self, text: str, doc_id: str,
-                  tenant_id: str) -> str:
-        """Inserts a watermark based on doc_id and tenant_id."""
-        # Generate watermark bit sequence
-        wm_input = f"{doc_id}:{tenant_id}"
-        wm_hash = hashlib.sha256(wm_input.encode()).hexdigest()
-        # Convert first 16 hex chars to bits
-        bits = bin(int(wm_hash[:16], 16))[2:].zfill(64)
-        # Insert zero-width characters every N words
-        words = text.split()
-        watermarked = []
-        bit_idx = 0
-        for i, word in enumerate(words):
-            watermarked.append(word)
-            if i % 10 == 9 and bit_idx < len(bits):
-                # Insert character based on the bit
-                char_idx = int(bits[bit_idx:bit_idx+2], 2) % 4
-                watermarked.append(self.ZERO_WIDTH_CHARS[char_idx])
-                bit_idx += 2
-        return " ".join(watermarked)
+    def take_snapshot(self, collection_name: str) -> str:
+        """Generates an integrity hash of the collection."""
+        collection = self.vector_store.get_collection(collection_name)
+        # Get all IDs and content hashes
+        all_docs = collection.get(include=["metadatas"])
+        content_hashes = sorted([
+            m.get("content_hash", "")
+            for m in all_docs["metadatas"]
+        ])
+        snapshot = hashlib.sha256(
+            json.dumps(content_hashes).encode()
+        ).hexdigest()
+        self._baseline_hashes[collection_name] = snapshot
+        return snapshot
 
-    def extract_watermark(self, text: str) -> Optional[str]:
-        """Extracts the watermark from a marked text."""
-        bits = []
-        for char in text:
-            if char in self.ZERO_WIDTH_CHARS:
-                idx = self.ZERO_WIDTH_CHARS.index(char)
-                bits.append(format(idx, '02b'))
-        if len(bits) < 8:
-            return None
-        return "".join(bits)
+    def verify_integrity(self, collection_name: str) -> dict:
+        """Verifies the collection has not been modified."""
+        baseline = self._baseline_hashes.get(collection_name)
+        if not baseline:
+            return {"status": "no_baseline",
+                    "message": "No previous snapshot"}
+
+        current = self.take_snapshot(collection_name)
+        if current != baseline:
+            return {
+                "status": "MODIFIED",
+                "message": f"Collection {collection_name} modified",
+                "baseline_hash": baseline,
+                "current_hash": current,
+                "timestamp": datetime.now(
+                    timezone.utc
+                ).isoformat(),
+            }
+        return {"status": "OK",
+                "message": "Integrity verified"}

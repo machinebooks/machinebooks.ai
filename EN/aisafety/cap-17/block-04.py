@@ -1,17 +1,16 @@
 # Extracted from: LibroAISafety/ch-17-mcp-security.md
 import hashlib
 import json
-import subprocess
 from pathlib import Path
 
 class MCPServerInventory:
     """Inventory and verification of installed MCP servers."""
 
     def __init__(self, approved_servers_path: str):
-        with open(approved_servers_path) as f:
+        with open(approved_servers_path, encoding="utf-8") as f:
             self._approved = json.load(f)
         # Format: {"server_name": {"version": "1.2.3",
-        #           "hash": "sha256:abc...", "reviewed_date": "..."}}
+        #          "hash": "sha256:abc...", "reviewed_date": "..."}}
 
     def verify_server(self, server_path: Path) -> dict:
         """Verifies an MCP server against the approved inventory."""
@@ -36,7 +35,7 @@ class MCPServerInventory:
                 "reviewed_date": approved["reviewed_date"]}
 
     def _hash_directory(self, path: Path) -> str:
-        """Calculates SHA-256 hash of a directory's contents."""
+        """Calculates SHA-256 hash of a directory's content."""
         hasher = hashlib.sha256()
         for file in sorted(path.rglob("*")):
             if file.is_file() and "node_modules" not in str(file):

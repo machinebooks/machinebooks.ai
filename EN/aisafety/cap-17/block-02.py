@@ -31,7 +31,7 @@ class ToolDiscoveryValidator:
             # Check blacklist
             if name in self.BLACKLISTED_TOOLS:
                 logger.warning(
-                    f"Tool blocked: {name} from {server_id}"
+                    f"Blocked tool: {name} from {server_id}"
                 )
                 continue
 

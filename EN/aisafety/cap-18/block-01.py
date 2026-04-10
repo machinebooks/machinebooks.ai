@@ -19,7 +19,7 @@ class SecureRAGQuery:
         """Retrieves documents respecting user permissions."""
         query_embedding = self.embedding_model.encode(question)
 
-        # Determine collections accessible to this user
+        # Determine accessible collections for this user
         accessible = self._get_accessible_collections(user)
 
         all_results = []
@@ -48,7 +48,7 @@ class SecureRAGQuery:
 
     def _get_accessible_collections(
             self, user: UserContext) -> list[str]:
-        """Returns the collections the user can query."""
+        """Returns collections the user can query."""
         classification_order = [
             DocClassification.PUBLIC,
             DocClassification.INTERNAL,

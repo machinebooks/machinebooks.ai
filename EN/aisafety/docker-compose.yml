@@ -1,0 +1,24 @@
+# Extracted from: LibroAISafety/ch-17-mcp-security.md
+# docker-compose.yml — MCP server with isolation
+services:
+  mcp-filesystem:
+    image: mcp-server-filesystem:verified-1.2.3
+    read_only: true            # Read-only filesystem
+    security_opt:
+      - no-new-privileges:true # No privilege escalation
+    cap_drop:
+      - ALL                    # Drop all capabilities
+    volumes:
+      - ./project:/workspace:ro  # Only the project directory, read-only
+      - /tmp/mcp-fs:/tmp         # Ephemeral temporary directory
+    networks:
+      - mcp-isolated           # Dedicated network without internet access
+    deploy:
+      resources:
+        limits:
+          memory: 256M         # Memory limit
+          cpus: "0.5"          # CPU limit
+
+networks:
+  mcp-isolated:
+    internal: true             # No internet access

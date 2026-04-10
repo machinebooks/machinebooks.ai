@@ -4,7 +4,7 @@ import hashlib
 from datetime import datetime, timezone
 
 class AgentAuditLog:
-    """Immutable record of all agent activity."""
+    """Immutable log of all agent activity."""
 
     def __init__(self, agent_id: str, storage_backend):
         self.agent_id = agent_id

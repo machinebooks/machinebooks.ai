@@ -23,7 +23,7 @@ components:
     network: "host"              # Access to host network?
 
   model:
-    access: "Remote API"         # or local, hybrid
+    access: "remote API"         # or local, hybrid
     tool_use: true
     tools:
       - "execute_code"           # Code execution
@@ -33,8 +33,8 @@ components:
 
   mcp_servers:
     - name: "filesystem"
-      origin: "official"         # or third_party, unknown
+      origin: "official"         # or third-party, unknown
       permissions: "read_write"
     - name: "database"
-      origin: "third_party"
+      origin: "third-party"
       permissions: "read"

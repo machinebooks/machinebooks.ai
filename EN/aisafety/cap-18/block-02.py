@@ -9,10 +9,10 @@ class ResponseGuard:
                        source_documents: list[dict]) -> str:
         """Verifies that the response does not exfiltrate content."""
         # Detect if the response contains long blocks
-        # of text that match source documents
+        # of text matching the source documents
         for doc in source_documents:
             doc_text = doc["text"]
-            # Find overlaps longer than MAX_CITATION_LENGTH
+            # Look for matches longer than MAX_CITATION_LENGTH
             overlap = self._find_longest_overlap(response, doc_text)
             if overlap and len(overlap) > self.MAX_CITATION_LENGTH:
                 logger.warning(

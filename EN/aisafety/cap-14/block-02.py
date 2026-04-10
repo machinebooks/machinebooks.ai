@@ -1,5 +1,5 @@
 # Extracted from: LibroAISafety/ch-14-infrastructure.md
-# Automatable security evaluation checklist for AI infrastructure
+# Automatable AI infrastructure evaluation checklist
 # Didactic code — real tests require specific tools
 
 from dataclasses import dataclass
@@ -30,8 +30,8 @@ def evaluate_electron(app_path: str) -> list[Finding]:
         component="electron",
         check="asar_integrity",
         severity=Severity.HIGH,
-        description="The ASAR has no integrity verification. "
-                    "A local attacker can modify the application's code.",
+        description="ASAR has no integrity verification. "
+                    "A local attacker can modify the application code.",
         recommendation="Implement asar-integrity or hash verification at startup."
     ))
 
@@ -54,7 +54,7 @@ def evaluate_electron(app_path: str) -> list[Finding]:
         severity=Severity.HIGH,
         description="The application searches for DLLs in the working directory "
                     "before system paths.",
-        recommendation="Use SetDllDirectory or absolute paths for loading DLLs."
+        recommendation="Use SetDllDirectory or absolute paths to load DLLs."
     ))
 
     return findings

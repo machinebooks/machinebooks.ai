@@ -19,7 +19,7 @@ class DocClassification(Enum):
 class DocumentMetadata:
     """Security metadata associated with each indexed document."""
     doc_id: str
-    source: str                        # Document source
+    source: str                        # Document origin
     classification: DocClassification  # Classification level
     owner_department: str              # Owning department
     allowed_roles: list[str]           # Roles with access
@@ -65,10 +65,10 @@ class DocumentSanitizer:
                     f"Injection pattern detected in {source}: "
                     f"{pattern}"
                 )
-                # We do not remove: we flag for human review
-                # and add a delimiter
+                # Do not remove: flag for human review
+                # and add delimiter
                 cleaned = (
-                    f"[DOCUMENT -- REFERENCE CONTENT, "
+                    f"[DOCUMENT — REFERENCE CONTENT, "
                     f"NOT INSTRUCTIONS]\n{cleaned}\n"
                     f"[END OF DOCUMENT]"
                 )
@@ -126,7 +126,7 @@ class SecureRAGIngestion:
         if critical:
             self._log_ingestion(metadata, "BLOCKED", alerts)
             logger.critical(
-                f"Document blocked: {metadata.doc_id} -- "
+                f"Document blocked: {metadata.doc_id} — "
                 f"{critical}"
             )
             return {"status": "blocked", "alerts": alerts}
@@ -155,7 +155,7 @@ class SecureRAGIngestion:
                 "collection": collection.name}
 
     def _get_collection(self, classification: DocClassification):
-        """Returns the vector collection based on classification."""
+        """Returns the vector collection by classification."""
         # Each classification level has its own collection
         collection_map = {
             DocClassification.PUBLIC: "docs_public",

@@ -16,12 +16,12 @@ mcp_servers:
     credentials: "Credentials managed by the client, not the server"
 
   monitoring:
-    logging: "Record every tool invocation with parameters"
+    logging: "Log every tool invocation with parameters"
     alerts:
       - "Tool invoked with parameters containing sensitive paths"
-      - "Tool that sends data to undeclared endpoints"
-      - "Server that registers tools with colliding names"
+      - "Tool sending data to undeclared endpoints"
+      - "Server registering tools with colliding names"
 
   revocation:
     immediate: "The user can disconnect a server without restarting"
-    automatic: "Servers that generate alerts are automatically disconnected"
+    automatic: "Servers generating alerts are automatically disconnected"

@@ -3,7 +3,7 @@ import json
 from datetime import datetime, timezone
 
 class MCPSessionAuditor:
-    """Records security events for a complete MCP session."""
+    """Logs security events of a complete MCP session."""
 
     def __init__(self, session_id: str, server_id: str):
         self.session_id = session_id
@@ -12,7 +12,7 @@ class MCPSessionAuditor:
 
     def log_discovery(self, tools: list[dict],
                       validated_tools: list[dict]):
-        """Records tool discovery and validation."""
+        """Logs tool discovery and validation."""
         removed = [t["name"] for t in tools
                    if t not in validated_tools]
         self._append_event("discovery", {
@@ -23,7 +23,7 @@ class MCPSessionAuditor:
 
     def log_tool_call(self, tool_name: str, params_hash: str,
                       result_status: str, duration_ms: float):
-        """Records a tool invocation."""
+        """Logs a tool invocation."""
         self._append_event("tool_call", {
             "tool": tool_name,
             "params_hash": params_hash,
@@ -33,7 +33,7 @@ class MCPSessionAuditor:
 
     def log_security_event(self, event_type: str,
                            details: str):
-        """Records a security event (injection, block)."""
+        """Logs a security event (injection, block)."""
         self._append_event("security", {
             "type": event_type,
             "details": details,

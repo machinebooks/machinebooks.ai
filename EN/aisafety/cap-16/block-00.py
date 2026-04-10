@@ -9,7 +9,7 @@ logger = logging.getLogger("agent_security")
 
 class RiskLevel(Enum):
     LOW = "low"           # Data reading, queries
-    MEDIUM = "medium"     # Modification of own data
+    MEDIUM = "medium"     # Own data modification
     HIGH = "high"         # Deletion, external sending
     CRITICAL = "critical" # Irreversible actions in production
 
@@ -24,7 +24,7 @@ class ToolPermission:
     max_calls_per_session: int = 100      # Rate limiting per session
 
 class ToolValidator:
-    """Validates tool invocations before executing them."""
+    """Validates tool invocations before execution."""
 
     def __init__(self, permissions: list[ToolPermission]):
         self._permissions = {p.name: p for p in permissions}
