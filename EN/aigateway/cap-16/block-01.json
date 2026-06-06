@@ -1,0 +1,12 @@
+# Extracted from: LibroAIGateway/cap-16-jwt-device-binding.md
+// Payload of the access_token (deserialized)
+{
+  "sub": "42",
+  "role": "admin",
+  "type": "access",
+  "jti": "a3f7b9c1-4d2e-4f8a-9b1c-d3e5f7a9b2c4",
+  "exp": 1750000000,
+  "iat": 1749999000,
+  "org_id": 7,
+  "device_id": "e3b0c44298fc1c149afbf4c8996fb924..."
+}

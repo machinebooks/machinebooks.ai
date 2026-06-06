@@ -1,0 +1,11 @@
+# Extraído de: LibroAIGateway/cap-10-embeddings-imagenes-audio.md
+// Response — OpenAI-compatible
+{
+    "object": "list",
+    "data": [{
+        "object": "embedding",
+        "index": 0,
+        "embedding": [0.001, -0.003, 0.002, ...]
+    }],
+    "usage": { "prompt_tokens": 6, "total_tokens": 6 }
+}

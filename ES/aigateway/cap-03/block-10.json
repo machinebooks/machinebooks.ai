@@ -1,0 +1,7 @@
+# Extraído de: LibroAIGateway/cap-03-pipeline-stages.md
+// Respuesta 400 ante context_length_exceeded
+{
+  "error": "context_length_exceeded",
+  "message": "El contexto de la conversacion supera la ventana del modelo. "
+             "Reduce el historial (compacta o inicia una conversacion nueva) y reintenta."
+}

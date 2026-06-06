@@ -1,0 +1,13 @@
+# Extracted from: LibroAIGateway/cap-29-admin-security-system.md
+// Webhook event payload
+{
+  "event": "firewall.blocked",
+  "timestamp": "2026-06-03T12:00:00Z",
+  "data": {
+    "request_id": "req_xxxxxxxx",
+    "category": "pii",
+    "action_taken": "block",
+    "organization_id": 1
+  },
+  "signature": "sha256=..."
+}

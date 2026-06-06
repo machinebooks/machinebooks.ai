@@ -1,0 +1,10 @@
+# Extracted from: LibroAIGateway/cap-33-stack-nginx.md
+# docker-compose.azure.yml — replaces DB/Redis with Azure managed
+services:
+  gateway:
+    environment:
+      - N7X_ENV=production
+      - DB_HOST=mysql-privado.database.azure.net
+      - DB_PORT=3307
+      - REDIS_URL=rediss://cache-privado.redis.cache.azure.net:6380/0
+      - KEY_VAULT_URL=https://kv-privado.vault.azure.net/

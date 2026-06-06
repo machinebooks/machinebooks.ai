@@ -1,0 +1,10 @@
+# Extraído de: LibroAIGateway/cap-05-router-smart-select.md
+// Request recibido por el pipeline
+{
+    "model": "gpt-5.4",
+    "messages": [
+        {"role": "system", "content": "Eres un asistente de seguridad..."},
+        {"role": "user", "content": "Compara estas dos políticas IAM y evalúa riesgos..."}
+    ],
+    "purpose": "code"
+}

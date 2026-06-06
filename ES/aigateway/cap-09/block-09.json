@@ -1,0 +1,16 @@
+# Extraído de: LibroAIGateway/cap-09-compresion-tokens.md
+// Forma de la herramienta inyectada (sintetizado)
+{
+  "type": "function",
+  "function": {
+    "name": "n7x_content_retrieve",
+    "description": "Recupera el contenido completo de un fichero o mensaje que fue comprimido para ahorrar tokens. Keys disponibles: auth_service.py, message_12, config.yaml",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "key": { "type": "string", "enum": ["auth_service.py", "message_12", "config.yaml"] }
+      },
+      "required": ["key"]
+    }
+  }
+}

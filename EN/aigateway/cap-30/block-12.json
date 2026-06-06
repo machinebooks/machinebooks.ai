@@ -1,0 +1,13 @@
+# Extracted from: LibroAIGateway/cap-30-user-portal.md
+// Example response from /spending/jobs
+{
+  "data": [
+    {"id": 1502, "type": "chat", "title": "Summarize report",
+     "status": "completed", "cost_usd": 0.032, "calls": 3,
+     "prompt_tokens": 4200, "completion_tokens": 1100},
+    {"id": 1501, "type": "evaluation", "title": "Evaluate proposal",
+     "status": "completed", "cost_usd": 0.185, "calls": 7,
+     "prompt_tokens": 28000, "completion_tokens": 12000}
+  ],
+  "total": 42
+}

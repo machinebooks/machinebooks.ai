@@ -1,0 +1,7 @@
+# Extracted from: LibroAIGateway/cap-10-embeddings-images-audio.md
+// Request — OpenAI-compatible
+{
+    "model": "text-embedding-3-large",
+    "input": ["documento confidencial Q3 2025"],
+    "encoding_format": "float"
+}

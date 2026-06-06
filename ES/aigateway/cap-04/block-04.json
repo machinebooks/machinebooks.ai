@@ -1,0 +1,11 @@
+# Extraído de: LibroAIGateway/cap-04-streaming-sse.md
+// Forma del dato StreamChunk (conceptual)
+{
+  "delta": " el gateway",
+  "finish_reason": null,
+  "tool_calls_delta": null,
+  "reasoning": null,
+  "prompt_tokens": 142,
+  "completion_tokens": 89,
+  "cached_tokens": 120
+}

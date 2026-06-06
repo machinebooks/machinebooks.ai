@@ -1,0 +1,8 @@
+# Extracted from: LibroAIGateway/cap-19-threat-jailbreak-dlp-pii.md
+// Custom DLP pattern in content_filters
+{
+  "filter_type": "dlp_secret",
+  "pattern": "CLIENT-[A-Z]{2}-\\d{6}",
+  "name": "referencia_interna_cliente",
+  "is_active": true
+}

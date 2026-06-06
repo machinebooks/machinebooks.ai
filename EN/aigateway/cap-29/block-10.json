@@ -1,0 +1,10 @@
+# Extracted from: LibroAIGateway/cap-29-admin-security-system.md
+// Schema of a hook (data shape)
+{
+  "name": "slack-alert-on-block",
+  "event": "firewall.blocked",
+  "url": "https://webhook.ejemplo.com/alerts",
+  "method": "POST",
+  "is_active": true,
+  "events": ["firewall.blocked", "moderation.flagged"]
+}

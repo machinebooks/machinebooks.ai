@@ -1,0 +1,11 @@
+# Extraído de: LibroAIGateway/cap-07-adapters.md
+// Respuesta nativa de Anthropic:
+{
+  "content": [{
+    "type": "tool_use",
+    "id": "toolu_abc123",
+    "name": "search_cve",
+    "input": {"cve_id": "CVE-2025-1234"}
+  }],
+  "stop_reason": "tool_use"
+}

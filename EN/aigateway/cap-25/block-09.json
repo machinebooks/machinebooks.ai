@@ -1,0 +1,14 @@
+# Extracted from: LibroAIGateway/cap-25-mcp-registration-catalog.md
+{
+  "name": "search_salesforce",
+  "description": "Buscar registros en Salesforce por nombre, email o cuenta",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "query": { "type": "string", "description": "Término de búsqueda" },
+      "object_type": { "type": "string", "enum": ["Contact", "Account", "Opportunity"] },
+      "limit": { "type": "integer", "default": 10 }
+    },
+    "required": ["query"]
+  }
+}

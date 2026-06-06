@@ -1,0 +1,9 @@
+# Extraído de: LibroAIGateway/cap-01-gateway-arquitectura-contrato.md
+{
+  "model": "claude-sonnet-4-20250514",
+  "messages": [
+    {"role": "user", "content": "Analiza este fragmento de código."}
+  ],
+  "max_tokens": 4096,
+  "system": "Eres un revisor de código."
+}

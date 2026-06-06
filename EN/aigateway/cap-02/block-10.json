@@ -1,0 +1,9 @@
+# Extracted from: LibroAIGateway/cap-02-mental-model-tenancy.md
+{
+    "organization": { "id": 1, "slug": "acme" },
+    "team":         { "id": 5, "name": "Backend Engineering" },
+    "user":         { "id": 42, "email": "carlos.lopez@ejemplo.com", "role": "viewer" },
+    "device":       { "device_id": "a3f2e1b4c5d6...", "app_type": "desktop", "is_active": true },
+    "license":      { "plan": "standard", "is_active": true },
+    "purpose":      "code-review"
+}

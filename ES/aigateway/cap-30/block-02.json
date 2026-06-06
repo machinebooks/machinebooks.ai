@@ -1,0 +1,16 @@
+# Extraído de: LibroAIGateway/cap-30-portal-usuario.md
+// Forma del payload de GET /api/v1/me/portal
+{
+  "data": {
+    "user": { "id": 42, "email": "u@ejemplo.com", "name": "María",
+              "mfa_enabled": true, "auth_source": "sso" },
+    "organization": { "id": 3, "name": "Empresa", "plan": "enterprise" },
+    "license": { "status": "active", "active_devices": 1,
+                 "registered_devices": 2, "max_devices": 3 },
+    "usage": { "month_cost_usd": 24.50, "month_tokens": 1_200_000,
+               "month_requests": 340, "requests_24h": 18 },
+    "api_keys": [ { "id": 5, "app_slug": "codex", "status": "active" } ],
+    "connections": [ { "slug": "github", "name": "GitHub MCP",
+                       "transport": "stdio", "scope": "org" } ]
+  }
+}

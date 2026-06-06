@@ -1,0 +1,17 @@
+# Extracted from: LibroAIGateway/cap-33-stack-nginx.md
+# docker-compose.prod.yml — worker with real queues and embedded beat
+services:
+  celery-worker:
+    build: ./gateway
+    command: >
+      celery -A app.celery_app worker --beat
+        --concurrency 4
+        --queues default,llm,orchestrator_priority,orchestrator
+        --loglevel info
+        --max-tasks-per-child 1000
+    environment:
+      - N7X_ENV=production
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      redis: { condition: service_healthy }
+      mysql: { condition: service_healthy }

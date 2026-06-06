@@ -1,0 +1,14 @@
+# Extraído de: LibroAIGateway/cap-33-stack-nginx.md
+# docker-compose.dev.yml — servicio gateway simplificado
+services:
+  gateway:
+    build: ./gateway
+    command: >
+      uvicorn app.main:app
+        --host 0.0.0.0 --port 8000
+        --reload --log-level debug
+    environment:
+      - N7X_ENV=development
+      - N7X_DEBUG=true
+      - CELERY_WORKER_MODE=eager
+      - REDIS_URL=redis://redis:6379/0

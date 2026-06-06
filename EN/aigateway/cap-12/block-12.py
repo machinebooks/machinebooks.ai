@@ -1,0 +1,34 @@
+# Extracted from: LibroAIGateway/cap-12-queue-rag.md
+# gateway/app/services/rag_service.py:1257-1304 (synthesized)
+@staticmethod
+def _split_text(text, chunk_size=1500, chunk_overlap=200):
+    """Splits by paragraphs first, then by sentences."""
+    paragraphs = text.split("\n\n")
+    chunks, current_chunk = [], ""
+
+    for para in paragraphs:
+        para = para.strip()
+        if not para:
+            continue
+        if len(current_chunk) + len(para) + 2 <= chunk_size:
+            # Fits: add to current chunk
+            current_chunk = (current_chunk + "\n\n" + para if current_chunk else para)
+        else:
+            # Fill current chunk and start a new one
+            if current_chunk:
+                chunks.append(current_chunk)
+            if len(para) > chunk_size:
+                # Very long paragraph: split by sentences
+                sentences = para.replace(". ", ".\n").split("\n")
+                # ... accumulate sentences up to chunk_size ...
+            else:
+                current_chunk = para
+
+    # Overlap: tail of previous chunk + next chunk
+    if chunk_overlap > 0 and len(chunks) > 1:
+        overlapped = [chunks[0]]
+        for i in range(1, len(chunks)):
+            prev_tail = chunks[i - 1][-chunk_overlap:]
+            overlapped.append(prev_tail + "\n" + chunks[i])
+        chunks = overlapped
+    return chunks

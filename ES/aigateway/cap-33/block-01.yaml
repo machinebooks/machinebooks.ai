@@ -1,0 +1,9 @@
+# Extraído de: LibroAIGateway/cap-33-stack-nginx.md
+# docker-compose.yml — volúmenes persistentes
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
+  qdrant_data:
+    driver: local

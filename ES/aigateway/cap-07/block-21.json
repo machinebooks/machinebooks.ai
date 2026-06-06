@@ -1,0 +1,19 @@
+# Extraído de: LibroAIGateway/cap-07-adapters.md
+// POST /v1/chat/completions
+{
+  "model": "claude-sonnet-4-20250514",
+  "messages": [
+    {"role": "system", "content": "You are a security analyst."},
+    {"role": "user", "content": "Check CVE-2025-1234"}
+  ],
+  "tools": [{
+    "type": "function",
+    "function": {
+      "name": "search_cve",
+      "description": "Search CVE database",
+      "parameters": {"type": "object", "properties": {
+        "cve_id": {"type": "string"}
+      }, "required": ["cve_id"]}
+    }
+  }]
+}

@@ -1,0 +1,7 @@
+# Extracted from: LibroAIGateway/cap-03-pipeline-stages.md
+// 400 response on context_length_exceeded
+{
+  "error": "context_length_exceeded",
+  "message": "The conversation context exceeds the model's window. "
+             "Reduce the history (compact or start a new conversation) and retry."
+}

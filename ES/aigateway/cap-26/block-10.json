@@ -1,0 +1,12 @@
+# Extraído de: LibroAIGateway/cap-26-gatewayclient-n7x-mcp.md
+{
+  "name": "n7x-mcp",
+  "type": "module",
+  "bin": { "n7x-mcp": "dist/index.js" },
+  "dependencies": { "@modelcontextprotocol/sdk": "^1.12.0" },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "esbuild": "^0.28.0",
+    "@types/node": "^20.14.0"
+  }
+}

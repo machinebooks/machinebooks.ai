@@ -1,0 +1,9 @@
+# Extraído de: LibroAIGateway/cap-10-embeddings-imagenes-audio.md
+// Request — POST /v1/images/generations
+{
+    "model": "flux-1-schnell",
+    "prompt": "diagrama de arquitectura de microservicios",
+    "n": 1,
+    "size": "1024x1024",
+    "response_format": "url"
+}

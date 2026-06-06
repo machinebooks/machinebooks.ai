@@ -1,0 +1,8 @@
+# Extraído de: LibroAIGateway/cap-23-compliance-regulatorio.md
+{
+    "dpo_email": "dpo@empresa.com",
+    "notify_threshold": "warning",
+    "notify_events": ["pii_leak", "dlp_violation", "unauthorized_access"],
+    "auto_notify": true,
+    "cooldown_minutes": 60
+}

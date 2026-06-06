@@ -1,0 +1,21 @@
+# Extracted from: LibroAIGateway/cap-01-gateway-architecture-contract.md
+{
+  "id": "chatcmpl-xxxxxxxxxx",
+  "object": "chat.completion",
+  "model": "gpt-4o",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Q4 summary..."
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 28,
+    "completion_tokens": 142,
+    "total_tokens": 170
+  }
+}

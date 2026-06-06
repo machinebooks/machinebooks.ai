@@ -1,0 +1,17 @@
+# Extraído de: LibroAIGateway/cap-07-adapters.md
+// Lo que ve Anthropic /v1/messages:
+{
+  "model": "claude-sonnet-4-20250514",
+  "system": "You are a security analyst.",
+  "messages": [
+    {"role": "user", "content": "Check CVE-2025-1234"}
+  ],
+  "tools": [{
+    "name": "search_cve",
+    "description": "Search CVE database",
+    "input_schema": {"type": "object", "properties": {
+      "cve_id": {"type": "string"}
+    }, "required": ["cve_id"]}
+  }],
+  "max_tokens": 4096
+}

@@ -1,0 +1,9 @@
+# Extraído de: LibroAIGateway/cap-10-embeddings-imagenes-audio.md
+// Request
+{
+    "model": "tts-hd",
+    "input": "Bienvenido al sistema de ayuda corporativa.",
+    "voice": "nova",
+    "response_format": "mp3",
+    "speed": 1.0
+}

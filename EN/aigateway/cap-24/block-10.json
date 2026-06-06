@@ -1,0 +1,11 @@
+# Extracted from: LibroAIGateway/cap-24-telemetry-realtime-webhooks.md
+{
+    "type": "event",
+    "data": {
+        "event": "deployment.degraded",
+        "organization_id": 42,
+        "timestamp": "2025-06-03T14:22:01Z",
+        "request_id": "req_4b8d1e56",
+        "data": { "model_key": "gpt-4o", "provider": "openai", "reason": "high_latency" }
+    }
+}

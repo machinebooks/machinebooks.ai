@@ -1,0 +1,6 @@
+# Extracted from: LibroAIGateway/cap-27-frontend-architecture-realtime.md
+{ "scripts": {
+    "build":            "vite build",
+    "build:user-portal":     "vite build --config vite.user-portal.config.ts",
+    "build:compliance-portal": "vite build --config vite.compliance-portal.config.ts"
+} }

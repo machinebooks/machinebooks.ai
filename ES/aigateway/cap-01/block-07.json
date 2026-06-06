@@ -1,0 +1,10 @@
+# Extraído de: LibroAIGateway/cap-01-gateway-arquitectura-contrato.md
+{
+  "model": "gpt-4o",
+  "messages": [
+    {"role": "system", "content": "Eres un asistente corporativo."},
+    {"role": "user", "content": "Resumen del Q4 2025."}
+  ],
+  "temperature": 0.3,
+  "stream": false
+}

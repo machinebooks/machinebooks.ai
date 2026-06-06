@@ -1,0 +1,21 @@
+# Extraído de: LibroAIGateway/cap-01-gateway-arquitectura-contrato.md
+{
+  "id": "chatcmpl-xxxxxxxxxx",
+  "object": "chat.completion",
+  "model": "gpt-4o",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Resumen del Q4..."
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 28,
+    "completion_tokens": 142,
+    "total_tokens": 170
+  }
+}

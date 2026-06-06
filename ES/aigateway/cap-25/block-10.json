@@ -1,0 +1,10 @@
+# Extraído de: LibroAIGateway/cap-25-mcp-registro-catalogo.md
+// Forma de la traducción para OpenAI (la hace el cliente, no el gateway)
+{
+  "type": "function",
+  "function": {
+    "name": "search_salesforce",
+    "description": "Buscar registros en Salesforce...",
+    "parameters": { "type": "object", "properties": { "query": { "type": "string" } } }
+  }
+}

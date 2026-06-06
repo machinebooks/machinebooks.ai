@@ -1,0 +1,12 @@
+# Extraído de: LibroAIGateway/cap-04-streaming-sse.md
+// Chunk emitido al bloquear
+{
+  "id": "chatcmpl-n7x",
+  "object": "chat.completion.chunk",
+  "model": "gpt-4o",
+  "choices": [{
+    "index": 0,
+    "delta": {"content": "\n\n[FILTERED]"},
+    "finish_reason": "content_filter"
+  }]
+}
