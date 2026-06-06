@@ -23,7 +23,7 @@ Each book documents how a specific professional profile builds enterprise system
 | 9 | *The DevSecOps and the Machine* | *El DevSecOps y la Máquina* | [`EN/devsecops/`](EN/devsecops/) | [`ES/devsecops/`](ES/devsecops/) |
 | 10 | *The Bug Bounty Hunter and the Machine* (in editing) | *El Bug Bounty Hunter y la Máquina* (en edición) | [`EN/bugbounty/`](EN/bugbounty/) | [`ES/bugbounty/`](ES/bugbounty/) |
 | 11 | *AI Safety Engineer and the Machine* | *AI Safety Engineer y la Máquina* | [`EN/aisafety/`](EN/aisafety/) | [`ES/aisafety/`](ES/aisafety/) |
-| 12 | *Anatomy of an Agent* (closing beta) | *Anatomía de un Agente de IA* (cerrando la beta) | [SylvarSecDesktop](https://github.com/sylvarcon2049/SylvarSecDesktop) | [SylvarSecDesktop](https://github.com/sylvarcon2049/SylvarSecDesktop) |
+| 12 | *Anatomy of an Agent* | *Anatomía de un Agente de IA* | Coming soon (beta) | Próximamente (beta) |
 | 13 | *Anatomy of a Corporate AI Platform* | *Anatomía de una Plataforma IA Corporativa* | [`EN/aigateway/`](EN/aigateway/) | [`ES/aigateway/`](ES/aigateway/) |
 
 All books are available on Amazon in Spanish and English. Visit **[machinebooks.ai](https://machinebooks.ai/)** for details, sample chapters, and purchase links.
