@@ -61,4 +61,7 @@ These are **starter scaffolds and didactic code examples**, not production-ready
 
 ## License
 
-MIT — See [LICENSE](LICENSE) for details.
+The companion code in `EN/` and `ES/` is MIT-licensed. Editorial content,
+videocourses, trademarks, and the production tooling in `formaciones/` are outside
+that grant. See [LICENSE](LICENSE) and [LICENSING.md](LICENSING.md) for the complete
+boundary.
