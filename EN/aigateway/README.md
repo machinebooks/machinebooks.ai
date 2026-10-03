@@ -22,7 +22,7 @@ Each file includes a header comment pointing to its source chapter.
 These are **didactic code examples from the book**, not a runnable application.
 
 - API keys use placeholders (`<YOUR_API_KEY>`, `<N7X_MASTER_KEY>`)
-- Each file is self-contained and commented
+- Each file illustrates a pattern and may need dependencies, helpers, and chapter context
 - Python 3.11+ with type hints; TypeScript for the admin panel / user portal
 
 ## The book
@@ -37,3 +37,9 @@ More at [machinebooks.ai](https://machinebooks.ai/).
 ## License
 
 MIT — See [LICENSE](../../LICENSE) for details.
+
+## Scope of the published material
+
+A file being present does not establish execution, complete coverage, or synchronization with the edition you are reading. ES contains extracted code; EN may contain a different selection or exercises. Named providers and clients identify concrete cases; alternatives need separate capability, permission, privacy, quality, and cost checks.
+
+See [LICENSE](../../LICENSE) and [LICENSING.md](../../LICENSING.md) for the boundaries of companion code, editorial text, and production tooling.

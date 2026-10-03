@@ -1,11 +1,11 @@
 # machinebooks.ai
 
 **Companion code and exercises for "The Professional and the Machine" book series.**
-**Código compañero y ejercicios de la serie "El Profesional y la Máquina".**
+**Ejemplos complementarios y ejercicios de la serie "El Profesional y la Máquina".**
 
-Each book documents how a specific professional profile builds enterprise systems or transforms their work using AI as the primary tool. Code is organized by language:
+Each book examines how a professional profile applies AI capabilities, tool contracts, permissions, evidence, and human review to systems or work. Named providers and SDKs retain their historical attribution as implementation cases. Examples are organized by language:
 
-- **[`EN/`](EN/)** — English: curated code examples with full READMEs and chapter maps
+- **[`EN/`](EN/)** — English: curated examples/exercises and per-folder documentation; availability varies
 - **[`ES/`](ES/)** — Español: código extraído de los capítulos en español de cada libro
 
 ## The Series / La Serie
@@ -23,10 +23,18 @@ Each book documents how a specific professional profile builds enterprise system
 | 9 | *The DevSecOps and the Machine* | *El DevSecOps y la Máquina* | [`EN/devsecops/`](EN/devsecops/) | [`ES/devsecops/`](ES/devsecops/) |
 | 10 | *The Bug Bounty Hunter and the Machine* (in editing) | *El Bug Bounty Hunter y la Máquina* (en edición) | [`EN/bugbounty/`](EN/bugbounty/) | [`ES/bugbounty/`](ES/bugbounty/) |
 | 11 | *AI Safety Engineer and the Machine* | *AI Safety Engineer y la Máquina* | [`EN/aisafety/`](EN/aisafety/) | [`ES/aisafety/`](ES/aisafety/) |
-| 12 | *Anatomy of an Agent* | *Anatomía de un Agente de IA* | Coming soon (beta) | Próximamente (beta) |
+| 12 | *Anatomy of an Agent* | *Anatomía de un Agente de IA* | Material not available | Material no disponible |
 | 13 | *Anatomy of a Corporate AI Platform* | *Anatomía de una Plataforma IA Corporativa* | [`EN/aigateway/`](EN/aigateway/) | [`ES/aigateway/`](ES/aigateway/) |
 
-All books are available on Amazon in Spanish and English. Visit **[machinebooks.ai](https://machinebooks.ai/)** for details, sample chapters, and purchase links.
+Publication status varies by title and language; the editing and unavailable-material entries above are not publication or companion-availability claims. Visit **[machinebooks.ai](https://machinebooks.ai/)** for current book details, sample chapters, and purchase links.
+
+El estado de publicación varía por título e idioma. Las entradas en edición o con material no disponible no anuncian publicación ni disponibilidad de ejemplos. Consulta **[machinebooks.ai](https://machinebooks.ai/)** para los detalles y enlaces actuales.
+
+## Review status — 3 October 2026
+
+The published examples refer to earlier editions. The books are undergoing a v1.1 review; corrected repository paths and catalogue descriptions do not mean that every code example has been updated or validated.
+
+Los ejemplos publicados corresponden a ediciones anteriores. La revisión v1.1 de los libros está en curso; corregir rutas y descripciones del catálogo no significa que todo el código esté actualizado o validado.
 
 ## How to use
 
@@ -35,23 +43,31 @@ All books are available on Amazon in Spanish and English. Visit **[machinebooks.
 git clone https://github.com/machinebooks/machinebooks.ai.git
 cd machinebooks.ai
 
-# Pick a language and book folder
-cd EN/finops    # English curated examples
-cd ES/finops    # Spanish code from book chapters
+# Choose ONE language and book folder; this example selects English
+cd EN/finops
 
-# Each file is self-contained — pick the pattern you need
-# See the README in each folder for details
-python agents/agent_budget_manager.py
+# Inspect the example and its dependencies before running it
+# For Spanish, start from the repository root and choose ES/finops instead
+# See the README in the selected folder for requirements and limitations
 ```
 
 ## Important
 
 These are **starter scaffolds and didactic code examples**, not production-ready platforms. The books are the guides — this code is the starting point.
 
+- EN curated examples and ES extracted blocks have different structures; folder or file counts do not establish content parity.
+- A file being present does not establish execution, security effectiveness, or synchronization with the edition you are reading.
+- Named AI clients, SDKs, and providers identify concrete examples. Alternative adapters require their own capability, permission, privacy, quality, and cost checks.
 - Code is didactic and commented with chapter references
 - API keys use placeholders (`<YOUR_API_KEY>` / `<TU_API_KEY>`)
 - Security patterns are implemented but should be reviewed for your specific deployment
 - All offensive security tools require proper authorization before use
+
+## Private application case and public examples
+
+The SylvarSecDesktop case remains private. This companion repository does not offer the application source, a public application download, or a current or future Community edition. The authors authorize the published didactic fragments and tests in EN/ and ES/ under their existing MIT terms; those examples are separate from the private product core.
+
+El caso SylvarSecDesktop permanece privado. Este repositorio no ofrece el código fuente de la aplicación, su descarga pública ni una edición Community actual o futura. Los autores mantienen autorizados los fragmentos y pruebas didácticos publicados en EN/ y ES/ bajo su licencia MIT; esos ejemplos son recursos distintos del core privado.
 
 ## Authors
 

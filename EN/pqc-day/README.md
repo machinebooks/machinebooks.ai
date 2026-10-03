@@ -2,7 +2,7 @@
 
 **Decisions, Code, and Lessons from a Post-Quantum Readiness Platform Built with AI**
 
-This repository contains the didactic code examples from the book. Each file is a self-contained, runnable example that illustrates a pattern discussed in the corresponding chapter.
+This repository contains the didactic code examples from the book. Each file illustrates a pattern discussed in the corresponding chapter. Dependencies, configuration and integration must be prepared and checked before execution.
 
 > **Important**: These are didactic examples, not production code. They are simplified and anonymized versions of real patterns. Do not use them directly in production without proper security review, error handling, and testing.
 
@@ -22,8 +22,8 @@ This repository contains the didactic code examples from the book. Each file is 
 
 ```bash
 # Clone the repository
-git clone https://github.com/machinebooks-ai/pqc-day.git
-cd pqc-day
+git clone https://github.com/machinebooks/machinebooks.ai.git
+cd machinebooks.ai/EN/pqc-day
 
 # Copy environment variables
 cp .env.example .env
@@ -105,21 +105,21 @@ pqc-day/
 
 | Chapter | File(s) | What It Shows |
 |---------|---------|---------------|
-| 1 | `crypto_scanner_basic.py` | Regex-based scanner + Claude API classification |
-| 7 | `crypto_patterns.py`, `repository_analyzer.py` | Multi-language pattern dictionary, full scanner with PQC scoring |
-| 8 | `certificate_scanner.py` | TLS certificate analysis, PQC group detection (ML-KEM, X25519MLKEM768) |
-| 9 | `quantum_vulnerable_algorithms.py`, `cloud_security_analyzer.py` | Algorithm taxonomy, AWS KMS/S3 audit |
-| 10 | `owasp_analyzer.py` | OWASP Top 10 vulnerability detection engine |
-| 11 | `ai_code_analyzer.py` | Multi-provider AI analysis (Anthropic, OpenAI), prompt engineering, JSON parsing |
-| 12 | `agent.py`, `tools.py` | Autonomous agent with tool-calling loop, 5 repository tools |
-| 13 | `rag_service.py` | Document chunking, PQC synonym expansion, LLM reranking |
-| 14 | `ai_admin_models.py` | AI governance: providers, services, prompts, usage logs, compliance controls |
-| 15 | `compliance_models.py`, `compliance_service.py` | NIS2/DORA compliance models, finding-to-control mapping |
-| 18 | `priority_scoring.py` | Migration priority scoring (Europol framework) |
-| 19 | `Dashboard.jsx` | React + MUI dashboard with theme and routing |
-| 21 | `docker-compose.yml`, `nginx.conf` | 7-service Docker architecture, Nginx reverse proxy |
-| 22 | `celery_tasks.py` | Async task pipeline with progress tracking |
-| 26 | `monitoring_agent.py`, `crypto_policy.py` | Continuous monitoring agent, crypto-agility policy model |
+| 1 | `cap-01/crypto_scanner_basic.py` | Regex-based scanner + Claude API classification |
+| 7 | `cap-07/crypto_patterns.py`, `cap-07/repository_analyzer.py` | Multi-language pattern dictionary, full scanner with PQC scoring |
+| 8 | `cap-08/certificate_scanner.py` | TLS certificate analysis, PQC group detection (ML-KEM, X25519MLKEM768) |
+| 9 | `cap-09/quantum_vulnerable_algorithms.py`, `cap-09/cloud_security_analyzer.py` | Algorithm taxonomy, AWS KMS/S3 audit |
+| 10 | `cap-10/owasp_analyzer.py` | OWASP Top 10 vulnerability detection engine |
+| 11 | `cap-11/ai_code_analyzer.py` | Multi-provider AI analysis (Anthropic, OpenAI), prompt engineering, JSON parsing |
+| 12 | `cap-12/agent.py`, `cap-12/tools.py` | Autonomous agent with tool-calling loop, 5 repository tools |
+| 13 | `cap-13/rag_service.py` | Document chunking, PQC synonym expansion, LLM reranking |
+| 14 | `cap-14/ai_admin_models.py` | AI governance: providers, services, prompts, usage logs, compliance controls |
+| 15 | `cap-15/compliance_models.py`, `cap-15/compliance_service.py` | NIS2/DORA compliance models, finding-to-control mapping |
+| 18 | `cap-18/priority_scoring.py` | Migration priority scoring (Europol framework) |
+| 19 | `cap-19/Dashboard.jsx` | React + MUI dashboard with theme and routing |
+| 21 | `cap-21/docker-compose.yml`, `cap-21/nginx.conf` | 7-service Docker architecture, Nginx reverse proxy |
+| 22 | `cap-22/celery_tasks.py` | Async task pipeline with progress tracking |
+| 26 | `cap-26/monitoring_agent.py`, `cap-26/crypto_policy.py` | Continuous monitoring agent, crypto-agility policy model |
 
 ## Running Examples That Use Claude API
 
@@ -186,7 +186,7 @@ python cap-15/compliance_service.py
 
 ## License
 
-These examples are provided for educational purposes as companion material to the book. See the book for full explanations and production considerations.
+The companion examples in this folder are MIT-licensed: see [LICENSE](../../LICENSE) and [LICENSING.md](../../LICENSING.md). The book text and production tooling are outside that grant. See the book for explanations and production considerations.
 
 ## Authors
 
@@ -195,3 +195,9 @@ Carlos Perez Gonzalez
 ---
 
 *Built with [Claude Code](https://claude.ai/claude-code)*
+
+## Scope of the published material
+
+A file being present does not establish execution, complete coverage, or synchronization with the edition you are reading. ES contains extracted code; EN may contain a different selection or exercises. Named providers and clients identify concrete cases; alternatives need separate capability, permission, privacy, quality, and cost checks.
+
+See [LICENSE](../../LICENSE) and [LICENSING.md](../../LICENSING.md) for the boundaries of companion code, editorial text, and production tooling.

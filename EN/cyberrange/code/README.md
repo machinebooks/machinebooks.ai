@@ -39,8 +39,10 @@ code/
 cp .env.example .env
 # Edit .env with your actual API keys, Proxmox credentials, etc.
 
-# 2. Start infrastructure
-docker compose up -d
+# 2. Start only the provided image-based infrastructure services
+docker compose up -d mysql redis
+# backend/Dockerfile and frontend/Dockerfile are not included.
+# The frontend source is also not included; supply your own before starting it.
 
 # 3. Install Python dependencies
 cd backend
@@ -58,15 +60,15 @@ pytest -v
 
 | Chapter | Topic | Files |
 |---------|-------|-------|
-| Ch. 8   | Workzones & network isolation | `routers/workzones.py` |
+| Ch. 8   | Workzones & network isolation | `backend/routers/workzones.py` |
 | Ch. 9   | FastAPI backend architecture | `backend/main.py` |
-| Ch. 10  | Proxmox integration | `services/proxmox_service.py` |
+| Ch. 10  | Proxmox integration | `backend/services/proxmox_service.py` |
 | Ch. 11  | Database design | `backend/models.py` |
-| Ch. 12  | CTF & flag mechanics | `services/flag_service.py`, `routers/gaming.py` |
+| Ch. 12  | CTF & flag mechanics | `backend/services/flag_service.py`, `backend/routers/gaming.py` |
 | Ch. 13  | Scenario automation | `playbooks/*.yml` |
-| Ch. 17  | AI scenario generation | `services/scenario_generator.py` |
-| Ch. 18  | AI coaching | `services/coaching_service.py` |
-| Ch. 19  | Red team AI agent | `services/red_team_agent.py` |
+| Ch. 17  | AI scenario generation | `backend/services/scenario_generator.py` |
+| Ch. 18  | AI coaching | `backend/services/coaching_service.py` |
+| Ch. 19  | Red team AI agent | `backend/services/red_team_agent.py` |
 | Ch. 24  | Security & authentication | `backend/auth.py` |
 | Ch. 25  | Containerized deployment | `docker-compose.yml` |
 

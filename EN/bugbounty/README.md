@@ -4,9 +4,9 @@
 
 **Companion code for *Bug Bounty Hunter and the Machine: Security Research with AI — From Docker Lab to Bounty Report*.**
 
-This folder contains the Docker lab, exploit PoCs, analysis scripts, and report templates referenced throughout the book.
+**Available in this folder:** this README only. The paths below describe planned companion material and are not download links or files currently supplied. The Spanish extraction is available separately in [ES/bugbounty](../../ES/bugbounty/), with chapter numbering from an earlier source snapshot.
 
-## Directory structure
+## Planned directory structure — not currently supplied
 
 ```
 bugbounty/
@@ -30,7 +30,7 @@ bugbounty/
 └── agents/               # Claude agent patterns for security research
 ```
 
-## Chapter-to-file mapping
+## Planned chapter-to-file mapping — earlier outline
 
 | Chapter | Title | Files |
 |---------|-------|-------|
@@ -57,14 +57,16 @@ bugbounty/
 | 26 | From hobby to profession: the economics of bug bounty | `agents/agent_roi_tracker.py` |
 | 27 | The future: offensive AI, defensive AI, and the hunter in between | `agents/agent_autonomous_hunter.py` |
 
+The outline above predates the current manuscript: economics and future are now chapters 35 and 36; the Spanish extraction headers still use 28 and 29 for those topics. Reconcile the complete map before announcing new companion availability. No files or private application source are added by this README update.
+
 ## Important: Responsible disclosure
 
-All vulnerability research described in this book and this repository was conducted under authorized bug bounty programs or responsible disclosure policies. The exploit code provided here is for **educational and authorized testing purposes only**.
+Use any companion security-research material only within systems, programmes, and disclosure arrangements for which you have explicit authorization. This is a requirement for use, not independent confirmation of the authorization or disclosure history of every case in the book. No exploit files are currently supplied in this English folder.
 
 - **Never** use these tools against systems without explicit written authorization.
 - **Always** follow the scope and rules of the bug bounty program you are participating in.
 - **Report** vulnerabilities through proper channels before any public disclosure.
-- Vendor names in PoC filenames are used for educational context only; all issues were reported to the respective vendors through their official security channels.
+- Before publishing case material or PoCs, verify authorization, disclosure status, and the vendor coordination applicable to that specific case. A vendor name or filename is not evidence that this process is complete.
 
 ## Requirements
 
@@ -75,4 +77,12 @@ All vulnerability research described in this book and this repository was conduc
 
 ## License
 
-MIT — See [LICENSE](../LICENSE) for details.
+MIT — See [LICENSE](../../LICENSE) for details.
+
+## Scope of the published material
+
+A file being present does not establish execution, complete coverage, or synchronization with the edition you are reading. ES contains extracted code; EN may contain a different selection or exercises. Named providers and clients identify concrete cases; alternatives need separate capability, permission, privacy, quality, and cost checks.
+
+See [LICENSE](../../LICENSE) and [LICENSING.md](../../LICENSING.md) for the boundaries of companion code, editorial text, and production tooling.
+
+The SylvarSecDesktop application case is private; this folder does not offer its source, a public download, or a current or future Community edition. Published didactic fragments and tests remain authorized under their existing MIT terms and do not constitute the product core.

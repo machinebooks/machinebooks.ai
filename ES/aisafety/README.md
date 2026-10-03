@@ -17,7 +17,7 @@ Cada fichero incluye un comentario de cabecera indicando el capitulo de origen.
 Estos son **ejemplos de codigo del libro**, no una aplicacion ejecutable.
 
 - Las claves API usan marcadores (`<TU_API_KEY>`)
-- Cada fichero es autocontenido y comentado
+- Cada fichero muestra un patrón y puede requerir dependencias, componentes auxiliares y contexto del capítulo
 - Python 3.11+ con type hints
 - Patrones de seguridad y guardrails aplicables a cualquier proveedor de IA
 
@@ -33,3 +33,9 @@ Mas informacion en [machinebooks.ai](https://machinebooks.ai/).
 ## Licencia
 
 MIT -- Ver [LICENSE](../../LICENSE) para mas detalles.
+
+## Alcance del material publicado
+
+La presencia de un fichero no acredita ejecución, cobertura completa ni sincronización con la edición que estés leyendo. ES reúne extracción de código; EN puede contener una selección distinta o ejercicios. Los proveedores y clientes nombrados son casos concretos; alternativas requieren adaptar y comprobar capacidades, permisos, privacidad, calidad y coste.
+
+Consulta [LICENSE](../../LICENSE) y [LICENSING.md](../../LICENSING.md) para la delimitación de los ejemplos complementarios, el texto editorial y las herramientas de producción.

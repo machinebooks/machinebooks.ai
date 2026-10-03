@@ -31,7 +31,7 @@ Each file corresponds to a chapter and contains the didactic code shown in the b
 These are **code examples from the book**, not a runnable application. They illustrate patterns and architectural decisions explained in each chapter.
 
 - API keys use placeholders (`<YOUR_API_KEY>`)
-- Each file is self-contained and commented
+- Each file illustrates a pattern and may need dependencies, helpers, and chapter context
 - Python 3.11+ with type hints
 
 ## The Book
@@ -41,3 +41,9 @@ Available on Amazon:
 - **English**: *The CISO and the Machine*
 
 Part of the series **The Professional and the Machine**.
+
+## Scope of the published material
+
+A file being present does not establish execution, complete coverage, or synchronization with the edition you are reading. ES contains extracted code; EN may contain a different selection or exercises. Named providers and clients identify concrete cases; alternatives need separate capability, permission, privacy, quality, and cost checks.
+
+See [LICENSE](../../LICENSE) and [LICENSING.md](../../LICENSING.md) for the boundaries of companion code, editorial text, and production tooling.

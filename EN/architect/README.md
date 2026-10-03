@@ -26,15 +26,18 @@ You will also need:
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/SYLVARCON2049/machinebooks.ai.git
-cd machinebooks.ai/architect
+git clone https://github.com/machinebooks/machinebooks.ai.git
+cd machinebooks.ai/EN/architect
 
 # 2. Copy and configure environment variables
 cp .env.example .env
 # Edit .env with your API keys
 
-# 3. Start infrastructure (MySQL, Redis, Qdrant, Meilisearch)
-docker compose up -d
+# 3. Review the infrastructure examples
+# The full Compose file also references backend/Dockerfile and ai_service/Dockerfile.
+# These build files are not included; supply your own before starting those services.
+# To start only the image-based infrastructure services:
+docker compose up -d mysql_ops mysql_analytics redis qdrant meilisearch
 
 # 4. Run the Quality Scorer tests (no infrastructure needed)
 python tests/test_quality_scorer.py
@@ -113,14 +116,20 @@ architect/
 These are **code examples from the book**, not a runnable application. They illustrate architectural patterns and decisions explained in each chapter.
 
 - API keys use placeholders (`<YOUR_API_KEY>` or `os.getenv()`)
-- Each file is self-contained with chapter references in comments and docstrings
+- Each file illustrates a pattern with chapter references and may require dependencies, helpers, and context
 - Python 3.11+ with type hints throughout
-- Models use Claude exclusively: `claude-opus-4-6`, `claude-sonnet-4-6`, `claude-haiku-4-5`
+- These examples use Claude models: `claude-opus-4-6`, `claude-sonnet-4-6`, `claude-haiku-4-5`. This is the implementation case, not a provider requirement for the architectural method; alternative adapters require separate evaluation.
 
 ## License
 
-MIT License. See [LICENSE](../LICENSE) for details.
+MIT License. See [LICENSE](../../LICENSE) for details.
 
 ## The Book
 
 *The Architect and the Machine* covers the complete architecture of an enterprise AI platform — from database design and IAM to LLM integration, agent orchestration, and Docker deployment. These code examples get you started. The book shows you where to go.
+
+## Scope of the published material
+
+A file being present does not establish execution, complete coverage, or synchronization with the edition you are reading. ES contains extracted code; EN may contain a different selection or exercises. Named providers and clients identify concrete cases; alternatives need separate capability, permission, privacy, quality, and cost checks.
+
+See [LICENSE](../../LICENSE) and [LICENSING.md](../../LICENSING.md) for the boundaries of companion code, editorial text, and production tooling.

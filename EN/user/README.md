@@ -2,13 +2,13 @@
 
 **AI Agents for Your Daily Work: From Asking to Delegating**
 
-This directory contains all the ready-to-use prompts and exercises from the book, organized by chapter. Each file includes copy-pasteable prompts that you can use directly with Claude Code, Claude Desktop, or claude.ai.
+This directory contains all the ready-to-use prompts and exercises from the book, organized by chapter. The prompts illustrate tasks for an AI client with the required tools, permissions, and data access. Claude Code, Claude Desktop, and claude.ai are the historical examples; adapt and validate the prompt for the client you use.
 
 ## How to use
 
 1. Find the chapter you're reading
 2. Open the corresponding exercise file
-3. Copy the prompt into your Claude session
+3. Use the prompt in an AI client whose capabilities and permissions fit the exercise
 4. Adapt paths, names, and data to your situation
 
 ## Structure
@@ -65,3 +65,9 @@ user/
 - Paths use Windows format (`C:\Users\...`) by default — adapt to your OS.
 - Replace placeholder values (`TU_USUARIO`, `tu-token`, file paths) with your actual data.
 - No real API keys, credentials, or personal data are included in any exercise.
+
+## Scope of the published material
+
+A file being present does not establish execution, complete coverage, or synchronization with the edition you are reading. ES contains extracted code; EN may contain a different selection or exercises. Named providers and clients identify concrete cases; alternatives need separate capability, permission, privacy, quality, and cost checks.
+
+See [LICENSE](../../LICENSE) and [LICENSING.md](../../LICENSING.md) for the boundaries of companion code, editorial text, and production tooling.

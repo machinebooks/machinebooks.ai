@@ -72,7 +72,7 @@ devsecops/
 These are **code examples from the book**, not a runnable application. They illustrate patterns and architectural decisions explained in each chapter.
 
 - API keys use placeholders (`<TU_API_KEY>`)
-- Each file is self-contained and commented
+- Each file illustrates a pattern and may need dependencies, helpers, and chapter context
 - Python 3.12+ with type hints
 - Claude models: `claude-sonnet-4-6`, `claude-haiku-4-5`, `claude-opus-4-6`
 
@@ -83,3 +83,11 @@ Available on Amazon:
 - **English**: *The DevSecOps and the Machine*
 
 Part of the series **The Professional and the Machine**.
+
+## Scope of the published material
+
+A file being present does not establish execution, complete coverage, or synchronization with the edition you are reading. ES contains extracted code; EN may contain a different selection or exercises. Named providers and clients identify concrete cases; alternatives need separate capability, permission, privacy, quality, and cost checks.
+
+See [LICENSE](../../LICENSE) and [LICENSING.md](../../LICENSING.md) for the boundaries of companion code, editorial text, and production tooling.
+
+The SylvarSecDesktop application case is private; this folder does not offer its source, a public download, or a current or future Community edition. Published didactic fragments and tests remain authorized under their existing MIT terms and do not constitute the product core.

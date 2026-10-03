@@ -13,12 +13,20 @@ All code is inside the [`code/`](code/) directory. See [`code/README.md`](code/R
 ## Quick Start
 
 ```bash
-git clone https://github.com/SYLVARCON2049/machinebooks.ai.git
-cd machinebooks.ai/cyberrange/code
+git clone https://github.com/machinebooks/machinebooks.ai.git
+cd machinebooks.ai/EN/cyberrange/code
 cp .env.example .env
-docker compose up -d
+docker compose up -d mysql redis
+# The backend/frontend services require Dockerfiles that are not included.
+# Supply your own builds and dependencies before starting application services.
 ```
 
 ## License
 
 MIT — See root repository for details.
+
+## Scope of the published material
+
+A file being present does not establish execution, complete coverage, or synchronization with the edition you are reading. ES contains extracted code; EN may contain a different selection or exercises. Named providers and clients identify concrete cases; alternatives need separate capability, permission, privacy, quality, and cost checks.
+
+See [LICENSE](../../LICENSE) and [LICENSING.md](../../LICENSING.md) for the boundaries of companion code, editorial text, and production tooling.
