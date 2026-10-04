@@ -1,0 +1,79 @@
+from datetime import datetime, timedelta
+
+class ActionManager:
+    DEFAULT_DEADLINES = {'critical': 14, 'high': 90, 'medium': 180, 'low': 365}
+    DEFAULT_EFFORT = {
+        'critical': '1-2 weeks', 'high': '2-4 weeks',
+        'medium': '1-2 months', 'low': '2-4 months'}
+    PRIORITY_ORDER = {'critical': 4, 'high': 3, 'medium': 2, 'low': 1}
+
+    def generate_actions_from_findings(self, assessment_id, prioritized_findings,
+                                       db_session=None):
+        # Input is an authorized immutable snapshot from the tenant-bound
+        # assessment service. This pure proposal builder performs no DB writes.
+        # db_session is retained for call compatibility and is never used here.
+        if type(assessment_id) is not int or assessment_id <= 0:
+            raise ValueError('Positive assessment identifier required')
+        if not isinstance(prioritized_findings, list):
+            raise ValueError('Reviewed prioritized snapshot required')
+        for finding in prioritized_findings:
+            if (not isinstance(finding, dict) or
+                    finding.get('priority_label') not in self.PRIORITY_ORDER or
+                    not isinstance(finding.get('algorithm'), str) or
+                    not finding['algorithm'].strip() or
+                    not isinstance(finding.get('usage_context'), str)):
+                raise ValueError('Invalid prioritized finding')
+        groups = self._group_by_migration_key(prioritized_findings)
+        actions = []
+        today = datetime.utcnow().date()
+        for group_key, findings in groups.items():
+            priority = max(findings,
+                           key=lambda f: self.PRIORITY_ORDER[f['priority_label']])['priority_label']
+            actions.append({
+                'assessment_id': assessment_id,
+                'title': self._generate_action_title(group_key, findings),
+                'description': self._generate_action_description(group_key, findings),
+                'priority': priority,
+                'status': 'pending',
+                'due_date': today + timedelta(days=self.DEFAULT_DEADLINES[priority]),
+                'estimated_effort': self.DEFAULT_EFFORT[priority],
+                'affected_findings': len(findings),
+                'affected_files': sorted({
+                    f['file_path'] for f in findings
+                    if isinstance(f.get('file_path'), str) and f['file_path']})})
+        return sorted(actions, key=lambda a: self.PRIORITY_ORDER[a['priority']],
+                      reverse=True)
+
+    def _group_by_migration_key(self, findings):
+        groups = {}
+        for finding in findings:
+            key = (finding['algorithm'].lower(), finding['usage_context'].lower())
+            groups.setdefault(key, []).append(finding)
+        return groups
+
+    def _generate_action_title(self, group_key, findings):
+        algorithm, usage = group_key
+        return f'Review migration of {algorithm.upper()} for {usage} ({len(findings)} findings)'
+
+    def _generate_action_description(self, group_key, findings):
+        algorithm, usage = group_key
+        files = sorted({f['file_path'] for f in findings
+                        if isinstance(f.get('file_path'), str) and f['file_path']})
+        recommendation = self._get_pqc_recommendation(algorithm, usage)
+        # Default dates and effort are internal planning assumptions, not law,
+        # measured effort or an implemented migration instruction.
+        return (recommendation + '\nInternal planning proposal; confirm evidence, '
+                'ownership, protocol compatibility, effort and legal scope.\n' +
+                '\n'.join(files[:10]))
+
+    def _get_pqc_recommendation(self, algorithm, usage):
+        if usage in {'signature', 'authentication'} and algorithm in {
+                'rsa', 'dsa', 'ecdsa', 'ecc', 'ed25519'}:
+            return 'Evaluate ML-DSA/SLH-DSA with the actual signature protocol and verifier support'
+        if usage in {'key_exchange', 'key_establishment'} and algorithm in {
+                'rsa', 'ecc', 'ecdh', 'dh', 'x25519'}:
+            return 'Evaluate ML-KEM or an applicable hybrid key-establishment profile'
+        if usage == 'encryption' and algorithm in {'rsa', 'ecc'}:
+            return ('Review the complete envelope and key-protection chain; ML-KEM '
+                    'establishes shared keys and does not directly replace bulk encryption')
+        return 'Determine function, parameters, evidence and applicable profile before choosing replacement'

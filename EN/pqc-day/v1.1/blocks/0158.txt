@@ -1,0 +1,55 @@
+const PQCScoreGauge = ({ score }) => {
+  const assessed = Number.isFinite(score) && score >= 0 && score <= 100
+  if (!assessed) return <Typography role="status">Not assessed</Typography>
+  const getColor = (s) => {
+    if (s >= 80) return '#1b5e20'  // Green — excellent
+    if (s >= 50) return '#8a4b00'  // Orange — attention
+    return '#b71c1c'               // Red — critical
+  }
+
+  return (
+    <Box sx={{ textAlign: 'center' }}>
+      <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+        {/* Gray background of the circular indicator */}
+        <CircularProgress
+          variant="determinate"
+          aria-hidden="true"
+          value={100}
+          size={120}
+          thickness={4}
+          sx={{ color: 'grey.200' }}
+        />
+        {/* Progress arc with dynamic color */}
+        <CircularProgress
+          variant="determinate"
+          aria-label="PQC finding classification"
+          value={score}
+          size={120}
+          thickness={4}
+          sx={{
+            color: getColor(score),
+            position: 'absolute',
+            left: 0,
+          }}
+        />
+        {/* Centered number inside the circle */}
+        <Box sx={{
+          position: 'absolute', inset: 0,
+          display: 'flex', alignItems: 'center',
+          justifyContent: 'center', flexDirection: 'column',
+        }}>
+          <Typography variant="h4" fontWeight="bold"
+            sx={{ color: getColor(score) }}>
+            {score.toFixed(0)}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            /100
+          </Typography>
+        </Box>
+      </Box>
+      <Typography variant="caption" color="text.secondary">
+        PQC finding classification
+      </Typography>
+    </Box>
+  )
+}

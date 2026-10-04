@@ -1,0 +1,58 @@
+import time
+import json
+from math import isfinite
+
+def run_agent(call_provider, execute_authorized_tool, initial_messages,
+              max_iterations=15, total_seconds=300):
+    if type(max_iterations) is not int or not 1 <= max_iterations <= 100:
+        raise ValueError("Iteration budget must be 1 to 100")
+    if (isinstance(total_seconds, bool) or not isinstance(total_seconds, (int, float))
+            or not isfinite(total_seconds) or not 0 < total_seconds <= 300):
+        raise ValueError("Total deadline must be at most 300 seconds")
+    messages, actions = list(initial_messages), []
+    deadline = time.monotonic() + total_seconds
+    seen_ids = set()
+    for iteration in range(max_iterations):
+        if time.monotonic() >= deadline:
+            return {"status": "deadline_exhausted", "actions": actions}
+        # Adapter enforces deadline, full token/cost/context limits, source policy
+        # and converts normalized messages to its own native provider protocol.
+        response = call_provider(messages, deadline=deadline)
+        if not isinstance(response, dict) or not isinstance(response.get('tool_calls'), list):
+            return {"status": "invalid_provider_reply", "actions": actions}
+        calls = response['tool_calls']
+        if len(calls) > 8 or len(actions) + len(calls) > 64:
+            return {"status": "tool_budget_exhausted", "actions": actions}
+        if response.get('finish_reason') == 'end_turn' and not calls:
+            return {"status": "model_finished", "coverage": "not_verified",
+                    "text": response.get('text', ''), "actions": actions}
+        if response.get('finish_reason') != 'tool_calls' or not calls:
+            return {"status": "provider_incomplete", "actions": actions}
+        ids = []
+        for call in calls:
+            if (not isinstance(call, dict) or not isinstance(call.get('id'), str)
+                    or not 1 <= len(call['id']) <= 200 or not isinstance(call.get('name'), str)
+                    or not isinstance(call.get('arguments'), dict)):
+                raise ValueError('Invalid tool call')
+            ids.append(call['id'])
+        if len(set(ids)) != len(ids) or seen_ids.intersection(ids):
+            raise ValueError('Duplicate tool call ID')
+        seen_ids.update(ids)
+        assistant = response.get('assistant_message')
+        if not isinstance(assistant, dict) or assistant.get('role') != 'assistant':
+            raise ValueError('Missing assistant message')
+        messages.append(assistant)
+        for call in calls:
+            if time.monotonic() >= deadline:
+                return {"status": "deadline_exhausted", "actions": actions}
+            # Dispatcher validates schema/allowlist, tenant, immutable paths,
+            # write approval and per-tool resource/deadline constraints.
+            result = execute_authorized_tool(call['name'], call['arguments'], deadline=deadline)
+            content = json.dumps(result, ensure_ascii=False)
+            if len(content) > 10000:
+                return {"status": "tool_output_budget_exhausted", "actions": actions}
+            messages.append({'role': 'tool', 'tool_call_id': call['id'], 'content': content})
+            actions.append({'tool_call_id': call['id'], 'name': call['name'], 'result': result})
+    return {'status': 'iteration_budget_exhausted', 'actions': actions}
+# A callback that ignores deadlines can still block. Durable receipts and
+# provider-specific conversion are omitted; this is a custom loop, not Agent SDK.

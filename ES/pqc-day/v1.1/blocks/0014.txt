@@ -1,0 +1,17 @@
+routes/
+├── __init__.py
+├── auth/
+│   ├── __init__.py          # Blueprint + recursos REST
+│   ├── resources.py         # Clases Resource de Flask-RESTful
+│   └── schemas.py           # Marshmallow schemas para serialización
+├── pqc_analysis/
+│   ├── __init__.py
+│   ├── resources.py
+│   ├── schemas.py
+│   └── tasks.py             # Tareas Celery de análisis asíncrono
+├── cloud/
+│   ├── __init__.py
+│   ├── resources.py
+│   ├── schemas.py
+│   └── connectors/          # boto3, azure-sdk, google-cloud
+...

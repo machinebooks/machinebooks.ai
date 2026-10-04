@@ -1,0 +1,73 @@
+import time
+import json
+import hmac
+import hashlib
+from flask import current_app
+from models.ai_admin import AIUsageLog
+
+
+def call_llm_with_tracking(provider, service, user_id, messages,
+                           client_id=None, *, organization_id):
+    # The caller authorizes user/service/provider/client and source export.
+    if type(organization_id) is not int or organization_id <= 0:
+        raise ValueError("Trusted organization required")
+    key = current_app.config.get("TELEMETRY_HMAC_KEY")
+    if not isinstance(key, bytes) or len(key) < 32:
+        raise RuntimeError("Telemetry key configuration missing")
+    payload = json.dumps({
+        "provider_id": provider.id, "model": service.model,
+        "max_tokens": service.max_tokens, "temperature": service.temperature,
+        "messages": messages,
+    }, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
+    request_hash = hmac.new(key, payload, hashlib.sha256).hexdigest()
+    start = time.monotonic()
+    response = None
+    provider_error = None
+    try:
+        response = anthropic_client.messages.create(
+            model=service.model, max_tokens=service.max_tokens,
+            temperature=service.temperature, messages=messages,
+        )
+    except Exception as exc:
+        provider_error = exc
+    tokens_in = tokens_out = cost = None
+    if response is not None:
+        usage = getattr(response, "usage", None)
+        values = (getattr(usage, "input_tokens", None),
+                  getattr(usage, "output_tokens", None))
+        if all(type(v) is int and v >= 0 for v in values):
+            tokens_in, tokens_out = values
+            try:
+                cost = calculate_cost(provider, usage)
+            except Exception:
+                cost = None
+    # A separate telemetry transaction cannot commit/rollback domain work.
+    factory = current_app.extensions.get("telemetry_session_factory")
+    if factory is None:
+        current_app.logger.warning("telemetry_unavailable")
+    else:
+        session = factory()
+        try:
+            session.add(AIUsageLog(
+                organization_id=organization_id, service_id=service.id,
+                provider_id=provider.id, user_id=user_id, model=service.model,
+                operation=service.slug, tokens_in=tokens_in,
+                tokens_out=tokens_out,
+                tokens_total=None if tokens_in is None else tokens_in + tokens_out,
+                cost_usd=cost, latency_ms=int((time.monotonic() - start) * 1000),
+                status="success" if provider_error is None else
+                    ("timeout" if isinstance(provider_error, TimeoutError) else "error"),
+                error_message=None if provider_error is None else "provider_call_failed",
+                request_hash=request_hash, client_id=client_id,
+            ))
+            session.commit()
+        except Exception:
+            session.rollback()
+            current_app.logger.warning("telemetry_write_failed")
+        finally:
+            session.close()
+    if provider_error is not None:
+        raise provider_error
+    return response
+# Provider-specific timeout types and dated pricing remain adapter contracts.
+# Aggregate counters derive from scoped logs; no read/modify/write increments.

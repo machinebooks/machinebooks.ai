@@ -1,0 +1,66 @@
+@celery.task(bind=True)
+def scan_cloud_config_task(self, job_id: int, config_id: int, target_id: int,
+                           organization_id: int, regions: list = None,
+                           options: dict = None):
+    job = AnalysisJob.query.get(job_id)
+    config = ClientCloudConfig.query.get(config_id)
+    target = AnalysisTarget.query.filter_by(id=target_id, job_id=job_id).first()
+    client = Client.query.filter_by(
+        id=job.client_id if job else None, organization_id=organization_id).first()
+    organization = Organization.query.get(organization_id)
+    if (not job or not config or not target or not client or not organization
+            or not organization.is_active or config.client_id != client.id
+            or job.job_type != 'cloud'):
+        return {'status': 'not_authorized', 'job_id': job_id}
+    claimed = AnalysisJob.query.filter_by(id=job_id, status='pending').update(
+        {'status': 'running', 'progress_percentage': 5}, synchronize_session=False)
+    db.session.commit()
+    if claimed != 1:
+        return {'status': 'not_admitted', 'job_id': job_id}
+    try:
+        provider = config.provider.name
+        if provider == 'aws':
+            scanner = AWSCloudScanner(config.credentials, regions or [])
+        elif provider == 'azure':
+            scanner = AzureCloudScanner(config.credentials)
+        elif provider == 'gcp':
+            scanner = GCPCloudScanner(config.credentials)
+        else:
+            raise ValueError("Unsupported provider")
+        result = scanner.scan_all()
+        observed = getattr(result, 'findings', None)
+        if not isinstance(observed, list):
+            raise ValueError("Invalid scanner result contract")
+        for finding in observed:
+            severity = getattr(finding, 'severity', None)
+            if severity not in {'critical', 'high', 'medium', 'low', 'info'}:
+                raise ValueError("Invalid severity")
+            state = getattr(finding, 'pqc_compliant', None)
+            if type(state) is not bool:
+                state = None
+            db.session.add(CryptoFinding(
+                job_id=job_id, target_id=target_id, finding_type='configuration',
+                algorithm_category='cloud_security', risk_level=severity,
+                pqc_compliant=state,
+                location=str(getattr(finding, 'resource_id', 'unknown')),
+                description=str(getattr(finding, 'title', 'Cloud observation')),
+                recommendation='Review purpose, evidence and applicable profile'))
+        job.status, job.progress_percentage = 'completed', 100
+        job.result_summary = {
+            'provider': provider, 'findings_count': len(observed),
+            'assessment_status': 'partial', 'pqc_readiness_score': None,
+            'coverage': 'scanner coverage and errors require normalized adapter'}
+        db.session.commit()
+        return {'status': 'completed', 'assessment_status': 'partial',
+                'job_id': job_id, 'pqc_readiness_score': None}
+    except Exception:
+        db.session.rollback()
+        job = AnalysisJob.query.get(job_id)
+        if job is not None:
+            job.status, job.error_message = 'failed', 'normalized_cloud_scan_error'
+            db.session.commit()
+        return {'status': 'failed', 'job_id': job_id}
+# Trusted dispatch supplies organization and target; JWT alone does not authorize
+# queue inputs. This example has no automatic retries or complete-coverage claim.
+# Production integration adds leased recovery, cancellation, safe credential use,
+# normalized coverage/errors and transactional idempotency of persisted findings.

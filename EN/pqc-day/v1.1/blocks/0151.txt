@@ -1,0 +1,11 @@
+def sign_hybrid(message, classical_private_key, pq_private_key, classical, post_quantum):
+    # Adapters implement signatures; a KEM is not a signature provider.
+    return {"classical": classical.sign(message, classical_private_key),
+            "post_quantum": post_quantum.sign(message, pq_private_key)}
+
+def verify_hybrid(message, bundle, classical_public_key, pq_public_key, classical, post_quantum):
+    if set(bundle) != {"classical", "post_quantum"}:
+        return False
+    # The calling protocol binds algorithms, keys and context to this bundle.
+    return (classical.verify(message, bundle["classical"], classical_public_key)
+            and post_quantum.verify(message, bundle["post_quantum"], pq_public_key))

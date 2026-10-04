@@ -1,0 +1,48 @@
+import anthropic
+
+client = anthropic.Anthropic()
+
+def classify_crypto_finding(
+    code_snippet: str,
+    algorithm: str,
+    file_path: str,
+    language: str
+) -> dict:
+    """Classifies a cryptographic finding by PQC risk.
+
+    Does not replace static analysis — it complements it with
+    semantic context that a regex cannot capture.
+    """
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=1024,
+        system=(
+            "You are a post-quantum cryptography expert. "
+            "Analyze the use of cryptographic algorithms in source code "
+            "and classify their vulnerability risk against quantum computing. "
+            "Always respond in JSON with the fields: "
+            "severity (critical/high/medium/low), "
+            "pqc_compliant (true/false), "
+            "context (what this algorithm protects), "
+            "recommended_replacement (recommended PQC-safe algorithm), "
+            "migration_priority (1-5), "
+            "rationale (brief explanation of the classification)."
+        ),
+        messages=[{
+            "role": "user",
+            "content": (
+                f"File: {file_path} ({language})\n"
+                f"Detected algorithm: {algorithm}\n"
+                f"Code fragment:\n```{language}\n{code_snippet}\n```\n\n"
+                "Classify this finding considering:\n"
+                "1. What does this algorithm protect? (data in transit, "
+                "   at rest, signatures, authentication)\n"
+                "2. Is it vulnerable to a quantum computer with Shor?\n"
+                "3. What is the recommended PQC-safe replacement according "
+                "   to NIST FIPS 203/204/205?\n"
+                "4. What migration priority does it have (1=urgent, 5=low)?"
+            )
+        }]
+    )
+
+    return parse_json_response(message.content[0].text)

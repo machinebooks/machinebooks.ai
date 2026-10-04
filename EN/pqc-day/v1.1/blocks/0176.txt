@@ -1,0 +1,20 @@
+def _resolve_path(self, relative_path):
+    from pathlib import Path
+    if not isinstance(relative_path, str) or not relative_path or len(relative_path) > 500:
+        raise ValueError('Invalid relative path')
+    path = Path(relative_path)
+    if path.is_absolute() or any(part.casefold() in {'.git', 'node_modules', '.venv'} for part in path.parts):
+        raise ValueError('Path denied')
+    root = self.repo_path.resolve(strict=True)
+    current = root
+    for part in path.parts:
+        current = current / part
+        if current.is_symlink():
+            raise ValueError('Symlink denied')
+    resolved = current.resolve(strict=True)
+    resolved.relative_to(root)
+    if not resolved.is_file():
+        raise ValueError('Regular file required')
+    return resolved
+# The caller owns an authorized immutable checkout; containment alone does not
+# defeat concurrent filesystem mutation. Byte/line/deadline limits apply on read.

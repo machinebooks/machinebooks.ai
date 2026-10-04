@@ -1,0 +1,48 @@
+def analyze_file_content(self, content: str, file_path: str) -> Dict:
+    findings = []
+    errors = list(self.compile_errors)
+    if not isinstance(content, str) or len(content) > 500_000:
+        return {'status': 'not_assessed', 'findings': [],
+                'errors': [{'status': 'invalid_or_oversized_input'}]}
+    started = time.monotonic()
+    exhausted = False
+    for category, rules in self.compiled_patterns.items():
+        for rule_id, rule in rules.items():
+            if time.monotonic() - started >= 2 or len(findings) >= 1000:
+                errors.append({'status': 'file_budget_exhausted'})
+                exhausted = True
+                break
+            try:
+                for match in rule['regex'].finditer(content, timeout=0.05):
+                    if time.monotonic() - started >= 2 or len(findings) >= 1000:
+                        errors.append({'status': 'file_budget_exhausted'})
+                        exhausted = True
+                        break
+                    findings.append({
+                        'rule_id': f"OWASP-{rule_id}", 'category': category,
+                        'owasp_id': rule.get('owasp_id', 'A00'),
+                        'owasp_category': rule.get('category', category),
+                        'title': rule.get('title') or 'Security candidate',
+                        'severity': rule.get('severity', 'medium'),
+                        'cwe': rule.get('cwe'),
+                        'description': rule.get('description', ''),
+                        'recommendation': rule.get('recommendation', ''),
+                        'file_path': file_path,
+                        'line_number': content.count('\n', 0, match.start()) + 1,
+                        'code_snippet': '', 'match_text': '',
+                        'evidence_status': 'raw_source_not_exported',
+                        'source': 'owasp_pattern', 'review_status': 'pending'
+                    })
+            except TimeoutError:
+                errors.append({'rule_id': rule_id, 'status': 'timeout'})
+            except Exception:
+                errors.append({'rule_id': rule_id, 'status': 'rule_error'})
+            if exhausted:
+                break
+        if exhausted:
+            break
+    return {'status': 'partial' if errors else 'selected_rules_processed',
+            'findings': findings, 'errors': errors}
+# File paths must already belong to an authorized immutable checkout. Empty
+# snippets avoid exporting neighboring secrets; review retrieves source through
+# a separate authorized evidence flow. No exhaustive OWASP coverage is claimed.

@@ -1,0 +1,18 @@
+AWS_ASSESSMENT_CHECKS = {
+    "s3-default-encryption": {
+        "evidence": "GetBucketEncryption plus object inventory",
+        "unknown_is_failure": False, "pqc_severity": None},
+    "kms-key-rotation": {
+        "evidence": "Key type, rotation eligibility and organization policy",
+        "note": "Rotation does not change immutable KeySpec/KeyUsage",
+        "pqc_severity": None},
+    "rds-transport": {
+        "evidence": "Enforcement configuration and observed TLS negotiation",
+        "note": "TLS version/cipher alone do not establish PQC key exchange",
+        "pqc_severity": None},
+    "acm-signature": {
+        "evidence": "Certificate key, function, service and trust chain",
+        "note": "RSA/ECDSA are classical; urgency depends on context",
+        "pqc_severity": None},
+}
+# These are internal check identifiers, not official CIS/NIST control statements.

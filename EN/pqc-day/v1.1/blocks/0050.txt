@@ -1,0 +1,20 @@
+from tempfile import TemporaryDirectory
+
+def analyze_repository(connector, repo_id, analyze, persist):
+    # Credential resolution and tenant authorization precede this function.
+    # analyze returns files_expected, files_scanned, read_errors and findings.
+    if not connector.connect():
+        return {"status": "failed", "stage": "connect"}
+    with TemporaryDirectory(prefix="pqc_analysis_") as workdir:
+        if not connector.clone_repository(repo_id, workdir):
+            return {"status": "failed", "stage": "clone"}
+        report = analyze(workdir)
+        if report["files_scanned"] == 0:
+            report["status"] = "not_assessed"
+        elif report["read_errors"] or report["files_scanned"] < report["files_expected"]:
+            report["status"] = "partial"
+        else:
+            report["status"] = "completed"
+        # persist uses a tenant-scoped transaction and an idempotency key.
+        persist(report)
+        return report

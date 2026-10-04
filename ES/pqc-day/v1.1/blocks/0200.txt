@@ -1,0 +1,39 @@
+from extensions import db
+from datetime import datetime
+
+
+class AuditLog(db.Model):
+    """Audit record for user actions.
+    Each row answers: who did what, when, from where
+    and on what system entity."""
+    __tablename__ = 'audit_logs'
+
+    id = db.Column(db.Integer, primary_key=True)
+    organization_id = db.Column(db.Integer, db.ForeignKey("organizations.id"), nullable=False)
+    # Who: relationship with users table
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('users.id', ondelete='SET NULL'),
+        nullable=True  # Allows system actions without user
+    )
+    # What: action executed (login, create_client, run_scan, etc.)
+    action = db.Column(db.String(100), nullable=False)
+    # On what: entity type and its ID
+    entity_type = db.Column(db.String(50))  # 'client', 'scan', 'report'
+    entity_id = db.Column(db.Integer)
+    # Additional context: free JSON for action-specific metadata
+    details = db.Column(db.JSON)
+    # From where: user's IP and browser
+    ip_address = db.Column(db.String(45))   # IPv6 supported
+    user_agent = db.Column(db.Text)
+    # When
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relationship to resolve user name in queries
+    user = db.relationship(
+        'User',
+        backref=db.backref('audit_logs', lazy='dynamic'),
+        foreign_keys=[user_id]
+    )
+# Verified ownership backfill/migration is required. SQL rows are mutable unless
+# protected separately; neither this model nor a digest proves forensic integrity.

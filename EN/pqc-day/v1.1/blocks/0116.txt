@@ -1,0 +1,30 @@
+def seed_governance_controls():
+    """Inserts the 12 rapid validation framework controls
+    if they do not exist. Each control starts in 'pending' status
+    and must be evaluated and documented by the CISO."""
+    controls_data = [
+        ('C.VR.1', 'Privacy',
+         'Disable data use for training',
+         'Deactivate the option to use conversations for '
+         'training the provider model.'),
+        ('C.VR.2', 'Privacy',
+         'Defined and applied retention policy',
+         'Define and configure the conversation retention period '
+         'according to data classification.'),
+        # ... C.VR.3 to C.VR.11 ...
+        ('C.VR.12', 'Governance',
+         'Periodic tenant review (with evidence)',
+         'Perform monthly/quarterly review of permissions, '
+         'connectors, retention, and admin roles.'),
+    ]
+    for cid, cat, name, desc in controls_data:
+        exists = AIGovernanceControl.query.filter_by(
+            control_id=cid).first()
+        if not exists:
+            ctrl = AIGovernanceControl(
+                control_id=cid, category=cat,
+                name=name, description=desc,
+                status='pending', responsible='CISO'
+            )
+            db.session.add(ctrl)
+    db.session.commit()

@@ -1,0 +1,51 @@
+class ComplianceService:
+    """Main service for compliance operations"""
+
+    # Deterministic mapping: finding categories -> controls
+    FINDING_TO_CONTROL_MAPPING = {
+        'crypto': {
+            'keywords': ['rsa', 'aes', 'des', 'md5', 'sha1', 'encryption',
+                         'cipher', 'key', 'certificate', 'ssl', 'tls'],
+            'controls': ['NIS2.RISK.8'],     # Cryptography and encryption
+            'domain': 'Cryptography'
+        },
+        'weak_crypto': {
+            'keywords': ['weak', 'deprecated', 'vulnerable', 'insecure'],
+            'controls': ['NIS2.RISK.8'],
+            'impact': 'recommendation'            # Direct non-compliance
+        },
+        'quantum': {
+            'keywords': ['quantum', 'post-quantum', 'pqc', 'lattice',
+                         'kyber', 'dilithium'],
+            'controls': ['NIS2.RISK.8', 'NIS2.RISK.1'],
+            'domain': 'Post-Quantum Cryptography'
+        },
+        'access_control': {
+            'keywords': ['access', 'authentication', 'authorization',
+                         'mfa', 'password', 'credential'],
+            'controls': ['NIS2.RISK.9', 'NIS2.RISK.10'],
+            'domain': 'Access Control'
+        },
+        'supply_chain': {
+            'keywords': ['dependency', 'third-party', 'library',
+                         'package', 'vendor'],
+            'controls': ['NIS2.RISK.4'],
+            'domain': 'Supply Chain'
+        },
+    }
+    def __init__(self, scope_service, store):
+        self.scope_service = scope_service
+        self.store = store
+
+    def _authorized_assessment(self, assessment_id, action):
+        # Mandatory server contract: active user/organization, action permission,
+        # own-client restrictions, assessment→client and framework version.
+        scope = self.scope_service.authorize_assessment(assessment_id, action)
+        if not isinstance(scope, dict) or scope.get('authorized') is not True:
+            raise PermissionError('Assessment unavailable')
+        required = ('client_id', 'organization_id', 'framework_version')
+        if any(scope.get(key) is None for key in required):
+            raise PermissionError('Incomplete assessment scope')
+        return scope
+# The two injected service implementations are omitted and are not evidence
+# of private-core RBAC/RLS. No unscoped fallback is provided.

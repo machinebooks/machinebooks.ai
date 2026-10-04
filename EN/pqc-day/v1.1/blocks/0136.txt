@@ -1,0 +1,145 @@
+"""Partial educational PDF example, not a legal compliance decision.
+Four section builders must be implemented before generate() is usable.
+References checked against the editorial cutoff of October 4, 2026.
+"""
+from math import isfinite
+from xml.sax.saxutils import escape
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import cm
+from reportlab.platypus import (
+    SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
+)
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib import colors
+
+LABELS = {'score_title': 'Didactic PQC risk scores',
+ 'dimension': 'Dimension',
+ 'score': 'Score',
+ 'risk': 'Didactic band',
+ 'reference': 'Reference for review',
+ 'shelf_life': 'Data shelf life',
+ 'exposure': 'HNDL exposure',
+ 'severity': 'Impact severity',
+ 'migration': 'Migration complexity',
+ 'overall': 'OVERALL SCORE',
+ 'article6': 'DORA Art. 6: ICT risk management',
+ 'article9': 'DORA Art. 9: protection and prevention',
+ 'article11': 'DORA Art. 11: continuity',
+ 'article26': 'DORA Art. 26: advanced testing, according to scope',
+ 'overall_reference': 'Didactic method, not an official DORA score',
+ 'score_note': 'These bands do not themselves assess DORA compliance.',
+ 'planning_days': 'Days until the selected internal target',
+ 'planning_note': 'The January 2026 G7 reference does not set a legal '
+                  'DORA deadline.',
+ 'timeline_title': 'Transition references: nature and scope',
+ 'date': 'Date',
+ 'milestone': 'Reference',
+ 'source': 'Source',
+ 'nature': 'Nature and scope',
+ 'critical': 'CRITICAL',
+ 'high': 'HIGH',
+ 'medium': 'MEDIUM',
+ 'low': 'LOW'}
+MILESTONES = [('17 Jan 2025',
+  'DORA applies',
+  'EU',
+  'Law for covered entities; no universal PQC date'),
+ ('End of 2026',
+  'Start of coordinated transition',
+  'EU roadmap',
+  'Target; no mandatory complete inventory for every entity'),
+ ('By category',
+  'CNSA 2.0 profile',
+  'NSA/CNSS',
+  'Requirements for US NSS; check version and exceptions'),
+ ('2028 / 2031 / 2035',
+  'Discovery and plan / priorities / migration',
+  'NCSC',
+  'March 2025 guidance targets; residual difficulties'),
+ ('2030 / 2035',
+  'Standards transition',
+  'NIST IR 8547',
+  'November 2024 draft; not a current universal prohibition'),
+ ('2030–2032 / 2035',
+  'Most critical systems / general horizon',
+  'G7 CEG',
+  'January 2026 non-prescriptive framework, subject to review'),
+ ('End of 2030',
+  'Transition of high-risk uses',
+  'EU roadmap',
+  'Coordinated target; check scope and applicable obligations')]
+
+class DoraReportGenerator:
+    """Legacy class name; scores are didactic risk bands, not DORA grades."""
+
+    def __init__(self, assessment: dict, entity: dict):
+        controls = assessment.get("controls", [])
+        self.assessment = {"controls": list(controls),
+                           "index": calculate_control_index(controls)}
+        self.entity = dict(entity)
+        self.styles = getSampleStyleSheet()
+        self.styles.add(ParagraphStyle(
+            "SectionHeader", parent=self.styles["Heading2"],
+            fontSize=14, spaceBefore=15, spaceAfter=10,
+        ))
+
+    def generate(self, output_path: str):
+        """Require the omitted builders before creating any output."""
+        required = ("_build_cover", "_build_executive_summary",
+                    "_build_findings_section", "_build_recommendations")
+        missing = [name for name in required
+                   if not callable(getattr(self, name, None))]
+        if missing:
+            raise NotImplementedError("Implement section builders: " + ", ".join(missing))
+        doc = SimpleDocTemplate(
+            output_path, pagesize=A4,
+            leftMargin=2.5*cm, rightMargin=2.5*cm,
+            topMargin=2*cm, bottomMargin=2*cm,
+        )
+        elements = self._build_cover() + [PageBreak()]
+        elements += self._build_executive_summary() + [PageBreak()]
+        elements += self._build_scoring_section()
+        elements += self._build_findings_section()
+        elements += self._build_regulatory_timeline()
+        elements += self._build_recommendations()
+        doc.build(elements)
+
+    def _build_scoring_section(self) -> list:
+        index = self.assessment["index"]
+        rows = [["Control", "State", "Weight"]]
+        rows.extend([[str(c.get("control_id", "Unknown")), c["state"], str(c["weight"])]
+                     for c in self.assessment["controls"]])
+        rows = [[Paragraph(escape(str(cell)), self.styles["Normal"]) for cell in row]
+                for row in rows]
+        table = Table(rows, colWidths=[6*cm, 6*cm, 4*cm], repeatRows=1)
+        table.setStyle(TableStyle([("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+                                   ("VALIGN", (0, 0), (-1, -1), "TOP")]))
+        value = "Unknown" if index["score"] is None else str(index["score"])
+        note = ("Internal assessed-control index: " + value
+                + "; status: " + index["status"]
+                + ". Unknown controls are disclosed separately. No legal compliance decision.")
+        return [Paragraph("Reviewed internal control evidence", self.styles["SectionHeader"]),
+                table, Spacer(1, 15), Paragraph(escape(note), self.styles["Normal"])]
+
+    def _build_regulatory_timeline(self) -> list:
+        data = [[LABELS["date"], LABELS["milestone"],
+                 LABELS["source"], LABELS["nature"]], *MILESTONES]
+        data = [[Paragraph(escape(str(cell)), self.styles["Normal"])
+                 for cell in row] for row in data]
+        table = Table(data, colWidths=[2.4*cm, 4.5*cm, 2.6*cm, 6.5*cm], repeatRows=1)
+        table.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#e8eaf6")),
+            ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+            ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ]))
+        return [Paragraph(LABELS["timeline_title"], self.styles["SectionHeader"]), table]
+
+    @staticmethod
+    def _risk_label(score: float) -> str:
+        if score >= 75:
+            return LABELS["critical"]
+        if score >= 50:
+            return LABELS["high"]
+        if score >= 25:
+            return LABELS["medium"]
+        return LABELS["low"]

@@ -32,9 +32,9 @@ El estado de publicación varía por título e idioma. Las entradas en edición 
 
 ## Review status — 4 October 2026
 
-Educational blocks from the v1.1 revisions of User, FinOps, and AI Safety are separated into `ES/<book>/v1.1/` and `EN/<book>/v1.1/`, with source manifests and SHA-256 hashes. Earlier material is preserved. The other titles remain under review; this code synchronization does not itself announce eBook publication or establish execution of every snippet.
+Educational blocks from the v1.1 revisions of User, FinOps, AI Safety, and PQC are separated into `ES/<book>/v1.1/` and `EN/<book>/v1.1/`, with source manifests and SHA-256 hashes. Earlier material is preserved. The other titles remain under review; this code synchronization does not itself announce eBook publication or establish execution of every snippet.
 
-Los bloques didácticos de la revisión v1.1 de Usuario, FinOps y AI Safety están separados en `ES/<libro>/v1.1/` y `EN/<libro>/v1.1/`, con manifiestos de origen y SHA-256. El material anterior se conserva. Los demás títulos siguen en revisión; esta sincronización del código no anuncia por sí misma la publicación de los eBooks ni acredita ejecución de cada fragmento.
+Los bloques didácticos de la revisión v1.1 de Usuario, FinOps, AI Safety y PQC están separados en `ES/<libro>/v1.1/` y `EN/<libro>/v1.1/`, con manifiestos de origen y SHA-256. El material anterior se conserva. Los demás títulos siguen en revisión; esta sincronización del código no anuncia por sí misma la publicación de los eBooks ni acredita ejecución de cada fragmento.
 
 ## How to use
 

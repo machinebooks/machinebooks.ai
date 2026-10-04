@@ -1,0 +1,42 @@
+def detect_ai_providers() -> Dict[str, Dict]:
+    """Detect which AI providers are available"""
+    results = {}
+
+    # Local providers: probe with short timeout
+    try:
+        ollama = OllamaProvider({'base_url': os.environ.get(
+            'OLLAMA_HOST', 'http://host.docker.internal:11434'
+        )})
+        status = ollama.test_connection()
+        results['ollama'] = {
+            'available': status.get('status') == 'success',
+            'models': status.get('available_models', [])
+        }
+    except Exception:  # Catch only exceptions, never bare except
+        results['ollama'] = {'available': False}
+
+    # Cloud providers: check environment variables
+    results['anthropic'] = {
+        'available': None, 'status': 'not_assessed',
+        'configured': bool(os.getenv('ANTHROPIC_API_KEY'))
+    }
+
+    results['openai'] = {
+        'available': None, 'status': 'not_assessed',
+        'configured': bool(os.getenv('OPENAI_API_KEY'))
+    }
+
+    # Azure OpenAI: requires endpoint + key + deployment
+    azure_configured = bool(
+        os.getenv('AZURE_OPENAI_ENDPOINT') and
+        os.getenv('AZURE_OPENAI_API_KEY') and
+        os.getenv('AZURE_OPENAI_DEPLOYMENT')
+    )
+    results['azure_openai'] = {
+        'available': None, 'status': 'not_assessed',
+        'configured': azure_configured
+    }
+
+    return results
+# Configured credentials are not proof of authentication, model availability or
+# a supported analysis contract. Local probe results concern that probe only.

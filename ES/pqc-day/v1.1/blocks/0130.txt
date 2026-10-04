@@ -1,0 +1,29 @@
+def ai_suggest_control_mappings(self, assessment_id):
+    scope = self._authorized_assessment(assessment_id, action='suggest_mappings')
+    # Store filters controls/findings to this client/framework and checks source
+    # export policy, configured provider and a complete token budget first.
+    controls = self.store.unassessed_controls(scope, limit=50)
+    findings = self.store.scoped_crypto_findings(scope, limit=30)
+    payload = {
+        'controls': [{'id': c.id, 'reference': c.reference, 'title': c.title}
+                     for c in controls],
+        'findings': [{'id': f.id, 'finding_type': 'crypto',
+                      'algorithm': f.algorithm_name, 'severity': f.risk_level,
+                      'description': f.description} for f in findings],
+    }
+    suggestions = self.store.review_mapping_suggestions(scope, payload)
+    allowed_controls = {c.id for c in controls}
+    allowed_findings = {f.id for f in findings}
+    if not isinstance(suggestions, list) or len(suggestions) > 100:
+        raise ValueError('Invalid suggestion list')
+    proposals = []
+    for item in suggestions:
+        if (not isinstance(item, dict) or type(item.get('control_id')) is not int
+                or type(item.get('finding_id')) is not int or item.get('control_id') not in allowed_controls
+                or item.get('finding_id') not in allowed_findings):
+            raise ValueError('Suggestion references an unprovided object')
+        proposals.append(propose_control_mapping(
+            assessment_id, item['control_id'], item['finding_id'], 'crypto', 'ai', item))
+    return proposals
+# Suggestions remain pending. JSON validity and membership are not semantic
+# confirmation; the provider/store adapters and their authorization are omitted.

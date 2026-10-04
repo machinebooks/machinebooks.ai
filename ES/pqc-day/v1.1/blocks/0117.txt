@@ -1,0 +1,21 @@
+from flask_jwt_extended import get_current_user
+from flask import current_app
+
+@ai_admin_bp.route('/governance/dashboard', methods=['GET'])
+@jwt_required()
+def governance_dashboard():
+    user = get_current_user()
+    if not user or not user.is_active or not user.has_permission('manage_ai'):
+        return jsonify({'error': 'Access denied'}), 403
+    service = current_app.extensions.get('ai_governance_service')
+    if service is None:
+        return jsonify({'error': 'Governance integration unavailable'}), 503
+    # Service verifies active organization, action permission and ownership of
+    # every control, incident, review and DPIA before scoped aggregation.
+    try:
+        metrics = service.authorized_metrics(user)
+    except PermissionError:
+        return jsonify({'error': 'Access denied'}), 403
+    return jsonify({'metrics': metrics, 'legal_compliance_decision': None})
+# Internal control labels are not legal determinations; missing/unknown evidence
+# remains separate. The scoped service implementation is explicitly omitted.

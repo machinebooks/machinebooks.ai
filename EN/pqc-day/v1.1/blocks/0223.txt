@@ -1,0 +1,17 @@
+def finding_readiness(findings, coverage_confirmed):
+    known = [f for f in findings if type(f.get("pqc_compliant")) is bool]
+    compliant = sum(f["pqc_compliant"] is True for f in known)
+    unresolved = sum(f["pqc_compliant"] is False for f in known)
+    unknown = len(findings) - len(known)
+    status = "not_assessed" if not findings else (
+        "review_required" if unknown or not coverage_confirmed else
+        "migration_needed" if unresolved else "assessed_candidates")
+    return {"status": status, "finding_count": len(findings), "unknown": unknown,
+            "classified_compliant_ratio": compliant / len(known) if known else None,
+            "assets_migrated_percentage": None}
+
+# Flask adapter contract (omitted): authenticate the string user ID, load an active
+# user/organization, authorize the target via AnalysisTarget->AnalysisJob->client,
+# validate algorithm/function/context, select one active numeric policy revision,
+# and return the authorized observations. CryptoFinding has no direct project_id
+# in the earlier model. This pure function does not implement that endpoint.

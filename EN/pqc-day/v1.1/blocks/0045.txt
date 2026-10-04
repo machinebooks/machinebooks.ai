@@ -1,0 +1,126 @@
+from dataclasses import dataclass, asdict
+from pathlib import Path
+from typing import List, Set, Optional, Dict, Any
+import regex as re
+import os
+
+@dataclass
+class CodeFinding:
+    """Cryptographic finding in source code"""
+    id: str
+    file_path: str
+    line_number: int
+    column: int
+    language: str
+    pattern_name: str
+    algorithm: str
+    severity: str          # critical, high, medium
+    description: str
+    code_snippet: str      # Snippet with context
+    pqc_impact: str        # Post-quantum impact
+    recommendation: str    # Migration recommendation
+
+
+class RepositoryAnalyzer:
+    """Scans repositories looking for quantum-vulnerable cryptography"""
+
+    def __init__(self, base_path: str = None):
+        self.base_path = base_path
+        self.findings: List[CodeFinding] = []
+        self.finding_count = 0
+        self.files_scanned = 0
+        self.lines_scanned = 0
+        self.algorithms_found: Set[str] = set()
+        self.files_expected = 0
+        self.read_errors = []
+        self.omissions = []
+        self.max_file_bytes = 500_000
+
+    def _get_language_from_extension(self, file_path: str) -> Optional[str]:
+        """Determines the language by file extension"""
+        ext = Path(file_path).suffix.lower()
+        for lang, extensions in LANGUAGE_EXTENSIONS.items():
+            if ext in extensions:
+                return lang
+        return None
+
+    def _should_skip_file(self, file_path: str) -> bool:
+        """Checks if the file should be excluded"""
+        path = Path(file_path)
+        # Exclude if in forbidden directory
+        for part in path.parts:
+            if part in SKIP_DIRECTORIES:
+                return True
+        # Exclude minified and lock files
+        name = path.name.lower()
+        if any(name.endswith(ext) for ext in ['.min.js', '.map', '.lock']):
+            return True
+        return False
+
+    def _scan_file(self, file_path: str) -> List[CodeFinding]:
+        """Scans an individual file"""
+        self.files_expected += 1
+        if self._should_skip_file(file_path):
+            self.omissions.append({"file": file_path, "reason": "excluded"})
+            return []
+
+        language = self._get_language_from_extension(file_path)
+        if not language or language not in CRYPTO_PATTERNS:
+            self.omissions.append({"file": file_path, "reason": "unsupported_language"})
+            return []
+
+        try:
+            path = Path(file_path)
+            if path.is_symlink() or path.stat().st_size > self.max_file_bytes:
+                self.omissions.append({"file": file_path, "reason": "symlink_or_size"})
+                return []
+            content = path.read_text(encoding="utf-8", errors="strict")
+            lines = content.splitlines()
+        except (OSError, UnicodeError):
+            self.read_errors.append({"file": file_path, "reason": "read_failed"})
+            return []
+
+        self.files_scanned += 1
+        self.lines_scanned += len(lines)
+        findings = []
+
+        # Apply each pattern for the detected language
+        for pattern_name, info in CRYPTO_PATTERNS[language].items():
+            try:
+                compiled = re.compile(info['pattern'], re.IGNORECASE | re.MULTILINE)
+                matches = list(compiled.finditer(content, timeout=0.05))[:1000]
+            except (re.error, TimeoutError):
+                self.read_errors.append({"file": file_path, "reason": "rule_failed"})
+                continue
+            for match in matches:
+                line_number = content[:match.start()].count('\n') + 1
+                column = match.start() - content.rfind('\n', 0, match.start())
+                self.algorithms_found.add(info['algorithm'])
+
+                finding = CodeFinding(
+                    id=self._generate_finding_id(),
+                    file_path=os.path.relpath(file_path, self.base_path),
+                    line_number=line_number,
+                    column=column,
+                    language=language,
+                    pattern_name=pattern_name,
+                    algorithm=info['algorithm'],
+                    severity=info['severity'],
+                    description=info['description'],
+                    code_snippet="",
+                    pqc_impact=info['pqc_impact'],
+                    recommendation=self._get_recommendation(info['algorithm'])
+                )
+                findings.append(finding)
+
+        return findings
+    def get_report(self):
+        return {
+            "status": "partial" if self.files_scanned else "not_assessed",
+            "scope": "selected_patterns_only", "readiness_score": None,
+            "files_expected": self.files_expected, "files_scanned": self.files_scanned,
+            "read_errors": list(self.read_errors), "omissions": list(self.omissions),
+            "findings": [asdict(f) for f in self.findings],
+        }
+# Immutable authorized snapshots and whole-job resource budgets are integration
+# requirements. Pattern absence and successful reading do not prove readiness.

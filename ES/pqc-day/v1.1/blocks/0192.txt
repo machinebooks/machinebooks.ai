@@ -1,0 +1,38 @@
+from flask import current_app
+from celery.exceptions import Retry
+
+@celery_app.task(base=DatabaseTask, bind=True, name='analyze_cloud_security_task',
+                 max_retries=3, default_retry_delay=60,
+                 rate_limit='2/m', queue='cloud_audit')
+def analyze_cloud_security_task(self, job_id, cloud_config_id, organization_id):
+    if any(type(v) is not int or v <= 0 for v in (job_id, cloud_config_id, organization_id)):
+        raise ValueError('Positive identifiers required')
+    runtime = current_app.extensions.get('cloud_analysis_runtime')
+    if runtime is None:
+        raise RuntimeError('Cloud runtime integration unavailable')
+    # Claim validates active org/action, Job->Client->Org, configuration owner,
+    # authorized target and idempotency lease; credentials resolve in worker.
+    claim = runtime.claim(job_id, cloud_config_id, organization_id)
+    if claim is None:
+        return {'status': 'duplicate_or_ineligible', 'job_id': job_id}
+    try:
+        result = runtime.scan_with_coverage(claim)
+        if (not isinstance(result, dict) or result.get('status') not in
+                ('completed', 'partial', 'not_assessed') or
+                not isinstance(result.get('observations'), list) or
+                not isinstance(result.get('errors'), list)):
+            raise ValueError('Invalid bounded cloud result')
+        return runtime.persist_and_complete(claim, result, readiness_score=None)
+    except Retry:
+        db.session.rollback()
+        raise
+    except Exception as exc:
+        db.session.rollback()
+        # Adapter recognizes typed provider throttling, never raw message matching.
+        if runtime.is_retryable_throttling(exc):
+            raise self.retry(exc=exc, countdown=60 * (2 ** self.request.retries))
+        runtime.mark_failed(claim, 'cloud_analysis_failed')
+        raise
+# Runtime enforces resource/deadline/provider budgets and actual Chapter 5
+# columns. Retry exhaustion can raise the original exception; no 90% guarantee.
+# A coordinator reconciles terminal failure/lease expiry. rate_limit is per worker.

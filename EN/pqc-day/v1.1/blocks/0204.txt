@@ -1,0 +1,69 @@
+from flask_jwt_extended import get_current_user
+from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required
+from sqlalchemy import desc, or_
+from datetime import datetime, timezone
+
+audit_bp = Blueprint('audit', __name__, url_prefix='/api/audit')
+
+@audit_bp.route('/logs', methods=['GET'])
+@jwt_required()
+def get_audit_logs():
+    user = get_current_user()
+    org = None if not user else db.session.get(Organization, user.organization_id)
+    if (not user or not user.is_active or not org or not org.is_active
+            or not user.has_permission('view_audit')):
+        return jsonify({'error': 'Access denied'}), 403
+    values = {}
+    for key, default, maximum in [('page', '1', 10000), ('per_page', '50', 100)]:
+        raw = request.args.get(key, default)
+        if len(raw) > 10 or not raw.isdecimal() or not 1 <= int(raw) <= maximum:
+            return jsonify({'error': 'Invalid pagination'}), 400
+        values[key] = int(raw)
+    query = AuditLog.query.filter(AuditLog.organization_id == org.id)
+    for key in ('action', 'entity_type'):
+        value = request.args.get(key)
+        if value:
+            if len(value) > 100:
+                return jsonify({'error': 'Invalid filter'}), 400
+            query = query.filter(getattr(AuditLog, key) == value)
+    for key in ('user_id', 'entity_id'):
+        value = request.args.get(key)
+        if value:
+            if len(value) > 10 or not value.isdecimal() or not 1 <= int(value) <= 2147483647:
+                return jsonify({'error': 'Invalid identifier'}), 400
+            query = query.filter(getattr(AuditLog, key) == int(value))
+    dates = {}
+    for key in ('date_from', 'date_to'):
+        raw = request.args.get(key)
+        if raw:
+            if len(raw) > 40:
+                return jsonify({'error': 'Invalid ISO8601 date'}), 400
+            try:
+                parsed = datetime.fromisoformat(raw.replace('Z', '+00:00'))
+                if parsed.utcoffset() is None:
+                    raise ValueError('Explicit timezone required')
+                dates[key] = parsed.astimezone(timezone.utc).replace(tzinfo=None)
+            except (ValueError, OverflowError):
+                return jsonify({'error': 'Invalid ISO8601 date'}), 400
+    if 'date_from' in dates and 'date_to' in dates:
+        if dates['date_to'] < dates['date_from'] or (dates['date_to'] - dates['date_from']).days > 366:
+            return jsonify({'error': 'Invalid date range'}), 400
+    if 'date_from' in dates:
+        query = query.filter(AuditLog.created_at >= dates['date_from'])
+    if 'date_to' in dates:
+        query = query.filter(AuditLog.created_at <= dates['date_to'])
+    search = request.args.get('search', '')
+    if len(search) > 100:
+        return jsonify({'error': 'Search too long'}), 400
+    if search:
+        safe = search.replace('!', '!!').replace('%', '!%').replace('_', '!_')
+        query = query.filter(or_(AuditLog.action.ilike('%' + safe + '%', escape='!'),
+                                 AuditLog.entity_type.ilike('%' + safe + '%', escape='!')))
+    pagination = query.order_by(desc(AuditLog.created_at), desc(AuditLog.id)).paginate(
+        page=values['page'], per_page=values['per_page'], error_out=False)
+    return jsonify({'data': [log.to_dict() for log in pagination.items],
+                    'total': pagination.total, 'pages': pagination.pages,
+                    'current_page': values['page'], 'per_page': values['per_page']}), 200
+# LIKE escaping controls wildcard semantics. SQL parameterization controls
+# injection. Database-specific date/index behavior needs integration verification.

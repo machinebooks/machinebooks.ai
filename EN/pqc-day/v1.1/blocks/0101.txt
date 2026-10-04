@@ -1,0 +1,17 @@
+def build_initial_messages(system_prompt, history, user_message):
+    if (not isinstance(system_prompt, str) or not system_prompt
+            or len(system_prompt) > 8000 or not isinstance(history, list)
+            or len(history) > 20 or not isinstance(user_message, str)
+            or not user_message.strip() or len(user_message) > 8000):
+        raise ValueError("Invalid bounded conversation")
+    messages = [{"role": "system", "content": system_prompt}]
+    for message in history:
+        if (not isinstance(message, dict) or message.get("role") not in {"user", "assistant"}
+                or not isinstance(message.get("content"), str)
+                or len(message["content"]) > 8000):
+            raise ValueError("Invalid history role/content")
+        messages.append({"role": message["role"], "content": message["content"]})
+    messages.append({"role": "user", "content": user_message})
+    return messages
+# History contains prior turns only. Provider-specific complete token accounting,
+# exchange/tool-ID preservation and reserved output are separate required checks.

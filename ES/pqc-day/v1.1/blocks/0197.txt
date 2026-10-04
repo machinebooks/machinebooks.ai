@@ -1,0 +1,18 @@
+from flask import current_app
+from datetime import datetime, timedelta
+
+@celery_app.task(base=DatabaseTask, name='cleanup_old_jobs_task')
+def cleanup_old_jobs_task(retention_days=90):
+    if type(retention_days) is not int or not 1 <= retention_days <= 3650:
+        raise ValueError('Validated retention period required')
+    service = current_app.extensions.get('analysis_retention_service')
+    if service is None:
+        return {'status': 'not_assessed', 'reason': 'retention_integration_unavailable'}
+    # Mandatory service contract: policy/holds, terminal Job completed_at in UTC,
+    # all finding/report dependencies, audit, and a transaction for each batch.
+    # Directory cleanup uses an ownership registry + worker/volume/lease check,
+    # verifies the resolved root, skips active owners, and records deletion errors.
+    # A pqc_* name or old filesystem mtime is never deletion authorization.
+    return service.cleanup(cutoff_utc=datetime.utcnow() - timedelta(days=retention_days))
+# No broad temp-directory glob deletion is included. Service implementation and
+# crash/lease recovery require independent tests before any operational claim.

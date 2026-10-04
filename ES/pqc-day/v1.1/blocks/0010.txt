@@ -1,0 +1,9 @@
+# Sin MCP: cada escáner tiene una interfaz distinta
+# Bandit devuelve JSON con un esquema
+bandit_results = run_bandit(file_path, severity="high")
+# Semgrep devuelve SARIF con otro esquema
+semgrep_results = run_semgrep(file_path, rules="crypto")
+# SSLyze devuelve objetos Python con otro formato
+sslyze_results = scan_tls(hostname, port=443)
+
+# El agente necesita conocer tres interfaces distintas

@@ -1,0 +1,22 @@
+# PQC Platform — Project Instructions
+
+## Stack and architecture
+- **Backend**: Flask 3.0 + SQLAlchemy 2.0 — `backend/app/`
+- **Frontend**: React 18 + Vite + MUI — `frontend/src/`
+- **DB**: MySQL 8.0 (multi-tenant by organization_id)
+- **Queues**: Celery 5.3 + Redis 7
+- **Infrastructure**: 7 Docker containers
+
+## Cryptographic conventions
+- Quantum-vulnerable algorithms: RSA, ECDSA, ECDH, DH, DSA, ElGamal
+- PQC-safe algorithms: ML-KEM (Kyber), ML-DSA (Dilithium), SLH-DSA (SPHINCS+)
+- Weak hashes: MD5, SHA-1
+- Weak symmetric: DES, 3DES, RC4, Blowfish
+- Every finding must include: algorithm, severity, pqc_compliant,
+  recommended_replacement
+
+## What NOT to do
+- Do not hardcode credentials or API keys
+- Do not use print() — always logger
+- Every new endpoint requires JWT + RBAC
+- Do not mix tenant logic: always filter by organization_id

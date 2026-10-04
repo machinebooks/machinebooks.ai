@@ -1,0 +1,13 @@
+def illustrative_value_cost(calls, minutes_per_call, hourly_value_eur,
+                            provider_cost_usd, usd_to_eur, exchange_rate_date):
+    values = (calls, minutes_per_call, hourly_value_eur, provider_cost_usd)
+    if any(v < 0 for v in values) or usd_to_eur <= 0:
+        raise ValueError("Invalid assumptions")
+    hours = calls * minutes_per_call / 60
+    value_eur = hours * hourly_value_eur
+    cost_eur = provider_cost_usd * usd_to_eur
+    return {"assumed_hours": hours, "assumed_value_eur": value_eur, "cost_eur": cost_eur,
+            "exchange_rate_date": exchange_rate_date,
+            "gross_value_cost_ratio": value_eur / cost_eur if cost_eur else None,
+            "illustrative_net_roi": (value_eur - cost_eur) / cost_eur if cost_eur else None}
+# This hypothesis excludes other costs and does not prove time actually saved.

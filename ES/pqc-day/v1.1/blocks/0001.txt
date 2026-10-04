@@ -1,0 +1,6 @@
+# Ejemplo: patrón de análisis criptográfico
+finding = CryptoFinding(
+    algorithm="RSA-2048",
+    severity="high",
+    pqc_compliant=False
+)

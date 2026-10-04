@@ -1,0 +1,41 @@
+from datetime import datetime, timezone
+
+def run_monitoring_cycle(organization_id, source_ids, checkpoints, observe, persist):
+    if type(organization_id) is not int or organization_id <= 0:
+        raise ValueError("Invalid organization")
+    if not isinstance(source_ids, list) or not isinstance(checkpoints, dict):
+        raise ValueError("Invalid source scope")
+    if (any(type(value) is not int or value <= 0 for value in source_ids)
+            or len(set(source_ids)) != len(source_ids)):
+        raise ValueError("Invalid source identifiers")
+    until = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    reports = []
+    for source_id in source_ids:
+        # The adapter authorizes organization/source; None requests initial inventory.
+        try:
+            report = observe(organization_id, source_id, checkpoints.get(source_id), until)
+        except Exception:
+            reports.append({"source_id": source_id, "status": "error",
+                            "coverage_confirmed": False,
+                            "error_code": "observation_failed"})
+            continue
+        if not isinstance(report, dict):
+            report = {"status": "error", "coverage_confirmed": False,
+                      "error_code": "invalid_adapter_report"}
+        report = dict(report)
+        report["source_id"] = source_id
+        if report.get("status") == "completed" and report.get("coverage_confirmed") is True:
+            # persist atomically writes findings and this source's next checkpoint.
+            if not isinstance(report.get("findings"), list) or "next_cursor" not in report:
+                raise ValueError("Incomplete covered report")
+            persist(organization_id, source_id, report["findings"], report["next_cursor"])
+        elif report.get("status") == "completed":
+            report["status"] = "partial"
+        elif report.get("status") not in {"partial", "error", "unavailable", "not_assessed"}:
+            report["status"] = "error"
+            report["error_code"] = "invalid_adapter_status"
+        reports.append(report)
+    status = "not_assessed" if not reports else (
+        "completed" if all(r["status"] == "completed" for r in reports) else "partial")
+    return {"organization_id": organization_id, "status": status,
+            "source_reports": reports, "snapshot_until": until}

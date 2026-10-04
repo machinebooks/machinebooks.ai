@@ -1,0 +1,29 @@
+import socket
+import ssl
+
+def _get_certificate(self, host, port):
+    def probe(verify):
+        context = ssl.create_default_context()
+        if not verify:
+            context.check_hostname = False
+            context.verify_mode = ssl.CERT_NONE
+        with socket.create_connection((host, port), timeout=self.timeout) as sock:
+            with context.wrap_socket(sock, server_hostname=host) as tls:
+                der = tls.getpeercert(binary_form=True)
+                if not der:
+                    raise ValueError("Missing certificate")
+                return {"status": "observed", "der": der,
+                        "certificate_verified": verify,
+                        "tls_version": tls.version(), "cipher": tls.cipher(),
+                        "negotiated_group": None}
+    try:
+        return probe(True)
+    except ssl.SSLCertVerificationError:
+        if not self.allow_insecure_fallback:
+            return {"status": "verification_failed", "certificate_verified": False}
+        try:
+            return probe(False)  # Authorized inspection only; no application data.
+        except (OSError, ssl.SSLError, ValueError):
+            return {"status": "error", "certificate_verified": False}
+    except (OSError, ssl.SSLError, ValueError):
+        return {"status": "error", "certificate_verified": False}

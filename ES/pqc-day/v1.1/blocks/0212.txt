@@ -1,0 +1,18 @@
+PLAN_ORDER = ("free", "starter", "professional", "enterprise")
+
+def resolve_feature(plan, overrides, feature, plan_defaults):
+    if plan not in PLAN_ORDER:
+        raise ValueError("Unknown plan")
+    known = set().union(*(set(values) for values in plan_defaults.values()))
+    if feature not in known:
+        raise ValueError("Unknown feature")
+    value = overrides.get(feature, plan_defaults.get(plan, {}).get(feature, False))
+    if type(value) is not bool:
+        raise ValueError("Feature must be boolean")
+    return value
+
+def minimum_plan(feature, plan_defaults):
+    matches = [plan for plan in PLAN_ORDER if plan_defaults.get(plan, {}).get(feature) is True]
+    return matches[0] if matches else None
+# Store only approved overrides. Copying every default into overrides freezes it.
+# Existing authorization and commercial approval precede feature/plan changes.

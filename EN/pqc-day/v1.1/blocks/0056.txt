@@ -1,0 +1,25 @@
+from urllib.parse import urlsplit
+from cryptography import x509
+
+def scan_url(self, url):
+    parsed = urlsplit(url)
+    if parsed.scheme != "https" or not parsed.hostname or parsed.username:
+        raise ValueError("Expected an authorized HTTPS URL")
+    # An external policy must authorize host, resolved IPs and destination port.
+    observation = self._get_certificate(parsed.hostname, parsed.port or 443)
+    if observation["status"] != "observed":
+        return observation
+    cert = x509.load_der_x509_certificate(observation.pop("der"))
+    key = cert.public_key()
+    observation.update({
+        "subject": cert.subject.rfc4514_string(),
+        "issuer": cert.issuer.rfc4514_string(),
+        "self_issued": cert.subject == cert.issuer,
+        "self_signed": None,  # Requires signature verification with the public key.
+        "key_algorithm": type(key).__name__,
+        "key_size": getattr(key, "key_size", None),
+        "not_before": cert.not_valid_before_utc.isoformat(),
+        "not_after": cert.not_valid_after_utc.isoformat(),
+        "pqc_classification": "unknown"})
+    # Cipher suites alone do not reveal TLS 1.3 key establishment/authentication.
+    return observation

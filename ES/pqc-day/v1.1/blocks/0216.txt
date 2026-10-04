@@ -1,0 +1,15 @@
+REGULATORY_REFERENCES = {
+    "NIS2": {"instrument": "Directive (EU) 2022/2555",
+        "cryptography_reference": "Article 21(2)(h)", "pqc_deadline": None,
+        "scope_requires": ["national_transposition", "entity_criteria"]},
+    "DORA": {"instrument": "Regulation (EU) 2022/2554",
+        "applies_from": "2025-01-17", "pqc_deadline": None,
+        "cryptography_detail": "Delegated Regulation (EU) 2024/1774, Article 6"},
+    "EU_PQC_ROADMAP": {"kind": "coordinated_roadmap", "year": 2025,
+        "national_initial_roadmaps": "2026-12-31",
+        "high_risk_target": "2030", "remaining_target_with_exceptions": "2035"},
+    "NIST_IR_8547": {"kind": "initial_public_draft", "date": "2024-11-12"},
+    "CNSA_2_0": {"scope": "applicable United States NSS", "universal_deadline": None},
+}
+# Internal checks must map evidence to the applicable provision/version;
+# a candidate algorithm finding is not itself a legal noncompliance decision.

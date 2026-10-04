@@ -1,0 +1,38 @@
+"""Educational Messages API classification; no Agent SDK agent loop.
+The caller authorizes the provider and data transfer. Input contains candidate
+metadata rather than unredacted source or secrets. Model output needs review.
+"""
+import json
+
+def classify_candidates(client, model, scan_result):
+    candidates = scan_result["findings"]
+    if not candidates:
+        return {"status": scan_result["status"], "suggestions": [],
+                "cryptographic_coverage_confirmed": False}
+    reply = client.messages.create(
+        model=model,
+        max_tokens=2000,
+        system=("Return a JSON object with a suggestions array. For each indexed "
+                "candidate, distinguish signature, key establishment, encryption, "
+                "hash or unknown. Lexical metadata cannot establish actual use, "
+                "PQC readiness, severity or legal compliance. Keep unknowns; "
+                "do not recommend ML-KEM as a signature replacement."),
+        messages=[{"role": "user", "content": json.dumps(
+            [{"candidate_id": i, **candidate} for i, candidate in enumerate(candidates)])}],
+    )
+    try:
+        text = "".join(block.text for block in reply.content if block.type == "text")
+        data = json.loads(text)
+        suggestions = data["suggestions"]
+        if not isinstance(suggestions, list):
+            raise ValueError("Invalid suggestion list")
+        if any(not isinstance(s, dict) or type(s.get("candidate_id")) is not int
+               or not 0 <= s["candidate_id"] < len(candidates) for s in suggestions):
+            raise ValueError("Invalid candidate reference")
+    except (ValueError, KeyError, TypeError, AttributeError):
+        return {"status": "error", "error_code": "invalid_model_output",
+                "suggestions": [], "cryptographic_coverage_confirmed": False}
+    return {"status": "review_required", "suggestions": suggestions,
+            "source_scan_status": scan_result["status"],
+            "cryptographic_coverage_confirmed": False,
+            "legal_compliance_decision": None}

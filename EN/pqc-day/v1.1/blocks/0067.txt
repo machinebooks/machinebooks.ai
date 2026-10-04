@@ -1,0 +1,38 @@
+def scan_kms(self, session, region):
+    # Caller supplies an authorized session and allowlisted region.
+    observations, errors = [], []
+    try:
+        kms = session.client('kms', region_name=region)
+        paginator = kms.get_paginator('list_keys')
+        for page in paginator.paginate(PaginationConfig={'MaxItems': 1000}):
+            for key in page.get('Keys', []):
+                key_id = key.get('KeyId')
+                if not isinstance(key_id, str) or not key_id:
+                    errors.append({'status': 'invalid_key_metadata'})
+                    continue
+                try:
+                    metadata = kms.describe_key(KeyId=key_id)['KeyMetadata']
+                    rotation = 'not_applicable'
+                    if (metadata.get('KeyManager') == 'CUSTOMER' and
+                            metadata.get('KeySpec') == 'SYMMETRIC_DEFAULT' and
+                            metadata.get('Origin') == 'AWS_KMS'):
+                        try:
+                            reply = kms.get_key_rotation_status(KeyId=key_id)
+                            rotation = reply.get('KeyRotationEnabled')
+                            if type(rotation) is not bool:
+                                rotation = 'unknown'
+                        except Exception:
+                            rotation = 'unknown'
+                            errors.append({'key_id': key_id, 'status': 'rotation_query_failed'})
+                    observations.append({'key_id': key_id, 'region': region,
+                        'KeySpec': metadata.get('KeySpec'), 'KeyUsage': metadata.get('KeyUsage'),
+                        'state': metadata.get('KeyState'), 'rotation': rotation})
+                except Exception:
+                    errors.append({'key_id': key_id, 'status': 'metadata_query_failed'})
+    except Exception:
+        errors.append({'status': 'kms_query_failed'})
+    return {'status': 'partial' if errors or observations else 'not_assessed',
+            'observations': observations, 'errors': errors,
+            'coverage': 'bounded_listing', 'readiness_score': None}
+# MaxItems is a selection budget, not complete account coverage. Missing
+# resources, permissions and provider deadlines remain adapter responsibilities.

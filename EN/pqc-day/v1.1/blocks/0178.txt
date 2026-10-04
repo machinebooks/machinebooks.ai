@@ -1,0 +1,6 @@
+healthcheck:
+  test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_PASSWORD mysql --protocol=TCP -h127.0.0.1 -u$$MYSQL_USER -D$$MYSQL_DATABASE -e 'SELECT 1' >/dev/null"]
+  interval: 10s
+  timeout: 5s
+  retries: 5
+  start_period: 30s

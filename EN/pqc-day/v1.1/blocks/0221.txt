@@ -1,0 +1,41 @@
+from celery.schedules import crontab
+from app.extensions import celery
+from app.tasks.base import DatabaseTask
+from flask import current_app
+
+@celery.task(base=DatabaseTask, name="crypto_monitoring.dispatch")
+def dispatch_crypto_monitoring():
+    runtime = current_app.extensions.get("monitoring_runtime")
+    if runtime is None:
+        raise RuntimeError("Monitoring runtime is not configured")
+    # Check active organization/plan, deduplicate a lease and atomically record
+    # an outbox item before delivery to the monitoring queue.
+    return runtime.enqueue_due_once()
+
+@celery.task(base=DatabaseTask, name="crypto_monitoring.continuous_scan")
+def continuous_crypto_scan(organization_id):
+    if type(organization_id) is not int or organization_id <= 0:
+        raise ValueError("Invalid organization")
+    runtime = current_app.extensions.get("monitoring_runtime")
+    if runtime is None:
+        raise RuntimeError("Monitoring runtime is not configured")
+    # claim_scope rechecks active plan, source ownership and worker lease.
+    scope = runtime.claim_scope(organization_id)
+    if scope is None:
+        return {"status": "skipped", "organization_id": organization_id}
+    try:
+        result = run_monitoring_cycle(organization_id, scope.source_ids,
+            scope.checkpoints, scope.observe, scope.persist)
+        if result["status"] not in {"completed", "partial", "not_assessed"}:
+            raise ValueError("Invalid cycle status")
+        runtime.record_cycle(scope, result)
+        return result
+    finally:
+        runtime.release(scope)
+
+MONITORING_SCHEDULE = {"crypto-monitoring-daily": {
+    "task": "crypto_monitoring.dispatch", "schedule": crontab(hour=2, minute=0),
+    "options": {"queue": "monitoring"}}}
+# Import run_monitoring_cycle from the preceding fragment. Configure UTC,
+# route both tasks and run a monitoring consumer. The omitted runtime implements
+# these lease/outbox/authorization/persistence contracts; this is not a deployment.

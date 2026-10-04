@@ -1,0 +1,76 @@
+# Didactic example: patterns/models/organization.py
+from app import db
+from datetime import datetime
+
+class Organization(db.Model):
+    """Organization: root unit of multi-tenant isolation.
+
+    Each organization has its own set of users,
+    clients, projects, findings, and configurations.
+    Subscription plans control usage limits.
+    """
+    __tablename__ = 'organizations'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    slug = db.Column(db.String(100), unique=True, nullable=False)
+    subscription_plan = db.Column(
+        db.Enum('free', 'starter', 'professional', 'enterprise'),
+        default='free',
+        nullable=False
+    )
+
+    # Plan limits — configurable without redeployment
+    max_clients = db.Column(db.Integer, default=1)
+    max_users = db.Column(db.Integer, default=1)
+    max_analyses_per_month = db.Column(db.Integer, default=5)
+    analyses_this_month = db.Column(db.Integer, default=0)
+    analyses_month_reset = db.Column(db.Date)
+
+    # Feature flags by plan — flexible JSON
+    features = db.Column(db.JSON, default=dict)
+    # Example: {"cloud_analysis": true, "ai_semantic": true,
+    #           "agent_autonomous": false, "pdf_reports": true,
+    #           "api_access": false, "sso": false}
+
+    # Metadata
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_active = db.Column(db.Boolean, default=True)
+
+    # Relationships — cascade for referential integrity
+    users = db.relationship(
+        'User', backref='organization',
+        cascade='all, delete-orphan', lazy='dynamic'
+    )
+    clients = db.relationship(
+        'Client', backref='organization',
+        cascade='all, delete-orphan', lazy='dynamic'
+    )
+    audit_logs = db.relationship(
+        'AuditLog', backref='organization', lazy='dynamic'
+    )
+
+    def can_add_client(self) -> bool:
+        """Checks if the organization can add a client."""
+        return self.max_clients == -1 or self.clients.count() < self.max_clients
+
+    def can_add_user(self) -> bool:
+        """Checks if the organization can register a user."""
+        return self.max_users == -1 or self.users.count() < self.max_users
+
+    def can_run_analysis(self) -> bool:
+        """Checks if analyses are available this month."""
+        self._reset_monthly_counter()
+        return self.max_analyses_per_month == -1 or self.analyses_this_month < self.max_analyses_per_month
+
+    def _reset_monthly_counter(self):
+        """Resets the counter if the month has changed."""
+        today = datetime.utcnow().date()
+        if self.analyses_month_reset is None or \
+           (self.analyses_month_reset.year, self.analyses_month_reset.month) != (today.year, today.month):
+            self.analyses_this_month = 0
+            self.analyses_month_reset = today
+            db.session.commit()
+# These non-atomic convenience checks do not reserve admission. Chapter24 uses
+# an authorized transaction, a unique admission record and an outbox. Client/user
+# admissions require their own atomic implementation before a production claim.

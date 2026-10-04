@@ -1,0 +1,70 @@
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Optional
+
+class DoraCategory(Enum):
+    RISK_MANAGEMENT = "art_6_risk_management"
+    PROTECTION = "art_9_protection_prevention"
+    DETECTION = "art_10_detection"
+    CONTINUITY = "art_11_continuity"
+    TESTING = "art_26_resilience_testing"
+    THIRD_PARTY = "art_28_third_party_risk"
+
+@dataclass
+class DoraControl:
+    control_id: str
+    article: int
+    category: DoraCategory
+    description: str
+    verification_method: str
+    pqc_relevance: str
+    weight: float = 1.0
+
+@dataclass
+class DoraAssessment:
+    organization_id: int
+    assessment_date: str
+    controls: list = field(default_factory=list)
+    findings_mapped: int = 0
+    overall_score: Optional[float] = None
+    status: str = "not_assessed"
+
+    @property
+    def critical_gaps(self):
+        return [c for c in self.controls
+                if c.get("state") == "contradicted"
+                and c.get("priority") == "critical"]
+
+# Own review catalogue; identifiers are not statutory DORA controls.
+# Applicability and assessment need source evidence and a human decision.
+# Feed reviewed state/weight rows to calculate_control_index; no legal verdict.
+DORA_PQC_CONTROLS = [
+    DoraControl("DORA-PQC-6.1", 6, DoraCategory.RISK_MANAGEMENT,
+        "Review cryptographic risk within the ICT risk framework",
+        "review_risk_framework",
+        "Article 6 establishes the framework; identification is addressed in Article 8", 3.0),
+    DoraControl("DORA-PQC-6.2", 8, DoraCategory.RISK_MANAGEMENT,
+        "Review inventory scope, functions, owners and coverage",
+        "review_crypto_inventory",
+        "Inventory supports risk assessment; a scan alone does not prove completeness", 3.0),
+    DoraControl("DORA-PQC-9.1", 9, DoraCategory.PROTECTION,
+        "Review transport protection appropriate to the applicable risk",
+        "review_transport_evidence",
+        "PQC or a reviewed hybrid profile may be a treatment; DORA specifies no universal PQC deadline", 2.5),
+    DoraControl("DORA-PQC-9.2", 9, DoraCategory.PROTECTION,
+        "Review transaction signature profiles and lifecycle",
+        "review_signature_evidence",
+        "Future RSA/ECDSA forgery is a signature risk; HNDL concerns confidentiality", 3.0),
+    DoraControl("DORA-PQC-11.1", 11, DoraCategory.CONTINUITY,
+        "Review continuity scenarios, recovery dependencies and evidence",
+        "review_continuity_scenario",
+        "Include a cryptographic compromise scenario where justified by the entity's risk", 2.0),
+    DoraControl("DORA-PQC-26.1", 26, DoraCategory.TESTING,
+        "Review applicable threat-led penetration testing scope",
+        "review_tlpt_applicability",
+        "Article 26 applies to selected entities; a future quantum scenario is not proof of an active campaign", 2.0),
+    DoraControl("DORA-PQC-28.1", 28, DoraCategory.THIRD_PARTY,
+        "Review applicable ICT third-party risks and contractual evidence",
+        "review_third_party_risk",
+        "Cryptographic dependencies can inform proportionate treatment; clauses require legal review", 2.0),
+]

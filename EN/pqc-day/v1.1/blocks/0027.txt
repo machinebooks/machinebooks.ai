@@ -1,0 +1,15 @@
+def assessment_summary(statuses):
+    # Own reporting weights, not a legal compliance decision.
+    allowed = {"implemented", "partial", "not_implemented",
+               "not_applicable", "not_assessed"}
+    if any(status not in allowed for status in statuses):
+        raise ValueError("Unknown control status")
+    counts = {status: statuses.count(status) for status in allowed}
+    applicable = len(statuses) - counts["not_applicable"]
+    assessed = applicable - counts["not_assessed"]
+    score = None if assessed == 0 else round(
+        (100 * counts["implemented"] + 50 * counts["partial"]) / assessed, 2)
+    return {"counts": counts, "assessed_score": score,
+            "coverage": None if applicable == 0 else assessed / applicable,
+            "status": "not_assessed" if assessed == 0 else
+                      "partial" if assessed < applicable else "assessed"}

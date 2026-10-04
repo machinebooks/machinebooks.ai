@@ -1,0 +1,2706 @@
+{
+  "editorial_version": "1.1",
+  "source_word_sha256": "d38448bc6773d8130845c22375c42cec89f246b63204000e3b00ceacd593445c",
+  "source_file": "PQC-Day-y-la-Maquina.docx",
+  "language": "es",
+  "scope": "educational SourceCode blocks; private desktop and core excluded",
+  "extraction": "literal w:t, line breaks w:br/w:cr and tabs w:tab in document order; UTF-8 without added headers",
+  "block_count": 224,
+  "execution_status": "not established by extraction",
+  "manuscript_final_four_sha256": {
+    "PQC-Day-and-the-Machine.docx": "c793d8b6308a2f8e5082a8d66169884916821ed652b56a44c0f62b3aa8993a8f",
+    "PQC-Day-and-the-Machine.epub": "10ffe770df35762474789e0f5f1b22e65c095f207899d3815ffbb264b2de8ca4",
+    "PQC-Day-y-la-Maquina.docx": "d38448bc6773d8130845c22375c42cec89f246b63204000e3b00ceacd593445c",
+    "PQC-Day-y-la-Maquina.epub": "07d414963a1d8762410340a3848575648fd025f92257b18eb880f026b67de21d"
+  },
+  "blocks": [
+    {
+      "id": 1,
+      "file": "blocks/0001.txt",
+      "word_paragraph_index_zero_based": 434,
+      "heading_context": [
+        "Cómo leer este libro",
+        "Convenciones tipográficas",
+        "Código inline y bloques"
+      ],
+      "sha256": "a85f38907e73f1758e18df23a99e36008b0234d11e5aa87787e4437da8ad72d4",
+      "bytes": 144
+    },
+    {
+      "id": 2,
+      "file": "blocks/0002.txt",
+      "word_paragraph_index_zero_based": 540,
+      "heading_context": [
+        "Capítulo 1 — El reloj corre: por qué la criptografía actual tiene fecha de caducidad",
+        "3. Implementación",
+        "Primera aproximación: detectar criptografía vulnerable"
+      ],
+      "sha256": "130b28ea6c6cb2056ad9caea382032482d368d29af9e7054249e32d3b3e52a82",
+      "bytes": 2645
+    },
+    {
+      "id": 3,
+      "file": "blocks/0003.txt",
+      "word_paragraph_index_zero_based": 548,
+      "heading_context": [
+        "Capítulo 1 — El reloj corre: por qué la criptografía actual tiene fecha de caducidad",
+        "3. Implementación",
+        "Clasificar hallazgos con Claude API"
+      ],
+      "sha256": "67b1aadd349d26bebe3d2cb8afcb7f0d5c0962488e3e98958b9d04ca5f18d470",
+      "bytes": 2065
+    },
+    {
+      "id": 4,
+      "file": "blocks/0004.txt",
+      "word_paragraph_index_zero_based": 697,
+      "heading_context": [
+        "Capítulo 2 — El nuevo perfil: arquitecto de migración criptográfica",
+        "3. Implementación",
+        "Los ocho conectores: la plataforma va a donde están los datos"
+      ],
+      "sha256": "79f7716ab850971bf8be7426c3f6fc98a1ab1bc32d9d2684a3765d6a56a1734c",
+      "bytes": 627
+    },
+    {
+      "id": 5,
+      "file": "blocks/0005.txt",
+      "word_paragraph_index_zero_based": 700,
+      "heading_context": [
+        "Capítulo 2 — El nuevo perfil: arquitecto de migración criptográfica",
+        "3. Implementación",
+        "Los ocho conectores: la plataforma va a donde están los datos"
+      ],
+      "sha256": "a996a148ff74380976300091c8e6a927c2bc35b9d0b1ec1d729caeada153cd83",
+      "bytes": 1049
+    },
+    {
+      "id": 6,
+      "file": "blocks/0006.txt",
+      "word_paragraph_index_zero_based": 841,
+      "heading_context": [
+        "Capítulo 3 — Ecosistema Claude para análisis criptográfico",
+        "3. Implementación",
+        "Claude Code en acción: el CLAUDE.md como sistema operativo del proyecto"
+      ],
+      "sha256": "d8c58a670bde4c538ef5c80c34c362d310149010c2571055377fd7d9323cdd1e",
+      "bytes": 885
+    },
+    {
+      "id": 7,
+      "file": "blocks/0007.txt",
+      "word_paragraph_index_zero_based": 848,
+      "heading_context": [
+        "Capítulo 3 — Ecosistema Claude para análisis criptográfico",
+        "3. Implementación",
+        "Claude Code en acción: el CLAUDE.md como sistema operativo del proyecto"
+      ],
+      "sha256": "78ce176c283aa33d12913421237ff4becea0f1cacc3ae336645fd7b58b436a1a",
+      "bytes": 760
+    },
+    {
+      "id": 8,
+      "file": "blocks/0008.txt",
+      "word_paragraph_index_zero_based": 858,
+      "heading_context": [
+        "Capítulo 3 — Ecosistema Claude para análisis criptográfico",
+        "3. Implementación",
+        "Claude API: clasificación inteligente de hallazgos criptográficos"
+      ],
+      "sha256": "a90093e9e58e9e8654ffcf52f7b9bfca05ff6cce1f0a0e0e8d7dbb8c29c07c26",
+      "bytes": 1913
+    },
+    {
+      "id": 9,
+      "file": "blocks/0009.txt",
+      "word_paragraph_index_zero_based": 864,
+      "heading_context": [
+        "Capítulo 3 — Ecosistema Claude para análisis criptográfico",
+        "3. Implementación",
+        "Bucle propio de análisis criptográfico con herramientas"
+      ],
+      "sha256": "178bd76a84b6abffc45a3919e31123c41dda18353e121b11d4af996a7b03bb40",
+      "bytes": 5591
+    },
+    {
+      "id": 10,
+      "file": "blocks/0010.txt",
+      "word_paragraph_index_zero_based": 880,
+      "heading_context": [
+        "Capítulo 3 — Ecosistema Claude para análisis criptográfico",
+        "3. Implementación",
+        "MCP: escáneres y conectores como herramientas del agente"
+      ],
+      "sha256": "640dfcbd4b785e1acf58dd099ed70b218eff80892e5262cc00eaef767c5d54f0",
+      "bytes": 397
+    },
+    {
+      "id": 11,
+      "file": "blocks/0011.txt",
+      "word_paragraph_index_zero_based": 883,
+      "heading_context": [
+        "Capítulo 3 — Ecosistema Claude para análisis criptográfico",
+        "3. Implementación",
+        "MCP: escáneres y conectores como herramientas del agente"
+      ],
+      "sha256": "fe1e8b215fee39c0f1e2cd7a3f374025f9c8aa0052a0872e6181c23fcade3979",
+      "bytes": 1071
+    },
+    {
+      "id": 12,
+      "file": "blocks/0012.txt",
+      "word_paragraph_index_zero_based": 904,
+      "heading_context": [
+        "Capítulo 3 — Ecosistema Claude para análisis criptográfico",
+        "3. Implementación",
+        "El patrón de pre-filtrado: Haiku como primer corte"
+      ],
+      "sha256": "690dc40022ccbd7be72f0cc3cc86f9dfd92d77d087de3fb09224f65d9a16ef3e",
+      "bytes": 793
+    },
+    {
+      "id": 13,
+      "file": "blocks/0013.txt",
+      "word_paragraph_index_zero_based": 1021,
+      "heading_context": [
+        "Capítulo 4 — Del requisito a la arquitectura: multi-tenant desde el día uno",
+        "3. Implementación",
+        "La factory de la aplicación Flask"
+      ],
+      "sha256": "c07cd2ad8ff910545e70b898f15a45a5255110cd76f9b3219f9c585b529b7a7f",
+      "bytes": 2330
+    },
+    {
+      "id": 14,
+      "file": "blocks/0014.txt",
+      "word_paragraph_index_zero_based": 1024,
+      "heading_context": [
+        "Capítulo 4 — Del requisito a la arquitectura: multi-tenant desde el día uno",
+        "3. Implementación",
+        "La factory de la aplicación Flask"
+      ],
+      "sha256": "6dd0fa41e7014248f9c252fbdd9d9df95031d3cb7b62433db19c6cfa12ed48ac",
+      "bytes": 621
+    },
+    {
+      "id": 15,
+      "file": "blocks/0015.txt",
+      "word_paragraph_index_zero_based": 1028,
+      "heading_context": [
+        "Capítulo 4 — Del requisito a la arquitectura: multi-tenant desde el día uno",
+        "3. Implementación",
+        "El modelo Organization: el núcleo del multi-tenancy"
+      ],
+      "sha256": "3b59dbbb6aa71d94bc3c3b86bf77c343df5d8edc30df8c6161b68ea43f58de67",
+      "bytes": 3171
+    },
+    {
+      "id": 16,
+      "file": "blocks/0016.txt",
+      "word_paragraph_index_zero_based": 1035,
+      "heading_context": [
+        "Capítulo 4 — Del requisito a la arquitectura: multi-tenant desde el día uno",
+        "3. Implementación",
+        "El modelo User y el RBAC en la práctica"
+      ],
+      "sha256": "c6937b726060a9ca906310ccfe2ce93e663cfb5f91b7bdc061d6fa211f2e46eb",
+      "bytes": 2420
+    },
+    {
+      "id": 17,
+      "file": "blocks/0017.txt",
+      "word_paragraph_index_zero_based": 1042,
+      "heading_context": [
+        "Capítulo 4 — Del requisito a la arquitectura: multi-tenant desde el día uno",
+        "3. Implementación",
+        "El patrón de filtrado multi-tenant"
+      ],
+      "sha256": "ef634d163cdad34f4327b2c2885b94245f4c8566ba1d9b96690a898b3453cdb8",
+      "bytes": 3837
+    },
+    {
+      "id": 18,
+      "file": "blocks/0018.txt",
+      "word_paragraph_index_zero_based": 1048,
+      "heading_context": [
+        "Capítulo 4 — Del requisito a la arquitectura: multi-tenant desde el día uno",
+        "3. Implementación",
+        "El verificador de límites de plan"
+      ],
+      "sha256": "4d5cb0a3f5350331a0adfbff01c1de118943f3bd85373887bb5ddd1fe7ab372f",
+      "bytes": 1056
+    },
+    {
+      "id": 19,
+      "file": "blocks/0019.txt",
+      "word_paragraph_index_zero_based": 1051,
+      "heading_context": [
+        "Capítulo 4 — Del requisito a la arquitectura: multi-tenant desde el día uno",
+        "3. Implementación",
+        "El verificador de límites de plan"
+      ],
+      "sha256": "9cc8b1eefa3deb3ccbe492d6ded77c3915ad71cdd0b2b7c69c408936c4638df3",
+      "bytes": 524
+    },
+    {
+      "id": 20,
+      "file": "blocks/0020.txt",
+      "word_paragraph_index_zero_based": 1055,
+      "heading_context": [
+        "Capítulo 4 — Del requisito a la arquitectura: multi-tenant desde el día uno",
+        "3. Implementación",
+        "Docker Compose: siete servicios, un solo comando"
+      ],
+      "sha256": "22792f173d417055efd2a5f9f3539827fb518ffc2c045aa8b36e55777013d584",
+      "bytes": 6173
+    },
+    {
+      "id": 21,
+      "file": "blocks/0021.txt",
+      "word_paragraph_index_zero_based": 1179,
+      "heading_context": [
+        "Capítulo 5 — Modelo de datos para hallazgos criptográficos",
+        "3. Implementación",
+        "El modelo CryptoFinding"
+      ],
+      "sha256": "91a6ae16a50e6de1859f5de7a38e3a16522bd8932d5b38c947f4b8a5ea0b0d41",
+      "bytes": 1710
+    },
+    {
+      "id": 22,
+      "file": "blocks/0022.txt",
+      "word_paragraph_index_zero_based": 1189,
+      "heading_context": [
+        "Capítulo 5 — Modelo de datos para hallazgos criptográficos",
+        "3. Implementación",
+        "El modelo VulnerabilityFinding"
+      ],
+      "sha256": "2eb301835a80c5add1c477fa094ff82b6e4213d1b23f40994bc27cd97058df37",
+      "bytes": 1352
+    },
+    {
+      "id": 23,
+      "file": "blocks/0023.txt",
+      "word_paragraph_index_zero_based": 1193,
+      "heading_context": [
+        "Capítulo 5 — Modelo de datos para hallazgos criptográficos",
+        "3. Implementación",
+        "AnalysisJob y AnalysisTarget: la cadena de producción"
+      ],
+      "sha256": "1eecd144203c4d45cc093f652463c5e6e31d01d886ba62df848def45ea8a5c6d",
+      "bytes": 1902
+    },
+    {
+      "id": 24,
+      "file": "blocks/0024.txt",
+      "word_paragraph_index_zero_based": 1196,
+      "heading_context": [
+        "Capítulo 5 — Modelo de datos para hallazgos criptográficos",
+        "3. Implementación",
+        "AnalysisJob y AnalysisTarget: la cadena de producción"
+      ],
+      "sha256": "d91ab7aa610bac217759e75656d482002c3d499a0650199580d9bab489700a50",
+      "bytes": 799
+    },
+    {
+      "id": 25,
+      "file": "blocks/0025.txt",
+      "word_paragraph_index_zero_based": 1200,
+      "heading_context": [
+        "Capítulo 5 — Modelo de datos para hallazgos criptográficos",
+        "3. Implementación",
+        "El modelo de compliance: del hallazgo al control normativo"
+      ],
+      "sha256": "d836bbb5678f0d89e585e65a54dc3554028fbfbd422f41bc47595aaa05ffa9ac",
+      "bytes": 862
+    },
+    {
+      "id": 26,
+      "file": "blocks/0026.txt",
+      "word_paragraph_index_zero_based": 1202,
+      "heading_context": [
+        "Capítulo 5 — Modelo de datos para hallazgos criptográficos",
+        "3. Implementación",
+        "El modelo de compliance: del hallazgo al control normativo"
+      ],
+      "sha256": "5b92d5a1dee050ba9cc2f20f0d8f79ad925bd0e033b7111675dda980f881d449",
+      "bytes": 1437
+    },
+    {
+      "id": 27,
+      "file": "blocks/0027.txt",
+      "word_paragraph_index_zero_based": 1208,
+      "heading_context": [
+        "Capítulo 5 — Modelo de datos para hallazgos criptográficos",
+        "3. Implementación",
+        "ComplianceAssessment: la evaluación viva"
+      ],
+      "sha256": "028c4adc86b8103c8dc36347a6d482379d9369d3cf341c759fe9a61573689ab2",
+      "bytes": 879
+    },
+    {
+      "id": 28,
+      "file": "blocks/0028.txt",
+      "word_paragraph_index_zero_based": 1213,
+      "heading_context": [
+        "Capítulo 5 — Modelo de datos para hallazgos criptográficos",
+        "3. Implementación",
+        "ControlAssessment: el voto del auditor (y de la IA)"
+      ],
+      "sha256": "f53c5aaaaf19554dec9911b0479acf1e9433ab1ef36bbfda54d1ac8210fa6b35",
+      "bytes": 1457
+    },
+    {
+      "id": 29,
+      "file": "blocks/0029.txt",
+      "word_paragraph_index_zero_based": 1217,
+      "heading_context": [
+        "Capítulo 5 — Modelo de datos para hallazgos criptográficos",
+        "3. Implementación",
+        "FindingControlMapping: el puente entre hallazgos y normativa"
+      ],
+      "sha256": "3081c7d57652231396fbe9d426e2dc7116cf07f9c274f3f63fd817c4fac4823f",
+      "bytes": 1203
+    },
+    {
+      "id": 30,
+      "file": "blocks/0030.txt",
+      "word_paragraph_index_zero_based": 1223,
+      "heading_context": [
+        "Capítulo 5 — Modelo de datos para hallazgos criptográficos",
+        "3. Implementación",
+        "La query que lo une todo"
+      ],
+      "sha256": "9be0c42f3615259c8db5c6234ac7330c56cbabeb91eedb796e40136cce620225",
+      "bytes": 2392
+    },
+    {
+      "id": 31,
+      "file": "blocks/0031.txt",
+      "word_paragraph_index_zero_based": 1384,
+      "heading_context": [
+        "Capítulo 6 — Seguridad y auditoría de la propia plataforma",
+        "3. Implementación",
+        "Sistema de autenticación: registro, inicio de sesión y refresco de tokens"
+      ],
+      "sha256": "32bd2fbbf09a6d0e88c902551e0de254b8c13dcee050f9030b4a6a00a1dae804",
+      "bytes": 2180
+    },
+    {
+      "id": 32,
+      "file": "blocks/0032.txt",
+      "word_paragraph_index_zero_based": 1389,
+      "heading_context": [
+        "Capítulo 6 — Seguridad y auditoría de la propia plataforma",
+        "3. Implementación",
+        "Sistema de autenticación: registro, inicio de sesión y refresco de tokens"
+      ],
+      "sha256": "48b3e23dbe211d424ad29b538df50db338ae6845dc44f35c923c09599f40c455",
+      "bytes": 1280
+    },
+    {
+      "id": 33,
+      "file": "blocks/0033.txt",
+      "word_paragraph_index_zero_based": 1393,
+      "heading_context": [
+        "Capítulo 6 — Seguridad y auditoría de la propia plataforma",
+        "3. Implementación",
+        "Gestores de error de JWT: cuatro escenarios de fallo"
+      ],
+      "sha256": "4996b18f1c2ea161d6cbe5019563b7a7cf6b46596eb5e16d812b1dc027c2c563",
+      "bytes": 821
+    },
+    {
+      "id": 34,
+      "file": "blocks/0034.txt",
+      "word_paragraph_index_zero_based": 1398,
+      "heading_context": [
+        "Capítulo 6 — Seguridad y auditoría de la propia plataforma",
+        "3. Implementación",
+        "RBAC en endpoints: verificación explícita con aislamiento multi-tenant"
+      ],
+      "sha256": "6f4a6b27826a089fb827fbfdf5b6db99575baad84b65b68968e0520129d7b1b4",
+      "bytes": 1286
+    },
+    {
+      "id": 35,
+      "file": "blocks/0035.txt",
+      "word_paragraph_index_zero_based": 1403,
+      "heading_context": [
+        "Capítulo 6 — Seguridad y auditoría de la propia plataforma",
+        "3. Implementación",
+        "El modelo AuditLog: trazabilidad para NIS2 y DORA"
+      ],
+      "sha256": "dbca83e9f94f1832794d6cfd2c10e57e8bf3afad2ce8e9554be904db0c93a55b",
+      "bytes": 3207
+    },
+    {
+      "id": 36,
+      "file": "blocks/0036.txt",
+      "word_paragraph_index_zero_based": 1410,
+      "heading_context": [
+        "Capítulo 6 — Seguridad y auditoría de la propia plataforma",
+        "3. Implementación",
+        "Endpoints de auditoría: consulta, filtrado y estadísticas"
+      ],
+      "sha256": "214b30c90aba3acaa333165ec52f677810e87da19234fbf354728a763281322d",
+      "bytes": 3630
+    },
+    {
+      "id": 37,
+      "file": "blocks/0037.txt",
+      "word_paragraph_index_zero_based": 1412,
+      "heading_context": [
+        "Capítulo 6 — Seguridad y auditoría de la propia plataforma",
+        "3. Implementación",
+        "Endpoints de auditoría: consulta, filtrado y estadísticas"
+      ],
+      "sha256": "93e51e6f5dba9d36e8cf4048a9a89c3024eea7ced35b4496ac31512b6e182c3e",
+      "bytes": 2859
+    },
+    {
+      "id": 38,
+      "file": "blocks/0038.txt",
+      "word_paragraph_index_zero_based": 1416,
+      "heading_context": [
+        "Capítulo 6 — Seguridad y auditoría de la propia plataforma",
+        "3. Implementación",
+        "Rate limiting: Flask-Limiter con Redis"
+      ],
+      "sha256": "b70c285e4d398a9247d9bde6fad9e90607a5e0be5cd14114bc16c4e44efe2ea9",
+      "bytes": 310
+    },
+    {
+      "id": 39,
+      "file": "blocks/0039.txt",
+      "word_paragraph_index_zero_based": 1422,
+      "heading_context": [
+        "Capítulo 6 — Seguridad y auditoría de la propia plataforma",
+        "3. Implementación",
+        "Gestión de secretos: la realidad de docker-compose"
+      ],
+      "sha256": "04f78434be5dc04419ac2e7b507c6b3007ddb6374f3fdb1fa40116322e9ac9bc",
+      "bytes": 259
+    },
+    {
+      "id": 40,
+      "file": "blocks/0040.txt",
+      "word_paragraph_index_zero_based": 1428,
+      "heading_context": [
+        "Capítulo 6 — Seguridad y auditoría de la propia plataforma",
+        "3. Implementación",
+        "Gestión de secretos: la realidad de docker-compose"
+      ],
+      "sha256": "3407c5ecd02198c573fd8d3e9ba563d61c11bb0d049338009ca1305cf6151d98",
+      "bytes": 1025
+    },
+    {
+      "id": 41,
+      "file": "blocks/0041.txt",
+      "word_paragraph_index_zero_based": 1433,
+      "heading_context": [
+        "Capítulo 6 — Seguridad y auditoría de la propia plataforma",
+        "3. Implementación",
+        "El modelo User: estructura de roles y constraints"
+      ],
+      "sha256": "952ee9c7dbdcf43e7575e1c111d8227fa3ab3e1923bf27d08d402f53612f87c9",
+      "bytes": 1638
+    },
+    {
+      "id": 42,
+      "file": "blocks/0042.txt",
+      "word_paragraph_index_zero_based": 1462,
+      "heading_context": [
+        "Capítulo 6 — Seguridad y auditoría de la propia plataforma",
+        "3. Implementación",
+        "CORS y aislamiento del frontend"
+      ],
+      "sha256": "b78bdf24b6379e2b908840e211b259b15d4403e167315e91b2b91185e0cbad17",
+      "bytes": 190
+    },
+    {
+      "id": 43,
+      "file": "blocks/0043.txt",
+      "word_paragraph_index_zero_based": 1536,
+      "heading_context": [
+        "Capítulo 7 — Análisis de código: detectar criptografía vulnerable en repositorios",
+        "3. Implementación",
+        "El diccionario de patrones criptográficos"
+      ],
+      "sha256": "4153e2d26bc8d78406fd85032b3297d07952f057c4f2e410b1c85c549e4dff79",
+      "bytes": 4797
+    },
+    {
+      "id": 44,
+      "file": "blocks/0044.txt",
+      "word_paragraph_index_zero_based": 1543,
+      "heading_context": [
+        "Capítulo 7 — Análisis de código: detectar criptografía vulnerable en repositorios",
+        "3. Implementación",
+        "Las extensiones de fichero y las exclusiones"
+      ],
+      "sha256": "b40626b46fbbb75b8ec18fe167c063a92bb6dd7be093204f959e53f205d1528a",
+      "bytes": 610
+    },
+    {
+      "id": 45,
+      "file": "blocks/0045.txt",
+      "word_paragraph_index_zero_based": 1549,
+      "heading_context": [
+        "Capítulo 7 — Análisis de código: detectar criptografía vulnerable en repositorios",
+        "3. Implementación",
+        "El motor de escaneo: _scan_file y scan_directory"
+      ],
+      "sha256": "f89cae92e80a8898b38b217a66aa590bc4a6595fe3d52ac3f28668a77842ae2f",
+      "bytes": 5024
+    },
+    {
+      "id": 46,
+      "file": "blocks/0046.txt",
+      "word_paragraph_index_zero_based": 1555,
+      "heading_context": [
+        "Capítulo 7 — Análisis de código: detectar criptografía vulnerable en repositorios",
+        "3. Implementación",
+        "El motor de escaneo: _scan_file y scan_directory"
+      ],
+      "sha256": "2b0dec83c86a292a83fb2acf9d5654b89415c7967e78b8f458697988ca061ac8",
+      "bytes": 1382
+    },
+    {
+      "id": 47,
+      "file": "blocks/0047.txt",
+      "word_paragraph_index_zero_based": 1560,
+      "heading_context": [
+        "Capítulo 7 — Análisis de código: detectar criptografía vulnerable en repositorios",
+        "3. Implementación",
+        "El motor de escaneo: _scan_file y scan_directory"
+      ],
+      "sha256": "cb9a33c32ea3d304fdec4caf8014d0977ca73896b103bcf620104f1d0cccc601",
+      "bytes": 678
+    },
+    {
+      "id": 48,
+      "file": "blocks/0048.txt",
+      "word_paragraph_index_zero_based": 1565,
+      "heading_context": [
+        "Capítulo 7 — Análisis de código: detectar criptografía vulnerable en repositorios",
+        "3. Implementación",
+        "El conector base y la implementación de GitHub"
+      ],
+      "sha256": "422092ef7251e68a27a233f24b6dc480c720c47cb52e62af103ab50c35e6b81d",
+      "bytes": 595
+    },
+    {
+      "id": 49,
+      "file": "blocks/0049.txt",
+      "word_paragraph_index_zero_based": 1568,
+      "heading_context": [
+        "Capítulo 7 — Análisis de código: detectar criptografía vulnerable en repositorios",
+        "3. Implementación",
+        "El conector base y la implementación de GitHub"
+      ],
+      "sha256": "957bf15f10ef3277dcbf03f5f9943158285704b7aa8d6408608ca693157d31b3",
+      "bytes": 2558
+    },
+    {
+      "id": 50,
+      "file": "blocks/0050.txt",
+      "word_paragraph_index_zero_based": 1575,
+      "heading_context": [
+        "Capítulo 7 — Análisis de código: detectar criptografía vulnerable en repositorios",
+        "3. Implementación",
+        "La tarea Celery: del clic del usuario al hallazgo en base de datos"
+      ],
+      "sha256": "9a562394ea15dc8f3ef80e2ee2db68728c4744c04f529919100523b67c2757ff",
+      "bytes": 959
+    },
+    {
+      "id": 51,
+      "file": "blocks/0051.txt",
+      "word_paragraph_index_zero_based": 1581,
+      "heading_context": [
+        "Capítulo 7 — Análisis de código: detectar criptografía vulnerable en repositorios",
+        "3. Implementación",
+        "El scoring: de hallazgos a puntuación PQC"
+      ],
+      "sha256": "e3c9114e508bfa38a0341dd233b64934d29128d45b19da6067a380970db689ea",
+      "bytes": 765
+    },
+    {
+      "id": 52,
+      "file": "blocks/0052.txt",
+      "word_paragraph_index_zero_based": 1666,
+      "heading_context": [
+        "Capítulo 8 — Análisis de certificados SSL/TLS",
+        "3. Implementación",
+        "Las tablas de clasificación: la base de datos de vulnerabilidad cuántica para TLS"
+      ],
+      "sha256": "4e0853a5176b7c0e8bd6489244fde246c814252d14c76a2d4ae11db4f931595b",
+      "bytes": 456
+    },
+    {
+      "id": 53,
+      "file": "blocks/0053.txt",
+      "word_paragraph_index_zero_based": 1670,
+      "heading_context": [
+        "Capítulo 8 — Análisis de certificados SSL/TLS",
+        "3. Implementación",
+        "Las tablas de clasificación: la base de datos de vulnerabilidad cuántica para TLS"
+      ],
+      "sha256": "7559f96fbde481b96d1fb231433ced10337ef94390a835605ff023cd4143998a",
+      "bytes": 599
+    },
+    {
+      "id": 54,
+      "file": "blocks/0054.txt",
+      "word_paragraph_index_zero_based": 1676,
+      "heading_context": [
+        "Capítulo 8 — Análisis de certificados SSL/TLS",
+        "3. Implementación",
+        "Los grupos PQC soportados: detectando la transición"
+      ],
+      "sha256": "c8762d55cfb903d32d6ce7796a0faacea56970f9c133086e1354c6162e87fa5c",
+      "bytes": 1161
+    },
+    {
+      "id": 55,
+      "file": "blocks/0055.txt",
+      "word_paragraph_index_zero_based": 1683,
+      "heading_context": [
+        "Capítulo 8 — Análisis de certificados SSL/TLS",
+        "3. Implementación",
+        "Obtención del certificado: el doble intento"
+      ],
+      "sha256": "166b8cabbd560a4055556530cd5fe7453f12279ed297a8c9b6b065bd9416df8c",
+      "bytes": 1331
+    },
+    {
+      "id": 56,
+      "file": "blocks/0056.txt",
+      "word_paragraph_index_zero_based": 1690,
+      "heading_context": [
+        "Capítulo 8 — Análisis de certificados SSL/TLS",
+        "3. Implementación",
+        "El método principal: scan_url()"
+      ],
+      "sha256": "853ded265eb2d81a837a8c6cc9a93efdad87ba92857e5af418cadc955e58da73",
+      "bytes": 1200
+    },
+    {
+      "id": 57,
+      "file": "blocks/0057.txt",
+      "word_paragraph_index_zero_based": 1700,
+      "heading_context": [
+        "Capítulo 8 — Análisis de certificados SSL/TLS",
+        "3. Implementación",
+        "La detección de soporte PQC en detalle"
+      ],
+      "sha256": "88eecd5473fc8389a5ceabfbe39f4198f802aeba65bb9551ca2ed46a81aaef92",
+      "bytes": 778
+    },
+    {
+      "id": 58,
+      "file": "blocks/0058.txt",
+      "word_paragraph_index_zero_based": 1707,
+      "heading_context": [
+        "Capítulo 8 — Análisis de certificados SSL/TLS",
+        "3. Implementación",
+        "La tarea Celery: del escaneo a la persistencia"
+      ],
+      "sha256": "5a2fc47c233a6408eaafd13eb72163272c3e4f36a9364d07f5548e5a1f7a2aab",
+      "bytes": 542
+    },
+    {
+      "id": 59,
+      "file": "blocks/0059.txt",
+      "word_paragraph_index_zero_based": 1713,
+      "heading_context": [
+        "Capítulo 8 — Análisis de certificados SSL/TLS",
+        "3. Implementación",
+        "Cálculo del pqc_readiness_score"
+      ],
+      "sha256": "8492c794fda816c72397a0fa06fc403b7fe476d1471d1968ba69bdf35cd85bc7",
+      "bytes": 450
+    },
+    {
+      "id": 60,
+      "file": "blocks/0060.txt",
+      "word_paragraph_index_zero_based": 1717,
+      "heading_context": [
+        "Capítulo 8 — Análisis de certificados SSL/TLS",
+        "3. Implementación",
+        "Cálculo del pqc_readiness_score"
+      ],
+      "sha256": "41b48fc4be5b54e3cfdab7a823bc577fc46a2b677a59465d7734eb41c0becc8b",
+      "bytes": 125
+    },
+    {
+      "id": 61,
+      "file": "blocks/0061.txt",
+      "word_paragraph_index_zero_based": 1759,
+      "heading_context": [
+        "Capítulo 8 — Análisis de certificados SSL/TLS",
+        "3. Implementación",
+        "El escaneo acotado: scan_urls()"
+      ],
+      "sha256": "78529ca6fde9bbef06b4fe2b6d158cd4c7ce5d728429ac4e18e6cac80777c031",
+      "bytes": 614
+    },
+    {
+      "id": 62,
+      "file": "blocks/0062.txt",
+      "word_paragraph_index_zero_based": 1826,
+      "heading_context": [
+        "Capítulo 9 — Auditoría cloud: AWS, Azure, GCP",
+        "3. Implementación",
+        "La base de datos de algoritmos vulnerables"
+      ],
+      "sha256": "ee3384a88ff28de2e24d3960abf59b7711985eace23487f9de0d204e37bbc660",
+      "bytes": 1058
+    },
+    {
+      "id": 63,
+      "file": "blocks/0063.txt",
+      "word_paragraph_index_zero_based": 1832,
+      "heading_context": [
+        "Capítulo 9 — Auditoría cloud: AWS, Azure, GCP",
+        "3. Implementación",
+        "El clasificador: CloudSecurityAnalyzer"
+      ],
+      "sha256": "8ff226509cb331a4036a344aff65be64dcf3d7fe21a3a367d199e51f54a26a54",
+      "bytes": 3403
+    },
+    {
+      "id": 64,
+      "file": "blocks/0064.txt",
+      "word_paragraph_index_zero_based": 1836,
+      "heading_context": [
+        "Capítulo 9 — Auditoría cloud: AWS, Azure, GCP",
+        "3. Implementación",
+        "Análisis de recursos AWS"
+      ],
+      "sha256": "79c6877a727dbb78e3a76e119af886015f46fa784c36e5945a3490bd6b8b82df",
+      "bytes": 1103
+    },
+    {
+      "id": 65,
+      "file": "blocks/0065.txt",
+      "word_paragraph_index_zero_based": 1840,
+      "heading_context": [
+        "Capítulo 9 — Auditoría cloud: AWS, Azure, GCP",
+        "3. Implementación",
+        "Análisis de recursos AWS"
+      ],
+      "sha256": "0d7a1b778385e3c3fc17d67539700bc21ac530ad9b84e948f8febc02aadeb341",
+      "bytes": 957
+    },
+    {
+      "id": 66,
+      "file": "blocks/0066.txt",
+      "word_paragraph_index_zero_based": 1845,
+      "heading_context": [
+        "Capítulo 9 — Auditoría cloud: AWS, Azure, GCP",
+        "3. Implementación",
+        "El escáner AWS: boto3 y la extracción de datos"
+      ],
+      "sha256": "71e40c0d21b95eadb5b412b986ef058b4ba47df055762b20247a7fd04b5e1a85",
+      "bytes": 2006
+    },
+    {
+      "id": 67,
+      "file": "blocks/0067.txt",
+      "word_paragraph_index_zero_based": 1848,
+      "heading_context": [
+        "Capítulo 9 — Auditoría cloud: AWS, Azure, GCP",
+        "3. Implementación",
+        "El escáner AWS: boto3 y la extracción de datos"
+      ],
+      "sha256": "229d36557f81b20cfbd3ab54f015c3722de8a788bf2505499c3860410b22a880",
+      "bytes": 2235
+    },
+    {
+      "id": 68,
+      "file": "blocks/0068.txt",
+      "word_paragraph_index_zero_based": 1853,
+      "heading_context": [
+        "Capítulo 9 — Auditoría cloud: AWS, Azure, GCP",
+        "3. Implementación",
+        "Análisis de Azure Key Vault y GCP Cloud KMS"
+      ],
+      "sha256": "492efe026cc72ada38a312cf1cd28dd97ccf5b1b0867cb6707a7e37bc6066552",
+      "bytes": 1486
+    },
+    {
+      "id": 69,
+      "file": "blocks/0069.txt",
+      "word_paragraph_index_zero_based": 1855,
+      "heading_context": [
+        "Capítulo 9 — Auditoría cloud: AWS, Azure, GCP",
+        "3. Implementación",
+        "Análisis de Azure Key Vault y GCP Cloud KMS"
+      ],
+      "sha256": "34a6f364fd097b36359967dc6b40384bd72e48287ca7f7ab40c5ebdaf49f857c",
+      "bytes": 1842
+    },
+    {
+      "id": 70,
+      "file": "blocks/0070.txt",
+      "word_paragraph_index_zero_based": 1859,
+      "heading_context": [
+        "Capítulo 9 — Auditoría cloud: AWS, Azure, GCP",
+        "3. Implementación",
+        "Puntuación de preparación PQC"
+      ],
+      "sha256": "147116fa8a7575f18c27717e38cc5157b827d05797eafdd3c5a0bc28cb33fe40",
+      "bytes": 601
+    },
+    {
+      "id": 71,
+      "file": "blocks/0071.txt",
+      "word_paragraph_index_zero_based": 1863,
+      "heading_context": [
+        "Capítulo 9 — Auditoría cloud: AWS, Azure, GCP",
+        "3. Implementación",
+        "Puntuación de preparación PQC"
+      ],
+      "sha256": "5d28ffe4c1c9b598d7b4d8a5afdcaeaffc751caab2cdef61ec9a5ca8066ed098",
+      "bytes": 2300
+    },
+    {
+      "id": 72,
+      "file": "blocks/0072.txt",
+      "word_paragraph_index_zero_based": 1866,
+      "heading_context": [
+        "Capítulo 9 — Auditoría cloud: AWS, Azure, GCP",
+        "3. Implementación",
+        "La tarea Celery: ejecución asíncrona con seguimiento de progreso"
+      ],
+      "sha256": "2e93a1353dd6cbe2a0bba333484bcdadfe0090c5453597f6bbbc0eacd93c7ec7",
+      "bytes": 3623
+    },
+    {
+      "id": 73,
+      "file": "blocks/0073.txt",
+      "word_paragraph_index_zero_based": 1870,
+      "heading_context": [
+        "Capítulo 9 — Auditoría cloud: AWS, Azure, GCP",
+        "3. Implementación",
+        "Ejemplo sintético de observaciones cloud"
+      ],
+      "sha256": "92c1fb3a57d6d04775b889e23c11269f5accac557b9dc57a6a2dd7afefc5e83d",
+      "bytes": 401
+    },
+    {
+      "id": 74,
+      "file": "blocks/0074.txt",
+      "word_paragraph_index_zero_based": 1875,
+      "heading_context": [
+        "Capítulo 9 — Auditoría cloud: AWS, Azure, GCP",
+        "3. Implementación",
+        "Reglas por proveedor: el catálogo de detección"
+      ],
+      "sha256": "99c4ee8a555b2d2f55ff5d0a7e4529cf1bd54f45582fd1b2db9873977e2d3086",
+      "bytes": 881
+    },
+    {
+      "id": 75,
+      "file": "blocks/0075.txt",
+      "word_paragraph_index_zero_based": 1953,
+      "heading_context": [
+        "Capítulo 10 — OWASP y vulnerabilidades complementarias",
+        "3. Implementación",
+        "Anatomía de un patrón OWASP"
+      ],
+      "sha256": "095ff5849ef2af031ac1a1edf1984ce61cbb055ca2bf6b834b43420bd7c0956f",
+      "bytes": 3897
+    },
+    {
+      "id": 76,
+      "file": "blocks/0076.txt",
+      "word_paragraph_index_zero_based": 1961,
+      "heading_context": [
+        "Capítulo 10 — OWASP y vulnerabilidades complementarias",
+        "3. Implementación",
+        "La clase OWASPAnalyzer"
+      ],
+      "sha256": "1b3ddd8668c38d06ddbf8cffb5a03a7703a399f56df889aba9d2dfe158940916",
+      "bytes": 2008
+    },
+    {
+      "id": 77,
+      "file": "blocks/0077.txt",
+      "word_paragraph_index_zero_based": 1967,
+      "heading_context": [
+        "Capítulo 10 — OWASP y vulnerabilidades complementarias",
+        "3. Implementación",
+        "Análisis de contenido de ficheros"
+      ],
+      "sha256": "00bd5edc73a3983952e8456498e975e14ec7acc9d6506295a35c7ff62fe56fd5",
+      "bytes": 2603
+    },
+    {
+      "id": 78,
+      "file": "blocks/0078.txt",
+      "word_paragraph_index_zero_based": 1975,
+      "heading_context": [
+        "Capítulo 10 — OWASP y vulnerabilidades complementarias",
+        "3. Implementación",
+        "Análisis masivo y resumen por categorías"
+      ],
+      "sha256": "f91b6a08eec3367723fa0892bf65c01928aaaab89979824730cba9669c6f1afc",
+      "bytes": 1580
+    },
+    {
+      "id": 79,
+      "file": "blocks/0079.txt",
+      "word_paragraph_index_zero_based": 1977,
+      "heading_context": [
+        "Capítulo 10 — OWASP y vulnerabilidades complementarias",
+        "3. Implementación",
+        "Análisis masivo y resumen por categorías"
+      ],
+      "sha256": "35b3a2559640d46cd767ba90502525fcda73b0f7fea875354efeae36678d7606",
+      "bytes": 1014
+    },
+    {
+      "id": 80,
+      "file": "blocks/0080.txt",
+      "word_paragraph_index_zero_based": 1980,
+      "heading_context": [
+        "Capítulo 10 — OWASP y vulnerabilidades complementarias",
+        "3. Implementación",
+        "Persistencia: de hallazgo OWASP a VulnerabilityFinding"
+      ],
+      "sha256": "75ba90ceb868cc0b6dfca01c5f6ad82d300baeced253ea677250821e29c81c26",
+      "bytes": 1955
+    },
+    {
+      "id": 81,
+      "file": "blocks/0081.txt",
+      "word_paragraph_index_zero_based": 1986,
+      "heading_context": [
+        "Capítulo 10 — OWASP y vulnerabilidades complementarias",
+        "3. Implementación",
+        "Integración con el prompt OWASP del analizador de IA"
+      ],
+      "sha256": "c29a07c7e7296da1ec4df27b96afbb5732ea0ccfc166f7303dfd853196d1a097",
+      "bytes": 466
+    },
+    {
+      "id": 82,
+      "file": "blocks/0082.txt",
+      "word_paragraph_index_zero_based": 1988,
+      "heading_context": [
+        "Capítulo 10 — OWASP y vulnerabilidades complementarias",
+        "3. Implementación",
+        "Integración con el prompt OWASP del analizador de IA"
+      ],
+      "sha256": "4294d2637cb8b9a4832015f25268b7ae919e1cb359a393056a0d41991c232576",
+      "bytes": 1367
+    },
+    {
+      "id": 83,
+      "file": "blocks/0083.txt",
+      "word_paragraph_index_zero_based": 1991,
+      "heading_context": [
+        "Capítulo 10 — OWASP y vulnerabilidades complementarias",
+        "3. Implementación",
+        "Integración con el prompt OWASP del analizador de IA"
+      ],
+      "sha256": "9f2995ef810c97698a4ab35b75368247ff1b74792cc805ef28a9547ca2f920da",
+      "bytes": 677
+    },
+    {
+      "id": 84,
+      "file": "blocks/0084.txt",
+      "word_paragraph_index_zero_based": 2151,
+      "heading_context": [
+        "Capítulo 11 — Análisis semántico de código con LLMs",
+        "3. Implementación",
+        "La jerarquía de proveedores"
+      ],
+      "sha256": "265633f8f0c4fb730995bd9901335aec61655035545e29f98a1e463c46872f68",
+      "bytes": 1016
+    },
+    {
+      "id": 85,
+      "file": "blocks/0085.txt",
+      "word_paragraph_index_zero_based": 2155,
+      "heading_context": [
+        "Capítulo 11 — Análisis semántico de código con LLMs",
+        "3. Implementación",
+        "La clase base y los prompts"
+      ],
+      "sha256": "1674c5691ffd434df5f8de4b2216cfa56099a4a0a443ba8a7b67c180de707892",
+      "bytes": 2299
+    },
+    {
+      "id": 86,
+      "file": "blocks/0086.txt",
+      "word_paragraph_index_zero_based": 2158,
+      "heading_context": [
+        "Capítulo 11 — Análisis semántico de código con LLMs",
+        "3. Implementación",
+        "La clase base y los prompts"
+      ],
+      "sha256": "f1f260715561b257fb4e95b8bba9ff080d1d4e71b773ad46f0a0354c69c78a50",
+      "bytes": 81
+    },
+    {
+      "id": 87,
+      "file": "blocks/0087.txt",
+      "word_paragraph_index_zero_based": 2166,
+      "heading_context": [
+        "Capítulo 11 — Análisis semántico de código con LLMs",
+        "3. Implementación",
+        "El parser robusto: _parse_ai_response()"
+      ],
+      "sha256": "c6cc23a7bd8aee71c28e06e9e0db0ec52ebda39a589827d13322fcc30294121a",
+      "bytes": 2421
+    },
+    {
+      "id": 88,
+      "file": "blocks/0088.txt",
+      "word_paragraph_index_zero_based": 2171,
+      "heading_context": [
+        "Capítulo 11 — Análisis semántico de código con LLMs",
+        "3. Implementación",
+        "Un proveedor concreto: AnthropicProvider"
+      ],
+      "sha256": "f48421ff2ce3a27272c772f74531ce99f02f7f9068ecfba450938c5908a137b0",
+      "bytes": 2935
+    },
+    {
+      "id": 89,
+      "file": "blocks/0089.txt",
+      "word_paragraph_index_zero_based": 2175,
+      "heading_context": [
+        "Capítulo 11 — Análisis semántico de código con LLMs",
+        "3. Implementación",
+        "La clase fachada: AICodeAnalyzer"
+      ],
+      "sha256": "fffd849d1529726957da9991c7b769173a4905a3bbaf31a6777dfaa41447f78c",
+      "bytes": 2005
+    },
+    {
+      "id": 90,
+      "file": "blocks/0090.txt",
+      "word_paragraph_index_zero_based": 2179,
+      "heading_context": [
+        "Capítulo 11 — Análisis semántico de código con LLMs",
+        "3. Implementación",
+        "Integración con Celery: el pipeline de análisis completo"
+      ],
+      "sha256": "31ebde04621c25f1cccf478869ad49b25a5d466462fabc87560439099148afce",
+      "bytes": 1093
+    },
+    {
+      "id": 91,
+      "file": "blocks/0091.txt",
+      "word_paragraph_index_zero_based": 2188,
+      "heading_context": [
+        "Capítulo 11 — Análisis semántico de código con LLMs",
+        "3. Implementación",
+        "Detección automática de proveedores: detect_ai_providers()"
+      ],
+      "sha256": "69ee16c51a9d1a838bc481dea2cc5ea3288dbdcb1ab3df61164237a991c0f9a1",
+      "bytes": 1501
+    },
+    {
+      "id": 92,
+      "file": "blocks/0092.txt",
+      "word_paragraph_index_zero_based": 2194,
+      "heading_context": [
+        "Capítulo 11 — Análisis semántico de código con LLMs",
+        "3. Implementación",
+        "Scoring PQC: de hallazgos a puntuación"
+      ],
+      "sha256": "6a53eec478331e8a2a6e096943249508ab06ab81ca7f15137b6a314acb700b25",
+      "bytes": 487
+    },
+    {
+      "id": 93,
+      "file": "blocks/0093.txt",
+      "word_paragraph_index_zero_based": 2271,
+      "heading_context": [
+        "Capítulo 12 — Agente autónomo de análisis criptográfico",
+        "3. Implementación",
+        "La clase CodeAnalysisAgent: anatomía del bucle"
+      ],
+      "sha256": "63ae3641b90fa0fbc323ab2b9e194017257422a8bcd9c5f510aeced52ac6e5a1",
+      "bytes": 3521
+    },
+    {
+      "id": 94,
+      "file": "blocks/0094.txt",
+      "word_paragraph_index_zero_based": 2282,
+      "heading_context": [
+        "Capítulo 12 — Agente autónomo de análisis criptográfico",
+        "3. Implementación",
+        "Las cinco herramientas del repositorio"
+      ],
+      "sha256": "bd919782317fdcf61fbd6ea58dde73005cca0f3d25338d3745b25fe008c8a6f2",
+      "bytes": 2291
+    },
+    {
+      "id": 95,
+      "file": "blocks/0095.txt",
+      "word_paragraph_index_zero_based": 2304,
+      "heading_context": [
+        "Capítulo 12 — Agente autónomo de análisis criptográfico",
+        "3. Implementación",
+        "Las cinco herramientas del repositorio"
+      ],
+      "sha256": "09013d9b3d41ec7fe426dba1370a7acf8299a184816f4d8946103d0fe0002f40",
+      "bytes": 1827
+    },
+    {
+      "id": 96,
+      "file": "blocks/0096.txt",
+      "word_paragraph_index_zero_based": 2309,
+      "heading_context": [
+        "Capítulo 12 — Agente autónomo de análisis criptográfico",
+        "3. Implementación",
+        "Validación de rutas: la defensa que el modelo no puede burlar"
+      ],
+      "sha256": "7ff2be86d5910cbd21812b77d26e9c732139f7979c7abd3bb62e45e29ec860ec",
+      "bytes": 2280
+    },
+    {
+      "id": 97,
+      "file": "blocks/0097.txt",
+      "word_paragraph_index_zero_based": 2316,
+      "heading_context": [
+        "Capítulo 12 — Agente autónomo de análisis criptográfico",
+        "3. Implementación",
+        "Adaptador de proveedores para el contrato del bucle propio"
+      ],
+      "sha256": "caf2938b9bc491bbc6381181953d92a3394902d50c2c6eddb2276c1c0e7f0907",
+      "bytes": 655
+    },
+    {
+      "id": 98,
+      "file": "blocks/0098.txt",
+      "word_paragraph_index_zero_based": 2319,
+      "heading_context": [
+        "Capítulo 12 — Agente autónomo de análisis criptográfico",
+        "3. Implementación",
+        "Adaptador de proveedores para el contrato del bucle propio"
+      ],
+      "sha256": "2fa0bd2cae95fe8390368fa93a2556ca56750a3f3245ee772f9bf39eaa018d02",
+      "bytes": 2181
+    },
+    {
+      "id": 99,
+      "file": "blocks/0099.txt",
+      "word_paragraph_index_zero_based": 2322,
+      "heading_context": [
+        "Capítulo 12 — Agente autónomo de análisis criptográfico",
+        "3. Implementación",
+        "Adaptador de proveedores para el contrato del bucle propio"
+      ],
+      "sha256": "e47931626b433473ffdc5ab78a0e1deb804fe0bf552e0c304aca22551d33dc9d",
+      "bytes": 4089
+    },
+    {
+      "id": 100,
+      "file": "blocks/0100.txt",
+      "word_paragraph_index_zero_based": 2326,
+      "heading_context": [
+        "Capítulo 12 — Agente autónomo de análisis criptográfico",
+        "3. Implementación",
+        "El endpoint REST y streaming SSE"
+      ],
+      "sha256": "7834be64f1df078d70b271431faa6596507379dee844b420044ebd1a7177aab0",
+      "bytes": 2958
+    },
+    {
+      "id": 101,
+      "file": "blocks/0101.txt",
+      "word_paragraph_index_zero_based": 2331,
+      "heading_context": [
+        "Capítulo 12 — Agente autónomo de análisis criptográfico",
+        "3. Implementación",
+        "El prompt del sistema: contexto criptográfico especializado"
+      ],
+      "sha256": "384a42820acc819968b430248860279f9161cc392943dd2c971596fb085e1d2f",
+      "bytes": 1090
+    },
+    {
+      "id": 102,
+      "file": "blocks/0102.txt",
+      "word_paragraph_index_zero_based": 2423,
+      "heading_context": [
+        "Capítulo 13 — RAG para inteligencia criptográfica",
+        "3. Implementación",
+        "Modelo de datos: AIRAGCollection y AIRAGDocument"
+      ],
+      "sha256": "a899619fd63702438db92f1e3fc06c4229b202e56139218f19ee890451a36335",
+      "bytes": 1638
+    },
+    {
+      "id": 103,
+      "file": "blocks/0103.txt",
+      "word_paragraph_index_zero_based": 2431,
+      "heading_context": [
+        "Capítulo 13 — RAG para inteligencia criptográfica",
+        "3. Implementación",
+        "Modelo de datos: AIRAGCollection y AIRAGDocument"
+      ],
+      "sha256": "3c2bd63154d3cb5be62292aa6c8a4b12857bfb07255d3b43631376ee315f758a",
+      "bytes": 1129
+    },
+    {
+      "id": 104,
+      "file": "blocks/0104.txt",
+      "word_paragraph_index_zero_based": 2438,
+      "heading_context": [
+        "Capítulo 13 — RAG para inteligencia criptográfica",
+        "3. Implementación",
+        "API REST para gestión de colecciones y documentos"
+      ],
+      "sha256": "7a78df5635a6c6370e4dac33f89eded7441804ea8659cb13404211771bbee7ee",
+      "bytes": 2924
+    },
+    {
+      "id": 105,
+      "file": "blocks/0105.txt",
+      "word_paragraph_index_zero_based": 2441,
+      "heading_context": [
+        "Capítulo 13 — RAG para inteligencia criptográfica",
+        "3. Implementación",
+        "API REST para gestión de colecciones y documentos"
+      ],
+      "sha256": "8cfb26791427b762b8a749b92ae4302064b3a9636333fe72613d316a62c26ef9",
+      "bytes": 2078
+    },
+    {
+      "id": 106,
+      "file": "blocks/0106.txt",
+      "word_paragraph_index_zero_based": 2447,
+      "heading_context": [
+        "Capítulo 13 — RAG para inteligencia criptográfica",
+        "3. Implementación",
+        "El pipeline de fragmentación"
+      ],
+      "sha256": "69d62ecdb4da2000e96d97c713c0efa1b3369e37c8dc84890a397e165a5783a5",
+      "bytes": 2093
+    },
+    {
+      "id": 107,
+      "file": "blocks/0107.txt",
+      "word_paragraph_index_zero_based": 2454,
+      "heading_context": [
+        "Capítulo 13 — RAG para inteligencia criptográfica",
+        "3. Implementación",
+        "La búsqueda contextual: del query al contexto RAG"
+      ],
+      "sha256": "67133fffde525148a9bd65948208989215dee2b56ed111db7fc01ef5b9558b05",
+      "bytes": 3165
+    },
+    {
+      "id": 108,
+      "file": "blocks/0108.txt",
+      "word_paragraph_index_zero_based": 2466,
+      "heading_context": [
+        "Capítulo 13 — RAG para inteligencia criptográfica",
+        "3. Implementación",
+        "Integración con el chat IA"
+      ],
+      "sha256": "116089771086a7b9c2457bf5b873e45c2ed0cd8f20ca6097da23acbcaa3573dc",
+      "bytes": 2594
+    },
+    {
+      "id": 109,
+      "file": "blocks/0109.txt",
+      "word_paragraph_index_zero_based": 2472,
+      "heading_context": [
+        "Capítulo 13 — RAG para inteligencia criptográfica",
+        "3. Implementación",
+        "Integración con el agente autónomo"
+      ],
+      "sha256": "1a9413ae86c335f6c2f38d0421d22cdc993f5d1666266bb9c3a144b5f4b82a75",
+      "bytes": 1533
+    },
+    {
+      "id": 110,
+      "file": "blocks/0110.txt",
+      "word_paragraph_index_zero_based": 2592,
+      "heading_context": [
+        "Capítulo 14 — Gobernanza de IA: el panel de administración",
+        "3. Implementación",
+        "3.1 El modelo de datos: diez entidades para gobernar la IA"
+      ],
+      "sha256": "3b21c8f1851397c08af383f90d25c6122425913698276bc273da9ffe43353c4b",
+      "bytes": 1822
+    },
+    {
+      "id": 111,
+      "file": "blocks/0111.txt",
+      "word_paragraph_index_zero_based": 2599,
+      "heading_context": [
+        "Capítulo 14 — Gobernanza de IA: el panel de administración",
+        "3. Implementación",
+        "3.2 AIService: la capa de abstracción entre código y modelo"
+      ],
+      "sha256": "6da3fdbbb7d50767830257c31c8ee22d6042852a7fbab24886a12bc091952ae2",
+      "bytes": 1402
+    },
+    {
+      "id": 112,
+      "file": "blocks/0112.txt",
+      "word_paragraph_index_zero_based": 2607,
+      "heading_context": [
+        "Capítulo 14 — Gobernanza de IA: el panel de administración",
+        "3. Implementación",
+        "3.3 AIPrompt: versionado de instrucciones sin redespliegue"
+      ],
+      "sha256": "af4e9fdefb356a5e562febeb340c54e5aa6ce723a42d0e2c1f329102fc0e0f20",
+      "bytes": 1001
+    },
+    {
+      "id": 113,
+      "file": "blocks/0113.txt",
+      "word_paragraph_index_zero_based": 2611,
+      "heading_context": [
+        "Capítulo 14 — Gobernanza de IA: el panel de administración",
+        "3. Implementación",
+        "3.3 AIPrompt: versionado de instrucciones sin redespliegue"
+      ],
+      "sha256": "f7019be8ec35567c8e900f520b3afc37c77bb17949ba4f1df737f707ae3eed5b",
+      "bytes": 763
+    },
+    {
+      "id": 114,
+      "file": "blocks/0114.txt",
+      "word_paragraph_index_zero_based": 2617,
+      "heading_context": [
+        "Capítulo 14 — Gobernanza de IA: el panel de administración",
+        "3. Implementación",
+        "3.4 AIUsageLog: el audit trail de la IA"
+      ],
+      "sha256": "135688bf193ef6b28c114cf9e9a770928ef5f7ae3369b49cb83b24e359ba716f",
+      "bytes": 1786
+    },
+    {
+      "id": 115,
+      "file": "blocks/0115.txt",
+      "word_paragraph_index_zero_based": 2627,
+      "heading_context": [
+        "Capítulo 14 — Gobernanza de IA: el panel de administración",
+        "3. Implementación",
+        "3.5 Controles de gobernanza: C.VR.1 a C.VR.12"
+      ],
+      "sha256": "171ee32af00f21708b234ee20c7d2e4928bf3f27324659281481fc73785d65ab",
+      "bytes": 943
+    },
+    {
+      "id": 116,
+      "file": "blocks/0116.txt",
+      "word_paragraph_index_zero_based": 2636,
+      "heading_context": [
+        "Capítulo 14 — Gobernanza de IA: el panel de administración",
+        "3. Implementación",
+        "3.5 Controles de gobernanza: C.VR.1 a C.VR.12"
+      ],
+      "sha256": "0e1862318b671970638a6452212cfaac3606f7f956271da6e6052d2206d07acf",
+      "bytes": 1299
+    },
+    {
+      "id": 117,
+      "file": "blocks/0117.txt",
+      "word_paragraph_index_zero_based": 2647,
+      "heading_context": [
+        "Capítulo 14 — Gobernanza de IA: el panel de administración",
+        "3. Implementación",
+        "3.7 La API REST: cuarenta y dos endpoints para gobernar"
+      ],
+      "sha256": "e52e56b069f7c72280dc80894e854acfff1b36f9367c1459ff4ca48aaa5a6a9f",
+      "bytes": 1047
+    },
+    {
+      "id": 118,
+      "file": "blocks/0118.txt",
+      "word_paragraph_index_zero_based": 2653,
+      "heading_context": [
+        "Capítulo 14 — Gobernanza de IA: el panel de administración",
+        "3. Implementación",
+        "3.8 Métricas de calidad, costes y ROI"
+      ],
+      "sha256": "a486b791237cde0621e52d37aadfdb8f0e57e2f5f038f2f1e513a88a2042ccbb",
+      "bytes": 3064
+    },
+    {
+      "id": 119,
+      "file": "blocks/0119.txt",
+      "word_paragraph_index_zero_based": 2657,
+      "heading_context": [
+        "Capítulo 14 — Gobernanza de IA: el panel de administración",
+        "3. Implementación",
+        "3.8 Métricas de calidad, costes y ROI"
+      ],
+      "sha256": "18d151b50a7e7a458937012ddd31fd1e99e91daf6382d1539f17a4679becc47b",
+      "bytes": 856
+    },
+    {
+      "id": 120,
+      "file": "blocks/0120.txt",
+      "word_paragraph_index_zero_based": 2669,
+      "heading_context": [
+        "Capítulo 14 — Gobernanza de IA: el panel de administración",
+        "3. Implementación",
+        "3.10 Test de conectividad: verificar antes de confiar"
+      ],
+      "sha256": "67770e4a4cde242ed74e90c9308710680241c254beeff644f76313ab3f133c7d",
+      "bytes": 1657
+    },
+    {
+      "id": 121,
+      "file": "blocks/0121.txt",
+      "word_paragraph_index_zero_based": 2759,
+      "heading_context": [
+        "Capítulo 15 — NIS2 y la obligación de evaluar riesgo criptográfico",
+        "3. Implementación",
+        "La cadena de modelos de compliance"
+      ],
+      "sha256": "b6b86e9066ff7c8323b587e6009d6fd11beda08fe10d5b5cc85d090f4eb5ba52",
+      "bytes": 983
+    },
+    {
+      "id": 122,
+      "file": "blocks/0122.txt",
+      "word_paragraph_index_zero_based": 2763,
+      "heading_context": [
+        "Capítulo 15 — NIS2 y la obligación de evaluar riesgo criptográfico",
+        "3. Implementación",
+        "La cadena de modelos de compliance"
+      ],
+      "sha256": "3169112c0995796d11f16d17387a1d8c8df64dcfb4267b7571a5705a804dc299",
+      "bytes": 1573
+    },
+    {
+      "id": 123,
+      "file": "blocks/0123.txt",
+      "word_paragraph_index_zero_based": 2767,
+      "heading_context": [
+        "Capítulo 15 — NIS2 y la obligación de evaluar riesgo criptográfico",
+        "3. Implementación",
+        "El assessment y la evaluación por control"
+      ],
+      "sha256": "28a47802fb164f5a9e4861079a1e3f661cf14113ea7a0268332fbc3c6f206f4a",
+      "bytes": 1376
+    },
+    {
+      "id": 124,
+      "file": "blocks/0124.txt",
+      "word_paragraph_index_zero_based": 2770,
+      "heading_context": [
+        "Capítulo 15 — NIS2 y la obligación de evaluar riesgo criptográfico",
+        "3. Implementación",
+        "El assessment y la evaluación por control"
+      ],
+      "sha256": "817e5bc430cd20019cb7172cd3517b88be7f745763036348f9f78def44d0545f",
+      "bytes": 1519
+    },
+    {
+      "id": 125,
+      "file": "blocks/0125.txt",
+      "word_paragraph_index_zero_based": 2774,
+      "heading_context": [
+        "Capítulo 15 — NIS2 y la obligación de evaluar riesgo criptográfico",
+        "3. Implementación",
+        "El servicio de compliance: importar hallazgos"
+      ],
+      "sha256": "f8f7565b301083ca9b0ceda29751c6015ad0f65ac9c5f3fe0bc8d512f6347e52",
+      "bytes": 2351
+    },
+    {
+      "id": 126,
+      "file": "blocks/0126.txt",
+      "word_paragraph_index_zero_based": 2778,
+      "heading_context": [
+        "Capítulo 15 — NIS2 y la obligación de evaluar riesgo criptográfico",
+        "3. Implementación",
+        "El servicio de compliance: importar hallazgos"
+      ],
+      "sha256": "9098dcd1c6b925b5486c1a3562cf8dff44207e34ec3d09c9bdbb77883e0ebf79",
+      "bytes": 2136
+    },
+    {
+      "id": 127,
+      "file": "blocks/0127.txt",
+      "word_paragraph_index_zero_based": 2783,
+      "heading_context": [
+        "Capítulo 15 — NIS2 y la obligación de evaluar riesgo criptográfico",
+        "3. Implementación",
+        "El mapeo determinístico por keywords"
+      ],
+      "sha256": "4583f18dda97b58df5b6d806a97c68e7933ed08e4f4d60b4cc8ec2261c95728f",
+      "bytes": 841
+    },
+    {
+      "id": 128,
+      "file": "blocks/0128.txt",
+      "word_paragraph_index_zero_based": 2790,
+      "heading_context": [
+        "Capítulo 15 — NIS2 y la obligación de evaluar riesgo criptográfico",
+        "3. Implementación",
+        "El FindingControlMapping: trazabilidad auditable"
+      ],
+      "sha256": "107d70b15f5fd24aae31946937d2e2450707ee819d91afa267bbbb1a4a8fe7cd",
+      "bytes": 1256
+    },
+    {
+      "id": 129,
+      "file": "blocks/0129.txt",
+      "word_paragraph_index_zero_based": 2794,
+      "heading_context": [
+        "Capítulo 15 — NIS2 y la obligación de evaluar riesgo criptográfico",
+        "3. Implementación",
+        "Actualización del estado de un control"
+      ],
+      "sha256": "093a596bee89883996e8108165107eae19e818f6fd944580c6a223aa16029e3e",
+      "bytes": 1486
+    },
+    {
+      "id": 130,
+      "file": "blocks/0130.txt",
+      "word_paragraph_index_zero_based": 2798,
+      "heading_context": [
+        "Capítulo 15 — NIS2 y la obligación de evaluar riesgo criptográfico",
+        "3. Implementación",
+        "Sugerencias de IA para controles no mapeados"
+      ],
+      "sha256": "201450d3773e8e3b3eba5f5bb1f254753ea3d92de3162aacef8b8bdbca490c87",
+      "bytes": 1762
+    },
+    {
+      "id": 131,
+      "file": "blocks/0131.txt",
+      "word_paragraph_index_zero_based": 2803,
+      "heading_context": [
+        "Capítulo 15 — NIS2 y la obligación de evaluar riesgo criptográfico",
+        "3. Implementación",
+        "Generación del SOA: la evidencia que el auditor necesita"
+      ],
+      "sha256": "2450c0a7efb8889e7356734e4e4fe42c11a2cc40b915caa51e99f6be58ff9d4a",
+      "bytes": 858
+    },
+    {
+      "id": 132,
+      "file": "blocks/0132.txt",
+      "word_paragraph_index_zero_based": 2807,
+      "heading_context": [
+        "Capítulo 15 — NIS2 y la obligación de evaluar riesgo criptográfico",
+        "3. Implementación",
+        "El informe de compliance: estadísticas por dominio"
+      ],
+      "sha256": "68fc8bdfaf9d62da679a306bcc003d3bdb4e10bf8f4023b4825763c9b6d1dcb7",
+      "bytes": 820
+    },
+    {
+      "id": 133,
+      "file": "blocks/0133.txt",
+      "word_paragraph_index_zero_based": 2886,
+      "heading_context": [
+        "Capítulo 16 — DORA: resiliencia digital y crypto-agility en finanzas",
+        "3. Implementación",
+        "Modelo de datos: artículos DORA mapeados a hallazgos criptográficos"
+      ],
+      "sha256": "55270c0f582c8e40ce54892926cb5b58c8f850e19fad5fb829c2e53eee690fb4",
+      "bytes": 3128
+    },
+    {
+      "id": 134,
+      "file": "blocks/0134.txt",
+      "word_paragraph_index_zero_based": 2894,
+      "heading_context": [
+        "Capítulo 16 — DORA: resiliencia digital y crypto-agility en finanzas",
+        "3. Implementación",
+        "Motor de scoring multidimensional"
+      ],
+      "sha256": "417d5dc66824f67fe7f418745934716034b8d9bbaf51e7664a0678adfcea6cfc",
+      "bytes": 1331
+    },
+    {
+      "id": 135,
+      "file": "blocks/0135.txt",
+      "word_paragraph_index_zero_based": 2901,
+      "heading_context": [
+        "Capítulo 16 — DORA: resiliencia digital y crypto-agility en finanzas",
+        "3. Implementación",
+        "Integración con Claude: explicaciones auditables"
+      ],
+      "sha256": "3e611f29b15631c361efcde73850a7d444404ba569e088654be1fa5b61f1953b",
+      "bytes": 6301
+    },
+    {
+      "id": 136,
+      "file": "blocks/0136.txt",
+      "word_paragraph_index_zero_based": 2908,
+      "heading_context": [
+        "Capítulo 16 — DORA: resiliencia digital y crypto-agility en finanzas",
+        "3. Implementación",
+        "Generación de informes DORA-PQC"
+      ],
+      "sha256": "ba1000835b0842494c79958649a995c4b706a945db29eca2f0af2c002ab21b32",
+      "bytes": 6346
+    },
+    {
+      "id": 137,
+      "file": "blocks/0137.txt",
+      "word_paragraph_index_zero_based": 2913,
+      "heading_context": [
+        "Capítulo 16 — DORA: resiliencia digital y crypto-agility en finanzas",
+        "3. Implementación",
+        "El endpoint de assessment DORA"
+      ],
+      "sha256": "b345eb44328efee8ba1ef91c5cf6f715c4ce17888ec73e81b3db4e7c75cb533d",
+      "bytes": 2467
+    },
+    {
+      "id": 138,
+      "file": "blocks/0138.txt",
+      "word_paragraph_index_zero_based": 3044,
+      "heading_context": [
+        "Capítulo 17 — NIST PQC Standards: de la teoría a la implementación",
+        "3. Implementación",
+        "El diccionario PQC_SAFE_ALGORITHMS"
+      ],
+      "sha256": "d4afbce6eeae6fb127af6f0685e323b8b1025db73bc43334f6aa7977e6a08d76",
+      "bytes": 626
+    },
+    {
+      "id": 139,
+      "file": "blocks/0139.txt",
+      "word_paragraph_index_zero_based": 3051,
+      "heading_context": [
+        "Capítulo 17 — NIST PQC Standards: de la teoría a la implementación",
+        "3. Implementación",
+        "El mapeo de recomendaciones: de hallazgo a estándar FIPS"
+      ],
+      "sha256": "2b0dec83c86a292a83fb2acf9d5654b89415c7967e78b8f458697988ca061ac8",
+      "bytes": 1382
+    },
+    {
+      "id": 140,
+      "file": "blocks/0140.txt",
+      "word_paragraph_index_zero_based": 3056,
+      "heading_context": [
+        "Capítulo 17 — NIST PQC Standards: de la teoría a la implementación",
+        "3. Implementación",
+        "El endpoint de referencia de estándares NIST"
+      ],
+      "sha256": "b5125bce5f96413a2b7ab73d30d2c7b3eac11db630bd9505ab70747fb850197a",
+      "bytes": 4301
+    },
+    {
+      "id": 141,
+      "file": "blocks/0141.txt",
+      "word_paragraph_index_zero_based": 3061,
+      "heading_context": [
+        "Capítulo 17 — NIST PQC Standards: de la teoría a la implementación",
+        "3. Implementación",
+        "Integración con Claude para enriquecimiento contextual"
+      ],
+      "sha256": "1c4e9994062343efcfdee7b70b23e8b125cbf37f1d97ba26c194661b1cc47f97",
+      "bytes": 1334
+    },
+    {
+      "id": 142,
+      "file": "blocks/0142.txt",
+      "word_paragraph_index_zero_based": 3067,
+      "heading_context": [
+        "Capítulo 17 — NIST PQC Standards: de la teoría a la implementación",
+        "3. Implementación",
+        "El diccionario de vulnerabilidad por categoría criptográfica"
+      ],
+      "sha256": "567f9663769035cf4bb0cd267da42c733aca19743db82283f50de1fc1e386f03",
+      "bytes": 641
+    },
+    {
+      "id": 143,
+      "file": "blocks/0143.txt",
+      "word_paragraph_index_zero_based": 3077,
+      "heading_context": [
+        "Capítulo 17 — NIST PQC Standards: de la teoría a la implementación",
+        "3. Implementación",
+        "La detección de soporte PQC en producción"
+      ],
+      "sha256": "91fd0e7e5a68aea9f495127fbc70cf531ac0cdc4dcdecc22f24b479aea59be98",
+      "bytes": 634
+    },
+    {
+      "id": 144,
+      "file": "blocks/0144.txt",
+      "word_paragraph_index_zero_based": 3083,
+      "heading_context": [
+        "Capítulo 17 — NIST PQC Standards: de la teoría a la implementación",
+        "3. Implementación",
+        "Generación del informe de compliance con referencias NIST"
+      ],
+      "sha256": "e9ed1190d1f1b89f879c306c3ee3708c45f4c76eb2b8f520e64ef5937aa50d23",
+      "bytes": 1869
+    },
+    {
+      "id": 145,
+      "file": "blocks/0145.txt",
+      "word_paragraph_index_zero_based": 3150,
+      "heading_context": [
+        "Capítulo 18 — Roadmap de migración: de inventario a crypto-agility",
+        "3. Implementación",
+        "3.1 El score compuesto de priorización"
+      ],
+      "sha256": "083d128ca6bdd6774e5bceee94d978ad93297b92a45f819e51f82778358a2b2b",
+      "bytes": 1036
+    },
+    {
+      "id": 146,
+      "file": "blocks/0146.txt",
+      "word_paragraph_index_zero_based": 3157,
+      "heading_context": [
+        "Capítulo 18 — Roadmap de migración: de inventario a crypto-agility",
+        "3. Implementación",
+        "3.2 El modelo ComplianceAction en contexto"
+      ],
+      "sha256": "070ba7e4af088aa6644ecf1398940de3ba9111b95727152bfafa8abe4dd66983",
+      "bytes": 4532
+    },
+    {
+      "id": 147,
+      "file": "blocks/0147.txt",
+      "word_paragraph_index_zero_based": 3163,
+      "heading_context": [
+        "Capítulo 18 — Roadmap de migración: de inventario a crypto-agility",
+        "3. Implementación",
+        "3.3 RiskScenario: riesgo inherente y residual"
+      ],
+      "sha256": "7ea7f8cc7a44e30c6cc52dbb3b3ffdd2c1b878814455baaeabe7fb9072a2972e",
+      "bytes": 1367
+    },
+    {
+      "id": 148,
+      "file": "blocks/0148.txt",
+      "word_paragraph_index_zero_based": 3169,
+      "heading_context": [
+        "Capítulo 18 — Roadmap de migración: de inventario a crypto-agility",
+        "3. Implementación",
+        "3.4 Generación de informes PDF"
+      ],
+      "sha256": "fa8ae21cd08777ed989e36e5b0b8c02af2c01374d8a4264d971cdc8bf3e020c7",
+      "bytes": 7486
+    },
+    {
+      "id": 149,
+      "file": "blocks/0149.txt",
+      "word_paragraph_index_zero_based": 3173,
+      "heading_context": [
+        "Capítulo 18 — Roadmap de migración: de inventario a crypto-agility",
+        "3. Implementación",
+        "3.4 Generación de informes PDF"
+      ],
+      "sha256": "8d8f4b9f71081508e66949f5a6b94d5313a4e48167a62292dd7778bddfd3699c",
+      "bytes": 5158
+    },
+    {
+      "id": 150,
+      "file": "blocks/0150.txt",
+      "word_paragraph_index_zero_based": 3179,
+      "heading_context": [
+        "Capítulo 18 — Roadmap de migración: de inventario a crypto-agility",
+        "3. Implementación",
+        "3.5 El orquestador: de hallazgos a informe completo"
+      ],
+      "sha256": "4f6e8b2dc43793d13f671491d02a14245ba51513e00ae6db09ebc2b62ee30a91",
+      "bytes": 3851
+    },
+    {
+      "id": 151,
+      "file": "blocks/0151.txt",
+      "word_paragraph_index_zero_based": 3183,
+      "heading_context": [
+        "Capítulo 18 — Roadmap de migración: de inventario a crypto-agility",
+        "3. Implementación",
+        "3.6 Crypto-agility: la capa de abstracción criptográfica"
+      ],
+      "sha256": "2094ca5ef70c1e61016379a437c81a200bbdd445d95c7fa16a84c587eda56a0c",
+      "bytes": 724
+    },
+    {
+      "id": 152,
+      "file": "blocks/0152.txt",
+      "word_paragraph_index_zero_based": 3257,
+      "heading_context": [
+        "Capítulo 19 — React + MUI: dashboard de preparación cuántica",
+        "3. Implementación",
+        "El punto de entrada: main.jsx y la cadena de proveedores"
+      ],
+      "sha256": "1135832c7dd6dc67eafe0ee619d05cef457d527bac5769532033169cca291a39",
+      "bytes": 784
+    },
+    {
+      "id": 153,
+      "file": "blocks/0153.txt",
+      "word_paragraph_index_zero_based": 3263,
+      "heading_context": [
+        "Capítulo 19 — React + MUI: dashboard de preparación cuántica",
+        "3. Implementación",
+        "El tema visual: identidad sin diseñador"
+      ],
+      "sha256": "91af9c27faa56464d966e3b454289a5a8c9e721bcb22fd93aa98a782505a68e0",
+      "bytes": 1298
+    },
+    {
+      "id": 154,
+      "file": "blocks/0154.txt",
+      "word_paragraph_index_zero_based": 3270,
+      "heading_context": [
+        "Capítulo 19 — React + MUI: dashboard de preparación cuántica",
+        "3. Implementación",
+        "App.jsx: el router como arquitectura"
+      ],
+      "sha256": "ef4d59b4077749b5a725cc85bd7fbfc516e6abe191771f1ca53f99a9ec639328",
+      "bytes": 3493
+    },
+    {
+      "id": 155,
+      "file": "blocks/0155.txt",
+      "word_paragraph_index_zero_based": 3280,
+      "heading_context": [
+        "Capítulo 19 — React + MUI: dashboard de preparación cuántica",
+        "3. Implementación",
+        "El layout: sidebar persistente y contenido dinámico"
+      ],
+      "sha256": "5b15f0e24c8dc44e492c02eea8a606f975e1c7a24a7d2064db1d53ff784ddeb7",
+      "bytes": 1710
+    },
+    {
+      "id": 156,
+      "file": "blocks/0156.txt",
+      "word_paragraph_index_zero_based": 3286,
+      "heading_context": [
+        "Capítulo 19 — React + MUI: dashboard de preparación cuántica",
+        "3. Implementación",
+        "El sidebar: navegación organizada por dominio funcional"
+      ],
+      "sha256": "9846b7ac1fbff50f03daad534f503fd71c592b80c69928b56989f3122062b4c8",
+      "bytes": 2150
+    },
+    {
+      "id": 157,
+      "file": "blocks/0157.txt",
+      "word_paragraph_index_zero_based": 3291,
+      "heading_context": [
+        "Capítulo 19 — React + MUI: dashboard de preparación cuántica",
+        "3. Implementación",
+        "El dashboard: donde los datos se convierten en decisiones"
+      ],
+      "sha256": "5586b7a9e6e2b32e7df4898dbc10ad0d31514ebf85950cf25e0d094e4144d1ed",
+      "bytes": 2729
+    },
+    {
+      "id": 158,
+      "file": "blocks/0158.txt",
+      "word_paragraph_index_zero_based": 3295,
+      "heading_context": [
+        "Capítulo 19 — React + MUI: dashboard de preparación cuántica",
+        "3. Implementación",
+        "El dashboard: donde los datos se convierten en decisiones"
+      ],
+      "sha256": "0306951a5e737b2e2410ba348be221a341eb4ef93a87c298e9bcfe9cf3f0a630",
+      "bytes": 1785
+    },
+    {
+      "id": 159,
+      "file": "blocks/0159.txt",
+      "word_paragraph_index_zero_based": 3299,
+      "heading_context": [
+        "Capítulo 19 — React + MUI: dashboard de preparación cuántica",
+        "3. Implementación",
+        "La distribución por severidad: barras de progreso con contexto"
+      ],
+      "sha256": "d3b90864c058afd58db90d1aebe032dc35f8e839cb2067eed1b8dfc123dee7e6",
+      "bytes": 772
+    },
+    {
+      "id": 160,
+      "file": "blocks/0160.txt",
+      "word_paragraph_index_zero_based": 3304,
+      "heading_context": [
+        "Capítulo 19 — React + MUI: dashboard de preparación cuántica",
+        "3. Implementación",
+        "La capa de API: axios con interceptores JWT"
+      ],
+      "sha256": "fab5516d56e35f61504e01dec209ac2097ef0299401f09121c8036814a6f220a",
+      "bytes": 836
+    },
+    {
+      "id": 161,
+      "file": "blocks/0161.txt",
+      "word_paragraph_index_zero_based": 3306,
+      "heading_context": [
+        "Capítulo 19 — React + MUI: dashboard de preparación cuántica",
+        "3. Implementación",
+        "La capa de API: axios con interceptores JWT"
+      ],
+      "sha256": "a6a2e417425a205958a33c4e8fe64618f6b83c9335082c9a504e960a8d17bd46",
+      "bytes": 806
+    },
+    {
+      "id": 162,
+      "file": "blocks/0162.txt",
+      "word_paragraph_index_zero_based": 3311,
+      "heading_context": [
+        "Capítulo 19 — React + MUI: dashboard de preparación cuántica",
+        "3. Implementación",
+        "El store de Redux: tres slices para todo"
+      ],
+      "sha256": "8d1066ba99e88a2c01659b7a6aa00ef087e0d420dc284d673754573c1249b070",
+      "bytes": 459
+    },
+    {
+      "id": 163,
+      "file": "blocks/0163.txt",
+      "word_paragraph_index_zero_based": 3316,
+      "heading_context": [
+        "Capítulo 19 — React + MUI: dashboard de preparación cuántica",
+        "3. Implementación",
+        "Diseño adaptable: de escritorio a tableta"
+      ],
+      "sha256": "f9082a55fa562ea558269ef57223d54aed089fae760d0dd536f8c472af39ba5a",
+      "bytes": 318
+    },
+    {
+      "id": 164,
+      "file": "blocks/0164.txt",
+      "word_paragraph_index_zero_based": 3326,
+      "heading_context": [
+        "Capítulo 19 — React + MUI: dashboard de preparación cuántica",
+        "3. Implementación",
+        "Tarjetas de categoría: hallazgos PQC, OWASP y cloud"
+      ],
+      "sha256": "299622946616114ebf00ac62548178bc77267c118d53e46654a0493a3c6ca2e7",
+      "bytes": 1384
+    },
+    {
+      "id": 165,
+      "file": "blocks/0165.txt",
+      "word_paragraph_index_zero_based": 3331,
+      "heading_context": [
+        "Capítulo 19 — React + MUI: dashboard de preparación cuántica",
+        "3. Implementación",
+        "El endpoint de dashboard: contrato entre frontend y backend"
+      ],
+      "sha256": "bba6017f4e028f85adb341d353305d4d41ea8a2f7e9972193c94595298f51881",
+      "bytes": 873
+    },
+    {
+      "id": 166,
+      "file": "blocks/0166.txt",
+      "word_paragraph_index_zero_based": 3400,
+      "heading_context": [
+        "Capítulo 20 — Chat IA y Knowledge Center: la interfaz conversacional sobre hallazgos criptográficos",
+        "3. Implementación",
+        "El componente AIChat: anatomía de un chat con modo agente"
+      ],
+      "sha256": "d066ef41b8dfac71c586e398147e208664195cd95e24bb0cd05d1d2156cf8549",
+      "bytes": 2551
+    },
+    {
+      "id": 167,
+      "file": "blocks/0167.txt",
+      "word_paragraph_index_zero_based": 3405,
+      "heading_context": [
+        "Capítulo 20 — Chat IA y Knowledge Center: la interfaz conversacional sobre hallazgos criptográficos",
+        "3. Implementación",
+        "El flujo de envío: tres caminos, una función"
+      ],
+      "sha256": "0b3e3b0bd3061c5c978a72de04c02f8f8399619cd7bfc2e4dd7bf32a973b8866",
+      "bytes": 1099
+    },
+    {
+      "id": 168,
+      "file": "blocks/0168.txt",
+      "word_paragraph_index_zero_based": 3411,
+      "heading_context": [
+        "Capítulo 20 — Chat IA y Knowledge Center: la interfaz conversacional sobre hallazgos criptográficos",
+        "3. Implementación",
+        "El modo agente: tool calling en el frontend"
+      ],
+      "sha256": "9e0445ca685ecf37ba3c77715ad9fbb65de1f2941327194a543e648f75e52b99",
+      "bytes": 1275
+    },
+    {
+      "id": 169,
+      "file": "blocks/0169.txt",
+      "word_paragraph_index_zero_based": 3417,
+      "heading_context": [
+        "Capítulo 20 — Chat IA y Knowledge Center: la interfaz conversacional sobre hallazgos criptográficos",
+        "3. Implementación",
+        "La visualización de tool calls: el componente ToolUseBlock"
+      ],
+      "sha256": "1a0d6cc1e963efab6cb142d6d51f75a005623311fe31f25dd7076513da5bfa25",
+      "bytes": 2110
+    },
+    {
+      "id": 170,
+      "file": "blocks/0170.txt",
+      "word_paragraph_index_zero_based": 3422,
+      "heading_context": [
+        "Capítulo 20 — Chat IA y Knowledge Center: la interfaz conversacional sobre hallazgos criptográficos",
+        "3. Implementación",
+        "El backend: dos endpoints para dos modos"
+      ],
+      "sha256": "bde3680aa4292cee16a16fbebcb172e963a25f945ead6285cccadda4fcc878f1",
+      "bytes": 2563
+    },
+    {
+      "id": 171,
+      "file": "blocks/0171.txt",
+      "word_paragraph_index_zero_based": 3425,
+      "heading_context": [
+        "Capítulo 20 — Chat IA y Knowledge Center: la interfaz conversacional sobre hallazgos criptográficos",
+        "3. Implementación",
+        "El backend: dos endpoints para dos modos"
+      ],
+      "sha256": "7834be64f1df078d70b271431faa6596507379dee844b420044ebd1a7177aab0",
+      "bytes": 2958
+    },
+    {
+      "id": 172,
+      "file": "blocks/0172.txt",
+      "word_paragraph_index_zero_based": 3430,
+      "heading_context": [
+        "Capítulo 20 — Chat IA y Knowledge Center: la interfaz conversacional sobre hallazgos criptográficos",
+        "3. Implementación",
+        "El prompt de sistema: inyección de conocimiento PQC"
+      ],
+      "sha256": "c0d0f2f65baf2c8d113fa6d1f43d9edf87ea5ed190d325dec08120fd3b561bb5",
+      "bytes": 1815
+    },
+    {
+      "id": 173,
+      "file": "blocks/0173.txt",
+      "word_paragraph_index_zero_based": 3438,
+      "heading_context": [
+        "Capítulo 20 — Chat IA y Knowledge Center: la interfaz conversacional sobre hallazgos criptográficos",
+        "3. Implementación",
+        "El modelo de datos: conversaciones persistentes"
+      ],
+      "sha256": "d94c11512dc4eff43ae296a3ed6f87494fa613e09a347753ec5e4d6fec1da8d3",
+      "bytes": 3461
+    },
+    {
+      "id": 174,
+      "file": "blocks/0174.txt",
+      "word_paragraph_index_zero_based": 3446,
+      "heading_context": [
+        "Capítulo 20 — Chat IA y Knowledge Center: la interfaz conversacional sobre hallazgos criptográficos",
+        "3. Implementación",
+        "El contenedor con persistencia: AIChatContainerV2"
+      ],
+      "sha256": "c3ebf6b3eda584be8ab242a4b962f62f6e2e3ec1decd660ffdc5d677fc8f5e87",
+      "bytes": 4546
+    },
+    {
+      "id": 175,
+      "file": "blocks/0175.txt",
+      "word_paragraph_index_zero_based": 3452,
+      "heading_context": [
+        "Capítulo 20 — Chat IA y Knowledge Center: la interfaz conversacional sobre hallazgos criptográficos",
+        "3. Implementación",
+        "Las cinco herramientas del agente"
+      ],
+      "sha256": "c283bf340b183d0de7e5daf226cc1d7447f3f4d448abf448cf851cff46aa7c6a",
+      "bytes": 2325
+    },
+    {
+      "id": 176,
+      "file": "blocks/0176.txt",
+      "word_paragraph_index_zero_based": 3458,
+      "heading_context": [
+        "Capítulo 20 — Chat IA y Knowledge Center: la interfaz conversacional sobre hallazgos criptográficos",
+        "3. Implementación",
+        "Seguridad: el sandbox del agente"
+      ],
+      "sha256": "75fe639e8f0890c9533de18024a511776e2bf948632d36ba9ebd527e1d947e8d",
+      "bytes": 937
+    },
+    {
+      "id": 177,
+      "file": "blocks/0177.txt",
+      "word_paragraph_index_zero_based": 3552,
+      "heading_context": [
+        "Capítulo 21 — Docker Compose: 7 servicios para PQC",
+        "3. Implementación",
+        "El docker-compose.yml completo"
+      ],
+      "sha256": "22792f173d417055efd2a5f9f3539827fb518ffc2c045aa8b36e55777013d584",
+      "bytes": 6173
+    },
+    {
+      "id": 178,
+      "file": "blocks/0178.txt",
+      "word_paragraph_index_zero_based": 3561,
+      "heading_context": [
+        "Capítulo 21 — Docker Compose: 7 servicios para PQC",
+        "3. Implementación",
+        "MySQL: healthcheck y configuración de arranque"
+      ],
+      "sha256": "a0a3789bf16066f4baa492fd79a674cb0c8680a97e610c9faacffb93161969fe",
+      "bytes": 219
+    },
+    {
+      "id": 179,
+      "file": "blocks/0179.txt",
+      "word_paragraph_index_zero_based": 3565,
+      "heading_context": [
+        "Capítulo 21 — Docker Compose: 7 servicios para PQC",
+        "3. Implementación",
+        "MySQL: healthcheck y configuración de arranque"
+      ],
+      "sha256": "a3609194bc4f93f03c14a6f08d83714553357a532ffa7d4e2fcb8fe6eb520dee",
+      "bytes": 181
+    },
+    {
+      "id": 180,
+      "file": "blocks/0180.txt",
+      "word_paragraph_index_zero_based": 3571,
+      "heading_context": [
+        "Capítulo 21 — Docker Compose: 7 servicios para PQC",
+        "3. Implementación",
+        "Redis: persistencia y límites de memoria"
+      ],
+      "sha256": "69043513e01d81c38e869da5bdce8082db8769bbaf4eb1c044f75096a8d69df6",
+      "bytes": 134
+    },
+    {
+      "id": 181,
+      "file": "blocks/0181.txt",
+      "word_paragraph_index_zero_based": 3576,
+      "heading_context": [
+        "Capítulo 21 — Docker Compose: 7 servicios para PQC",
+        "3. Implementación",
+        "El backend: depends_on con condición de salud"
+      ],
+      "sha256": "361092af1f7e2b6d6f6fca76df90202e12d518ad5876f640526d65a2141d131b",
+      "bytes": 99
+    },
+    {
+      "id": 182,
+      "file": "blocks/0182.txt",
+      "word_paragraph_index_zero_based": 3579,
+      "heading_context": [
+        "Capítulo 21 — Docker Compose: 7 servicios para PQC",
+        "3. Implementación",
+        "El backend: depends_on con condición de salud"
+      ],
+      "sha256": "3d9c4ad724f6ac1f18bc2dc3ddf65a94a98dd922fba76ff06c8f5c25dbde61cd",
+      "bytes": 189
+    },
+    {
+      "id": 183,
+      "file": "blocks/0183.txt",
+      "word_paragraph_index_zero_based": 3585,
+      "heading_context": [
+        "Capítulo 21 — Docker Compose: 7 servicios para PQC",
+        "3. Implementación",
+        "Celery Worker y Beat: dos servicios, un código base"
+      ],
+      "sha256": "9df1b871cfad24c8cf01e6a3f108029d9442966b1a9703b348224c167121231d",
+      "bytes": 187
+    },
+    {
+      "id": 184,
+      "file": "blocks/0184.txt",
+      "word_paragraph_index_zero_based": 3589,
+      "heading_context": [
+        "Capítulo 21 — Docker Compose: 7 servicios para PQC",
+        "3. Implementación",
+        "Celery Worker y Beat: dos servicios, un código base"
+      ],
+      "sha256": "2f62d31780a3cc2f53eb7cc3cd572e99943150a5365901bc0f0cc76d2915756a",
+      "bytes": 112
+    },
+    {
+      "id": 185,
+      "file": "blocks/0185.txt",
+      "word_paragraph_index_zero_based": 3596,
+      "heading_context": [
+        "Capítulo 21 — Docker Compose: 7 servicios para PQC",
+        "3. Implementación",
+        "El frontend: desarrollo frente a producción"
+      ],
+      "sha256": "fca3b288d12cd5a750b7b4dc1764458b30710e46eda3a06af093e7ca5f9a476d",
+      "bytes": 96
+    },
+    {
+      "id": 186,
+      "file": "blocks/0186.txt",
+      "word_paragraph_index_zero_based": 3602,
+      "heading_context": [
+        "Capítulo 21 — Docker Compose: 7 servicios para PQC",
+        "3. Implementación",
+        "Nginx: la configuración del reverse proxy"
+      ],
+      "sha256": "ae6a976afed1dea201a67ca1c9f3d7858d01bf667720aaf81c2c1a692342d7ba",
+      "bytes": 2064
+    },
+    {
+      "id": 187,
+      "file": "blocks/0187.txt",
+      "word_paragraph_index_zero_based": 3620,
+      "heading_context": [
+        "Capítulo 21 — Docker Compose: 7 servicios para PQC",
+        "3. Implementación",
+        "El fichero .env.example"
+      ],
+      "sha256": "35116e6354c1d7d3859fa95048d7054f078a9c64c963a20ea1f401b6b7e5bd10",
+      "bytes": 1093
+    },
+    {
+      "id": 188,
+      "file": "blocks/0188.txt",
+      "word_paragraph_index_zero_based": 3624,
+      "heading_context": [
+        "Capítulo 21 — Docker Compose: 7 servicios para PQC",
+        "3. Implementación",
+        "Operaciones habituales"
+      ],
+      "sha256": "e76fb47979e40cac22c94f79cdf7717bee71c3cee45c5bb2fbb09318c60d7691",
+      "bytes": 855
+    },
+    {
+      "id": 189,
+      "file": "blocks/0189.txt",
+      "word_paragraph_index_zero_based": 3700,
+      "heading_context": [
+        "Capítulo 22 — Procesamiento asíncrono: Celery para análisis pesados",
+        "3. Implementación",
+        "La clase base DatabaseTask"
+      ],
+      "sha256": "c8d94ec0a2f95f60b774770e262113cd339371756ab5faf505c84c5c698878c3",
+      "bytes": 601
+    },
+    {
+      "id": 190,
+      "file": "blocks/0190.txt",
+      "word_paragraph_index_zero_based": 3707,
+      "heading_context": [
+        "Capítulo 22 — Procesamiento asíncrono: Celery para análisis pesados",
+        "3. Implementación",
+        "La tarea principal: analyze_repository_task"
+      ],
+      "sha256": "da6fc78b0ad8c6a747a83449830091b58332efcb3cf888ea34a6e1bcae982679",
+      "bytes": 1669
+    },
+    {
+      "id": 191,
+      "file": "blocks/0191.txt",
+      "word_paragraph_index_zero_based": 3719,
+      "heading_context": [
+        "Capítulo 22 — Procesamiento asíncrono: Celery para análisis pesados",
+        "3. Implementación",
+        "Tarea multi-etapa con progreso: clone_and_analyze_repository_task"
+      ],
+      "sha256": "f94cefceada69b9b45515db3c14342ed851baa59310351396666ed0e88205fa7",
+      "bytes": 2608
+    },
+    {
+      "id": 192,
+      "file": "blocks/0192.txt",
+      "word_paragraph_index_zero_based": 3725,
+      "heading_context": [
+        "Capítulo 22 — Procesamiento asíncrono: Celery para análisis pesados",
+        "3. Implementación",
+        "Tarea con reintentos automáticos: analyze_cloud_security_task"
+      ],
+      "sha256": "54772ab9e7e0984f33d8c907ee6c4838689658e5c97b9beaa72502fde8989cb9",
+      "bytes": 2085
+    },
+    {
+      "id": 193,
+      "file": "blocks/0193.txt",
+      "word_paragraph_index_zero_based": 3733,
+      "heading_context": [
+        "Capítulo 22 — Procesamiento asíncrono: Celery para análisis pesados",
+        "3. Implementación",
+        "Tarea con concurrencia controlada: scan_url_certificates_task"
+      ],
+      "sha256": "cfc31fa9c649c81f652e2678360ab6e58c4c6dee8a546cb59249d95472c2d4bd",
+      "bytes": 1406
+    },
+    {
+      "id": 194,
+      "file": "blocks/0194.txt",
+      "word_paragraph_index_zero_based": 3740,
+      "heading_context": [
+        "Capítulo 22 — Procesamiento asíncrono: Celery para análisis pesados",
+        "3. Implementación",
+        "Celery Beat: programación de análisis recurrentes"
+      ],
+      "sha256": "2b4e0660f253aae9c653341b7e5a10f8166c3e6828e825840dadac696ef5b906",
+      "bytes": 1861
+    },
+    {
+      "id": 195,
+      "file": "blocks/0195.txt",
+      "word_paragraph_index_zero_based": 3744,
+      "heading_context": [
+        "Capítulo 22 — Procesamiento asíncrono: Celery para análisis pesados",
+        "3. Implementación",
+        "Celery Beat: programación de análisis recurrentes"
+      ],
+      "sha256": "7e4cee8056cac990061d2818553c84908903b56d74cbe30936ab162df8537e88",
+      "bytes": 1419
+    },
+    {
+      "id": 196,
+      "file": "blocks/0196.txt",
+      "word_paragraph_index_zero_based": 3757,
+      "heading_context": [
+        "Capítulo 22 — Procesamiento asíncrono: Celery para análisis pesados",
+        "3. Implementación",
+        "El endpoint de la API: cómo se encola una tarea"
+      ],
+      "sha256": "f140566dd96fa009116cf1f2c90531730bde2b515c6d0404165da451bc0bf94a",
+      "bytes": 2430
+    },
+    {
+      "id": 197,
+      "file": "blocks/0197.txt",
+      "word_paragraph_index_zero_based": 3763,
+      "heading_context": [
+        "Capítulo 22 — Procesamiento asíncrono: Celery para análisis pesados",
+        "3. Implementación",
+        "Limpieza y mantenimiento: la tarea de higiene"
+      ],
+      "sha256": "c6d79f8a08d5c3740780c4234a61e260efd1333a6ef38fcd7cd5ff943971165b",
+      "bytes": 1158
+    },
+    {
+      "id": 198,
+      "file": "blocks/0198.txt",
+      "word_paragraph_index_zero_based": 3769,
+      "heading_context": [
+        "Capítulo 22 — Procesamiento asíncrono: Celery para análisis pesados",
+        "3. Implementación",
+        "Integración con Docker Compose"
+      ],
+      "sha256": "05e01f494c26c2168f493004df3bcee53c0747df0dbaaaacec450e4bb5548873",
+      "bytes": 1393
+    },
+    {
+      "id": 199,
+      "file": "blocks/0199.txt",
+      "word_paragraph_index_zero_based": 3775,
+      "heading_context": [
+        "Capítulo 22 — Procesamiento asíncrono: Celery para análisis pesados",
+        "3. Implementación",
+        "Monitoring y diagnóstico en producción"
+      ],
+      "sha256": "18992f029852937769deb865934ed33c701e39ab2f9fa1615f1e57dd71a7528a",
+      "bytes": 1236
+    },
+    {
+      "id": 200,
+      "file": "blocks/0200.txt",
+      "word_paragraph_index_zero_based": 3845,
+      "heading_context": [
+        "Capítulo 23 — Observabilidad y audit trail para compliance",
+        "3. Implementación",
+        "3.1 Modelo AuditLog: el registro de acciones de usuario"
+      ],
+      "sha256": "6d4203e77db25062eadca490b66dcb84397bdadf1c86e1521a92333952f15d4f",
+      "bytes": 1532
+    },
+    {
+      "id": 201,
+      "file": "blocks/0201.txt",
+      "word_paragraph_index_zero_based": 3850,
+      "heading_context": [
+        "Capítulo 23 — Observabilidad y audit trail para compliance",
+        "3. Implementación",
+        "3.1 Modelo AuditLog: el registro de acciones de usuario"
+      ],
+      "sha256": "0b355f69541e79877616ee6c8615ed64c5b946131c7c1df446bebb6e2889010e",
+      "bytes": 1566
+    },
+    {
+      "id": 202,
+      "file": "blocks/0202.txt",
+      "word_paragraph_index_zero_based": 3855,
+      "heading_context": [
+        "Capítulo 23 — Observabilidad y audit trail para compliance",
+        "3. Implementación",
+        "3.1 Modelo AuditLog: el registro de acciones de usuario"
+      ],
+      "sha256": "8354fa5e5bbb961d5b0b79e94a5d62ec61137d05ed99a6cd9c68efc5720d1d37",
+      "bytes": 1799
+    },
+    {
+      "id": 203,
+      "file": "blocks/0203.txt",
+      "word_paragraph_index_zero_based": 3860,
+      "heading_context": [
+        "Capítulo 23 — Observabilidad y audit trail para compliance",
+        "3. Implementación",
+        "3.2 Serialización y consulta: el método to_dict()"
+      ],
+      "sha256": "ce730bc955b0e319c6a142758f48a3754bfef103e295b891593383ffa20409e2",
+      "bytes": 616
+    },
+    {
+      "id": 204,
+      "file": "blocks/0204.txt",
+      "word_paragraph_index_zero_based": 3865,
+      "heading_context": [
+        "Capítulo 23 — Observabilidad y audit trail para compliance",
+        "3. Implementación",
+        "3.3 Endpoint de consulta: GET /api/audit/logs"
+      ],
+      "sha256": "214b30c90aba3acaa333165ec52f677810e87da19234fbf354728a763281322d",
+      "bytes": 3630
+    },
+    {
+      "id": 205,
+      "file": "blocks/0205.txt",
+      "word_paragraph_index_zero_based": 3885,
+      "heading_context": [
+        "Capítulo 23 — Observabilidad y audit trail para compliance",
+        "3. Implementación",
+        "3.4 Endpoint de estadísticas: GET /api/audit/stats"
+      ],
+      "sha256": "93e51e6f5dba9d36e8cf4048a9a89c3024eea7ced35b4496ac31512b6e182c3e",
+      "bytes": 2859
+    },
+    {
+      "id": 206,
+      "file": "blocks/0206.txt",
+      "word_paragraph_index_zero_based": 3891,
+      "heading_context": [
+        "Capítulo 23 — Observabilidad y audit trail para compliance",
+        "3. Implementación",
+        "3.5 Endpoints auxiliares: filtros dinámicos"
+      ],
+      "sha256": "2aec3773b516a41bd738e813efb416cd30c31f95b6f722c209a38018c4caea59",
+      "bytes": 1560
+    },
+    {
+      "id": 207,
+      "file": "blocks/0207.txt",
+      "word_paragraph_index_zero_based": 3896,
+      "heading_context": [
+        "Capítulo 23 — Observabilidad y audit trail para compliance",
+        "3. Implementación",
+        "3.6 Modelo AIUsageLog: trazabilidad de operaciones de IA"
+      ],
+      "sha256": "135688bf193ef6b28c114cf9e9a770928ef5f7ae3369b49cb83b24e359ba716f",
+      "bytes": 1786
+    },
+    {
+      "id": 208,
+      "file": "blocks/0208.txt",
+      "word_paragraph_index_zero_based": 3904,
+      "heading_context": [
+        "Capítulo 23 — Observabilidad y audit trail para compliance",
+        "3. Implementación",
+        "3.7 Integración del AIUsageLog con el servicio de IA"
+      ],
+      "sha256": "4bdd9e4ec294a2b64ff35abdf40c24651d1048904b79680fe9dbe354bf74ee7b",
+      "bytes": 3253
+    },
+    {
+      "id": 209,
+      "file": "blocks/0209.txt",
+      "word_paragraph_index_zero_based": 3912,
+      "heading_context": [
+        "Capítulo 23 — Observabilidad y audit trail para compliance",
+        "3. Implementación",
+        "3.8 Consulta de uso de IA: métricas para gobernanza"
+      ],
+      "sha256": "94bfa195c20033dc1486858337843a0547b0e7a4da743a8a3bffecd225dc848f",
+      "bytes": 3059
+    },
+    {
+      "id": 210,
+      "file": "blocks/0210.txt",
+      "word_paragraph_index_zero_based": 4056,
+      "heading_context": [
+        "Capítulo 24 — PQC Assessment como servicio: modelo SaaS",
+        "3. Implementación",
+        "El modelo Organization: centro de gravedad del SaaS"
+      ],
+      "sha256": "3197b4f0d326089152f83338bf16aed897997193721bf035b2dd58aa995be523",
+      "bytes": 1602
+    },
+    {
+      "id": 211,
+      "file": "blocks/0211.txt",
+      "word_paragraph_index_zero_based": 4064,
+      "heading_context": [
+        "Capítulo 24 — PQC Assessment como servicio: modelo SaaS",
+        "3. Implementación",
+        "Aplicación de límites de plan: la validación que vive en el backend"
+      ],
+      "sha256": "cfc75a1405a9a4ed660291182fc3ef1515d1e1ae122106d3441eac628d777f19",
+      "bytes": 1365
+    },
+    {
+      "id": 212,
+      "file": "blocks/0212.txt",
+      "word_paragraph_index_zero_based": 4078,
+      "heading_context": [
+        "Capítulo 24 — PQC Assessment como servicio: modelo SaaS",
+        "3. Implementación",
+        "Feature flags: funcionalidades que se activan con datos, no con código"
+      ],
+      "sha256": "16807870c64bb45c97a87db0141df667cc117c1bbae47d708d11bae7e204b47c",
+      "bytes": 876
+    },
+    {
+      "id": 213,
+      "file": "blocks/0213.txt",
+      "word_paragraph_index_zero_based": 4085,
+      "heading_context": [
+        "Capítulo 24 — PQC Assessment como servicio: modelo SaaS",
+        "3. Implementación",
+        "Flujo de onboarding: del registro al primer análisis"
+      ],
+      "sha256": "97fb9e2ba717d2d208f2d1cacc0fa03471e75ca7b639979bc404604a48883652",
+      "bytes": 691
+    },
+    {
+      "id": 214,
+      "file": "blocks/0214.txt",
+      "word_paragraph_index_zero_based": 4097,
+      "heading_context": [
+        "Capítulo 24 — PQC Assessment como servicio: modelo SaaS",
+        "3. Implementación",
+        "El ciclo de vida de la suscripción"
+      ],
+      "sha256": "b1074c60f41f01aacbe222a36e1e3ba43e88c4b3d67ce6272389547a396b34f1",
+      "bytes": 1395
+    },
+    {
+      "id": 215,
+      "file": "blocks/0215.txt",
+      "word_paragraph_index_zero_based": 4104,
+      "heading_context": [
+        "Capítulo 24 — PQC Assessment como servicio: modelo SaaS",
+        "3. Implementación",
+        "Métricas SaaS que el backend calcula"
+      ],
+      "sha256": "8de5617f4904e1a03bf8011acb4ea7205e60d0ee12302b87a7f68e323af664a9",
+      "bytes": 2618
+    },
+    {
+      "id": 216,
+      "file": "blocks/0216.txt",
+      "word_paragraph_index_zero_based": 4206,
+      "heading_context": [
+        "Capítulo 25 — El mercado: quién necesita esto y por qué ahora",
+        "3. Implementación",
+        "Mapear presión regulatoria a funcionalidad de producto"
+      ],
+      "sha256": "449341f3ce368ab830e9f8b67fd24a879a756d326c22ca58712841d40da57478",
+      "bytes": 945
+    },
+    {
+      "id": 217,
+      "file": "blocks/0217.txt",
+      "word_paragraph_index_zero_based": 4212,
+      "heading_context": [
+        "Capítulo 25 — El mercado: quién necesita esto y por qué ahora",
+        "3. Implementación",
+        "Generación de informes de compliance por regulación"
+      ],
+      "sha256": "64bbc7c6e406fd1a5839f219b420c5c11c395206526a354a5d67aee0482040d5",
+      "bytes": 660
+    },
+    {
+      "id": 218,
+      "file": "blocks/0218.txt",
+      "word_paragraph_index_zero_based": 4218,
+      "heading_context": [
+        "Capítulo 25 — El mercado: quién necesita esto y por qué ahora",
+        "3. Implementación",
+        "Análisis de mercado con Claude: inteligencia competitiva automatizada"
+      ],
+      "sha256": "eee06be799dccc2385a0810c031ce9c8ca627094896df03c05ad55ed04ecff0b",
+      "bytes": 2723
+    },
+    {
+      "id": 219,
+      "file": "blocks/0219.txt",
+      "word_paragraph_index_zero_based": 4227,
+      "heading_context": [
+        "Capítulo 25 — El mercado: quién necesita esto y por qué ahora",
+        "3. Implementación",
+        "El timing del HSM: por qué 2026 es el punto de inflexión del hardware"
+      ],
+      "sha256": "f396e3c3a02c013338e3f85b5c834a4640ee2bdc41b14f411b9352007c5f2501",
+      "bytes": 1104
+    },
+    {
+      "id": 220,
+      "file": "blocks/0220.txt",
+      "word_paragraph_index_zero_based": 4321,
+      "heading_context": [
+        "Capítulo 26 — El criptógrafo del futuro",
+        "3. Implementación",
+        "Arquitectura de un agente de monitorización criptográfica continua"
+      ],
+      "sha256": "6dca3660d8e19b6aa92a88c7511f0a216638a0047b25859b931436c8b504c6ce",
+      "bytes": 2358
+    },
+    {
+      "id": 221,
+      "file": "blocks/0221.txt",
+      "word_paragraph_index_zero_based": 4329,
+      "heading_context": [
+        "Capítulo 26 — El criptógrafo del futuro",
+        "3. Implementación",
+        "Tarea Celery para monitorización programada"
+      ],
+      "sha256": "7e57c86679b622ffaddbd11127b8a8da3a8ec06ec3180c64837dc86e21e5cf99",
+      "bytes": 1981
+    },
+    {
+      "id": 222,
+      "file": "blocks/0222.txt",
+      "word_paragraph_index_zero_based": 4336,
+      "heading_context": [
+        "Capítulo 26 — El criptógrafo del futuro",
+        "3. Implementación",
+        "Modelo de datos para crypto-agility"
+      ],
+      "sha256": "6fc2252bfc23be56d9e057fa41d368bb9619c8cacc3a9c1717e53315ea405ffe",
+      "bytes": 992
+    },
+    {
+      "id": 223,
+      "file": "blocks/0223.txt",
+      "word_paragraph_index_zero_based": 4343,
+      "heading_context": [
+        "Capítulo 26 — El criptógrafo del futuro",
+        "3. Implementación",
+        "API crypto-agile: abstracción para aplicaciones cliente"
+      ],
+      "sha256": "f5e7ba9f463f15c5c1b7fed3f9c711b754fa27914346a16ffeb18074cdb3e326",
+      "bytes": 1107
+    },
+    {
+      "id": 224,
+      "file": "blocks/0224.txt",
+      "word_paragraph_index_zero_based": 4934,
+      "heading_context": [
+        "Apéndices",
+        "Apéndice E — Repositorio de código",
+        "Estructura del repositorio"
+      ],
+      "sha256": "0f05eed3de73228dddff4765fd19aa570cbfe621856d225493124864c896e8f8",
+      "bytes": 5059
+    }
+  ]
+}

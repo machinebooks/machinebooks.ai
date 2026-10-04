@@ -1,0 +1,26 @@
+def analyze_files(self, files: List[Dict], max_files: int = 500) -> Dict:
+    if type(max_files) is not int or max_files <= 0:
+        raise ValueError("Positive file budget required")
+    findings, errors, processed, complete = [], [], 0, 0
+    severity_counts, category_counts, files_with_issues = {}, {}, set()
+    for file_info in files[:max_files]:
+        result = self.analyze_file_content(file_info.get('content'),
+                                           file_info.get('path', ''))
+        processed += 1
+        complete += result['status'] == 'selected_rules_processed'
+        errors.extend({'file': file_info.get('path', ''), **error}
+                      for error in result['errors'])
+        findings.extend(result['findings'])
+        for finding in result['findings']:
+            files_with_issues.add(finding['file_path'])
+            severity = finding['severity']
+            category = finding['owasp_category']
+            severity_counts[severity] = severity_counts.get(severity, 0) + 1
+            category_counts[category] = category_counts.get(category, 0) + 1
+    excluded = max(0, len(files) - max_files)
+    return {'findings': findings, 'total_findings': len(findings),
+            'files_processed': processed, 'files_selected_rules_complete': complete,
+            'files_with_issues': len(files_with_issues),
+            'excluded_by_budget': excluded, 'errors': errors,
+            'severity_counts': severity_counts, 'category_counts': category_counts,
+            'status': 'partial' if errors or excluded else 'selected_rules_processed'}

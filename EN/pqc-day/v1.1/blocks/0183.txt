@@ -1,0 +1,5 @@
+command: >
+  celery -A app.celery_app worker
+  --loglevel=${LOG_LEVEL:-info}
+  --concurrency=${CELERY_CONCURRENCY:-2}
+  -Q repository_analysis,certificate_scanning,cloud_audit,ai_analysis

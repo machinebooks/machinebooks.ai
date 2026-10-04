@@ -1,0 +1,50 @@
+"""Educational lexical inventory, not a complete cryptographic assessment.
+Shor-related public-key families, classically deprecated primitives and
+symmetric/hash observations are separate categories. Purpose stays unknown.
+Authorization and immutable-checkout provisioning belong to the caller.
+"""
+from pathlib import Path
+import re
+
+PATTERNS = {
+    "RSA": (r"\bRSA\b|RSA\.generate", "shor_candidate"),
+    "ECDSA": (r"\bECDSA\b", "shor_candidate"),
+    "DH/ECDH": (r"\b(?:DH|ECDH)\b", "shor_candidate"),
+    "DES": (r"\bDES\b", "classically_deprecated_candidate"),
+    "MD5": (r"\bmd5\s*\(", "hash_use_requires_context"),
+    "SHA-1": (r"\bsha1\s*\(", "hash_use_requires_context"),
+    "AES": (r"\bAES\b", "symmetric_use_requires_parameters"),
+}
+
+def scan_directory(root, max_files=1000, max_file_bytes=1000000):
+    if type(max_files) is not int or max_files < 1:
+        raise ValueError("Positive file limit required")
+    if type(max_file_bytes) is not int or max_file_bytes < 1:
+        raise ValueError("Positive byte limit required")
+    root = Path(root).resolve(strict=True)
+    expected = sorted(p for p in root.rglob("*.py") if p.is_file())
+    findings, errors, scanned = [], [], 0
+    selected = expected[:max_files]
+    for path in selected:
+        try:
+            if path.is_symlink() or not path.resolve(strict=True).is_relative_to(root):
+                raise ValueError("Unsupported or out-of-scope path")
+            if path.stat().st_size > max_file_bytes:
+                raise ValueError("File exceeds example limit")
+            text = path.read_text(encoding="utf-8", errors="strict")
+        except (OSError, UnicodeError, ValueError):
+            errors.append({"path": str(path.relative_to(root)), "code": "read_unavailable"})
+            continue
+        scanned += 1
+        for line_number, line in enumerate(text.splitlines(), 1):
+            for family, (pattern, category) in PATTERNS.items():
+                if re.search(pattern, line, re.IGNORECASE):
+                    findings.append({"path": str(path.relative_to(root)),
+                                     "line": line_number, "family": family,
+                                     "category": category, "purpose": "unknown",
+                                     "pqc_compliant": None, "review_required": True})
+    complete = scanned == len(expected) and not errors
+    return {"status": "completed" if complete else "partial",
+            "findings": findings, "errors": errors, "files_expected": len(expected),
+            "files_scanned": scanned, "scope": "Python lexical patterns only",
+            "cryptographic_coverage_confirmed": False}

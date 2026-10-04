@@ -1,0 +1,147 @@
+# Educational draft generation; references and model output need human review.
+"""
+Generador de explicaciones DORA-PQC auditables con Claude.
+Transforma scores numéricos en narrativas que un auditor
+o supervisor bancario puede evaluar.
+"""
+import anthropic
+import json
+
+client = anthropic.Anthropic()
+
+AUDITOR_SYSTEM_PROMPT = """Eres un experto en regulación financiera europea
+y criptografía post-cuántica. Generas explicaciones técnicas para
+auditores DORA sobre la preparación PQC de entidades financieras.
+
+Reglas:
+- Referencia artículos específicos del Reglamento (UE) 2022/2554
+- Distingue leyes, perfiles, borradores y objetivos orientativos por ámbito y fecha
+- G7 e IR 8547 no son plazos legales DORA; no infieras incumplimiento del score
+- Verifica los artículos citados y señala ausencia de evidencia; requiere revisión humana
+- Usa terminología de auditoría: "hallazgo", "evidencia", "control"
+- Sé preciso con los algoritmos: ML-KEM (FIPS 203), ML-DSA (FIPS 204)
+- No minimices ni exageres los riesgos
+- Formato: párrafos cortos, lenguaje profesional, sin jerga innecesaria"""
+
+
+def generate_audit_explanation(
+    score: dict,
+    findings_summary: dict,
+    entity_profile: dict,
+) -> str:
+    """
+    Genera una explicación auditable del score DORA-PQC
+    para inclusión en informes de cumplimiento.
+    """
+    context = {
+        "score": score,
+        "findings": findings_summary,
+        "entity": entity_profile,
+        "transition_references": {'g7_ceg': {'kind': 'advisory_non_prescriptive',
+            'version': '2026-01',
+            'targets': {'most_critical': '2030-2032', 'overall': '2035'},
+            'targets_subject_to_review': True,
+            'legal_DORA_deadline': None,
+            'source': 'https://home.treasury.gov/system/files/136/G7-CEG-Quantum-Roadmap.pdf'},
+ 'nist_ir_8547': {'kind': 'initial_public_draft',
+                  'version': '2024-11-12',
+                  'vulnerable_112_bit_deprecation_proposed': 'after_2030',
+                  'vulnerable_algorithm_disallowance_proposed': 'after_2035',
+                  'universal_law': False,
+                  'source': 'https://csrc.nist.gov/pubs/ir/8547/ipd'},
+ 'eu_pqc': {'kind': 'roadmap_for_Member_States',
+            'start_transition_target': 'end_2026',
+            'high_risk_target': 'end_2030',
+            'universal_complete_inventory_deadline': None,
+            'source': 'https://digital-strategy.ec.europa.eu/en/policies/post-quantum-cryptography'},
+ 'dora': {'kind': 'regulation_scoped_requirements',
+          'applies_from': '2025-01-17',
+          'universal_pqc_deadline': None},
+ 'editorial_cutoff': '2026-10-03'},
+    }
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=3000,
+        system=AUDITOR_SYSTEM_PROMPT,
+        messages=[{
+            "role": "user",
+            "content": f"""Genera la explicación auditable para este
+assessment DORA-PQC.
+
+Contexto del assessment:
+{json.dumps(context, indent=2, ensure_ascii=False)}
+
+La explicación debe cubrir:
+1. Estado actual de preparación PQC de la entidad
+2. Hallazgos críticos con referencia a artículos DORA
+3. Desviaciones de objetivos internos o referencias orientativas, sin atribuir infracción
+4. Recomendaciones priorizadas con horizonte temporal
+5. Riesgos residuales si no se actúa
+
+Formato: texto estructurado para sección de informe de auditoría."""
+        }],
+    )
+
+    if getattr(message, "stop_reason", None) != "end_turn":
+        raise ValueError("Incomplete model output requires manual review")
+    parts = [block.text for block in message.content
+             if getattr(block, "type", None) == "text"]
+    if not parts or not all(isinstance(part, str) for part in parts):
+        raise ValueError("Expected textual draft for manual review")
+    return 'BORRADOR PARA REVISIÓN HUMANA; no decisión de cumplimiento.\n' + "\n".join(parts)
+
+
+def generate_resilience_scenarios(
+    findings: list,
+    entity_type: str,
+) -> list[dict]:
+    """
+    Genera escenarios de resiliencia post-cuántica para pruebas TLPT
+    según Art. 26 DORA, basados en los hallazgos reales de la entidad.
+    """
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4000,
+        system="""Eres un experto en pruebas de resiliencia operativa
+digital (DORA Art. 26) y criptoanálisis cuántico. Generas escenarios
+didácticos de planificación; no un TLPT aprobado ni un ataque cuántico observado.""",
+        messages=[{
+            "role": "user",
+            "content": f"""Para una entidad financiera de tipo
+"{entity_type}", genera 5 escenarios de prueba de resiliencia
+post-cuántica basados en estos hallazgos criptográficos reales:
+
+{json.dumps(findings[:20], indent=2, ensure_ascii=False)}
+
+Cada escenario debe incluir:
+- nombre: título descriptivo
+- threat_actor: perfil del atacante (estado-nación, crimen organizado)
+- attack_vector: cómo se explota la debilidad cuántica
+- affected_systems: qué sistemas se ven comprometidos
+- business_impact: impacto en operaciones financieras
+- detection_indicators: señales de compromiso
+- recovery_actions: pasos de recuperación
+- dora_articles: artículos DORA relevantes
+
+Devuelve un array JSON con los 5 escenarios."""
+        }],
+    )
+
+    try:
+        if getattr(message, "stop_reason", None) != "end_turn":
+            raise ValueError("Incomplete scenario draft")
+        parts = [block.text for block in message.content
+                 if getattr(block, "type", None) == "text"]
+        scenarios = json.loads("\n".join(parts))
+        if not isinstance(scenarios, list) or len(scenarios) != 5:
+            raise ValueError("Expected five scenario objects")
+        required = {"nombre", "threat_actor", "attack_vector", "affected_systems",
+                    "business_impact", "detection_indicators", "recovery_actions", "dora_articles"}
+        for scenario in scenarios:
+            if not isinstance(scenario, dict) or not required <= set(scenario):
+                raise ValueError("Scenario schema requires review")
+            scenario["review_status"] = "draft_requires_human_review"
+        return scenarios
+    except (ValueError, TypeError, AttributeError):
+        return [{"error": "Draft scenarios require manual review"}]

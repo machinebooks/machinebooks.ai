@@ -1,0 +1,46 @@
+class AIUsageLog(db.Model):
+    """Detailed AI usage record.
+    Combines audit trail with cost and performance tracking."""
+    __tablename__ = 'ai_usage_logs'
+
+    id = db.Column(db.Integer, primary_key=True)
+    # Relationships: which service, which provider, which user
+    organization_id = db.Column(db.Integer, db.ForeignKey("organizations.id"), nullable=False)
+    service_id = db.Column(
+        db.Integer, db.ForeignKey('ai_services.id'), nullable=True
+    )
+    provider_id = db.Column(
+        db.Integer, db.ForeignKey('ai_providers.id'), nullable=True
+    )
+    user_id = db.Column(
+        db.Integer, db.ForeignKey('users.id'), nullable=True
+    )
+    # Model used (claude-sonnet-4-6, etc.)
+    model = db.Column(db.String(200))
+    # Operation type
+    operation = db.Column(db.String(100))  # 'chat', 'pqc_analysis'
+
+    # Consumption metrics
+    tokens_in = db.Column(db.Integer, nullable=True)
+    tokens_out = db.Column(db.Integer, nullable=True)
+    tokens_total = db.Column(db.Integer, nullable=True)
+    cost_usd = db.Column(db.Float, nullable=True)
+    latency_ms = db.Column(db.Integer)
+
+    # Operation status
+    status = db.Column(
+        db.Enum('success', 'error', 'timeout'),
+        default='success'
+    )
+    error_message = db.Column(db.Text)
+
+    # Traceability without exposing sensitive content
+    request_hash = db.Column(db.String(64))  # SHA-256 of prompt
+    client_id = db.Column(
+        db.Integer, db.ForeignKey('clients.id'), nullable=True
+    )
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+# Ownership migration/backfill is required; request_hash is pseudonymous.
+
+# request_hash is a keyed HMAC over the complete canonical request.
+# It is pseudonymous metadata, not anonymization; restrict access and retention.

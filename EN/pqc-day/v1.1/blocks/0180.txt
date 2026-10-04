@@ -1,0 +1,7 @@
+command: >
+  redis-server
+  --save 60 1000
+  --loglevel warning
+  --maxmemory 128mb
+  --maxmemory-policy noeviction
+  --appendonly yes

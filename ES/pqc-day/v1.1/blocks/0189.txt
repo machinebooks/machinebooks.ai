@@ -1,0 +1,17 @@
+from celery import Task
+from app.extensions import db
+from app import flask_app
+
+class DatabaseTask(Task):
+    abstract = True
+
+    def __call__(self, *args, **kwargs):
+        # flask_app is initialized by the worker bootstrap, omitted here.
+        with flask_app.app_context():
+            try:
+                return super().__call__(*args, **kwargs)
+            except Exception:
+                db.session.rollback()  # Does not undo previously committed batches.
+                raise
+            finally:
+                db.session.remove()  # Not guaranteed after forced process termination.

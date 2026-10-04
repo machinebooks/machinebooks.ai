@@ -1,0 +1,33 @@
+
+**INSTRUCTIONS:**
+Identify vulnerabilities from these OWASP Top 10 categories:
+
+1. **A01:2021 - Broken Access Control**: IDOR, missing authorization
+2. **A02:2021 - Cryptographic Failures**: Hardcoded secrets, weak algorithms
+3. **A03:2021 - Injection**: SQL, Command, XPath, LDAP, eval
+4. **A04:2021 - Insecure Design**: Missing rate limiting
+5. **A05:2021 - Security Misconfiguration**: Debug mode, CORS, SSL
+6. **A06:2021 - Vulnerable Components**: Outdated dependencies
+7. **A07:2021 - Auth Failures**: Weak passwords, session fixation
+8. **A08:2021 - Integrity Failures**: Insecure deserialization
+9. **A09:2021 - Logging Failures**: Silenced exceptions
+10. **A10:2021 - SSRF**: User URLs without validation
+
+**RESPOND IN VALID JSON with this structure:**
+{{
+    "findings": [
+        {{
+            "type": "owasp_vulnerability",
+            "owasp_category": "A01|A02|...|A10",
+            "vulnerability_name": "name",
+            "severity": "critical|high|medium|low",
+            "line_number": number or null,
+            "description": "detailed description",
+            "impact": "potential impact",
+            "recommendation": "how to fix it",
+            "cwe_id": "CWE-XXX if applicable"
+        }}
+    ],
+    "summary": "executive summary of OWASP analysis",
+    "risk_score": number 0-100
+}}"""

@@ -1,0 +1,32 @@
+# Educational excerpt: requires a report object implementing the shown methods.
+def generate_nist_compliance_section(findings: list, report) -> None:
+    """Legacy name; references do not determine legal compliance."""
+    counts = {}
+    for finding in findings:
+        algorithm = finding.get("algorithm", "Unknown")
+        if not isinstance(algorithm, str):
+            raise ValueError("algorithm must be text")
+        counts[algorithm] = counts.get(algorithm, 0) + 1
+
+    migration_map = {'RSA': ('FIPS 203 / FIPS 204', 'ML-KEM / ML-DSA'),
+ 'ECDSA': ('FIPS 204', 'ML-DSA'),
+ 'ECDH': ('FIPS 203', 'ML-KEM'),
+ 'DH': ('FIPS 203', 'ML-KEM'),
+ 'DSA': ('FIPS 204 / FIPS 205', 'ML-DSA / SLH-DSA')}
+    report.add_heading('NIST PQC references for review')
+    report.add_paragraph(('FIPS 203/204/205 are final standards of August 2024. These alternatives '
+ 'require assessment of function, parameters, protocol and profile; they '
+ 'do not certify compatibility or compliance.'))
+    for algorithm, count in sorted(counts.items(), key=lambda item: (-item[1], item[0])):
+        fips, alternative = migration_map.get(algorithm, ('No verified mapping', 'No verified mapping'))
+        report.add_table_row([
+            f"{algorithm} ({count})", fips, alternative, 'Review function, profile and evidence; IR 8547 is a draft',
+        ])
+    report.add_heading('Planning references and requirements according to scope', level=2)
+    report.add_timeline([['By category', 'CNSA 2.0: check NSS profile, version and exceptions'],
+ ['After 2030',
+  'IR 8547: proposed deprecation for vulnerable 112-bit algorithms'],
+ ['2030–2032 / 2035', 'G7: non-prescriptive targets subject to review'],
+ ['End of 2030', 'EU roadmap: target for high-risk uses'],
+ ['After 2035',
+  'IR 8547: proposed disallowance according to standards and scope']])

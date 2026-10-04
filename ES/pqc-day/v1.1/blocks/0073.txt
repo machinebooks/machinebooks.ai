@@ -1,0 +1,9 @@
+Synthetic cloud observations (not a customer scan)
+================================================
+S3 default configuration: AES256 (SSE-S3)
+Object-level inventory: not assessed
+KMS KeySpec: RSA_2048; KeyUsage: SIGN_VERIFY
+KMS signature use: classical asymmetric candidate
+KMS data-encryption use: not inferred from this signing key
+TLS negotiated group: unknown
+Overall PQC compliance: not assessed

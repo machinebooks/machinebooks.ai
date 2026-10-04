@@ -1,0 +1,24 @@
+import json
+
+SEVERITY_OPTION = {"low": "-l", "medium": "-ll", "high": "-lll"}
+
+def bandit_command(file_path, severity="medium"):
+    if severity not in SEVERITY_OPTION:
+        raise ValueError("Invalid severity")
+    # The caller authorizes and resolves file_path inside its repository.
+    return ["bandit", "-f", "json", SEVERITY_OPTION[severity], file_path]
+
+def decode_bandit_result(returncode, stdout):
+    if returncode not in (0, 1):
+        return {"status": "error", "findings": [], "coverage": "unknown"}
+    try:
+        report = json.loads(stdout)
+        findings = report["results"]
+        errors = report.get("errors", [])
+        if not isinstance(findings, list) or not isinstance(errors, list):
+            raise ValueError("Invalid report")
+    except (ValueError, KeyError, TypeError):
+        return {"status": "error", "findings": [], "coverage": "unknown"}
+    return {"status": "partial" if errors else "completed",
+            "findings": findings, "scan_errors": len(errors),
+            "coverage": "partial" if errors else "requested_file"}

@@ -1,0 +1,38 @@
+from app.extensions import db
+from datetime import datetime
+
+class AIRAGCollection(db.Model):
+    """RAG Collection — groups documents by type and purpose"""
+    __tablename__ = 'ai_rag_collections'
+
+    id = db.Column(db.Integer, primary_key=True)
+    organization_id = db.Column(db.Integer, db.ForeignKey("organizations.id"), nullable=False)
+    name = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text)
+    # Collection type: what kind of documents it contains
+    collection_type = db.Column(
+        db.Enum('documentation', 'framework', 'policy', 'custom'),
+        default='custom'
+    )
+    # Configurable embedding provider per collection
+    embedding_provider_id = db.Column(
+        db.Integer,
+        db.ForeignKey('ai_providers.id'),
+        nullable=True
+    )
+    embedding_model = db.Column(db.String(200))
+    # Chunking parameters
+    chunk_size = db.Column(db.Integer, default=1000)    # tokens per fragment
+    chunk_overlap = db.Column(db.Integer, default=200)  # overlap tokens
+    document_count = db.Column(db.Integer, default=0)   # denormalized counter
+    is_active = db.Column(db.Boolean, default=True)
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow,
+                           onupdate=datetime.utcnow)
+
+    documents = db.relationship(
+        'AIRAGDocument', backref='collection',
+        lazy='dynamic', cascade='all, delete-orphan'
+    )
+# Existing rows require verified ownership backfill before scoped use.

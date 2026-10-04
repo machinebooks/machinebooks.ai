@@ -1,0 +1,14 @@
+def analyze_aws_s3_encryption(bucket_name, response, observation_error=None):
+    # response is the successful GetBucketEncryption response, not object inventory.
+    if observation_error or not isinstance(response, dict):
+        return {"bucket": bucket_name, "status": "not_assessed", "object_coverage": None}
+    rules = response.get("ServerSideEncryptionConfiguration", {}).get("Rules", [])
+    algorithms = [r.get("ApplyServerSideEncryptionByDefault", {}).get("SSEAlgorithm")
+                  for r in rules]
+    allowed = {"AES256", "aws:kms", "aws:kms:dsse"}
+    recognized = bool(algorithms) and all(a in allowed for a in algorithms)
+    return {"bucket": bucket_name,
+            "status": "observed" if recognized else "unknown_configuration",
+            "default_algorithms": algorithms, "object_coverage": None,
+            "pqc_compliant": None,
+            "next_step": "Assess object inventory, KMS dependencies and transport separately"}

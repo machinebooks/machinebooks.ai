@@ -1,0 +1,74 @@
+# Didactic example: analyzers/cloud_security_analyzer.py
+
+@dataclass
+class SecurityFinding:
+    """Represents a security finding with PQC context"""
+    id: str
+    provider: str
+    resource_type: str          # 'KMS Key', 'S3 Bucket', 'ACM Certificate'
+    resource_id: str
+    resource_name: str
+    severity: str               # critical, high, medium, low, info
+    category: str               # 'Key Management', 'Data Protection', 'TLS/SSL'
+    title: str
+    description: str
+    current_config: Dict[str, Any]  # current resource configuration
+    recommendation: str
+    pqc_impact: str             # specific post-quantum impact
+    remediation_steps: List[str]
+    references: List[str]
+    detected_at: str = None
+
+    def __post_init__(self):
+        if self.detected_at is None:
+            self.detected_at = datetime.utcnow().isoformat()
+
+
+class CloudSecurityAnalyzer:
+    """Analyzes cloud configurations for quantum-vulnerable cryptography"""
+
+    def __init__(self, provider: str):
+        self.provider = provider
+        self.findings: List[SecurityFinding] = []
+        self.finding_count = 0
+        self.observations = []
+
+    def _generate_finding_id(self) -> str:
+        self.finding_count += 1
+        return f"PQC-{self.provider.upper()}-{self.finding_count:04d}"
+
+    def _check_algorithm_vulnerability(self, algorithm: str) -> Optional[Dict]:
+        aliases = {
+            ('aws', 'RSA_2048'): ('RSA-2048', 'unknown'),
+            ('aws', 'RSA_3072'): ('RSA-3072', 'unknown'),
+            ('aws', 'RSA_4096'): ('RSA-4096', 'unknown'),
+            ('aws', 'ECC_NIST_P256'): ('ECC-P256', 'unknown'),
+            ('aws', 'ECC_NIST_P384'): ('ECC-P384', 'unknown'),
+            ('aws', 'ECC_NIST_P521'): ('ECC-P521', 'unknown'),
+            ('azure', 'RSA'): ('RSA', 'unknown'),
+            ('azure', 'RSA-HSM'): ('RSA', 'unknown'),
+            ('azure', 'EC'): ('ECC', 'unknown'),
+            ('azure', 'EC-HSM'): ('ECC', 'unknown'),
+            ('gcp', 'RSA_DECRYPT_OAEP_2048_SHA256'): ('RSA-2048', 'at_rest'),
+            ('gcp', 'RSA_SIGN_PSS_2048_SHA256'): ('RSA-2048', 'signature'),
+            ('gcp', 'EC_SIGN_P256_SHA256'): ('ECDSA-P256', 'signature'),
+            ('gcp', 'EC_SIGN_P384_SHA384'): ('ECDSA-P384', 'signature'),
+        }
+        name = algorithm.strip().upper() if isinstance(algorithm, str) else ''
+        identity = aliases.get((self.provider, name))
+        observation = {'provider': self.provider, 'observed_name': name,
+                       'classification': 'not_assessed', 'severity': None}
+        if identity is None:
+            self.observations.append(observation)
+            return None
+        canonical, purpose = identity
+        observation.update({'algorithm': canonical, 'purpose': purpose,
+                            'classification': 'shor_susceptible',
+                            'category': 'classical_public_key', 'severity': 'info',
+                            'reason': 'classical public-key candidate; purpose, exposure '
+                                      'and applicable profile require review'})
+        self.observations.append(observation)
+        return observation
+# This exact-name subset is an educational mapping, not a complete provider
+# catalog. Unknown aliases remain not assessed. KeyUsage/curve/size and real use
+# must be reconciled with metadata; an informational candidate is not a risk score.

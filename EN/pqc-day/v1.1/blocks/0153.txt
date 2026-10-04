@@ -1,0 +1,50 @@
+import { createTheme } from '@mui/material/styles'
+
+const theme = createTheme({
+  palette: {
+    mode: 'light',
+    primary: {
+      main: '#1976d2',       // Institutional blue — trust, security
+      light: '#42a5f5',
+      dark: '#1565c0',
+      contrastText: '#fff',
+    },
+    secondary: {
+      main: '#dc004e',       // Red for secondary actions and alerts
+    },
+    error: { main: '#d32f2f' },
+    warning: { main: '#ed6c02' },
+    success: { main: '#2e7d32' },
+    background: {
+      default: '#f5f5f5',    // Light gray background — reduces visual fatigue
+      paper: '#ffffff',       // Cards and panels on white background
+    },
+  },
+  typography: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    h4: { fontSize: '1.5rem', fontWeight: 500 },
+    // All typographic variants with defined weights
+  },
+  shape: {
+    borderRadius: 8,          // Consistent rounded borders
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',   // No forced uppercase
+          fontWeight: 500,
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)', // Subtle shadow
+        },
+      },
+    },
+  },
+})
+
+export default theme

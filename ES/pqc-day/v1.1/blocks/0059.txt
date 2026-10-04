@@ -1,0 +1,6 @@
+def tls_assessment_summary(findings, observation_coverage):
+    return {"finding_count": len(findings), "observation_coverage": observation_coverage,
+            "pqc_readiness_score": None,
+            "status": "not_assessed" if observation_coverage is None else "review_required"}
+# Prioritization uses each finding's function, exposure and horizon. Negotiating
+# a hybrid group does not cancel unrelated certificate/trust/configuration findings.

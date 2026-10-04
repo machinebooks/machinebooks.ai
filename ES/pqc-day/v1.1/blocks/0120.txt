@@ -1,0 +1,35 @@
+from flask_jwt_extended import get_current_user
+import time
+from flask import current_app
+
+@ai_admin_bp.route('/providers/<int:provider_id>/test', methods=['POST'])
+@jwt_required()
+def test_provider(provider_id):
+    user = get_current_user()
+    if not user or not user.is_active or not user.has_permission('manage_ai'):
+        return jsonify({'error': 'Access denied'}), 403
+    policy = current_app.extensions.get('ai_provider_authorization')
+    if policy is None:
+        return jsonify({'error': 'Provider authorization unavailable'}), 503
+    try:
+        provider = policy.authorized_provider(user, provider_id, action='test')
+    except PermissionError:
+        return jsonify({'error': 'Provider not found'}), 404
+    started = time.monotonic()
+    try:
+        result = ai_service.test_provider_connection(provider)
+        valid = isinstance(result, dict) and type(result.get('success')) is bool
+        success = result['success'] if valid else None
+    except Exception:
+        db.session.rollback()
+        success = None
+    latency = int((time.monotonic() - started) * 1000)
+    provider.last_test_at = datetime.utcnow()
+    provider.last_test_status = 'success' if success is True else 'failure'
+    provider.last_test_latency_ms = latency
+    provider.last_test_message = None if success is True else 'provider_test_not_confirmed'
+    db.session.commit()
+    return jsonify({'success': success, 'latency_ms': latency,
+                    'scope': 'single connection test'}), 200
+# Policy enforces organization/configuration/egress and blocks unauthorized URLs.
+# A connection test does not prove tool, context or semantic capabilities.

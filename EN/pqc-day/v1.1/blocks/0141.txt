@@ -1,0 +1,46 @@
+# Didactic example: patterns/ai_enrichment.py
+
+import anthropic
+
+def enrich_recommendation_with_context(
+    finding: dict,
+    code_context: str,
+    nist_recommendation: str
+) -> str:
+    """
+    Uses Claude to add operational context to the
+    deterministic NIST recommendation.
+    """
+    client = anthropic.Anthropic()
+
+    prompt = f"""Analyze this cryptographic finding and enrich the
+migration recommendation with specific operational context.
+
+FINDING:
+- Algorithm: {finding['algorithm']}
+- File: {finding['file']}
+- Line: {finding['line']}
+- Severity: {finding['severity']}
+
+SURROUNDING CODE:
+{code_context}
+
+BASE RECOMMENDATION (deterministic, do not modify):
+{nist_recommendation}
+
+INSTRUCTIONS:
+1. Keep the base recommendation as is.
+2. Add context about the operational impact of migration.
+3. Identify whether the use is for encryption, signature, or key exchange.
+4. Estimate the migration complexity (low/medium/high).
+5. Flag dependencies that might be affected.
+6. If it is test or example code, indicate low priority.
+
+Respond in English. Be concise and practical."""
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=1024,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return message.content[0].text

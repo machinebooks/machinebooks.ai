@@ -1,0 +1,58 @@
+from flask_jwt_extended import get_current_user
+import re
+from datetime import datetime, timedelta
+from sqlalchemy import func, case
+
+@ai_admin_bp.route('/usage/stats', methods=['GET'])
+@jwt_required()
+def get_ai_usage_stats():
+    user = get_current_user()
+    org = None if not user else db.session.get(Organization, user.organization_id)
+    if (not user or not user.is_active or not org or not org.is_active
+            or user.role not in ('org_owner', 'org_admin')):
+        return jsonify({'error': 'Access denied'}), 403
+    raw_days = request.args.get('days', '30')
+    if not re.fullmatch(r'[1-9][0-9]?', raw_days):
+        return jsonify({'error': 'Invalid days'}), 400
+    days = int(raw_days)
+    if not 1 <= days <= 90:
+        return jsonify({'error': 'Period must be 1 to 90 days'}), 400
+    since = datetime.utcnow() - timedelta(days=days)
+    scope = (AIUsageLog.organization_id == org.id, AIUsageLog.created_at >= since)
+    stats = db.session.query(
+        func.count(AIUsageLog.id).label('calls'),
+        func.sum(case((AIUsageLog.status == 'success', 1), else_=0)).label('success'),
+        func.sum(case((AIUsageLog.status == 'error', 1), else_=0)).label('errors'),
+        func.sum(case((AIUsageLog.status == 'timeout', 1), else_=0)).label('timeouts'),
+        func.avg(AIUsageLog.latency_ms).label('avg_latency'),
+        func.sum(AIUsageLog.tokens_total).label('tokens'),
+        func.count(AIUsageLog.tokens_total).label('tokens_known_calls'),
+        func.sum(AIUsageLog.cost_usd).label('cost'),
+        func.count(AIUsageLog.cost_usd).label('cost_known_calls'),
+    ).filter(*scope).first()
+    total = stats.calls
+    by_provider = db.session.query(
+        AIUsageLog.provider_id, AIProvider.name,
+        func.count(AIUsageLog.id), func.sum(AIUsageLog.tokens_total),
+        func.sum(AIUsageLog.cost_usd),
+    ).select_from(AIUsageLog).outerjoin(
+        AIProvider, AIUsageLog.provider_id == AIProvider.id,
+    ).filter(*scope).group_by(AIUsageLog.provider_id, AIProvider.name).all()
+    return jsonify({
+        'period_days': days, 'total_calls': total,
+        'success_rate': None if not total else round(100 * (stats.success or 0) / total, 2),
+        'error_rate': None if not total else round(100 * (stats.errors or 0) / total, 2),
+        'timeout_rate': None if not total else round(100 * (stats.timeouts or 0) / total, 2),
+        'avg_latency_ms': stats.avg_latency,
+        'known_tokens_sum': stats.tokens, 'tokens_known_calls': stats.tokens_known_calls,
+        'known_cost_sum_usd': stats.cost, 'cost_known_calls': stats.cost_known_calls,
+        'unknown_token_calls': total - stats.tokens_known_calls,
+        'unknown_cost_calls': total - stats.cost_known_calls,
+        'by_provider': [
+            {'provider_id': r[0], 'provider': r[1], 'calls': r[2],
+             'known_tokens_sum': r[3], 'known_cost_sum_usd': r[4]}
+            for r in by_provider
+        ],
+        'semantic_quality': None,
+        'scope': 'Recorded organization calls; omitted or lost telemetry is not represented',
+    }), 200

@@ -1,0 +1,9 @@
+QUANTUM_ASSESSMENT_PROFILE = {
+    "RSA": {"threat": "Shor", "function_required": True, "severity": None},
+    "ECDSA": {"threat": "Shor", "function_required": True, "severity": None},
+    "ECDH": {"threat": "Shor", "function_required": True, "severity": None},
+    "AES-128": {"threat": "ideal_quantum_key_search", "practical_break_demonstrated": False},
+    "AES-256": {"threat": "ideal_quantum_key_search", "deployment_review_required": True},
+    "SHA-256": {"property_required": "preimage_or_collision", "deployment_review_required": True},
+    "TLS_AES_256_GCM_SHA384": {"key_establishment": "unknown", "authentication": "unknown"},
+}

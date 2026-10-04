@@ -1,0 +1,15 @@
+def pre_filter_file(file_content, file_path, classify):
+    # classify is an injected provider adapter; it returns a text answer.
+    if not isinstance(file_content, str) or not isinstance(file_path, str):
+        raise ValueError("Expected text content and path")
+    if len(file_content) > 40000:
+        return None  # No silently truncated negative classification.
+    payload = {"task": "Classify cryptographic candidates; answer YES or NO",
+               "untrusted_data": {"path": file_path, "content": file_content}}
+    try:
+        answer = classify(payload)
+    except Exception:
+        return None  # The caller sends this file to review, not to exclusion.
+    if not isinstance(answer, str):
+        return None
+    return {"YES": True, "NO": False}.get(answer.strip().upper())

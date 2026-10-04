@@ -1,0 +1,37 @@
+from flask_jwt_extended import get_current_user
+from flask import request, jsonify
+from flask_jwt_extended import jwt_required
+from models.audit import AuditLog
+
+@clients_bp.route('/clients', methods=['POST'])
+@jwt_required()
+def create_client():
+    user = get_current_user()
+    if not user or not user.is_active or not user.has_permission('manage_clients'):
+        return jsonify({'error': 'Access denied'}), 403
+    org = Organization.query.filter_by(id=user.organization_id, is_active=True).with_for_update().first()
+    if org is None:
+        return jsonify({'error': 'Access denied'}), 403
+    data = request.get_json(silent=True)
+    name = None if not isinstance(data, dict) else data.get('name')
+    if not isinstance(name, str) or not 1 <= len(name.strip()) <= 200:
+        return jsonify({'error': 'Invalid client name'}), 400
+    count = Client.query.filter_by(organization_id=org.id).count()
+    if type(org.max_clients) is not int or org.max_clients < -1:
+        return jsonify({'error': 'Invalid plan limit'}), 503
+    if org.max_clients != -1 and count >= org.max_clients:
+        return jsonify({'error': 'Client quota reached'}), 409
+    try:
+        new_client = Client(name=name.strip(), organization_id=org.id)
+        db.session.add(new_client)
+        db.session.flush()
+        AuditLog.log(user.id, 'create_client', entity_type='client',
+                     entity_id=new_client.id, organization_id=org.id,
+                     details={'records_created': 1})
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
+    return jsonify({'data': new_client.to_dict()}), 201
+# Every quota writer must take the same organization lock. Audit is committed
+# atomically here; that does not prove all other application actions are logged.

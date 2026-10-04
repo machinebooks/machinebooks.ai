@@ -1,0 +1,76 @@
+from sqlalchemy import func, extract
+from datetime import datetime, timedelta
+from app.models.organization import Organization
+from app.models.user import User
+from app.models.analysis import AnalysisJob
+from app.models import Client
+
+
+def calculate_saas_metrics():
+    """Calculates operational SaaS metrics.
+
+    These metrics are queried in the internal administration panel,
+    not exposed to platform users.
+    """
+    now = datetime.utcnow()
+    thirty_days_ago = now - timedelta(days=30)
+
+    # Organization distribution by plan
+    plan_distribution = dict(
+        db.session.query(
+            Organization.subscription_plan,
+            func.count(Organization.id)
+        ).filter(
+            Organization.is_active == True
+        ).group_by(
+            Organization.subscription_plan
+        ).all()
+    )
+
+    # Active organizations (at least 1 analysis in 30 days)
+    active_orgs = db.session.query(
+        func.count(func.distinct(Client.organization_id))
+    ).select_from(AnalysisJob).join(
+        Client, AnalysisJob.client_id == Client.id
+    ).filter(
+        AnalysisJob.created_at >= thirty_days_ago
+    ).scalar()
+
+    # Total analyses this month
+    monthly_analyses = AnalysisJob.query.filter(
+        extract('year', AnalysisJob.created_at) == now.year,
+        extract('month', AnalysisJob.created_at) == now.month
+    ).count()
+
+    # Usage rate: what percentage of quota do orgs use
+    # (indicator of activity and upgrade pressure)
+    usage_rates = []
+    orgs = Organization.query.filter_by(is_active=True).all()
+    for org in orgs:
+        if org.subscription_plan == 'enterprise':
+            continue  # Enterprise has no numerical limit
+        month_usage = AnalysisJob.query.join(
+            Client, AnalysisJob.client_id == Client.id
+        ).filter(
+            Client.organization_id == org.id,
+            extract('year', AnalysisJob.created_at) == now.year,
+            extract('month', AnalysisJob.created_at) == now.month
+        ).count()
+        if org.max_analyses_per_month > 0:
+            rate = month_usage / org.max_analyses_per_month
+            usage_rates.append({
+                'org_id': org.id,
+                'plan': org.subscription_plan,
+                'usage_rate': round(rate, 2)
+            })
+
+    return {
+        'plan_distribution': plan_distribution,
+        'active_organizations_30d': active_orgs,
+        'monthly_analyses': monthly_analyses,
+        'usage_rates': usage_rates,
+        'avg_usage_rate': (
+            sum(r['usage_rate'] for r in usage_rates) / len(usage_rates)
+            if usage_rates else 0
+        )
+    }

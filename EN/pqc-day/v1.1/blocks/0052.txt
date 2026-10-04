@@ -1,0 +1,7 @@
+TLS_VERSION_OBSERVATIONS = {
+    "TLSv1.3": {"protocol_status": "modern", "pqc_key_establishment": "unknown"},
+    "TLSv1.2": {"protocol_status": "context_review", "pqc_key_establishment": "unknown"},
+    "TLSv1.1": {"protocol_status": "deprecated", "pqc_key_establishment": "unknown"},
+    "TLSv1": {"protocol_status": "deprecated", "pqc_key_establishment": "unknown"},
+}
+# Protocol, certificate authentication and negotiated group are separate evidence.

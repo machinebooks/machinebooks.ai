@@ -1,0 +1,33 @@
+from flask import current_app
+from celery.exceptions import Retry
+
+@celery_app.task(base=DatabaseTask, bind=True, name='analyze_repository_task',
+                 max_retries=2, soft_time_limit=600, time_limit=720)
+def analyze_repository_task(self, job_id, target_id, organization_id):
+    if any(type(v) is not int or v <= 0 for v in (job_id, target_id, organization_id)):
+        raise ValueError('Positive identifiers required')
+    runtime = current_app.extensions.get('repository_analysis_runtime')
+    if runtime is None:
+        raise RuntimeError('Analysis runtime integration unavailable')
+    # Claim verifies active authorization, Job->Client->Org and Target->Job,
+    # owns one lease and resolves credentials locally; no secrets in broker.
+    claim = runtime.claim(job_id, target_id, organization_id)
+    if claim is None:
+        return {'status': 'duplicate_or_ineligible', 'job_id': job_id}
+    try:
+        with runtime.authorized_snapshot(claim) as snapshot:
+            analyzer = RepositoryAnalyzer()
+            analyzer.scan_directory(snapshot.path)
+            report = analyzer.get_report()
+            return runtime.persist_and_complete(claim, {'crypto': report},
+                assessment_status='partial', readiness_score=None)
+    except Retry:
+        db.session.rollback()
+        raise
+    except Exception:
+        db.session.rollback()
+        runtime.mark_failed(claim, 'analysis_failed')
+        raise
+# Runtime persists actual Chapter 5 fields including target_id, classification
+# unknowns, required titles, errors and omissions with the claim token. Cleanup,
+# lease recovery and idempotency are explicit integration contracts.

@@ -1,0 +1,9 @@
+class AnalysisResource(Resource):
+    @jwt_required()                        # 1. Is the user authenticated?
+    @require_permission('run_analysis')    # 2. Do they have permission?
+    @check_plan_limit('analysis')          # 3. Do they have analyses left?
+    @check_feature('ai_semantic')          # 4. Does their plan include this feature?
+    def post(self):
+        """Create a new PQC analysis — with all verifications."""
+        user = User.query.get(get_jwt_identity())
+        # ... analysis creation logic ...

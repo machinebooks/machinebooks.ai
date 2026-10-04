@@ -1,0 +1,22 @@
+from flask import request
+from flask_restful import Resource
+from flask_jwt_extended import create_access_token, create_refresh_token
+from app.models import Organization, User
+
+class LoginResource(Resource):
+    def post(self):
+        data = request.get_json(silent=True)
+        fields = ("organization_slug", "email", "password")
+        if not isinstance(data, dict) or any(not isinstance(data.get(k), str) for k in fields):
+            return {"error": "Invalid credentials"}, 401
+        org = Organization.query.filter_by(slug=data["organization_slug"], is_active=True).first()
+        user = None if org is None else User.query.filter_by(
+            organization_id=org.id, email=data["email"], is_active=True).first()
+        # verify_or_dummy must perform comparable password work for unknown users.
+        if not verify_or_dummy(data["password"], user.password_hash if user else None):
+            return {"error": "Invalid credentials"}, 401
+        if user is None:
+            return {"error": "Invalid credentials"}, 401
+        return {"access_token": create_access_token(identity=str(user.id)),
+                "refresh_token": create_refresh_token(identity=str(user.id))}, 200
+# Add deployment-specific throttling, MFA/session policy and scoped audit storage.

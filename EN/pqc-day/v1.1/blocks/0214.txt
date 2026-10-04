@@ -1,0 +1,22 @@
+def propose_plan_change(current_plan, requested_plan, limits, usage, commercial_approval):
+    plans = {"free", "starter", "professional", "enterprise"}
+    if current_plan not in plans or requested_plan not in plans:
+        raise ValueError("Unknown plan")
+    if not isinstance(limits, dict) or not isinstance(usage, dict):
+        raise ValueError("Limits and usage must be dictionaries")
+    if any(type(maximum) is not int or maximum < -1 for maximum in limits.values()):
+        raise ValueError("Limits use -1 for unlimited or a nonnegative integer")
+    unknown = [resource for resource in limits
+               if type(usage.get(resource)) is not int or usage[resource] < 0]
+    if unknown:
+        return {"status": "usage_unknown", "resources": sorted(unknown)}
+    if commercial_approval is not True:
+        return {"status": "pending_commercial_approval"}
+    if any(maximum != -1 and usage[resource] > maximum
+           for resource, maximum in limits.items()):
+        return {"status": "needs_downgrade_policy"}
+    return {"status": "authorized_proposal", "requested_plan": requested_plan,
+            "preserve_approved_overrides": True}
+# A tenant-authorized persistence service must lock the organization and write
+# plan, entitlement decision and audit in one transaction. This pure proposal
+# returns no HTTP status and does not persist or validate commercial approval.

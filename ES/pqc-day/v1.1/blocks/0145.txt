@@ -1,0 +1,17 @@
+def calculate_priority(shelf_life, exposure, impact, migration_complexity):
+    values = (shelf_life, exposure, impact, migration_complexity)
+    if any(type(v) is not int or not 1 <= v <= 5 for v in values):
+        raise ValueError("Four ordinal values from 1 to 5 are required")
+    risk_index = shelf_life * exposure * impact
+    preparation_index = round(100 * risk_index * migration_complexity / 625, 2)
+    return {"risk_index": risk_index, "preparation_index": preparation_index,
+            "method": "internal_illustrative_heuristic",
+            "planning": "Assess high-risk complex migrations early",
+            "regulatory_deadline": None}
+
+def qsff_factor_mean(factors):
+    if len(factors) != 3 or any(type(v) is not int or not 1 <= v <= 3 for v in factors):
+        raise ValueError("Three QSFF factors from 1 to 3 required")
+    return round(sum(factors) / 3)
+# QSFF/Europol 2026 separately computes risk and migration-time means, then uses
+# its risk/time matrix. It is not the four-factor internal heuristic above.

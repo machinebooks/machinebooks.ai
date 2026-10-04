@@ -1,0 +1,131 @@
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { Box, Drawer, IconButton, Typography,
+         List, ListItemButton, ListItemText,
+         TextField, InputAdornment, Chip } from '@mui/material'
+import { Add as AddIcon, Search as SearchIcon,
+         SmartToy as AgentIcon, FolderOpen as FolderIcon } from '@mui/icons-material'
+import KiloStyleChat from './KiloStyleChat'
+import { listConversations, getConversation,
+         createConversation, deleteConversation,
+         sendConversationMessage } from '../../api/aiAnalysis'
+
+const SIDEBAR_WIDTH = 280
+
+export default function AIChatContainerV2({
+  clientId, repositoryId, repoUrl, ...chatProps
+}) {
+  const sendingRef = useRef(false)
+  const selectedRef = useRef(null)
+  const scopeVersion = useRef(0)
+  const [conversations, setConversations] = useState([])
+  const [currentConvId, setCurrentConvId] = useState(null)
+  const [messages, setMessages] = useState([])
+  const [searchQuery, setSearchQuery] = useState('')
+  const [sidebarOpen, setSidebarOpen] = useState(true)
+
+  // Load conversation list
+  useEffect(() => {
+    scopeVersion.current += 1
+    selectedRef.current = null
+    setCurrentConvId(null)
+    setMessages([])
+    loadConversations()
+  }, [clientId, repositoryId])
+
+  const loadConversations = async () => {
+    const version = scopeVersion.current
+    const data = await listConversations({
+      client_id: clientId,
+      client_repository_id: repositoryId
+    })
+    if (version === scopeVersion.current) setConversations(data.conversations || [])
+  }
+
+  // Select conversation and load messages
+  const selectConversation = async (convId) => {
+    selectedRef.current = convId
+    setCurrentConvId(convId)
+    const version = scopeVersion.current
+    const conv = await getConversation(convId)
+    if (version === scopeVersion.current && selectedRef.current === convId) setMessages(conv.messages || [])
+  }
+
+  // Create new conversation
+  const handleNewConversation = async () => {
+    const version = scopeVersion.current
+    const conv = await createConversation({
+      client_id: clientId,
+      client_repository_id: repositoryId,
+      repo_url: repoUrl,
+      agent_mode: true
+    })
+    if (version !== scopeVersion.current) throw new Error("Conversation scope changed")
+    selectedRef.current = conv.id
+    setCurrentConvId(conv.id)
+    setMessages([])
+    await loadConversations()
+    return conv.id
+  }
+
+  // Send message with persistence
+  const handleSendMessage = async (userMessage, config) => {
+    if (sendingRef.current) return
+    sendingRef.current = true
+    const version = scopeVersion.current
+    try {
+      let conversationId = selectedRef.current
+      if (!conversationId) conversationId = await handleNewConversation()
+      const response = await sendConversationMessage(conversationId, userMessage, config)
+      const persisted = await getConversation(conversationId)
+      if (version === scopeVersion.current && selectedRef.current === conversationId) {
+        setMessages(persisted.messages || [])
+      }
+      await loadConversations()
+      return response
+    } finally {
+      sendingRef.current = false
+    }
+  }
+
+  const handleDeleteConversation = async (conversationId) => {
+    await deleteConversation(conversationId)
+    if (selectedRef.current === conversationId) {
+      selectedRef.current = null
+      setCurrentConvId(null)
+      setMessages([])
+    }
+    await loadConversations()
+  }
+
+  return (
+    <Box sx={{ display: 'flex', height: '100%' }}>
+      {/* Conversation sidebar */}
+      <Drawer variant="persistent" open={sidebarOpen}
+              sx={{ width: SIDEBAR_WIDTH }}>
+        <ConversationSidebar
+          conversations={conversations}
+          currentId={currentConvId}
+          onSelect={selectConversation}
+          onNew={handleNewConversation}
+          onDelete={handleDeleteConversation}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          repositoryName={repoUrl?.split('/').pop()}
+        />
+      </Drawer>
+
+      {/* Main chat area */}
+      <Box sx={{ flex: 1 }}>
+        <KiloStyleChat
+          externalMessages={messages}
+          onMessagesChange={setMessages}
+          onSendMessage={handleSendMessage}
+          conversationId={currentConvId}
+          {...chatProps}
+        />
+      </Box>
+    </Box>
+  )
+}
+// Server authorization/idempotency and asynchronous error UI remain required.
+// The client does not append a second copy of the message persisted by the server.

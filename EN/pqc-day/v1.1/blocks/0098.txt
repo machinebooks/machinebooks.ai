@@ -1,0 +1,43 @@
+def normalize_provider_reply(reply):
+    if not isinstance(reply, dict) or not isinstance(reply.get("content"), list):
+        raise ValueError("Invalid provider reply")
+    content, calls, texts = [], [], []
+    seen = set()
+    for block in reply["content"]:
+        if not isinstance(block, dict):
+            raise ValueError("Invalid content block")
+        kind = block.get("type")
+        if kind == "text":
+            if not isinstance(block.get("text"), str):
+                raise ValueError("Invalid text block")
+            texts.append(block["text"])
+        elif kind == "tool_use":
+            ident, name, arguments = block.get("id"), block.get("name"), block.get("input")
+            if (not isinstance(ident, str) or not 1 <= len(ident) <= 200
+                    or ident in seen or not isinstance(name, str)
+                    or not name or not isinstance(arguments, dict)):
+                raise ValueError("Invalid tool call")
+            seen.add(ident)
+            calls.append({"id": ident, "name": name, "arguments": arguments})
+        else:
+            raise ValueError("Unsupported content block")
+        content.append(block)
+    reason = reply.get("stop_reason")
+    if reason not in {"tool_use", "end_turn", "max_tokens", "stop_sequence"}:
+        raise ValueError("Unsupported stop reason")
+    if bool(calls) != (reason == "tool_use"):
+        raise ValueError("Inconsistent tool stop reason")
+    return {"assistant_message": {"role": "assistant", "content": content},
+            "tool_calls": calls,
+            "finish_reason": "tool_calls" if calls else reason,
+            "text": "".join(texts)}
+
+def native_tool_results(calls, results):
+    if len(calls) != len(results):
+        raise ValueError("Mismatched tool results")
+    return {"role": "user", "content": [
+        {"type": "tool_result", "tool_use_id": call["id"], "content": result}
+        for call, result in zip(calls, results)]}
+# Transport checks HTTP/error/refusal state before normalization. Unsupported
+# thinking/server-tool protocols require their own converter, not silent removal.
+# Each provider converts normalized assistant/tool messages to its native schema.

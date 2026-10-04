@@ -1,0 +1,10 @@
+RFC10024_GROUPS = {"X25519MLKEM768", "SecP256r1MLKEM768", "SecP384r1MLKEM1024"}
+
+def assess_negotiated_group(group_name, observation_status):
+    if observation_status != "observed" or not group_name:
+        return {"key_establishment": "unknown", "authentication": "unknown"}
+    return {"key_establishment": "rfc10024_hybrid" if group_name in RFC10024_GROUPS
+                                  else "requires_registry_and_protocol_review",
+            "authentication": "unknown"}
+# Numeric group IDs must come from the applicable IANA registry/version.
+# A local scanner's lack of support does not demonstrate absence at the peer.

@@ -1,0 +1,35 @@
+def import_findings_to_assessment(self, assessment_id,
+                                 code_analysis_ids=None, cloud_analysis_ids=None):
+    scope = self._authorized_assessment(assessment_id, action='import_findings')
+    if any(v is not None and not isinstance(v, list) for v in (code_analysis_ids, cloud_analysis_ids)):
+        raise ValueError('Analysis IDs must be lists')
+    ids = list(dict.fromkeys((code_analysis_ids or []) + (cloud_analysis_ids or [])))
+    if len(ids) > 100 or any(type(v) is not int or v <= 0 for v in ids):
+        raise ValueError('At most 100 positive analysis IDs required')
+    jobs = []
+    for job_id in ids:
+        job = AnalysisJob.query.join(Client, AnalysisJob.client_id == Client.id).filter(
+            AnalysisJob.id == job_id, AnalysisJob.client_id == scope['client_id'],
+            Client.organization_id == scope['organization_id'],
+            AnalysisJob.status == 'completed',
+            AnalysisJob.job_type.in_(['code', 'cloud', 'full']),
+        ).first()
+        if job is None:
+            raise PermissionError('Analysis source unavailable in assessment scope')
+        jobs.append(job)
+    proposals = []
+    for job in jobs:
+        for kind, findings in [('crypto', job.crypto_findings),
+                               ('vulnerability', job.vulnerability_findings)]:
+            for finding in findings:
+                candidates = self.store.mapping_candidates(scope, kind, finding)
+                for candidate in candidates:
+                    self.store.validate_control(scope, candidate['control_id'])
+                    proposals.append({**candidate, 'finding_type': kind,
+                                      'finding_id': finding.id})
+    merged = merge_mapping_candidates(proposals)
+    # Store verifies every discriminator/ID, binds the framework version and
+    # persists pending proposals atomically. It never updates implementation
+    # or effectiveness from keyword/LLM confidence. Idempotency is its contract.
+    return self.store.persist_pending_mappings(scope, merged)
+# Printed Chapter5 graph is Job→Client→Organization; no Job.organization_id.

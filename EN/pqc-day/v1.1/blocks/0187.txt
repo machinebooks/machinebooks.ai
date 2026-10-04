@@ -1,0 +1,40 @@
+# .env.example — Environment variables for the PQC Platform
+# Copy to .env and fill in with real values
+# NEVER version the .env file in git
+
+# --- MySQL ---
+MYSQL_ROOT_PASSWORD=<YOUR_ROOT_PASSWORD>
+MYSQL_DATABASE=pqc_db
+MYSQL_USER=pqc_user
+MYSQL_PASSWORD=<YOUR_MYSQL_PASSWORD>
+MYSQL_PORT=3306
+
+# --- Redis ---
+REDIS_PORT=6379
+
+# --- Flask Backend ---
+FLASK_APP=app
+APP_CONFIG=development           # development | production
+SECRET_KEY=<set-in-vault>
+ENCRYPTION_KEY=<set-in-vault>
+JWT_SECRET_KEY=<set-in-vault>  # Minimum 32 random characters
+LOG_LEVEL=INFO
+BACKEND_PORT=5000
+GUNICORN_WORKERS=4              # Rule: 2 * num_cpus + 1
+
+# --- Celery ---
+CELERY_CONCURRENCY=2
+
+# --- AI (Claude API) ---
+ANTHROPIC_API_KEY=<set-in-vault>
+
+# --- Frontend ---
+FRONTEND_PORT=3000
+VITE_API_URL=/api
+VITE_WS_URL=ws://localhost:8080
+
+# --- Nginx ---
+NGINX_PORT=8080
+# Placeholder values must be replaced through the deployment secret mechanism.
+# Flask does not infer production policy from FLASK_ENV. APP_CONFIG is an
+# application setting explicitly resolved by this book's factory proposal.

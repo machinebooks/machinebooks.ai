@@ -1,0 +1,55 @@
+import { Outlet } from 'react-router-dom'
+import {
+  Box, AppBar, Toolbar, Typography,
+  IconButton, Avatar, Chip, Tooltip,
+} from '@mui/material'
+import { SecurityOutlined, NotificationsOutlined } from '@mui/icons-material'
+import { useSelector } from 'react-redux'
+import Sidebar from './Sidebar'
+
+export default function Layout() {
+  const { user, organization } = useSelector((s) => s.auth)
+
+  return (
+    <Box sx={{ display: 'flex' }}>
+      {/* Top bar — fixed, always visible */}
+      <AppBar
+        position="fixed"
+        sx={{
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        }}
+      >
+        <Toolbar>
+          <SecurityOutlined sx={{ mr: 2, fontSize: 28 }} />
+          <Typography variant="h5" sx={{ flexGrow: 1, fontWeight: 600 }}>
+            PQC Security
+          </Typography>
+          <Chip
+            label={organization?.name || 'Organization'}
+            size="small"
+            sx={{ mr: 2, bgcolor: 'rgba(255,255,255,0.2)', color: 'white' }}
+          />
+          {/* User menu with avatar, role and logout */}
+        </Toolbar>
+      </AppBar>
+
+      {/* Sidebar — permanent, 260px wide */}
+      <Sidebar />
+
+      {/* Content area — grows to fill remaining space */}
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          mt: 8,                      // Space for the fixed AppBar
+          minHeight: '100vh',
+          backgroundColor: '#f8f9fa', // Background slightly different from paper
+        }}
+      >
+        <Outlet />  {/* The active page renders here */}
+      </Box>
+    </Box>
+  )
+}

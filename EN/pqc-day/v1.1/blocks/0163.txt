@@ -1,0 +1,8 @@
+<Grid container spacing={3}>
+  <Grid item xs={12} sm={6} lg={3}>
+    {/* On mobile: 12/12 = full row */}
+    {/* On tablet: 6/12 = half row (2 cards per row) */}
+    {/* On desktop: 3/12 = one quarter (4 cards per row) */}
+    <KPICard label="Clients" value={stats.total_clients} />
+  </Grid>
+</Grid>

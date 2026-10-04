@@ -1,0 +1,19 @@
+def analyze_selected_files(files, analyze_file, max_ai_files=50, batch_size=5):
+    if type(max_ai_files) is not int or max_ai_files < 0:
+        raise ValueError("Invalid file budget")
+    if type(batch_size) is not int or batch_size <= 0:
+        raise ValueError("Positive batch size required")
+    selected = files[:max_ai_files]
+    results = []
+    for start in range(0, len(selected), batch_size):
+        for file in selected[start:start + batch_size]:
+            try:
+                result = analyze_file(file)
+            except Exception:
+                result = {"status": "error", "findings": None}
+            results.append({"file": file, "result": result})
+    return {"results": results, "selected": len(selected), "eligible": len(files),
+            "excluded_by_budget": max(0, len(files) - len(selected)),
+            "status": "budget_limited" if len(selected) < len(files) else "selected_files_processed"}
+# Progress, durable batch commits and organization-scoped idempotency are omitted;
+# completion here concerns selected files, not exhaustive repository coverage.

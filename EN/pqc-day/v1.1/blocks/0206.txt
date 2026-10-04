@@ -1,0 +1,38 @@
+from flask_jwt_extended import get_current_user
+@audit_bp.route('/actions', methods=['GET'])
+@jwt_required()
+def get_audit_actions():
+    """Returns the list of distinct recorded actions.
+    Useful for populating the filter dropdown in the frontend."""
+    user = get_current_user()
+    org = None if not user else db.session.get(Organization, user.organization_id)
+    if (not user or not user.is_active or not org or not org.is_active
+            or not user.has_permission('view_audit')):
+        return jsonify({'error': 'Access denied'}), 403
+    org_filter = AuditLog.organization_id == org.id
+    actions = db.session.query(
+        AuditLog.action
+    ).filter(org_filter).distinct().order_by(AuditLog.action).all()
+    return jsonify({
+        'data': [a[0] for a in actions]
+    }), 200
+
+
+@audit_bp.route('/entity-types', methods=['GET'])
+@jwt_required()
+def get_entity_types():
+    """Returns the list of distinct entity types."""
+    user = get_current_user()
+    org = None if not user else db.session.get(Organization, user.organization_id)
+    if (not user or not user.is_active or not org or not org.is_active
+            or not user.has_permission('view_audit')):
+        return jsonify({'error': 'Access denied'}), 403
+    org_filter = AuditLog.organization_id == org.id
+    types = db.session.query(
+        AuditLog.entity_type
+    ).filter(org_filter, 
+        AuditLog.entity_type.isnot(None)
+    ).filter(org_filter).distinct().order_by(AuditLog.entity_type).all()
+    return jsonify({
+        'data': [t[0] for t in types]
+    }), 200

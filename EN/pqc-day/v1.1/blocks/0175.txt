@@ -1,0 +1,59 @@
+class RepositoryTools:
+    """Tools for exploring code repositories"""
+
+    def __init__(self, repo_path: str, max_file_size: int = 100_000):
+        self.repo_path = Path(repo_path).resolve(strict=True)
+        self.max_file_size = max_file_size
+
+        self.ignore_dirs = {
+            '__pycache__', 'node_modules', '.git', 'venv',
+            'dist', 'build', '.idea', '.vscode'
+        }
+
+    def get_tool_definitions(self) -> list:
+        """Definitions in function calling format"""
+        return [
+            {
+                "type": "function",
+                "function": {
+                    "name": "list_files",
+                    "description": "Lists files and folders in a "
+                                   "repository directory.",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "path": {
+                                "type": "string",
+                                "description": "Relative path. '' = root."
+                            },
+                            "recursive": {
+                                "type": "boolean",
+                                "description": "List recursively."
+                            }
+                        }
+                    }
+                }
+            },
+            # read_file, search_code, find_crypto_usage,
+            # get_file_summary (similar definitions)
+        ]
+
+    def execute_tool(self, name: str, args: dict) -> dict:
+        """Execute tool by name"""
+        handlers = {
+            'list_files': getattr(self, '_list_files', None),
+            'read_file': getattr(self, '_read_file', None),
+            'search_code': getattr(self, '_search_code', None),
+            'find_crypto_usage': getattr(self, '_find_crypto_usage', None),
+            'get_file_summary': getattr(self, '_get_file_summary', None),
+        }
+        handler = handlers.get(name)
+        if not handler:
+            return {'error': f'Unknown tool: {name}'}
+
+        try:
+            return handler(**args)
+        except Exception as e:
+            return {'error': 'Tool execution failed'}
+# Only authorized immutable snapshots may be passed here. The omitted list,
+# search and summary handlers must enforce the same path/time/byte budgets.

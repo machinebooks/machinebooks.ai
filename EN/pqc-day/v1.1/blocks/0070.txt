@@ -1,0 +1,9 @@
+def cloud_assessment_summary(observations, requested_resources, errors):
+    if requested_resources < 0 or errors < 0:
+        raise ValueError("Invalid counts")
+    assessed = sum(o.get("classification") not in (None, "unknown") for o in observations)
+    return {"requested_resources": requested_resources, "observations": len(observations),
+            "assessed": assessed, "errors": errors,
+            "status": "not_assessed" if not observations else
+                      "partial" if errors or len(observations) < requested_resources else "observed",
+            "pqc_readiness_score": None}

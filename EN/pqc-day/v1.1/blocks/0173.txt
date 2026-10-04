@@ -1,0 +1,76 @@
+class AIConversation(db.Model):
+    """Persistent conversation with the AI assistant"""
+    __tablename__ = 'ai_conversations'
+
+    id = db.Column(db.Integer, primary_key=True)
+    organization_id = db.Column(db.Integer, db.ForeignKey("organizations.id"), nullable=False)
+    user_id = db.Column(db.Integer,
+        db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+
+    # Link to client and repository (multi-tenant)
+    client_id = db.Column(db.Integer,
+        db.ForeignKey('clients.id', ondelete='SET NULL'), nullable=True)
+    client_repository_id = db.Column(db.Integer,
+        db.ForeignKey('client_repositories.id', ondelete='SET NULL'),
+        nullable=True)
+
+    title = db.Column(db.String(255), nullable=True)
+    repo_url = db.Column(db.String(500), nullable=True)
+    repo_path = db.Column(db.String(500), nullable=True)
+    provider = db.Column(db.String(50), nullable=True)
+    model = db.Column(db.String(100), nullable=True)
+    agent_mode = db.Column(db.Boolean, default=True)
+    is_active = db.Column(db.Boolean, default=True)  # Soft delete
+    last_message_at = db.Column(db.DateTime, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    messages = db.relationship('AIConversationMessage',
+        backref='conversation', lazy='dynamic',
+        cascade='all, delete-orphan',
+        order_by='AIConversationMessage.created_at')
+
+    def add_message(self, role, content, **kwargs):
+        """Add message with agent metadata"""
+        if role not in {'user', 'assistant', 'system'} or not isinstance(content, str) or len(content) > 16000:
+            raise ValueError('Invalid bounded conversation message')
+        tokens = kwargs.get('tokens_used')
+        if tokens is not None and (type(tokens) is not int or tokens < 0):
+            raise ValueError('Unknown tokens must be None')
+        msg = AIConversationMessage(
+            conversation_id=self.id,
+            role=role,
+            content=content,
+            provider=kwargs.get('provider'),
+            model=kwargs.get('model'),
+            agent_actions=kwargs.get('agent_actions'),
+            iterations=kwargs.get('iterations'),
+            tokens_used=kwargs.get('tokens_used')
+        )
+        db.session.add(msg)
+        self.last_message_at = datetime.utcnow()
+
+        # Auto-generate title from the first message
+        if not self.title:
+            self.title = 'Conversation'
+
+        return msg
+
+
+class AIConversationMessage(db.Model):
+    """Individual message with traceability metadata"""
+    __tablename__ = 'ai_conversation_messages'
+
+    id = db.Column(db.Integer, primary_key=True)
+    conversation_id = db.Column(db.Integer,
+        db.ForeignKey('ai_conversations.id', ondelete='CASCADE'))
+    role = db.Column(db.String(20), nullable=False)  # user/assistant/system
+    content = db.Column(db.Text, nullable=False)
+    provider = db.Column(db.String(50), nullable=True)
+    model = db.Column(db.String(100), nullable=True)
+    agent_actions = db.Column(db.JSON, nullable=True)
+    iterations = db.Column(db.Integer, nullable=True)
+    tokens_used = db.Column(db.Integer, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+# All CRUD/message endpoints must scope conversation.organization_id, owner,
+# client/repository and action. Lost nullable client/repo links never widen access.
+# Schema/ownership migration and source-retention policy require integration tests.

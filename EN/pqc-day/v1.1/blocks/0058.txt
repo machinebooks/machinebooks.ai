@@ -1,0 +1,9 @@
+def summarize_tls_observations(observations):
+    observed = [x for x in observations if x.get("status") == "observed"]
+    failures = len(observations) - len(observed)
+    verified = sum(x.get("certificate_verified") is True for x in observed)
+    return {"requested": len(observations), "observed": len(observed),
+            "certificate_verified": verified, "failed": failures,
+            "status": "not_assessed" if not observed else
+                      "partial" if failures else "completed",
+            "pqc_readiness": "unknown"}

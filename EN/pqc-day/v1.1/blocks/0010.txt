@@ -1,0 +1,9 @@
+# Without MCP: each scanner has a different interface
+# Bandit returns JSON with one schema
+bandit_results = run_bandit(file_path, severity="high")
+# Semgrep returns SARIF with another schema
+semgrep_results = run_semgrep(file_path, rules="crypto")
+# SSLyze returns Python objects with another format
+sslyze_results = scan_tls(hostname, port=443)
+
+# The agent needs to know three different interfaces

@@ -1,0 +1,27 @@
+# Didactic example: patterns/connectors/base.py
+class BaseConnector:
+    """Base interface for all repository and cloud connectors."""
+
+    def __init__(self, credentials: dict):
+        self.credentials = credentials
+        self._validate_credentials()
+
+    def _validate_credentials(self):
+        """Verifies that necessary credentials are present."""
+        raise NotImplementedError
+
+    def test_connection(self) -> dict:
+        """Tests the connection and returns status + metadata."""
+        raise NotImplementedError
+
+    def list_repositories(self) -> list:
+        """Lists repositories accessible with this credential."""
+        raise NotImplementedError
+
+    def get_file_content(self, repo: str, path: str, branch: str = "main") -> str:
+        """Gets the content of a specific file."""
+        raise NotImplementedError
+
+    def list_files(self, repo: str, path: str = "", branch: str = "main") -> list:
+        """Lists files in a repository directory."""
+        raise NotImplementedError

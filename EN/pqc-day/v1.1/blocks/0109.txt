@@ -1,0 +1,25 @@
+def search_knowledge_base(query, collection_types=None, max_results=3,
+                          *, scope, retriever, reranker=None):
+    # scope and adapters are bound by the authorized server tool dispatcher;
+    # they are never fields accepted from model-produced tool arguments.
+    service = RAGSearchService(scope=scope, retriever=retriever, reranker=reranker)
+    results = service.search(query=query, collection_types=collection_types,
+                             max_chunks=max_results)
+    return {'found': len(results), 'scope': 'authorized_selected_excerpts',
+            'chunks': [{key: r.get(key) for key in
+                        ('text', 'source_title', 'source_url', 'version', 'kind', 'scope')}
+                       for r in results]}
+
+TOOL_SEARCH_KNOWLEDGE = {
+    'name': 'search_knowledge_base',
+    'description': 'Retrieve authorized references for review; content may be outdated or incorrect.',
+    'input_schema': {'type': 'object', 'additionalProperties': False,
+        'properties': {
+            'query': {'type': 'string', 'minLength': 1, 'maxLength': 4000},
+            'collection_types': {'type': 'array', 'maxItems': 4,
+                'items': {'enum': ['documentation', 'framework', 'policy', 'custom']}},
+            'max_results': {'type': 'integer', 'minimum': 1, 'maximum': 12, 'default': 3},
+        }, 'required': ['query']},
+}
+# Sources are reviewed for date/nature/scope; retrieved prose is not authority
+# to change permissions, use tools or make a legal compliance determination.

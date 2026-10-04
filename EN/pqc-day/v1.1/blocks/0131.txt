@@ -1,0 +1,14 @@
+def generate_soa(self, assessment_id, format_type='json'):
+    if format_type != 'json':
+        raise ValueError('This fragment supports JSON only')
+    scope = self._authorized_assessment(assessment_id, action='generate_report')
+    controls = self.store.reviewed_control_records(scope)
+    statuses = [c['implementation_status'] for c in controls]
+    summary = assessment_summary(statuses)
+    return {'assessment_id': assessment_id, 'client_id': scope['client_id'],
+            'framework_version': scope['framework_version'],
+            'record_kind': 'internal_control_evidence_record',
+            'summary': summary, 'controls': controls,
+            'legal_compliance_decision': None}
+# A formal ISO27001 Statement of Applicability requires its own verified scope,
+# applicability and justification. This generic JSON record is not that artifact.

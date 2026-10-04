@@ -1,0 +1,37 @@
+from dataclasses import dataclass
+from typing import Dict, List, Optional
+from abc import ABC, abstractmethod
+from enum import Enum
+import json
+import time
+import re
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+class AIProvider(str, Enum):
+    """Supported AI providers"""
+    OPENAI = "openai"
+    ANTHROPIC = "anthropic"
+    AZURE_OPENAI = "azure_openai"
+    OLLAMA = "ollama"
+    LMSTUDIO = "lmstudio"
+    CUSTOM = "custom"  # For OpenAI-compatible endpoints
+
+
+@dataclass
+class AIAnalysisResult:
+    """Structured AI analysis result"""
+    provider: str
+    model: str
+    findings: Optional[List[Dict]]
+    summary: str
+    risk_score: Optional[float]              # 0-100: aggregated severity
+    recommendations: List[str]
+    quantum_vulnerable_items: List[Dict]
+    pqc_migration_plan: List[Dict]
+    status: str = "not_assessed"
+    raw_response: Optional[str] = None
+    tokens_used: Optional[int] = None       # For cost governance
+    analysis_time_ms: Optional[int] = None  # For internal SLAs

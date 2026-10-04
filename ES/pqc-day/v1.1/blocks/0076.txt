@@ -1,0 +1,44 @@
+import regex
+import time
+
+# Didactic example: analyzers/owasp_analyzer.py — main class
+
+@dataclass
+class OWASPFinding:
+    """OWASP finding with all fields needed for persistence"""
+    rule_id: str        # Unique identifier: "OWASP-hardcoded_secret"
+    category: str       # Internal category: "crypto_failures"
+    owasp_id: str       # OWASP ID: "A02"
+    title: str          # Readable title: "Cryptographic Failures"
+    severity: str       # Severity: "critical", "high", "medium", "low"
+    cwe: str            # Associated CWE: "CWE-798"
+    description: str    # Finding description
+    recommendation: str # Remediation guidance
+    file_path: str      # File where detected
+    line_number: int    # Exact line
+    code_snippet: str   # Intentionally empty: raw source stays in authorized custody
+    match_text: str     # Intentionally empty: no raw match is exported
+
+
+class OWASPAnalyzer:
+    def __init__(self, patterns: Dict = None):
+        self.patterns = OWASP_PATTERNS if patterns is None else patterns
+        self._compile_patterns()
+
+    def _compile_patterns(self):
+        self.compiled_patterns = {}
+        self.compile_errors = []
+        for category, rules in self.patterns.items():
+            self.compiled_patterns[category] = {}
+            for rule_id, rule in rules.items():
+                try:
+                    self.compiled_patterns[category][rule_id] = {
+                        **{k: v for k, v in rule.items() if k != 'pattern'},
+                        'regex': regex.compile(rule['pattern'],
+                                               regex.IGNORECASE | regex.MULTILINE)
+                    }
+                except (regex.error, KeyError, TypeError):
+                    self.compile_errors.append({'rule_id': rule_id,
+                                                'status': 'compile_error'})
+# Install and pin the regex dependency. Rule metadata is trusted configuration;
+# custom rules need separate authorization and a bounded compilation worker.

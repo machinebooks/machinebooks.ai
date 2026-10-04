@@ -1,0 +1,5 @@
+depends_on:
+  pqc_mysql:
+    condition: service_healthy
+  pqc_redis:
+    condition: service_healthy

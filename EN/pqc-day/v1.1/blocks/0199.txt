@@ -1,0 +1,26 @@
+from datetime import datetime, timezone
+from flask import current_app
+
+@celery_app.task(name='health_check_task')
+def health_check_task():
+    return {'status': 'responded', 'timestamp': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')}
+
+class CeleryStatusResource(Resource):
+    @require_auth
+    @require_role('org_owner', 'org_admin')
+    def get(self):
+        user = request.current_user
+        org = None if not user else db.session.get(Organization, user.organization_id)
+        if not user or not user.is_active or not org or not org.is_active:
+            return {'error': 'Access denied'}, 403
+        metrics = current_app.extensions.get('authorized_job_metrics')
+        if metrics is None:
+            return {'error': 'Metrics integration unavailable'}, 503
+        try:
+            result = metrics.for_organization(user=user, organization_id=org.id)
+        except PermissionError:
+            return {'error': 'Access denied'}, 403
+        return result, 200
+# Adapter returns bounded tenant-scoped aggregate counts and unknown states.
+# Raw inspect tasks/kwargs, worker details and global Redis queues are not exposed.
+# Task response is one observation, not continuous readiness or availability proof.

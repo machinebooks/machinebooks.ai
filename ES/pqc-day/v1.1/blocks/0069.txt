@@ -1,0 +1,40 @@
+# Didactic example: analyzers/cloud_security_analyzer.py
+
+def analyze_gcp_kms(self, crypto_keys: List[Dict]) -> List[SecurityFinding]:
+    """Analyzes GCP Cloud KMS keys for quantum vulnerabilities"""
+    findings = []
+
+    for key in crypto_keys:
+        key_name = key.get('name', 'unknown')
+        algorithm = key.get('algorithm', '')
+        purpose = key.get('purpose', '')
+
+        vuln = self._check_algorithm_vulnerability(algorithm)
+        if vuln:
+            findings.append(SecurityFinding(
+                id=self._generate_finding_id(),
+                provider='gcp',
+                resource_type='Cloud KMS Key',
+                resource_id=key_name,
+                resource_name=key_name,
+                severity=vuln['severity'],
+                category='Key Management',
+                title=f"Quantum-Vulnerable KMS Key: {algorithm}",
+                description=f"Key uses {algorithm} which is {vuln['reason']}",
+                current_config={'algorithm': algorithm, 'purpose': purpose},
+                recommendation="Plan migration to PQC when GCP supports it",
+                pqc_impact=('Review signature/authentication profile'
+                            if vuln['purpose'] == 'signature' else
+                            'Review key protection and confidentiality lifetime'
+                            if vuln['purpose'] == 'at_rest' else
+                            'Purpose and exposure not assessed'),
+                remediation_steps=[
+                    "Audit all resources using this key",
+                    "Determine cryptographic function and applicable profile",
+                    "Monitor GCP for PQC KMS announcements"
+                ],
+                references=["https://cloud.google.com/kms/docs/algorithms"]
+            ))
+
+    self.findings.extend(findings)
+    return findings

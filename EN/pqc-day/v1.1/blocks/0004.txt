@@ -1,0 +1,10 @@
+backend/app/connectors/
+├── base.py                  # Base interface: connect(), list_repos(), get_file()
+├── github_connector.py      # GitHub (personal token or app)
+├── gitlab_connector.py      # GitLab (personal token)
+├── bitbucket_connector.py   # Bitbucket Cloud (API token)
+├── azure_devops_connector.py # Azure DevOps (PAT)
+├── public_github_connector.py # Public GitHub (no authentication)
+├── aws_connector.py         # AWS (access key + secret)
+├── azure_connector.py       # Azure (service principal)
+└── gcp_connector.py         # GCP (service account JSON)

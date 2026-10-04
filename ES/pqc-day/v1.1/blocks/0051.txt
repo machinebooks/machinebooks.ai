@@ -1,0 +1,15 @@
+def summarize_repository(findings, files_scanned, files_expected, read_errors):
+    if min(files_scanned, files_expected, read_errors) < 0:
+        raise ValueError("Invalid counts")
+    coverage = (files_scanned / files_expected) if files_expected else None
+    if not files_scanned:
+        status = "not_assessed"
+    elif read_errors or files_scanned < files_expected:
+        status = "partial"
+    else:
+        status = "completed"
+    weights = {"critical": 20, "high": 12, "medium": 6, "low": 2, "info": 0}
+    penalty = sum(weights[f["severity"]] for f in findings)
+    return {"status": status, "coverage": coverage, "findings": len(findings),
+            "read_errors": read_errors, "weighted_penalty": penalty,
+            "pqc_readiness_score": None}

@@ -1,0 +1,20 @@
+def _get_recommendation(self, algorithm, function=None):
+    if not isinstance(algorithm, str) or not algorithm.strip():
+        return 'Obtain algorithm evidence before recommending'
+    name = algorithm.upper()
+    if name in {'RSA-JWT', 'ECDSA-JWT'}:
+        return ('Review RFC 9964 ML-DSA JOSE/COSE, key formats, client support '
+                'and JWT validation; no universal hybrid JWT substitution')
+    if name in {'RSA', 'ECC'} and function is None:
+        return 'Determine signature, key establishment or encryption function first'
+    if name in {'RSA', 'DSA', 'ECDSA', 'ECC', 'ED25519'} and function == 'signature':
+        return 'Evaluate ML-DSA (FIPS 204) or SLH-DSA (FIPS 205) and protocol support'
+    if name in {'ECDH', 'DH', 'X25519'} or (name in {'RSA', 'ECC'} and function == 'key_establishment'):
+        return 'Evaluate ML-KEM (FIPS 203), approved hybrid profiles and protocol support'
+    if name in {'RSA', 'ECC'}:
+        return 'Review complete data/key protection chain; ML-KEM is not bulk encryption'
+    if name in {'DES', '3DES', 'MD5', 'SHA-1'}:
+        return 'Review classical weakness, function and profile before choosing replacement'
+    if name == 'AES-128':
+        return 'Review symmetric profile and resource model; no practical Grover break asserted'
+    return 'Review function, parameters, implementation and applicable profile'

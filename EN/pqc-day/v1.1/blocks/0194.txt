@@ -1,0 +1,52 @@
+from celery.schedules import crontab
+
+# Celery configuration
+celery_config = {
+    'broker_url': 'redis://pqc_redis:6379/0',
+    'result_backend': 'redis://pqc_redis:6379/1',
+
+    # Secure serialization: JSON only, not pickle
+    'task_serializer': 'json',
+    'accept_content': ['json'],
+    'result_serializer': 'json',
+
+    # Global limits
+    'task_acks_late': True,     # ACK after executing, not before
+    'worker_prefetch_multiplier': 1,  # Don't pre-load tasks
+
+    # Queue routes
+    'task_routes': {
+        'analyze_repository_task': {'queue': 'repository_analysis'},
+        'clone_and_analyze_repository_task': {'queue': 'repository_analysis'},
+        'analyze_cloud_security_task': {'queue': 'cloud_audit'},
+        'scan_url_certificates_task': {'queue': 'certificate_scanning'},
+        'ai_code_analysis_task': {'queue': 'ai_analysis'},
+        'scheduled_rescan_task': {'queue': 'repository_analysis'},
+    },
+
+    # Beat scheduled tasks
+    'beat_schedule': {
+        # Every hour: check which clients need re-scanning
+        'check-pending-rescans': {
+            'task': 'check_pending_rescans_task',
+            'schedule': crontab(minute=0),  # Every hour on the hour
+            'options': {'queue': 'repository_analysis'}
+        },
+
+        # Every day at 03:00: clean up old jobs
+        'cleanup-old-jobs': {
+            'task': 'cleanup_old_jobs_task',
+            'schedule': crontab(hour=3, minute=0),
+            'options': {'queue': 'repository_analysis'}
+        },
+
+        # Every Monday at 02:00: weekly change report
+        'weekly-change-report': {
+            'task': 'generate_weekly_change_report_task',
+            'schedule': crontab(
+                hour=2, minute=0, day_of_week='monday'
+            ),
+            'options': {'queue': 'repository_analysis'}
+        },
+    }
+}

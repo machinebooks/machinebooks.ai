@@ -1,0 +1,45 @@
+class AICodeAnalyzer:
+    """AI code analyzer — unified multi-provider interface"""
+
+    PROVIDERS = {
+        'openai': OpenAIProvider,
+        'anthropic': AnthropicProvider,
+        'azure_openai': AzureOpenAIProvider,
+        'ollama': OllamaProvider,
+        'lmstudio': LMStudioProvider,
+        'custom': CustomOpenAIProvider,
+    }
+
+    def __init__(self, provider: str = 'ollama',
+                 analysis_type: str = 'pqc', **config):
+        self.provider_name = provider
+        self.analysis_type = analysis_type
+
+        if provider not in self.PROVIDERS:
+            raise ValueError(
+                f"Unknown provider: {provider}. "
+                f"Available: {list(self.PROVIDERS.keys())}"
+            )
+
+        self.provider = self.PROVIDERS[provider](config, analysis_type)
+
+    def analyze_file(self, code: str, filename: str,
+                     context: Dict = None) -> AIAnalysisResult:
+        started = time.monotonic()
+        try:
+            result = self.provider.analyze_code(code, filename, context)
+        except Exception:
+            result = {'status': 'error', 'findings': None, 'risk_score': None}
+        if not isinstance(result, dict):
+            result = {'status': 'invalid_response', 'findings': None, 'risk_score': None}
+        status = result.get('status', 'invalid_response')
+        valid = status == 'parsed_suggestions' and isinstance(result.get('findings'), list)
+        return AIAnalysisResult(
+            provider=self.provider_name, model=self.provider.model,
+            findings=result['findings'] if valid else None,
+            summary='', risk_score=None, recommendations=[],
+            quantum_vulnerable_items=[], pqc_migration_plan=[], status=status,
+            tokens_used=result.get('tokens_used'),
+            analysis_time_ms=int((time.monotonic() - started) * 1000))
+# Every provider adapter normalizes the same status/schema contract. asdict()
+# serializes results for callers; invalid responses do not mean zero findings.

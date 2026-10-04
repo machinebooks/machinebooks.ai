@@ -1,0 +1,86 @@
+# Didactic example: analyzers/owasp_analyzer.py — pattern structure
+
+OWASP_PATTERNS = {
+    'crypto_failures': {
+        'hardcoded_secret': {
+            # Regex detecting secret assignments with literal values
+            'pattern': r'(?:secret|password|api_key|apikey|token|private_key)'
+                       r'\s*[=:]\s*["\'][^"\']{8,}["\']',
+            'severity': 'critical',
+            'category': 'A02:2021',
+            'title': 'Cryptographic Failures',
+            'description': 'Hardcoded secret detected in source code',
+            'owasp_id': 'A02',
+            'cwe': 'CWE-798',  # Use of hardcoded credentials
+            'recommendation': 'Use environment variables or a secrets manager'
+        },
+        'weak_random': {
+            # Detects non-cryptographic pseudorandom generators
+            'pattern': r'(?:random\.random|Math\.random|'
+                       r'rand\(\)|Random\(\)\.Next)',
+            'severity': 'medium',
+            'category': 'A02:2021',
+            'title': 'Cryptographic Failures',
+            'description': 'Non-cryptographic pseudorandom generator',
+            'owasp_id': 'A02',
+            'cwe': 'CWE-338',
+            'recommendation': 'Use secrets (Python) or crypto.randomBytes (Node.js)'
+        },
+    },
+    'misconfiguration': {
+        'ssl_verify_disabled': {
+            # Detects TLS verification disabled in multiple languages
+            'pattern': r'verify\s*[=:]\s*False|ssl\s*[=:]\s*False|'
+                       r'VERIFY_NONE|rejectUnauthorized\s*:\s*false',
+            'severity': 'critical',
+            'category': 'A05:2021',
+            'title': 'Security Misconfiguration',
+            'description': 'SSL/TLS verification disabled',
+            'owasp_id': 'A05',
+            'cwe': 'CWE-295',  # Improper certificate validation
+            'recommendation': 'Always verify SSL/TLS certificates'
+        },
+        'cors_wildcard': {
+            # Detects permissive CORS with wildcard
+            'pattern': r'(?:Access-Control-Allow-Origin|cors|CORS)'
+                       r'.*["\']?\*["\']?',
+            'severity': 'medium',
+            'category': 'A05:2021',
+            'title': 'Security Misconfiguration',
+            'description': 'CORS allows all origins (*)',
+            'owasp_id': 'A05',
+            'cwe': 'CWE-942',
+            'recommendation': 'Restrict CORS to trusted origins'
+        },
+    },
+    'auth_failures': {
+        'jwt_none_algorithm': {
+            # Detects JWT configured with none algorithm (signature bypass)
+            'pattern': r'(?:algorithm|alg)\s*[=:]\s*["\'](?:none|None)["\']',
+            'severity': 'critical',
+            'category': 'A07:2021',
+            'title': 'Authentication Failures',
+            'description': 'JWT with none algorithm — authentication bypass',
+            'owasp_id': 'A07',
+            'cwe': 'CWE-327',  # Use of broken or risky cryptographic algorithm
+            'recommendation': 'Always specify and validate the JWT algorithm'
+        },
+    },
+    'injection': {
+        'sql_injection': {
+            # Detects concatenation or interpolation in SQL queries
+            'pattern': r'(?:execute|query|cursor\.execute|raw|rawQuery)\s*\('
+                       r'\s*["\']?\s*(?:SELECT|INSERT|UPDATE|DELETE|DROP)'
+                       r'[^"\']*%s|(?:f["\']|["\'].*\{).*'
+                       r'(?:SELECT|INSERT|UPDATE|DELETE)',
+            'severity': 'critical',
+            'category': 'A03:2021',
+            'title': 'Injection',
+            'description': 'Potential SQL injection via string interpolation',
+            'owasp_id': 'A03',
+            'cwe': 'CWE-89',
+            'recommendation': 'Use parameterized queries or an ORM'
+        },
+    },
+    # ... 9 additional categories with similar patterns
+}

@@ -1,0 +1,42 @@
+class CloudPQCAnalyzer:
+    def __init__(self):
+        self.analyzers = {}
+        self.all_findings = []
+        self.errors = []
+
+    def analyze_aws(self, connector, resource_types=None) -> Dict:
+        selected = ['kms', 's3', 'acm'] if resource_types is None else resource_types
+        methods = {'kms': ('get_kms_keys', 'analyze_aws_kms'),
+                   's3': ('get_s3_buckets', 'analyze_aws_s3_encryption'),
+                   'acm': ('get_acm_certificates', 'analyze_aws_acm_certificates')}
+        if not isinstance(selected, list) or any(t not in methods for t in selected):
+            raise ValueError("Unsupported resource selection")
+        analyzer = CloudSecurityAnalyzer('aws')
+        self.analyzers['aws'] = analyzer
+        for resource_type in selected:
+            read_method, analyze_method = methods[resource_type]
+            try:
+                resources = getattr(connector, read_method)()
+                if not isinstance(resources, list):
+                    raise ValueError("Invalid resource-list contract")
+                getattr(analyzer, analyze_method)(resources)
+            except Exception:
+                self.errors.append({'provider': 'aws', 'resource_type': resource_type,
+                                    'status': 'adapter_error'})
+        self.all_findings.extend(analyzer.findings)
+        return {'findings': [vars(finding) for finding in analyzer.findings],
+                'summary': self.get_global_summary()}
+
+    def get_global_summary(self) -> Dict:
+        return {'total_findings': len(self.all_findings),
+                'provider_summaries': {
+                    name: {'observations': len(analyzer.observations),
+                           'findings': len(analyzer.findings),
+                           'pqc_readiness_score': None}
+                    for name, analyzer in self.analyzers.items()},
+                'errors': list(self.errors), 'assessment_status': 'partial'
+                    if self.analyzers else 'not_assessed',
+                'overall_pqc_readiness': None}
+# Native adapters need typed errors, pagination and requested/observed resource
+# counts. This excerpt retains partial status because those contracts are omitted;
+# a zero-length list cannot establish complete inventory or complete readiness.

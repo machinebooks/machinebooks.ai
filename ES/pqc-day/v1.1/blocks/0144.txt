@@ -1,0 +1,32 @@
+# Educational excerpt: requires a report object implementing the shown methods.
+def generate_nist_compliance_section(findings: list, report) -> None:
+    """Legacy name; references do not determine legal compliance."""
+    counts = {}
+    for finding in findings:
+        algorithm = finding.get("algorithm", "Unknown")
+        if not isinstance(algorithm, str):
+            raise ValueError("algorithm must be text")
+        counts[algorithm] = counts.get(algorithm, 0) + 1
+
+    migration_map = {'RSA': ('FIPS 203 / FIPS 204', 'ML-KEM / ML-DSA'),
+ 'ECDSA': ('FIPS 204', 'ML-DSA'),
+ 'ECDH': ('FIPS 203', 'ML-KEM'),
+ 'DH': ('FIPS 203', 'ML-KEM'),
+ 'DSA': ('FIPS 204 / FIPS 205', 'ML-DSA / SLH-DSA')}
+    report.add_heading('Referencias NIST PQC para revisión')
+    report.add_paragraph(('FIPS 203/204/205 son estándares finales de agosto de 2024. Estas '
+ 'alternativas requieren evaluar función, parámetros, protocolo y perfil; '
+ 'no certifican compatibilidad o cumplimiento.'))
+    for algorithm, count in sorted(counts.items(), key=lambda item: (-item[1], item[0])):
+        fips, alternative = migration_map.get(algorithm, ('Sin mapeo verificado', 'Sin mapeo verificado'))
+        report.add_table_row([
+            f"{algorithm} ({count})", fips, alternative, 'Revisar función, perfil y evidencia; IR 8547 es borrador',
+        ])
+    report.add_heading('Referencias de planificación y requisitos según ámbito', level=2)
+    report.add_timeline([['Por categoría', 'CNSA 2.0: comprobar perfil NSS, versión y excepciones'],
+ ['Después de 2030',
+  'IR 8547: deprecación propuesta para algoritmos vulnerables de 112 bits'],
+ ['2030–2032 / 2035', 'G7: objetivos no prescriptivos sujetos a revisión'],
+ ['Finales de 2030', 'Hoja UE: objetivo para usos de alto riesgo'],
+ ['Después de 2035',
+  'IR 8547: retirada propuesta según estándares y ámbito']])

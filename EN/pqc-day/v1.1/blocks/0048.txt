@@ -1,0 +1,24 @@
+from abc import ABC, abstractmethod
+from typing import Dict, List, Optional
+
+class BaseConnector(ABC):
+    """Base class for all repository connectors"""
+
+    def __init__(self, config: Dict):
+        self.config = config
+        self.connection = None
+
+    @abstractmethod
+    def connect(self) -> bool:
+        """Establish connection with the service"""
+        pass
+
+    @abstractmethod
+    def test_connection(self) -> Dict:
+        """Test connection and return status"""
+        pass
+
+    @abstractmethod
+    def disconnect(self):
+        """Close connection"""
+        pass

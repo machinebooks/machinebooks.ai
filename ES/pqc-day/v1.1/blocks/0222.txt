@@ -1,0 +1,19 @@
+def policy_recommendation(rule):
+    if rule.get("function") not in {"signature", "key_establishment"}:
+        raise ValueError("Function required")
+    phase = rule.get("phase")
+    if phase not in {"hybrid", "pure_pqc"}:
+        raise ValueError("Unknown migration phase")
+    target = rule.get("hybrid_target") if phase == "hybrid" else rule.get("target")
+    if not target:
+        raise ValueError("Missing target")
+    return {"algorithm": target, "phase": phase, "scope": rule["scope"],
+            "policy_version": rule["policy_version"]}
+
+CNSA_PARAMETER_REFERENCE = {
+    "signature": {"algorithm": "ML-DSA-87", "scope": "applicable NSS profile"},
+    "key_establishment": {"algorithm": "ML-KEM-1024", "scope": "applicable NSS profile"},
+}
+# Software/firmware signatures have their own LMS/XMSS profile and timelines.
+# Organization policy targets and deadlines must carry independent scope/source.
+# Re-evaluation is an explicit service operation; no cascade is implemented here.

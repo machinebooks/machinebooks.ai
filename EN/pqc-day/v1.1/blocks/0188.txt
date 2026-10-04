@@ -1,0 +1,26 @@
+# Start all services
+docker compose up -d
+
+# View status of all services with healthcheck
+docker compose ps
+
+# View logs of a specific service (last 100 lines, follow)
+docker compose logs -f --tail=100 pqc_backend
+
+# Restart only the backend without affecting other services
+docker compose restart pqc_backend
+
+# Rebuild the backend image after Dockerfile changes
+docker compose build pqc_backend && docker compose up -d pqc_backend
+
+# Run database migrations inside the container
+docker compose exec pqc_backend flask db upgrade
+
+# Open a shell in the backend container for debugging
+docker compose exec pqc_backend bash
+
+# Stop all services (volumes persist)
+docker compose down
+
+# Stop and DELETE volumes (DESTRUCTIVE: deletes the database)
+docker compose down -v

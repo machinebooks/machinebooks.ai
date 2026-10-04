@@ -1,0 +1,47 @@
+from flask import current_app
+from celery.exceptions import Retry
+
+@celery_app.task(base=DatabaseTask, bind=True,
+                 name='clone_and_analyze_repository_task',
+                 soft_time_limit=1800, time_limit=2100)
+def clone_and_analyze_repository_task(self, job_id, target_id, organization_id):
+    runtime = current_app.extensions.get('repository_analysis_runtime')
+    if runtime is None:
+        raise RuntimeError('Analysis runtime integration unavailable')
+    # Runtime claims a lease/idempotency token and verifies Job→Client→Org,
+    # Target→Job, active authorization, configuration and source-export policy.
+    # Broker payload contains IDs; credentials resolve only inside the worker.
+    claim = runtime.claim(job_id, target_id, organization_id)
+    if claim is None:
+        return {'status': 'duplicate_or_ineligible', 'job_id': job_id}
+    try:
+        with runtime.authorized_snapshot(claim) as snapshot:
+            runtime.progress(claim, 'crypto_scan', 20)
+            analyzer = RepositoryAnalyzer()
+            analyzer.scan_directory(snapshot.path)
+            crypto_report = analyzer.get_report()
+            owasp_report = {'status': 'not_assessed', 'findings': [], 'errors': []}
+            ai_report = {'status': 'not_assessed', 'findings': None}
+            if claim.include_owasp:
+                # Selection adapter enforces file/path/byte/time budgets and
+                # propagates exclusions. This is the printed regex analyzer,
+                # not an unimplemented Bandit/Semgrep integration.
+                files = runtime.selected_file_contents(claim, snapshot)
+                owasp_report = OWASPAnalyzer().analyze_files(files)
+            if claim.include_ai:
+                ai_report = runtime.review_ai_candidates(claim, snapshot, crypto_report)
+            reports = {'crypto': crypto_report, 'owasp': owasp_report, 'ai': ai_report}
+            # Persistence maps dataclasses/dicts to actual Chapter 5 fields,
+            # includes target_id, tri-state classification and required titles,
+            # retains every error/omission and commits once with claim token.
+            return runtime.persist_and_complete(claim, reports,
+                assessment_status='partial', readiness_score=None)
+    except Retry:
+        db.session.rollback()
+        raise
+    except Exception:
+        db.session.rollback()
+        runtime.mark_failed(claim, 'analysis_failed')
+        raise
+# Lease recovery after hard kill, cancellation, outbox delivery and source
+# custody are required runtime contracts; finally/after_return do not prove them.

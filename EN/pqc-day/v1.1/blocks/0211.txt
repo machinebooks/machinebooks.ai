@@ -1,0 +1,27 @@
+from sqlalchemy import text
+from datetime import datetime, timezone
+
+RESERVE_ANALYSIS = text("""
+UPDATE organizations
+SET analyses_this_month = CASE WHEN analyses_month_reset = :period
+    THEN analyses_this_month + 1 ELSE 1 END,
+    analyses_month_reset = :period
+WHERE id = :organization_id AND is_active = TRUE
+  AND (max_analyses_per_month = -1 OR max_analyses_per_month > 0)
+  AND (max_analyses_per_month = -1 OR analyses_month_reset IS NULL OR analyses_month_reset <> :period
+       OR analyses_this_month < max_analyses_per_month)
+""")
+
+def reserve_analysis(connection, authorized_organization_id):
+    if type(authorized_organization_id) is not int or authorized_organization_id <= 0:
+        raise ValueError("Invalid organization")
+    period = datetime.now(timezone.utc).date().replace(day=1)
+    result = connection.execute(RESERVE_ANALYSIS,
+        {"organization_id": authorized_organization_id, "period": period})
+    return result.rowcount == 1
+# The caller holds one transaction for quota + unique admission record + outbox.
+# It rolls back on failure; an idempotency key prevents double reservation on retry.
+# This analysis counter does not implement client/user admission or billing.
+
+# Use the complete chapter4 Organization model, including analyses_this_month
+# and analyses_month_reset. A chapter24 field excerpt is not a standalone schema.

@@ -1,0 +1,24 @@
+class FindingControlMapping(db.Model):
+    """Auditable record of finding -> control mapping"""
+    __tablename__ = 'finding_control_mappings'
+
+    id = db.Column(db.Integer, primary_key=True)
+    finding_type = db.Column(db.String(50), nullable=False)  # 'crypto', 'vulnerability'
+    finding_id = db.Column(db.Integer, nullable=False)
+    control_id = db.Column(db.Integer,
+                           db.ForeignKey('compliance_controls.id'),
+                           nullable=False)
+    mapping_type = db.Column(db.Enum('violation', 'partial',
+                                      'recommendation'), default='recommendation')
+    confidence = db.Column(db.Float)          # 0.0 to 1.0
+    notes = db.Column(db.Text)                # "Mapped by keyword: rsa"
+    is_auto_mapped = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    review_status = db.Column(db.Enum(
+        'pending', 'confirmed', 'rejected'), nullable=False, default='pending')
+    reviewed_by = db.Column(db.Integer)
+    reviewed_at = db.Column(db.DateTime)
+
+# Confirmation requires an authorized human, tenant-bound evidence and a stored
+# reviewer/time. AI confidence never changes review_status or implementation_status.

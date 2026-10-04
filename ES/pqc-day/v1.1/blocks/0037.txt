@@ -1,0 +1,83 @@
+from flask_jwt_extended import get_current_user
+from datetime import timedelta
+from sqlalchemy import func
+
+
+@audit_bp.route('/stats', methods=['GET'])
+@jwt_required()
+def get_audit_stats():
+    """Aggregated system activity statistics.
+    Returns: total, today, week, breakdown by action,
+    breakdown by entity type, active users 24h,
+    daily activity last 7 days."""
+    user = get_current_user()
+    org = None if not user else db.session.get(Organization, user.organization_id)
+    if (not user or not user.is_active or not org or not org.is_active
+            or not user.has_permission('view_audit')):
+        return jsonify({'error': 'Access denied'}), 403
+    org_filter = AuditLog.organization_id == org.id
+    # General counts
+    total = AuditLog.query.filter(org_filter).count()
+
+    today = datetime.utcnow().replace(
+        hour=0, minute=0, second=0, microsecond=0
+    )
+    today_count = AuditLog.query.filter(org_filter).filter(org_filter, 
+        AuditLog.created_at >= today
+    ).count()
+
+    week_ago = datetime.utcnow() - timedelta(days=7)
+    week_count = AuditLog.query.filter(org_filter).filter(org_filter, 
+        AuditLog.created_at >= week_ago
+    ).count()
+
+    # Breakdown by action (top 10)
+    actions = db.session.query(
+        AuditLog.action,
+        func.count(AuditLog.id).label('count')
+    ).filter(org_filter).group_by(AuditLog.action) \
+     .order_by(desc('count')).limit(10).all()
+
+    # Breakdown by entity type (top 10)
+    entity_types = db.session.query(
+        AuditLog.entity_type,
+        func.count(AuditLog.id).label('count')
+    ).filter(org_filter, AuditLog.entity_type.isnot(None)) \
+     .group_by(AuditLog.entity_type) \
+     .order_by(desc('count')).limit(10).all()
+
+    # Active users in the last 24 hours
+    day_ago = datetime.utcnow() - timedelta(hours=24)
+    active_users = db.session.query(
+        func.count(func.distinct(AuditLog.user_id))
+    ).filter(org_filter, 
+        AuditLog.created_at >= day_ago,
+        AuditLog.user_id.isnot(None)
+    ).scalar()
+
+    # Daily activity (last 7 days) for charts
+    daily = db.session.query(
+        func.date(AuditLog.created_at).label('date'),
+        func.count(AuditLog.id).label('count')
+    ).filter(org_filter, 
+        AuditLog.created_at >= week_ago
+    ).filter(org_filter).group_by(
+        func.date(AuditLog.created_at)
+    ).order_by('date').all()
+
+    return jsonify({
+        'total': total,
+        'today': today_count,
+        'week': week_count,
+        'active_users_24h': active_users or 0,
+        'actions': [
+            {'action': a[0], 'count': a[1]} for a in actions
+        ],
+        'entity_types': [
+            {'entity_type': e[0], 'count': e[1]}
+            for e in entity_types
+        ],
+        'daily_activity': [
+            {'date': str(d[0]), 'count': d[1]} for d in daily
+        ]
+    }), 200

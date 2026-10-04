@@ -1,0 +1,19 @@
+# Extension to language mapping
+LANGUAGE_EXTENSIONS = {
+    'python': ['.py', '.pyw', '.pyi'],
+    'javascript': ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs'],
+    'java': ['.java'],
+    'go': ['.go'],
+    'c': ['.c', '.cpp', '.cc', '.cxx', '.h', '.hpp', '.hxx'],
+    'rust': ['.rs'],
+}
+
+# Directories to exclude from scanning
+SKIP_DIRECTORIES = {
+    'node_modules', '.git', '.svn', '.hg',
+    '__pycache__', '.pytest_cache',
+    'venv', 'env', '.venv', '.env', 'virtualenv', '.tox',
+    'build', 'dist', 'target', 'bin', 'obj', 'out',
+    '.idea', '.vscode', '.vs',
+    'vendor', 'third_party', 'external',
+}

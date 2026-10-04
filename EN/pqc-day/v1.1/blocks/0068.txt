@@ -1,0 +1,25 @@
+def analyze_azure_key_vault(self, keys):
+    if not isinstance(keys, list) or len(keys) > 1000:
+        raise ValueError('Bounded key metadata list required')
+    observations = []
+    for key in keys:
+        if not isinstance(key, dict):
+            raise ValueError('Invalid key metadata')
+        key_type = key.get('key_type')
+        operations = key.get('key_ops', [])
+        if not isinstance(operations, list) or any(not isinstance(v, str) for v in operations):
+            raise ValueError('Invalid key operations')
+        functions = []
+        if any(v in operations for v in ('sign', 'verify')):
+            functions.append('signature')
+        if any(v in operations for v in ('encrypt', 'decrypt', 'wrapKey', 'unwrapKey')):
+            functions.append('data_or_key_protection')
+        observations.append({'provider': 'azure', 'resource_id': key.get('name'),
+            'key_type': key_type, 'key_size': key.get('key_size'),
+            'curve': key.get('curve_name'), 'functions': functions or ['unknown'],
+            'shor_candidate': True if key_type in ('RSA', 'RSA-HSM', 'EC', 'EC-HSM') else None,
+            'severity': None, 'migration_target': None})
+    return {'status': 'partial' if observations else 'not_assessed',
+            'observations': observations, 'readiness_score': None}
+# Caller validates authorization and actual Azure metadata. Function and protocol
+# determine a reviewed recommendation; symmetric encryption does not replace signing.

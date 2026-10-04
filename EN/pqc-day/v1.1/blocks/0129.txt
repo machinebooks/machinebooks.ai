@@ -1,0 +1,25 @@
+from math import isfinite
+
+def propose_control_mapping(assessment_id, control_id, finding_id,
+                            finding_type, source, mapping_data):
+    # Authorized importer verifies assessment/client/framework/finding ownership.
+    if any(type(v) is not int or v <= 0
+           for v in (assessment_id, control_id, finding_id)):
+        raise ValueError("Positive scoped identifiers required")
+    if finding_type not in {"crypto", "vulnerability"}:
+        raise ValueError("Finding discriminator required")
+    impact = mapping_data.get("impact", "recommendation")
+    if impact not in {"violation", "partial", "recommendation"}:
+        raise ValueError("Unknown impact")
+    confidence = mapping_data.get("confidence")
+    if confidence is not None and (isinstance(confidence, bool)
+            or not isinstance(confidence, (int, float)) or not isfinite(confidence)
+            or not 0 <= confidence <= 1):
+        raise ValueError("Invalid uncalibrated confidence")
+    return {"assessment_id": assessment_id, "control_id": control_id,
+            "finding_id": finding_id, "finding_type": finding_type, "source": source,
+            "mapping_type": impact, "review_status": "pending",
+            "reviewed_by": None, "reviewed_at": None,
+            "confidence": confidence, "confidence_calibrated": False}
+# assessment_id/source are importer metadata, not extra columns silently added
+# to FindingControlMapping. Persistence must bind the actual scoped models.

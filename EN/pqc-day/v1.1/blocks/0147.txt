@@ -1,0 +1,22 @@
+def evaluate_risk_scenario(inherent_likelihood, inherent_impact,
+                           residual_likelihood=None, residual_impact=None,
+                           controls_applied=()):
+    for value in (inherent_likelihood, inherent_impact):
+        if type(value) is not int or not 1 <= value <= 5:
+            raise ValueError("Inherent ordinal values must be 1 to 5")
+    if (residual_likelihood is None) != (residual_impact is None):
+        raise ValueError("Provide both residual values or neither")
+    inherent = inherent_likelihood * inherent_impact
+    residual = None
+    if residual_likelihood is not None:
+        for value in (residual_likelihood, residual_impact):
+            if type(value) is not int or not 1 <= value <= 5:
+                raise ValueError("Residual ordinal values must be 1 to 5")
+        residual = residual_likelihood * residual_impact
+    return {"inherent_index": inherent, "residual_index": residual,
+            "controls_applied": sorted(set(controls_applied)),
+            "index_change_percentage": None if residual is None else
+                round(100 * (1 - residual / inherent), 1),
+            "treatment": "requires_authorized_risk_owner_decision"}
+# Evidence and coverage determine residual judgment. Control names/duplicates
+# do not automatically reduce it. Index change is not measured real risk reduction.

@@ -1,0 +1,77 @@
+import {
+  Drawer, List, ListItem, ListItemButton,
+  ListItemIcon, ListItemText, Typography, Box, Divider,
+} from '@mui/material'
+import {
+  Dashboard, Business, Assessment, Security,
+  CloudQueue, Psychology, AdminPanelSettings,
+} from '@mui/icons-material'
+import { useNavigate, useLocation } from 'react-router-dom'
+
+const drawerWidth = 260
+
+export default function Sidebar() {
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  // Visual highlighting of the active section
+  const isActive = (path) => location.pathname.startsWith(path)
+
+  return (
+    <Drawer
+      variant="permanent"
+      sx={{
+        width: drawerWidth,
+        '& .MuiDrawer-paper': {
+          width: drawerWidth,
+          bgcolor: '#fafbfc',
+          borderRight: '1px solid rgba(0,0,0,0.08)',
+        },
+      }}
+    >
+      <List sx={{ px: 1.5, pt: 2 }}>
+        {/* Group: MAIN */}
+        <SectionLabel text="MAIN" />
+        <NavItem
+          icon={<Dashboard />}
+          label="Dashboard"
+          path="/dashboard"
+          active={isActive('/dashboard')}
+          onClick={() => navigate('/dashboard')}
+        />
+        <NavItem
+          icon={<Business />}
+          label="Clients"
+          path="/clients"
+          active={isActive('/clients')}
+          onClick={() => navigate('/clients')}
+        />
+
+        <Divider sx={{ my: 2 }} />
+
+        {/* Group: PQC ANALYSIS */}
+        <SectionLabel text="PQC ANALYSIS" />
+        <NavItem
+          icon={<Assessment />}
+          label="General Panel"
+          subtitle="All analyses"
+          active={location.pathname === '/analysis'}
+          onClick={() => navigate('/analysis')}
+        />
+        {/* Code analysis, infrastructure, cloud... */}
+
+        <Divider sx={{ my: 2 }} />
+
+        {/* Group: ADMINISTRATION */}
+        <SectionLabel text="ADMINISTRATION" />
+        <NavItem
+          icon={<AdminPanelSettings />}
+          label="AI Central Admin"
+          subtitle="Providers, prompts, ROI..."
+          active={isActive('/admin/ia')}
+          onClick={() => navigate('/admin/ia')}
+        />
+      </List>
+    </Drawer>
+  )
+}

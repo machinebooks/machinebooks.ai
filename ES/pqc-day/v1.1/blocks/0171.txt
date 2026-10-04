@@ -1,0 +1,62 @@
+from flask_jwt_extended import get_current_user
+from flask import current_app, stream_with_context
+
+@ai_analysis_bp.route('/chat/agent', methods=['POST'])
+@jwt_required()
+def ai_chat_agent():
+    data = request.get_json(silent=True)
+    user = get_current_user()
+    if not isinstance(data, dict):
+        return jsonify({'error': 'Invalid request'}), 400
+    message = data.get('message')
+    history = data.get('history', [])
+    if (not isinstance(message, str) or not message.strip()
+            or len(message) > 8000 or not isinstance(history, list)
+            or len(history) > 20):
+        return jsonify({'error': 'Invalid message or history'}), 400
+    messages = []
+    for item in history:
+        if (not isinstance(item, dict)
+                or item.get('role') not in ('user', 'assistant')
+                or not isinstance(item.get('content'), str)
+                or len(item['content']) > 8000):
+            return jsonify({'error': 'Invalid history'}), 400
+        messages.append({'role': item['role'], 'content': item['content']})
+    if not user or not user.is_active:
+        return jsonify({'error': 'Access denied'}), 403
+    # Mandatory server integration: active organization, action permission,
+    # client/repository ownership, own-client restrictions, source-export
+    # policy, immutable checkout and allowlisted provider configuration.
+    policy = current_app.extensions.get('pqc_authorization')
+    if policy is None:
+        return jsonify({'error': 'Authorization integration unavailable'}), 503
+    try:
+        scope = policy.authorize_ai_request(
+            user=user, action='repository_agent', client_id=data.get('client_id'),
+            repository_id=data.get('repository_id'),
+        )
+    except PermissionError:
+        return jsonify({'error': 'Access denied'}), 403
+    if not isinstance(scope, dict) or scope.get('authorized') is not True:
+        return jsonify({'error': 'Access denied'}), 403
+    # Client-supplied repo_path, context, roles, API keys and base_url are
+    # not consumed. The policy supplies bounded context/configuration.
+    if type(data.get('stream', False)) is not bool:
+        return jsonify({'error': 'Invalid stream flag'}), 400
+    agent = CodeAnalysisAgent(
+        scope['repository_path'], scope['provider'], scope['config'],
+    )
+    if data.get('stream', False):
+        @stream_with_context
+        def generate():
+            for event in agent.run(message.strip(), messages):
+                yield 'data: ' + json.dumps(event) + '\n\n'
+            yield 'data: [DONE]\n\n'
+        return Response(generate(), mimetype='text/event-stream', headers={
+            'Cache-Control': 'no-cache', 'X-Accel-Buffering': 'no',
+        })
+    result = agent.run_sync(message.strip(), messages)
+    return jsonify({
+        'response': result['response'], 'actions': result['actions'],
+        'iterations': result['iterations'], 'events': result.get('events', []),
+    }), 200

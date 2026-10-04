@@ -1,0 +1,12 @@
+def summarize_pqc_probes(probes):
+    allowed = {"negotiated", "handshake_rejected", "client_unsupported", "timeout", "error"}
+    if any(p.get("status") not in allowed for p in probes):
+        raise ValueError("Invalid probe state")
+    observed = [p for p in probes if p["status"] == "negotiated"]
+    return {"status": "observed" if observed else "not_verified",
+            "negotiated_groups": [p["group"] for p in observed],
+            "attempts": len(probes),
+            "client_unsupported": sum(p["status"] == "client_unsupported" for p in probes),
+            "pqc_absent_at_peer": None, "severity": None}
+# The adapter checks local OpenSSL capabilities before offering a group and
+# records a negotiated group only from the handshake. No scanner is executed here.

@@ -1,0 +1,8 @@
+def classify_tls_cipher(cipher_name, tls_version, negotiated_group=None):
+    if tls_version == "TLSv1.3":
+        return {"cipher_suite": cipher_name, "aead_and_hkdf": "suite_defined",
+                "key_establishment_group": negotiated_group or "unknown",
+                "authentication": "requires_certificate_or_psk_observation"}
+    return {"cipher_suite": cipher_name, "key_establishment": "requires_exact_suite_registry",
+            "authentication": "requires_exact_suite_and_certificate_observation"}
+# HMAC-SHA1 is not a SHA1 certificate signature. Substring matching is insufficient.

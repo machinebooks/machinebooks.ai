@@ -1,0 +1,87 @@
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import {
+  Typography, Box, Grid, Card, CardContent,
+  CircularProgress, Paper, Chip, Alert,
+  LinearProgress, Table, TableBody, TableCell,
+  TableHead, TableRow,
+} from '@mui/material'
+import { dashboardApi } from '../../api'
+
+export default function Dashboard() {
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [stats, setStats] = useState(null)
+
+  useEffect(() => {
+    let active = true
+    let timer
+    const loadDashboard = async () => {
+      try {
+        const response = await dashboardApi.getStats()
+        if (active) {
+          setStats(response.data)
+          setError('')
+        }
+      } catch {
+        if (active) setError('Unable to load statistics')
+      } finally {
+        if (active) {
+          setLoading(false)
+          timer = setTimeout(loadDashboard, 30000)
+        }
+      }
+    }
+    loadDashboard()
+    return () => { active = false; clearTimeout(timer) }
+  }, [])
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" minHeight="400px">
+        <CircularProgress />
+      </Box>
+    )
+  }
+
+  if (!stats) return <Alert severity="error" role="alert">{error || 'Statistics not assessed'}</Alert>
+
+  return (
+    <Box>
+      {error && <Alert severity="warning" role="alert">{error}</Alert>}
+      {/* Header with title and controls */}
+      <Typography variant="h4" fontWeight="bold" gutterBottom>
+        PQC Dashboard
+      </Typography>
+
+      {/* Row 1: Main KPI cards */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} lg={3}>
+          <KPICard
+            label="Clients"
+            value={stats.total_clients}
+            subtitle={`${stats.clients_by_status?.active || 0} active`}
+            gradient="linear-gradient(135deg, #667eea, #764ba2)"
+            onClick={() => navigate('/clients')}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} lg={3}>
+          <KPICard
+            label="Findings"
+            value={stats.total_findings}
+            subtitle={`${stats.critical_findings} critical`}
+            gradient="linear-gradient(135deg, #f093fb, #f5576c)"
+            onClick={() => navigate('/analysis')}
+          />
+        </Grid>
+        {/* ... total analyses, users */}
+      </Grid>
+
+      {/* Row 2: Findings by category (PQC, OWASP, Cloud) */}
+      {/* Row 3: Recent analyses + Overall PQC Score */}
+    </Box>
+  )
+}
+// Polling is serialized and cancelled on unmount. API metrics still need
+// scoped denominators/coverage; a failed first read displays no zero KPI.

@@ -1,0 +1,28 @@
+from math import isfinite
+def calculate_control_index(controls):
+    if not controls:
+        return {"score": None, "critical_gaps": None, "status": "not_assessed"}
+    total_weight = 0
+    weighted = 0
+    gaps = 0
+    unknown = 0
+    for control in controls:
+        weight = control["weight"]
+        state = control["state"]
+        if isinstance(weight, bool) or not isinstance(weight, (int, float)) or not isfinite(weight) or weight <= 0:
+            raise ValueError("Positive weight required")
+        if state not in {"supported", "contradicted", "unknown", "not_applicable"}:
+            raise ValueError("Invalid control state")
+        if state == "not_applicable":
+            continue
+        unknown += state == "unknown"
+        if state == "unknown":
+            continue
+        total_weight += weight
+        weighted += weight if state == "supported" else 0
+        gaps += state == "contradicted" and control.get("priority") == "critical"
+    return {"score": round(100 * weighted / total_weight, 2) if total_weight else None,
+            "critical_gaps": gaps, "unknown_controls": unknown,
+            "status": "not_assessed" if not total_weight else
+                      "partial" if unknown else "assessed_internal_index"}
+# A deterministic internal indicator is not DORA compliance or a legal deadline.

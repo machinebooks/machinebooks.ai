@@ -1,0 +1,36 @@
+class CryptoFinding(db.Model):
+    """Cryptographic finding: the atom of the PQC inventory"""
+    __tablename__ = 'crypto_findings'
+
+    id = db.Column(db.Integer, primary_key=True)
+    job_id = db.Column(db.Integer, db.ForeignKey('analysis_jobs.id',
+                       ondelete='CASCADE'), nullable=False)
+    target_id = db.Column(db.Integer, db.ForeignKey('analysis_targets.id',
+                          ondelete='CASCADE'), nullable=False)
+
+    # Finding classification
+    finding_type = db.Column(db.Enum(
+        'algorithm',       # RSA-2048 in source code
+        'protocol',        # TLS 1.2 with vulnerable cipher suite
+        'certificate',     # X.509 certificate with ECDSA-P256
+        'key',             # RSA-4096 SSH key
+        'configuration',   # KMS configuration with RSA
+        name='finding_types'), nullable=False)
+
+    algorithm_name = db.Column(db.String(100))    # RSA-2048, ECDSA-P256, AES-256
+    algorithm_category = db.Column(db.String(50))  # asymmetric, symmetric, hash
+    risk_level = db.Column(db.Enum(
+        'critical', 'high', 'medium', 'low', 'info',
+        name='risk_levels'), nullable=False)
+
+    # The most important field in the entire database
+    pqc_compliant = db.Column(db.Boolean, nullable=True)
+
+    # Finding context
+    location = db.Column(db.Text)        # Path, URL, or identifier
+    context = db.Column(db.Text)         # JWT, TLS, encryption at rest, SSH...
+    description = db.Column(db.Text)     # Human-readable description
+    recommendation = db.Column(db.Text)  # "Migrate to ML-KEM-768"
+    cve_reference_links = db.Column(db.JSON)  # CVEs and references
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)

@@ -1,0 +1,13 @@
+.claude/
+├── rules/
+│   ├── anonimizacion.md      <- What never to include in book code
+│   ├── code-samples.md       <- How to show code in chapters
+│   ├── writing.md            <- Writing style and structure
+│   └── security-gate.md      <- Mandatory security review
+├── commands/
+│   ├── write.md              <- Template for writing a chapter
+│   ├── review.md             <- Editorial review checklist
+│   └── security-review.md    <- Specialized security review
+└── memory/
+    ├── MEMORY.md             <- Index of persistent memories
+    └── project_focus.md      <- Project premise and focus

@@ -1,0 +1,49 @@
+from io import BytesIO
+from flask import Blueprint, request, jsonify, send_file, current_app
+from flask_jwt_extended import jwt_required, get_jwt_identity
+
+dora_bp = Blueprint("dora", __name__, url_prefix="/api/v1/dora")
+
+@dora_bp.route("/assessment", methods=["POST"])
+@jwt_required()
+def run_assessment():
+    body = request.get_json(silent=True)
+    org_id = None if not isinstance(body, dict) else body.get("organization_id")
+    if type(org_id) is not int or org_id <= 0:
+        return jsonify({"error": "Invalid organization"}), 400
+    service = current_app.extensions.get("dora_assessment_service")
+    if service is None:
+        return jsonify({"error": "Assessment integration unavailable"}), 503
+    # Mandatory service contract: active user/org, role/action authorization,
+    # tenant-scoped findings, reviewed control evidence, atomic persistence/audit.
+    try:
+        scope = service.authorize(get_jwt_identity(), org_id, "assess")
+    except PermissionError:
+        return jsonify({"error": "Access denied"}), 403
+    controls = service.reviewed_controls(scope)
+    index = calculate_control_index(controls)
+    assessment = service.persist(scope=scope, controls=controls, index=index)
+    return jsonify({
+        "assessment_id": assessment.id, "internal_control_index": index,
+        "controls_evaluated": len(controls), "legal_compliance_decision": None,
+        "regulatory_deadline": None,
+    }), 201
+
+@dora_bp.route("/assessment/<int:assessment_id>/report", methods=["GET"])
+@jwt_required()
+def download_report(assessment_id):
+    service = current_app.extensions.get("dora_assessment_service")
+    if service is None:
+        return jsonify({"error": "Assessment integration unavailable"}), 503
+    try:
+        assessment = service.authorized_assessment(get_jwt_identity(), assessment_id,
+                                                 action="download_report")
+    except PermissionError:
+        return jsonify({"error": "Assessment not found"}), 404
+    pdf = service.render_pdf(assessment)
+    if not isinstance(pdf, bytes):
+        return jsonify({"error": "Report integration returned invalid data"}), 503
+    return send_file(BytesIO(pdf), mimetype="application/pdf", as_attachment=True,
+                     download_name=f"DORA-PQC-Assessment-{assessment_id}.pdf")
+# No service implementation, legal determination or private-core validation is
+# supplied by this fragment. Empty/unknown control sets retain unknown indices.

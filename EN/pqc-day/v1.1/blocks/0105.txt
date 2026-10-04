@@ -1,0 +1,39 @@
+from flask_jwt_extended import get_current_user
+from flask import current_app
+import zlib
+
+@ai_admin_bp.route('/rag/collections/<int:col_id>/documents', methods=['POST'])
+@jwt_required()
+def add_document(col_id):
+    user = get_current_user()
+    policy = current_app.extensions.get('rag_authorization')
+    if policy is None:
+        return jsonify({'error': 'RAG authorization unavailable'}), 503
+    try:
+        scope = policy.authorize(user, action='manage_documents')
+    except PermissionError:
+        return jsonify({'error': 'Access denied'}), 403
+    col = AIRAGCollection.query.filter_by(id=col_id,
+        organization_id=scope['organization_id'], is_active=True).with_for_update().first_or_404()
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({'error': 'Invalid request'}), 400
+    title, content = data.get('title'), data.get('content')
+    if (not isinstance(title, str) or not 1 <= len(title.strip()) <= 200
+            or not isinstance(content, str) or not content
+            or len(content.encode('utf-8')) > 500_000):
+        return jsonify({'error': 'Invalid title or document byte budget'}), 400
+    # Metadata/URL are bounded and validated by policy; URLs are not fetched.
+    metadata = policy.validate_document_metadata(scope, data.get('metadata'), data.get('source_url'))
+    doc = AIRAGDocument(collection_id=col.id, title=title.strip(),
+                        content=zlib.compress(content.encode('utf-8')),
+                        source_url=metadata.get('source_url'),
+                        doc_metadata=metadata.get('metadata'), status='pending')
+    db.session.add(doc)
+    db.session.flush()
+    col.document_count = col.documents.count()
+    # A transactional indexing outbox is required; this fragment does not enqueue.
+    db.session.commit()
+    return jsonify({'document': doc.to_dict(), 'indexing_status': 'pending'}), 201
+# Concurrent writers must take the same collection lock. Worker authorization,
+# decompression/chunk/token budgets and outbox recovery require separate tests.

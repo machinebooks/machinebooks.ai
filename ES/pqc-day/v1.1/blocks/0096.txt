@@ -1,0 +1,39 @@
+def _read_file(self, path, start_line=None, end_line=None):
+    if not isinstance(path, str) or not path or len(path) > 500:
+        return {'success': False, 'error': 'Invalid relative path'}
+    if Path(path).is_absolute() or any(part.casefold() in {'.git', 'node_modules', '.venv'} for part in Path(path).parts):
+        return {'success': False, 'error': 'Absolute path denied'}
+    if any(v is not None and (type(v) is not int or v < 1)
+           for v in (start_line, end_line)):
+        return {'success': False, 'error': 'Invalid line range'}
+    if start_line is not None and end_line is not None and end_line < start_line:
+        return {'success': False, 'error': 'Invalid line range'}
+    try:
+        root = self.repo_path.resolve(strict=True)
+        candidate = root / path
+        resolved = candidate.resolve(strict=True)
+        relative = resolved.relative_to(root)
+        if any(part.casefold() in {'.git', 'node_modules', '.venv'} for part in relative.parts):
+            return {'success': False, 'error': 'Excluded path denied'}
+        if not resolved.is_file():
+            return {'success': False, 'error': 'Regular file required'}
+        current = root
+        for part in Path(path).parts:
+            current = current / part
+            if current.is_symlink():
+                return {'success': False, 'error': 'Symlink denied'}
+        with resolved.open('rb') as handle:
+            content = handle.read(self.max_file_size + 1)
+        if len(content) > self.max_file_size:
+            return {'success': False, 'error': 'File byte budget exceeded'}
+        text = content.decode('utf-8', errors='strict')
+    except (OSError, ValueError, UnicodeError):
+        return {'success': False, 'error': 'File unavailable'}
+    lines = text.splitlines(keepends=True)
+    begin = 0 if start_line is None else start_line - 1
+    end = len(lines) if end_line is None else min(end_line, len(lines))
+    return {'success': True, 'result': {'path': str(relative),
+            'content': ''.join(lines[begin:end]), 'line_start': begin + 1,
+            'line_end': end, 'scope': 'authorized_immutable_snapshot'}}
+# Snapshot immutability and authorization are mandatory caller contracts.
+# Path checks alone do not defeat a concurrent filesystem mutation.

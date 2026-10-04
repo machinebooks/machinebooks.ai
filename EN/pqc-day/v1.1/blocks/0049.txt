@@ -1,0 +1,72 @@
+from github import Github, GithubException
+from git import Repo
+
+class GitHubConnector(BaseConnector):
+    """Connector for GitHub API"""
+
+    def __init__(self, config: Dict):
+        super().__init__(config)
+        self.token = config.get('token')
+        self.client = None
+
+    def connect(self) -> bool:
+        try:
+            self.client = Github(self.token)
+            user = self.client.get_user()
+            # Validate that the token is functional
+            _ = user.login
+            self.connection = self.client
+            return True
+        except GithubException:
+            return False
+
+    def test_connection(self) -> Dict:
+        if self.connect():
+            user = self.client.get_user()
+            return {
+                'status': 'success',
+                'user': user.login,
+                'name': user.name
+            }
+        return {'status': 'error', 'message': 'Connection failed'}
+
+    def clone_repository(self, repo_full_name: str, local_path: str) -> bool:
+        """Clones the repository to a local directory"""
+        try:
+            repo = self.client.get_repo(repo_full_name)
+            # Inject token in the URL for private repos:
+            clone_url = repo.clone_url
+            # Credential transport is omitted; use an authorized protected mechanism.
+            # Clone with --depth 1 to minimize transfer
+            Repo.clone_from(clone_url, local_path, depth=1)
+            return True
+        except Exception:
+            return False
+
+    def get_file_content(self, repo_full_name: str,
+                         file_path: str, branch: str = 'main') -> Optional[str]:
+        """Gets a file's content without cloning"""
+        try:
+            repo = self.client.get_repo(repo_full_name)
+            content = repo.get_contents(file_path, ref=branch)
+            return content.decoded_content.decode('utf-8')
+        except GithubException:
+            return None
+
+    def search_code(self, query: str,
+                    org_name: Optional[str] = None) -> List[Dict]:
+        """Searches code in the organization's repositories"""
+        if org_name:
+            query = f"{query} org:{org_name}"
+        results = []
+        for result in self.client.search_code(query)[:100]:
+            results.append({
+                'name': result.name,
+                'path': result.path,
+                'repository': result.repository.full_name,
+            })
+        return results
+
+    def disconnect(self):
+        self.client = None
+        self.connection = None

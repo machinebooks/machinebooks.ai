@@ -1,0 +1,10 @@
+def validate_onboarding_payload(data):
+    required = ("organization_name", "username", "email", "password", "full_name")
+    if not isinstance(data, dict) or any(
+            not isinstance(data.get(k), str) or not data[k].strip() for k in required):
+        raise ValueError("Invalid registration fields")
+    # Chapter 6 supplies the single-factor password/tenant-aware registration contract.
+    # Persist organization + owner with unique constraints in one transaction;
+    # prepare tokens before commit, handle collisions and log category-only errors.
+    return {key: data[key] for key in required}
+# This validation function does not create an account, grant a plan or send tokens.

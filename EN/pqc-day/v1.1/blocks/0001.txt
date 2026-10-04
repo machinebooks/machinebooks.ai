@@ -1,0 +1,6 @@
+# Example: cryptographic analysis pattern
+finding = CryptoFinding(
+    algorithm="RSA-2048",
+    severity="high",
+    pqc_compliant=False
+)

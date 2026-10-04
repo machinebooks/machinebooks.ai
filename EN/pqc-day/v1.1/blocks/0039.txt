@@ -1,0 +1,7 @@
+# Didactic example: patterns/docker/docker-compose.yml — Secrets as variables
+backend:
+  environment:
+    JWT_SECRET_KEY: <${JWT_SECRET}>
+    ENCRYPTION_KEY: <YOUR_ENCRYPTION_KEY>
+    AI_PROVIDER: azure_ai_foundry
+    AZURE_AI_FOUNDRY_KEY: <set-in-vault>

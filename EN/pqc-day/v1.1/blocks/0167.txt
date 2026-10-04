@@ -1,0 +1,36 @@
+const handleSend = async () => {
+  if (!input.trim() || loading) return
+
+  const userMessage = input.trim()
+  setInput('')
+  setCurrentAction(null)
+
+  // Add user message immediately (UX)
+  const newMessages = [...messages, { role: 'user', content: userMessage }]
+  setMessages(newMessages)
+  setLoading(true)
+
+  try {
+    const config = { model, provider }
+    // Provider configuration is resolved and allowlisted by the server.
+
+    // Build history (last 10 exchanges)
+    const history = messages.filter(m => ['user', 'assistant'].includes(m.role)).slice(-20).map(m => ({
+      role: m.role, content: m.content
+    }))
+
+    // Path 1: agent mode with repository available
+    if (agentMode && repoCachePath) {
+      await handleAgentMessage(userMessage, history, config)
+    }
+    // Path 2: simple chat with optional context
+    else {
+      await handleSimpleMessage(userMessage, history, config)
+    }
+  } catch (err) {
+    setError(err.response?.data?.error || err.message)
+    setMessages(messages) // Revert the user message
+  }
+
+  setLoading(false)
+}

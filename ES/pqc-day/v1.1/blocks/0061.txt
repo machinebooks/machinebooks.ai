@@ -1,0 +1,14 @@
+def scan_urls(urls, depth, authorize, scan, discover):
+    if depth not in {"quick", "standard", "deep"}:
+        raise ValueError("Unknown scan depth")
+    targets = list(dict.fromkeys(urls))
+    if depth == "deep":
+        targets = list(dict.fromkeys(targets + discover(targets)))
+    results = []
+    for url in targets:
+        if not authorize(url):
+            results.append({"url": url, "status": "out_of_scope"})
+            continue
+        results.append({"url": url, "observation": scan(url, depth)})
+    return results
+# scan implements the agreed depth matrix. Discovery never grants authorization.

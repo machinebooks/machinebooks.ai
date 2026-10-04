@@ -1,0 +1,5 @@
+# In development: accept any origin
+CORS_ORIGINS = '*'
+
+# In production: restrict to frontend domains
+CORS_ORIGINS = ['https://app.example.com', 'https://admin.example.com']

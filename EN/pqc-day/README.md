@@ -1,5 +1,11 @@
 # PQC-Day and the Machine — Companion Code
 
+## Code from version 1.1
+
+The 224 educational blocks from version 1.1 are in [v1.1/blocks](v1.1/blocks). The [manifest](v1.1/manifest.json) records each section, position and SHA-256, together with the final Word and EPUB hashes. Each TXT preserves the text, line breaks and tabs of its corresponding Word file; it can be copied to prepare tests with the conditions and dependencies described in the book. Extraction does not establish execution or production suitability.
+
+Earlier folders belong to the previous edition material and may contain another selection. The reference for this revision is `v1.1`. The product and its core are private; no Community edition exists or will be published. This folder publishes companion examples only.
+
 **Decisions, Code, and Lessons from a Post-Quantum Readiness Platform Built with AI**
 
 This repository contains the didactic code examples from the book. Each file illustrates a pattern discussed in the corresponding chapter. Dependencies, configuration and integration must be prepared and checked before execution.
@@ -11,14 +17,14 @@ This repository contains the didactic code examples from the book. Each file ill
 - **ES**: "PQC-Day y la Máquina" — Available on Amazon
 - **EN**: "PQC-Day and the Machine" — Available on Amazon
 
-## Requirements
+## Requirements of the earlier material
 
 - **Python 3.11+** — Backend examples
 - **Node.js 18+** — Frontend examples (cap-19)
 - **Docker & Docker Compose** — Infrastructure examples (cap-21)
 - **Optional**: `pip install anthropic` for AI-powered examples (cap-11, 12, 13, 26)
 
-## Quick Start
+## Earlier material: preparation examples
 
 ```bash
 # Clone the repository
@@ -35,7 +41,7 @@ python cap-07/repository_analyzer.py /path/to/your/code
 python cap-18/priority_scoring.py
 ```
 
-## Repository Structure
+## Structure of the earlier material
 
 ```
 pqc-day/
@@ -101,7 +107,7 @@ pqc-day/
     └── crypto_policy.py                   # CryptoPolicy: crypto-agility data model
 ```
 
-## Chapter-by-Chapter Guide
+## Guide to the earlier material
 
 | Chapter | File(s) | What It Shows |
 |---------|---------|---------------|
@@ -171,14 +177,14 @@ python cap-14/ai_admin_models.py
 python cap-15/compliance_service.py
 ```
 
-## Technology Stack (Case Study)
+## Historical case study stack
 
 | Layer | Technology |
 |-------|-----------|
 | AI Development | Claude Code (claude-sonnet-4-6 / claude-opus-4-6) |
 | Frontend | React 18 + Vite + TypeScript + MUI |
 | Backend | Flask 3.0 + SQLAlchemy 2.0 |
-| AI Service | Claude API + Claude Agent SDK |
+| AI Service | Named API adapters and tool loops; SDK integration requires its version-specific contract |
 | LLMs | Anthropic Claude, OpenAI, Ollama |
 | Database | MySQL 8.0 |
 | Queues | Celery 5.3 + Redis 7 |

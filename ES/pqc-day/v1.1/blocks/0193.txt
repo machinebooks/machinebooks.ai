@@ -1,0 +1,28 @@
+from concurrent.futures import ThreadPoolExecutor, wait
+
+def scan_certificates(urls, scan_url, wait_seconds=30):
+    if not urls:
+        return {"status": "not_assessed", "results": [], "errors": []}
+    executor = ThreadPoolExecutor(max_workers=min(5, len(urls)))
+    futures = {executor.submit(scan_url, url): url for url in urls}
+    done, pending = wait(futures, timeout=wait_seconds)
+    results, errors = [], []
+    try:
+        for future in done:
+            try:
+                observation = future.result()
+                if not isinstance(observation, dict) or observation.get("status") != "observed":
+                    errors.append({"url": futures[future], "status": "not_observed"})
+                else:
+                    results.append({"url": futures[future], "certificate": observation})
+            except Exception:
+                errors.append({"url": futures[future], "status": "error"})
+        for future in pending:
+            future.cancel()
+            errors.append({"url": futures[future], "status": "wait_budget_exhausted"})
+    finally:
+        executor.shutdown(wait=False, cancel_futures=True)
+    # Running threads cannot be killed here. Network calls need their own timeouts;
+    # strict wall-clock isolation requires a separately controlled process.
+    return {"status": "partial" if errors else "completed",
+            "results": results, "errors": errors}

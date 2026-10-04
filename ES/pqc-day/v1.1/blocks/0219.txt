@@ -1,0 +1,18 @@
+HSM_REFERENCE = {
+    "QASM_CMVP_5497": {"certificate": "5497", "initial_validation": "2026-08-19",
+        "last_update_observed": "2026-08-21", "hardware_level": 3,
+        "listed_algorithms": ["ML-KEM", "ML-DSA", "SLH-DSA"],
+        "source": "https://csrc.nist.gov/projects/cryptographic-module-validation-program/certificate/5497"},
+}
+
+def assess_hsm(observed_configuration, verified_reference):
+    if not observed_configuration or not verified_reference:
+        return {"state": "not_assessed", "replacement_needed": None}
+    required = {"model", "hardware_version", "firmware_version", "operating_mode"}
+    if not required.issubset(observed_configuration):
+        return {"state": "configuration_incomplete", "replacement_needed": None}
+    return {"state": "requires_certificate_security_policy_comparison",
+            "replacement_needed": None,
+            "next_step": "Compare exact versions, approved mode, algorithms and caveats"}
+# A manufacturer announcement or another validation scheme does not establish
+# CMVP coverage for the configuration actually inventoried by a customer.

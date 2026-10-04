@@ -1,0 +1,25 @@
+from functools import wraps
+from flask_jwt_extended import get_jwt_identity
+from app.models import User
+
+def require_active_user():
+    identity = get_jwt_identity()
+    if not isinstance(identity, str) or not identity.isdecimal():
+        raise PermissionError("Invalid identity")
+    user = User.query.filter_by(id=int(identity), is_active=True).first()
+    if user is None or not user.organization.is_active:
+        raise PermissionError("Inactive account")
+    return user
+
+def check_plan_limit(resource_type):
+    if resource_type not in {"client", "user", "analysis"}:
+        raise ValueError("Unknown resource")
+    def decorator(function):
+        @wraps(function)
+        def wrapped(*args, **kwargs):
+            user = require_active_user()
+            # This admission service must lock/reserve and perform the write in
+            # one transaction. A separate count-then-call decorator is insufficient.
+            return perform_authorized_admission(user, resource_type, function, args, kwargs)
+        return wrapped
+    return decorator

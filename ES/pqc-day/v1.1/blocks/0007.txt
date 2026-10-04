@@ -1,0 +1,13 @@
+.claude/
+├── rules/
+│   ├── anonimizacion.md      ← Qué no incluir nunca en el código del libro
+│   ├── code-samples.md       ← Cómo mostrar código en los capítulos
+│   ├── writing.md            ← Estilo y estructura de redacción
+│   └── security-gate.md      ← Revisión de seguridad obligatoria
+├── commands/
+│   ├── write.md              ← Plantilla para escribir un capítulo
+│   ├── review.md             ← Checklist de revisión editorial
+│   └── security-review.md    ← Revisión de seguridad especializada
+└── memory/
+    ├── MEMORY.md             ← Índice de memorias persistentes
+    └── project_focus.md      ← Premisa y foco del proyecto

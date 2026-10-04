@@ -1,0 +1,13 @@
+def generate_compliance_report(self, assessment_id, format_type='json'):
+    soa = self.generate_soa(assessment_id, format_type)
+    domains = {}
+    for control in soa['controls']:
+        domains.setdefault(control.get('domain', 'Unspecified'), []).append(
+            control['implementation_status'])
+    return {'assessment_id': assessment_id, 'framework_version': soa['framework_version'],
+            'internal_control_summary': soa['summary'],
+            'by_domain': {name: assessment_summary(states)
+                          for name, states in domains.items()},
+            'control_evidence': soa['controls'], 'legal_compliance_decision': None}
+# Unknown assessments remain outside the assessed denominator and coverage is
+# disclosed. No removed overall_score/counter fields or fixed NIS2 title are used.

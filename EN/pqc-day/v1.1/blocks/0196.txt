@@ -1,0 +1,46 @@
+from flask import request, current_app
+from flask_restful import Resource
+from auth.decorators import require_auth, require_role
+from models import AnalysisJob, Client, Organization
+from extensions import db
+
+class RepositoryAnalysisResource(Resource):
+    @require_auth
+    @require_role('analyst', 'org_admin', 'org_owner')
+    def post(self, repository_id):
+        dispatcher = current_app.extensions.get('analysis_dispatcher')
+        if dispatcher is None:
+            return {'error': 'Dispatch integration unavailable'}, 503
+        try:
+            scope = dispatcher.authorize_repository(request.current_user,
+                                                    repository_id, action='scan')
+            reservation = dispatcher.reserve_and_enqueue(scope, manual=True)
+        except PermissionError:
+            return {'error': 'Repository not found'}, 404
+        if reservation.get('newly_reserved') is not True:
+            return {'error': 'Analysis already reserved',
+                    'job_id': reservation['job_id']}, 409
+        return {'job_id': reservation['job_id'], 'status': 'pending'}, 202
+
+class AnalysisJobStatusResource(Resource):
+    @require_auth
+    def get(self, job_id):
+        user = request.current_user
+        org = None if not user else db.session.get(Organization, user.organization_id)
+        if not user or not user.is_active or not org or not org.is_active:
+            return {'error': 'Access denied'}, 403
+        if not (user.has_permission('view_findings') or user.has_permission('view_own_findings')):
+            return {'error': 'Access denied'}, 403
+        query = AnalysisJob.query.join(Client, AnalysisJob.client_id == Client.id).filter(
+            AnalysisJob.id == job_id, Client.organization_id == org.id)
+        if not user.has_permission('view_findings'):
+            if user.client_id is None:
+                return {'error': 'Access denied'}, 403
+            query = query.filter(AnalysisJob.client_id == user.client_id)
+        job = query.first_or_404()
+        return {'job_id': job.id, 'status': job.status,
+                'progress_percentage': job.progress_percentage,
+                'summary': job.result_summary,
+                'error': None if job.status != 'failed' else 'analysis_failed'}, 200
+# AnalysisJob has client_id/configuration/result_summary, not repository_id,
+# organization_id, stage, total_findings or pqc_score columns in Chapter 5.

@@ -1,0 +1,20 @@
+def analyze_aws_kms(keys):
+    observations = []
+    for key in keys:
+        spec = key.get("KeySpec", key.get("key_spec"))
+        usage = key.get("KeyUsage", key.get("key_usage"))
+        if spec == "SYMMETRIC_DEFAULT":
+            classification = "symmetric_aes256_metadata"
+        elif isinstance(spec, str) and spec.startswith(("RSA_", "ECC_")):
+            classification = "classical_asymmetric_candidate"
+        elif spec in ("ML_DSA_44", "ML_DSA_65", "ML_DSA_87"):
+            classification = "ml_dsa_metadata_candidate"
+        else:
+            classification = "unknown"
+        function = {"SIGN_VERIFY": "signature", "ENCRYPT_DECRYPT": "encryption",
+                    "KEY_AGREEMENT": "key_agreement", "GENERATE_VERIFY_MAC": "mac"}.get(usage, "unknown")
+        observations.append({"key_id": key.get("KeyId", key.get("key_id")),
+            "key_spec": spec, "function": function, "classification": classification,
+            "severity": None, "pqc_compliant": None,
+            "next_step": "Check actual usage, algorithms, policy and key dependencies"})
+    return observations

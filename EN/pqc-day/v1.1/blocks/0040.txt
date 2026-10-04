@@ -1,0 +1,24 @@
+import os
+
+# Didactic example: patterns/config.py — Secrets separation
+class Config:
+    SECRET_KEY = os.getenv('SECRET_KEY',
+                           'dev-secret-key-change-in-production')
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY',
+                               'jwt-secret-key-change-in-production')
+    ENCRYPTION_KEY = os.getenv('ENCRYPTION_KEY',
+                               'encryption-key-32-chars-min!!!')
+
+    # JWT Tokens
+    JWT_ACCESS_TOKEN_EXPIRES = 3600      # 1 hour
+    JWT_REFRESH_TOKEN_EXPIRES = 2592000  # 30 days
+
+class ProductionConfig(Config):
+    # In production: mandatory secrets from environment variables
+    SECRET_KEY = os.getenv('SECRET_KEY')
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
+    ENCRYPTION_KEY = os.getenv('ENCRYPTION_KEY')
+
+# The chapter4 application factory rejects missing production values before
+# initializing extensions. Presence does not validate entropy, format, rotation
+# or storage controls; development placeholders are illustrative only.

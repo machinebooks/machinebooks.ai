@@ -1,0 +1,58 @@
+from flask_jwt_extended import get_current_user
+from flask import Blueprint, request, jsonify, current_app
+from flask_jwt_extended import jwt_required
+from app.extensions import db
+from app.models.ai_admin import AIRAGCollection
+
+ai_admin_bp = Blueprint('ai_admin', __name__, url_prefix='/api/ai-admin')
+
+@ai_admin_bp.route('/rag/collections', methods=['GET'])
+@jwt_required()
+def list_collections():
+    user = get_current_user()
+    policy = current_app.extensions.get('rag_authorization')
+    if policy is None:
+        return jsonify({'error': 'RAG authorization unavailable'}), 503
+    try:
+        scope = policy.authorize(user, action='view_collections')
+    except PermissionError:
+        return jsonify({'error': 'Access denied'}), 403
+    collections = AIRAGCollection.query.filter_by(
+        organization_id=scope['organization_id'], is_active=True).order_by(
+            AIRAGCollection.name).limit(200).all()
+    return jsonify({'collections': [c.to_dict() for c in collections],
+                    'scope': 'first_200_active_authorized_collections'})
+
+@ai_admin_bp.route('/rag/collections', methods=['POST'])
+@jwt_required()
+def create_collection():
+    user = get_current_user()
+    policy = current_app.extensions.get('rag_authorization')
+    if policy is None:
+        return jsonify({'error': 'RAG authorization unavailable'}), 503
+    try:
+        scope = policy.authorize(user, action='manage_collections')
+    except PermissionError:
+        return jsonify({'error': 'Access denied'}), 403
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({'error': 'Invalid request'}), 400
+    name = data.get('name')
+    size, overlap = data.get('chunk_size', 1000), data.get('chunk_overlap', 200)
+    kind = data.get('collection_type', 'custom')
+    if (not isinstance(name, str) or not 1 <= len(name.strip()) <= 200
+            or type(size) is not int or not 100 <= size <= 4000
+            or type(overlap) is not int or not 0 <= overlap < size
+            or kind not in {'documentation', 'framework', 'policy', 'custom'}):
+        return jsonify({'error': 'Invalid collection parameters'}), 400
+    provider = policy.authorized_embedding_provider(scope, data.get('embedding_provider_id'),
+                                                    data.get('embedding_model'))
+    col = AIRAGCollection(organization_id=scope['organization_id'], name=name.strip(),
+                          collection_type=kind, embedding_provider_id=provider['id'],
+                          embedding_model=provider['model'], chunk_size=size,
+                          chunk_overlap=overlap, created_by=user.id)
+    db.session.add(col)
+    db.session.commit()
+    return jsonify({'collection': col.to_dict()}), 201
+# Policy validates active user/org, action permission and provider/egress policy.
+# A schema migration/backfill and transactional upload/count handling are required.

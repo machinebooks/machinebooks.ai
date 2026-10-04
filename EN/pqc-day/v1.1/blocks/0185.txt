@@ -1,0 +1,3 @@
+volumes:
+  - ./frontend:/app
+  - /app/node_modules              # Exclude node_modules from mount

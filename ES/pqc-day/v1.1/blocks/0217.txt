@@ -1,0 +1,10 @@
+def summarize_control_evidence(controls):
+    allowed = {"supported", "contradicted", "unknown", "not_applicable"}
+    if any(c.get("state") not in allowed for c in controls):
+        raise ValueError("Unknown evidence state")
+    applicable = [c for c in controls if c["state"] != "not_applicable"]
+    assessed = [c for c in applicable if c["state"] != "unknown"]
+    return {"state": "not_assessed" if not assessed else
+                     "partial" if len(assessed) < len(applicable) else "evidence_review",
+            "assessed": len(assessed), "applicable": len(applicable),
+            "legal_compliance_decision": "requires_authorized_human_review"}

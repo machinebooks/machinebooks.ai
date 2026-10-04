@@ -1,0 +1,27 @@
+from datetime import datetime, timedelta
+from flask import current_app
+
+RESCAN_INTERVALS = {
+    'starter': timedelta(days=30), 'professional': timedelta(days=7),
+    'enterprise': timedelta(days=1), 'ultimate': timedelta(hours=12),
+}
+
+@celery_app.task(base=DatabaseTask, name='check_pending_rescans_task')
+def check_pending_rescans_task():
+    now = datetime.utcnow()
+    dispatcher = current_app.extensions.get('analysis_dispatcher')
+    if dispatcher is None:
+        return {'status': 'not_assessed', 'enqueued_rescans': 0,
+                'reason': 'dispatch_integration_unavailable'}
+    enqueued = 0
+    for candidate in dispatcher.authorized_due_repositories(now, RESCAN_INTERVALS):
+        # This mandatory transaction contract validates active organization,
+        # plan and permissions, locks/reserves repository + schedule window,
+        # includes pending/running Jobs and writes Job/Target/outbox atomically.
+        # The worker resolves protected credentials; payload contains IDs only.
+        reservation = dispatcher.reserve_and_enqueue(candidate, now=now)
+        enqueued += reservation['newly_reserved'] is True
+    return {'status': 'dispatch_requested', 'enqueued_rescans': enqueued,
+            'checked_at': now.isoformat() + 'Z'}
+# This fragment does not implement the reservation/outbox service. It cannot
+# substantiate idempotency, broker delivery or private production behavior alone.

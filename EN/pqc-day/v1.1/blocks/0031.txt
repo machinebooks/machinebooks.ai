@@ -1,0 +1,40 @@
+from flask import request
+from flask_restful import Resource
+from flask_jwt_extended import create_access_token, create_refresh_token
+from sqlalchemy.exc import IntegrityError
+from app.extensions import db
+from app.models import Organization, User
+
+class RegisterResource(Resource):
+    def post(self):
+        data = request.get_json(silent=True)
+        required = ("organization_name", "email", "password", "full_name", "username")
+        if not isinstance(data, dict) or any(
+                not isinstance(data.get(k), str) or not data[k].strip() for k in required):
+            return {"error": "Invalid registration fields"}, 400
+        # validate_email and password_allowed are omitted validation adapters.
+        # Single-factor passwords require at least 15 characters, with blocklist,
+        # Unicode/length handling and throttling; composition rules are not required.
+        if not validate_email(data["email"]) or not password_allowed(data["password"]):
+            return {"error": "Invalid registration fields"}, 400
+        try:
+            org = Organization(name=data["organization_name"],
+                slug=generate_unique_slug(data["organization_name"]), subscription_plan="free")
+            db.session.add(org)
+            db.session.flush()
+            user = User(organization_id=org.id, email=data["email"],
+                username=data["username"], full_name=data["full_name"],
+                password_hash=hash_password(data["password"]), role="org_owner", is_active=True)
+            db.session.add(user)
+            db.session.flush()
+            tokens = {"access_token": create_access_token(identity=str(user.id)),
+                      "refresh_token": create_refresh_token(identity=str(user.id))}
+            db.session.commit()
+            return tokens, 201
+        except IntegrityError:
+            db.session.rollback()  # Unique constraints handle races/slug collisions.
+            return {"error": "Registration conflict"}, 409
+        except Exception:
+            db.session.rollback()
+            return {"error": "Registration failed"}, 500
+# Provisioning policy, audit, CSRF/rate limits and email confirmation are omitted.

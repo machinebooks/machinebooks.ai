@@ -1,0 +1,12 @@
+# Didactic example: analyzers/ai_code_analyzer.py — OWASP prompt
+
+def _build_owasp_prompt(self, code: str, filename: str,
+                         language: str = None) -> str:
+    """Specialized prompt for OWASP analysis with LLM"""
+    return f"""You are an application security expert and OWASP Top 10 specialist.
+Analyze the following code looking for security vulnerabilities.
+
+**FILE:** {filename}
+**LANGUAGE:** {language or 'auto-detect'}
+
+**CODE:**

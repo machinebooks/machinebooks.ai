@@ -1,0 +1,59 @@
+from sqlalchemy import case
+
+def get_critical_non_pqc_by_framework(user, client_id):
+    if (user is None or not user.is_active or user.organization is None
+            or not user.organization.is_active):
+        raise PermissionError("Active organization and user required")
+    if not (has_permission(user.role, 'view_findings')
+            or has_permission(user.role, 'view_own_findings')):
+        raise PermissionError("Findings permission required")
+    if (user.role == 'client_user'
+            and (user.client_id is None or client_id != user.client_id)):
+        raise PermissionError("Client outside authorized scope")
+    client = Client.query.filter_by(
+        id=client_id, organization_id=user.organization_id).first()
+    if client is None:
+        raise PermissionError("Client outside authorized scope")
+    results = db.session.query(
+        ComplianceFramework.code,
+        ComplianceFramework.name,
+        ComplianceControl.reference,
+        ComplianceControl.title,
+        CryptoFinding.algorithm_name,
+        CryptoFinding.risk_level,
+        CryptoFinding.location,
+        CryptoFinding.context,
+        FindingControlMapping.confidence
+    ).join(
+        ComplianceControl,
+        ComplianceControl.framework_id == ComplianceFramework.id
+    ).join(
+        FindingControlMapping,
+        FindingControlMapping.control_id == ComplianceControl.id
+    ).join(
+        CryptoFinding,
+        db.and_(
+            FindingControlMapping.finding_type == 'crypto',
+            FindingControlMapping.finding_id == CryptoFinding.id
+        )
+    ).join(
+        AnalysisJob,
+        CryptoFinding.job_id == AnalysisJob.id
+    ).join(
+        Client, AnalysisJob.client_id == Client.id
+    ).filter(
+        Client.organization_id == user.organization_id,
+        Client.id == client_id,
+        CryptoFinding.pqc_compliant.is_(False),
+        CryptoFinding.risk_level.in_(['critical', 'high']),
+        FindingControlMapping.review_status == 'confirmed',
+        FindingControlMapping.reviewed_by.isnot(None),
+        FindingControlMapping.reviewed_at.isnot(None)
+    ).order_by(
+        ComplianceFramework.code,
+        case((CryptoFinding.risk_level == 'critical', 0), else_=1)
+    ).all()
+
+    return results
+# Authentication, permission definitions and evidence review workflow are
+# application dependencies. This query does not establish a legal violation.

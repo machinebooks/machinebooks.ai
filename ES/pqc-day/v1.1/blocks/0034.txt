@@ -1,0 +1,26 @@
+from flask_jwt_extended import get_current_user
+class ClientResource(Resource):
+    @jwt_required()
+    def delete(self, client_id):
+        user = get_current_user()
+        org = None if not user else db.session.get(Organization, user.organization_id)
+        if (not user or not user.is_active or not org or not org.is_active
+                or user.role not in ('org_owner', 'org_admin')
+                or not user.has_permission('manage_clients')):
+            return {'error': 'Access denied'}, 403
+        if type(client_id) is not int or client_id <= 0:
+            return {'error': 'Invalid client'}, 400
+        client = Client.query.filter_by(id=client_id, organization_id=org.id).first()
+        if not client:
+            return {'error': 'Client not found'}, 404
+        try:
+            client.status = 'archived'
+            AuditLog.log(user.id, 'archive_client', 'client', client.id,
+                         organization_id=org.id)
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            return {'error': 'Archive failed'}, 500
+        return {'message': 'Client archived'}, 200
+# AuditLog.log shares the domain transaction. The factory user lookup,
+# retention and archive semantics require integration verification.

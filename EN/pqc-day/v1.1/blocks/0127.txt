@@ -1,0 +1,17 @@
+def merge_mapping_candidates(candidates):
+    rank = {"recommendation": 0, "partial": 1, "violation": 2}
+    merged = {}
+    for candidate in candidates:
+        kind = candidate.get("finding_type")
+        if kind not in {"crypto", "vulnerability"}:
+            raise ValueError("Finding discriminator required")
+        key = (kind, candidate["finding_id"], candidate["control_id"])
+        impact = candidate["impact"]
+        if impact not in rank:
+            raise ValueError("Unknown impact")
+        current = merged.get(key)
+        if current is None or rank[impact] > rank[current["impact"]]:
+            merged[key] = {**candidate, "review_status": "pending"}
+    return list(merged.values())
+# This merges proposals; neither an impact label nor AI confidence establishes
+# an infringement or changes a human control assessment.

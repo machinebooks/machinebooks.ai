@@ -1,0 +1,168 @@
+import anthropic
+
+client = anthropic.Anthropic()
+
+# Cryptographic analysis agent tool definitions
+tools = [
+    {
+        "name": "list_repository_files",
+        "description": (
+            "Lists files in a repository filtered by extension. "
+            "Use this first to identify candidate files."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "repo_path": {
+                    "type": "string",
+                    "description": "Repository path"
+                },
+                "extensions": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Extensions to filter: .py, .js, .java, .go"
+                }
+            },
+            "required": ["repo_path"]
+        }
+    },
+    {
+        "name": "read_file_content",
+        "description": "Reads the content of a repository file",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "description": "Full file path"
+                }
+            },
+            "required": ["file_path"]
+        }
+    },
+    {
+        "name": "scan_file_for_crypto",
+        "description": (
+            "Scans a file with Bandit/Semgrep looking for "
+            "cryptographic patterns. Returns raw findings."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "file_path": {"type": "string"},
+                "scanner": {
+                    "type": "string",
+                    "enum": ["bandit", "semgrep", "both"]
+                }
+            },
+            "required": ["file_path"]
+        }
+    },
+    {
+        "name": "register_finding",
+        "description": (
+            "Registers a classified cryptographic finding in the "
+            "platform's database."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "algorithm": {"type": "string"},
+                "severity": {
+                    "type": "string",
+                    "enum": ["critical", "high", "medium", "low"]
+                },
+                "pqc_compliant": {"type": "boolean"},
+                "file_path": {"type": "string"},
+                "line_number": {"type": "integer"},
+                "context": {"type": "string"},
+                "recommended_replacement": {"type": "string"}
+            },
+            "required": [
+                "algorithm", "severity", "pqc_compliant",
+                "file_path", "context"
+            ]
+        }
+    }
+]
+
+def run_crypto_analysis_agent(
+    repo_path: str,
+    organization_id: int,
+    max_iterations: int = 15
+) -> dict:
+    """Runs the autonomous cryptographic analysis agent.
+
+    The agent decides which files to analyze, in what order,
+    and when it has enough information to generate a report.
+    Maximum 15 iterations to control token consumption.
+    """
+    conversation = [{
+        "role": "user",
+        "content": (
+            f"Analyze the repository at '{repo_path}' looking for "
+            "cryptographic algorithms vulnerable to quantum "
+            "computing. Prioritize TLS configuration files, "
+            "authentication modules, and any use of RSA, ECDSA, "
+            "ECDH, DH, or DSA. Register each finding with its usage "
+            "context and PQC migration recommendation."
+        )
+    }]
+
+    findings_count = 0
+
+    for iteration in range(max_iterations):
+        response = client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=4096,
+            tools=tools,
+            messages=conversation,
+            system=(
+                "You are an expert agent in post-quantum cryptographic "
+                "analysis. Your goal is to find and classify all uses "
+                "of vulnerable cryptography in the repository. Be "
+                "methodical: first list files, then analyze the most "
+                "critical ones, and register each finding with "
+                "precise context."
+            )
+        )
+
+        # If the agent has finished its analysis
+        if response.stop_reason == "end_turn":
+            break
+
+        # Add the assistant's response (only once)
+        conversation.append({
+            "role": "assistant",
+            "content": response.content
+        })
+
+        # Process tool calls and collect results
+        tool_results = []
+        for block in response.content:
+            if block.type == "tool_use":
+                result = execute_tool(
+                    block.name,
+                    block.input,
+                    organization_id
+                )
+                if block.name == "register_finding":
+                    findings_count += 1
+                tool_results.append({
+                    "type": "tool_result",
+                    "tool_use_id": block.id,
+                    "content": str(result)
+                })
+
+        # Return all tool results
+        if tool_results:
+            conversation.append({
+                "role": "user",
+                "content": tool_results
+            })
+
+    return {
+        "iterations_used": iteration + 1,
+        "findings_registered": findings_count,
+        "completed": response.stop_reason == "end_turn"
+    }

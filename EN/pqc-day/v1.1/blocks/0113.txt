@@ -1,0 +1,12 @@
+def select_active_prompt(prompts, service, role, language, fallback_language="en"):
+    active = [p for p in prompts if p["service"] == service and p["role"] == role and p["active"]]
+    for candidate_language in dict.fromkeys((language, fallback_language)):
+        matches = [p for p in active if p["language"] == candidate_language]
+        if len(matches) > 1:
+            raise ValueError("Ambiguous active prompt")
+        if matches:
+            return {"text": matches[0]["text"], "prompt_version_id": matches[0]["version_id"],
+                    "language": candidate_language}
+    return None
+# The calling service stores the selected immutable version ID and activation
+# decision in its usage receipt; a current row alone cannot reconstruct history.

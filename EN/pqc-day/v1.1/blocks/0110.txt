@@ -1,0 +1,40 @@
+from app.extensions import db
+from datetime import datetime
+
+class AIProvider(db.Model):
+    """Tenant-scoped provider configuration; encryption adapter is omitted."""
+    __tablename__ = 'ai_providers'
+
+    id = db.Column(db.Integer, primary_key=True)
+    organization_id = db.Column(db.Integer, db.ForeignKey('organizations.id'), nullable=False)
+    name = db.Column(db.String(200), nullable=False)
+    provider_type = db.Column(
+        db.Enum('openai', 'azure_openai', 'anthropic', 'ollama',
+                'lmstudio', 'azure_ai_foundry', 'groq', 'custom'),
+        nullable=False
+    )
+    endpoint = db.Column(db.String(500))
+    api_key_encrypted = db.Column(db.Text)       # application-level encryption
+    default_model = db.Column(db.String(200))
+    is_default = db.Column(db.Boolean, default=False)
+    is_active = db.Column(db.Boolean, default=True)
+
+    # Aggregated metrics — updated by each usage_log write
+    total_tokens_used = db.Column(db.BigInteger, default=0)
+    total_cost_usd = db.Column(db.Float, default=0.0)
+    cost_per_1k_tokens_in = db.Column(db.Float, nullable=True)
+    cost_per_1k_tokens_out = db.Column(db.Float, nullable=True)
+
+    # Last connectivity test status
+    last_test_status = db.Column(
+        db.Enum('success', 'failure', 'not_tested'),
+        default='not_tested'
+    )
+    last_test_latency_ms = db.Column(db.Integer)
+
+    # Relationships
+    services = db.relationship('AIService', backref='provider', lazy='dynamic')
+    usage_logs = db.relationship('AIUsageLog', backref='provider', lazy='dynamic')
+# A migration and tenant-scoped resolver are required before use.
+# Aggregate counters are derived from known usage; unknown tariffs remain None.
+# Persist model, currency, effective date and tariff source in the omitted tariff registry.

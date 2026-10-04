@@ -1,0 +1,45 @@
+import json
+
+def parse_ai_response(response_text, analysis_type='pqc', source_line_count=None):
+    invalid = {'status': 'invalid_response', 'findings': None, 'risk_score': None}
+    if (not isinstance(response_text, str) or len(response_text) > 100_000
+            or analysis_type not in {'pqc', 'owasp'}
+            or type(source_line_count) is not int or source_line_count < 1):
+        return invalid
+    try:
+        data = json.loads(response_text)
+    except (ValueError, TypeError):
+        return invalid
+    if (not isinstance(data, dict) or not isinstance(data.get('findings'), list)
+            or len(data['findings']) > 1000):
+        return invalid
+    clean = []
+    for finding in data['findings']:
+        if not isinstance(finding, dict):
+            return invalid
+        start, end = finding.get('line_start'), finding.get('line_end')
+        if (type(start) is not int or type(end) is not int
+                or not 1 <= start <= end <= source_line_count):
+            return invalid
+        if analysis_type == 'pqc':
+            algorithm = finding.get('algorithm')
+            classification, purpose = finding.get('classification'), finding.get('purpose')
+            if (not isinstance(algorithm, str) or not 1 <= len(algorithm) <= 128
+                    or classification not in {'classical_candidate',
+                                               'standardized_candidate', 'unknown'}
+                    or purpose not in {'signature', 'key_establishment',
+                                       'at_rest', 'digest', 'unknown'}):
+                return invalid
+            item = {'algorithm': algorithm, 'classification': classification,
+                    'purpose': purpose}
+        else:
+            rule_id, severity = finding.get('rule_id'), finding.get('severity')
+            if (not isinstance(rule_id, str) or not 1 <= len(rule_id) <= 128
+                    or severity not in {'critical', 'high', 'medium', 'low', 'info'}):
+                return invalid
+            item = {'rule_id': rule_id, 'severity': severity}
+        item.update({'line_start': start, 'line_end': end, 'review_status': 'pending'})
+        clean.append(item)
+    return {'status': 'parsed_suggestions', 'findings': clean, 'risk_score': None}
+# Structure and line bounds do not establish actual use or a vulnerability.
+# Additional fields are discarded; accepted identifiers still need source review.

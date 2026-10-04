@@ -1,0 +1,18 @@
+class AIPrompt(db.Model):
+    """Versioned record used only by consumers integrated with the resolver."""
+    __tablename__ = 'ai_prompts'
+
+    id = db.Column(db.Integer, primary_key=True)
+    service_id = db.Column(db.Integer, db.ForeignKey('ai_services.id'),
+                           nullable=False)
+    role = db.Column(db.Enum('system', 'user', 'assistant'), default='system')
+    name = db.Column(db.String(200))
+    content = db.Column(db.Text, nullable=False)
+    language = db.Column(db.String(10), default='es')
+    version = db.Column(db.Integer, default=1)
+    is_active = db.Column(db.Boolean, default=True)
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+# Version and is_active do not implement activation history or rollback.
+# The resolver checks the active tenant and service, pins a version and records selection.
+# Earlier hardcoded examples are independent fragments, not users of this registry.
