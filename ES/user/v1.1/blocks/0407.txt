@@ -1,0 +1,13 @@
+Maqueta ficticia de rendimiento; no es salida de comandos ejecutados:
+CPU: 87% en un intervalo de muestra; memoria: 72% según criterio declarado.
+I/O: 45 MB/s, que necesita una referencia antes de etiquetarlo como elevado.
+Nginx: media 4,2 s, P95 12,8 s, P99 28,3 s, sólo si el log recoge duración.
+Los percentiles requieren el conjunto de peticiones y un método definido.
+PostgreSQL: consulta events repetida; revisa EXPLAIN y estadísticas, no deduzcas
+que falta un índice ni lo crees sin evaluar selectividad, coste y despliegue.
+Redis: calcula hit rate con diferencias de keyspace_hits y keyspace_misses
+para el mismo intervalo; contadores acumulados no describen por sí solos la última hora.
+Un 12% no demuestra pérdida de contenido ni que la caché haya dejado de funcionar.
+Revisa reinicios, expiraciones, expulsiones, patrón de peticiones y cambios de carga.
+Reiniciar workers no garantiza recalentar la caché y puede aumentar la carga.
+Valida las hipótesis antes de aplicar mitigaciones y comprueba el resultado.

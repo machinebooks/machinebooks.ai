@@ -1,0 +1,6 @@
+Process these invoices (some are in English and others in German).
+The amounts may have different formats depending on the country of origin.
+Normalize all amounts to the Spanish format:
+period for thousands, comma for decimals (example: 12.345,67).
+All dates in DD/MM/YYYY.
+For CSV, use a semicolon delimiter, double quotes for fields requiring them, and UTF-8 encoding. Check types, separators, and dates against the source; flag ambiguities for review.

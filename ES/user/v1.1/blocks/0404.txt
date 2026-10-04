@@ -1,0 +1,17 @@
+=== Informe consolidado de salud — 21/03/2026 ===
+
+              web1          web2          db1
+CPU:          23%           45%           67%
+Memoria:      78%           82%           91% ⚠
+Disco /:      71%           68%           54%
+Disco /var:   89% ⚠        45%           72%
+Servicios:    ✓ todos       ✓ todos       ✓ todos
+Errores 12h:  0             3 warnings    12 slow queries ⚠
+
+RESUMEN:
+  ⚠ web1: /var al 89% — necesita rotación de logs
+  ⚠ db1: Memoria al 91% y 12 consultas lentas — revisar
+  ✓ web2: Sin problemas
+
+PRIORIDAD: Atender db1 primero (memoria alta puede provocar
+problemas en cascada si se agota).

@@ -1,0 +1,15 @@
+# Dashboard specification in YAML; not importable Grafana JSON.
+# Ratios require compatible instrumentation and non-zero denominators.
+- title: Detector candidates by severity
+  query: sum by (severity) (rate(ai_security_injection_attempts_total[5m]))
+- title: Blocked control activations per model generation
+  query: >
+    sum(rate(ai_security_guardrail_activations_total{action="blocked"}[1h]))
+    / sum(rate(ai_security_generation_seconds_count[1h]))
+- title: PII candidates requiring review
+  query: sum(increase(ai_security_pii_detections_total[24h]))
+- title: Model-output length percentile 99
+  query: >
+    histogram_quantile(0.99,
+      sum by (le) (rate(ai_security_response_length_chars_bucket[1h])))
+# Multiple activations per generation can make the activation ratio exceed 1.

@@ -1,0 +1,34 @@
+#!/bin/bash
+# Apply only a reviewed fixed EC2 allowlist; IAM must also restrict the scope.
+set -euo pipefail
+ACTION=${1:-}
+[[ $ACTION == start || $ACTION == stop ]] || { echo 'Usage: cloud-scheduler.sh start|stop' >&2; exit 2; }
+: "${AWS_PROFILE:?Select the approved profile}"
+: "${AWS_REGION:?Select the approved region}"
+: "${EXPECTED_AWS_ACCOUNT:?Select the approved account}"
+: "${APPROVED_INSTANCE_IDS:?Set the reviewed fixed allowlist}"
+export AWS_PAGER=
+aws_cli=(aws --profile "$AWS_PROFILE" --region "$AWS_REGION")
+account=$("${aws_cli[@]}" sts get-caller-identity --query Account --output text)
+[[ $account == "$EXPECTED_AWS_ACCOUNT" ]] || exit 1
+read -r -a ids <<< "$APPROVED_INSTANCE_IDS"
+((${#ids[@]}>0)) || exit 1
+for id in "${ids[@]}"; do
+  [[ $id =~ ^i-([0-9a-f]{8}|[0-9a-f]{17})$ ]] || exit 1
+done
+data=$("${aws_cli[@]}" ec2 describe-instances --instance-ids "${ids[@]}" \
+  --query 'Reservations[].Instances[]' --output json)
+printf '%s' "$data" | jq -e --argjson n "${#ids[@]}" '
+  length==$n and all(.[]; .RootDeviceType=="ebs" and
+    any(.Tags[]?; .Key=="Environment" and .Value=="development"))' >/dev/null
+if [[ $ACTION == stop ]]; then desired=running; final=stopped
+else desired=stopped; final=running
+fi
+mapfile -t targets < <(printf '%s' "$data" |
+  jq -r --arg state "$desired" '.[] | select(.State.Name==$state) | .InstanceId')
+if ((${#targets[@]}==0)); then
+  echo 'No reviewed targets currently in the required initial state.'; exit 0
+fi
+"${aws_cli[@]}" ec2 "$ACTION-instances" --instance-ids "${targets[@]}" --output json
+"${aws_cli[@]}" ec2 wait "instance-$final" --instance-ids "${targets[@]}"
+printf 'Observed EC2 state %s; application health is still pending.\n' "$final"

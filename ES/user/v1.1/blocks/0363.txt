@@ -1,0 +1,14 @@
+Se han procesado 4 ficheros de log (2 comprimidos, 2 en texto plano).
+Total de intentos fallidos SSH: 12.847 desde 187 IPs únicas.
+
+Las 5 IPs con más intentos:
+  203.0.113.45    - 4.231 intentos (SOSPECHOSA) - dirección de documentación RFC 5737
+  198.51.100.12   - 2.108 intentos (SOSPECHOSA) - dirección de documentación RFC 5737
+  192.0.2.78      - 1.456 intentos (SOSPECHOSA) - dirección de documentación RFC 5737
+  ...
+
+CSV generado en: <directorio_protegido>/ssh_failed_logins_202603-<identificador>.csv
+
+Revisión: los recuentos son ficticios. No prueban origen geográfico
+ni ataque; investiga fechas, eventos y contexto antes de proponer
+bloqueos. No los apliques automáticamente.

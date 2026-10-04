@@ -1,0 +1,15 @@
+# System adjustments
+
+## 2026-03-15
+- Weekly report command didn't include new projects → updated CLAUDE.md
+- Agent classified client emails as "informational" → added rule:
+  "client emails are always URGENT or PENDING, never INFORMATIONAL"
+
+## 2026-03-08
+- Bank reconciliation failed with OFX format statements → changed to CSV
+- Added /project:backup-semanal command to copy critical data
+
+## 2026-03-01
+- First week with the complete system
+- Day startup time: dropped from 45 min to 15 min
+- Emails processed per day: rose from 30 to 47 (same working hours)

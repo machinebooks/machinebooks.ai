@@ -1,0 +1,15 @@
+Genera una copia nueva kpis-2024.csv con 12 meses ficticios de 2024.
+Define EUR, criterios de ingresos y gastos, fechas y formato decimal.
+Columnas: Mes; Ingresos; Gastos; Clientes nuevos; Clientes perdidos;
+Pedidos; Ticket medio; Respuestas NPS; Promotores; Detractores; NPS;
+Visitas elegibles; Conversiones; Tasa de conversión.
+
+Ingresos entre 200.000 y 400.000; gastos entre 150.000 y 300.000;
+pedidos entre 300 y 700. Elige valores compatibles y deriva ticket
+medio = ingresos/pedidos (450–650), sin generar métricas independientes.
+Clientes nuevos 15–60 y perdidos 3–12 son flujos, no una base de activos.
+Promotores y detractores son recuentos de una encuesta 0–10: 9–10 y 0–6.
+NPS = 100×(promotores−detractores)/respuestas; conserva los pasivos.
+Conversión = 100×conversiones/visitas elegibles, con criterio definido.
+Con denominador cero, valor no aplicable. Conserva recuentos y supuestos;
+no añadas 2023, presupuesto o dimensiones que este CSV no contiene.

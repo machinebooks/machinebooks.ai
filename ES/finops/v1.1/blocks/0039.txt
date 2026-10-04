@@ -1,0 +1,33 @@
+import json
+from datetime import datetime, timedelta, timezone
+
+def get_resource_creator(cloudtrail, resource_id, now):
+    if now.tzinfo is None or now.utcoffset() != timedelta(0):
+        raise ValueError("UTC timestamp required")
+    if not isinstance(resource_id, str) or not 1 <= len(resource_id) <= 128:
+        raise ValueError("resource ID required")
+    token, seen = None, set()
+    for _ in range(20):
+        page = cloudtrail.lookup_events(
+            LookupAttributes=[{"AttributeKey":"ResourceName", "AttributeValue":resource_id}],
+            StartTime=now-timedelta(days=90), EndTime=now, MaxResults=50,
+            **({"NextToken":token} if token else {}))
+        for event in page.get("Events", []):
+            if event.get("EventName") != "RunInstances":
+                continue
+            raw = event.get("CloudTrailEvent", "")
+            if len(raw) > 100000:
+                raise ValueError("event size")
+            detail = json.loads(raw)
+            identity = detail.get("userIdentity", {})
+            return {"status":"candidate_found", "event_id":event.get("EventId"),
+                    "identity_type":identity.get("type"), "creator_verified":False}
+        token = page.get("NextToken")
+        if not token:
+            return {"status":"not_found_in_90_day_window", "creator_verified":False}
+        if token in seen:
+            break
+        seen.add(token)
+    return {"status":"partial", "creator_verified":False}
+# Scope and error handling belong to host; failures do not become "no creator".
+# Inspect identity evidence only in a protected review; no raw PII is returned.

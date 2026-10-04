@@ -1,0 +1,4 @@
+def get_all_budget_status(authorized_snapshots, now):
+    return get_current_budget_status(authorized_snapshots,now)
+# Reuse Chapter 7 validated status contract. Host enforces route/object permissions.
+# Zero limits block; unknown cost/cache/version is not green. UI shows text and unit.

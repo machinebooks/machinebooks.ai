@@ -1,0 +1,29 @@
+Genera un dashboard completo combinando los datos de kpis-2024.csv.
+El dashboard debe tener:
+
+FILA SUPERIOR — Indicadores clave (4 cajas con números grandes):
+- Ingresos totales de 2024; comparativa 2023 no disponible sin fuente
+- Resultado del dataset (ingresos − gastos), con porcentaje sobre ingresos
+- Clientes netos ganados en el año
+- NPS agregado = 100×(promotores totales − detractores totales)/respuestas totales
+
+FILA CENTRAL — Gráficos principales (2 gráficos):
+- Izquierda: Evolución mensual de ingresos, gastos y beneficio
+- Derecha: Evolución de clientes nuevos vs. perdidos con saldo neto
+
+FILA INFERIOR — Gráficos secundarios (3 gráficos):
+- Izquierda: Ticket medio mensual con media anual ponderada por pedidos
+- Centro: NPS mensual con escala −100 a 100 y recuentos
+- Derecha: Tasa de conversión mensual con referencia anual ponderada por visitas
+
+ESTILO:
+- Fondo blanco
+- Título: "Dashboard de KPIs — 2024"
+- Subtítulo con fecha de generación
+- Colores sobrios y profesionales (azul oscuro, gris, verde para positivo, rojo para negativo)
+
+Genera dos versiones:
+1. dashboard-2024.png — imagen estática de alta resolución (para imprimir o insertar en presentación)
+2. dashboard-2024.html — versión interactiva con recursos incluidos y tabla equivalente.
+Comprueba valores, denominadores cero, privacidad de datos embebidos y
+lectura al tamaño final; no presentes resultado del dataset como beneficio neto fiscal.

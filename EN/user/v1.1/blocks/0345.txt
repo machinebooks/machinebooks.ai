@@ -1,0 +1,7 @@
+Generate a chart comparing three monthly metrics during 2024:
+- Revenue: from the file ventas-2024.csv
+- Expenses: from the file gastos-2024.csv
+- Active customers: from the file clientes-2024.csv
+
+Use two Y axes: the left for amounts (revenue and expenses) and the
+right for number of customers. Include legend and title.

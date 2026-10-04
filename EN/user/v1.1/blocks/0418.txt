@@ -1,0 +1,6 @@
+For EC2 instances in the authorized scope:
+- Name, type, region, state and identified owner.
+- Accumulated cost with source and definition; mark unavailable if resource attribution is missing.
+- Mean and peak CPU over seven complete days, with coverage and additional metrics.
+- Original currency and period; without conversion do not compare USD with a EUR threshold.
+- Mark review candidates, without inferring that low CPU permits shutdown.

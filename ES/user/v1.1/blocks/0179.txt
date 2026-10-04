@@ -1,0 +1,14 @@
+Necesito que me crees un servidor MCP en Python que se conecte a una API REST
+en https://api.interna.miempresa.com/v2. La API usa autenticación Bearer Token.
+
+Quiero estas herramientas:
+1. Buscar empleados por nombre o departamento
+2. Consultar las vacaciones pendientes de un empleado
+3. Listar los proyectos activos
+
+La API tiene estos endpoints:
+- GET /empleados?buscar=nombre&departamento=dept
+- GET /empleados/{id}/vacaciones
+- GET /proyectos?estado=activo
+
+Créame el archivo servidor.py y requirements.txt listos para usar.

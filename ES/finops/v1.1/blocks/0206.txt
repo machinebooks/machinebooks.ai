@@ -1,0 +1,2 @@
+fully_loaded_hourly_cost = gross_salary * (1 + employer_contribution_fraction) * (1 + structural_overhead_fraction) / annual_productive_hours
+# Assumptions depend on jurisdiction/role/contract; do not add structural overhead twice.

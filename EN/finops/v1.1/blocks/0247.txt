@@ -1,0 +1,15 @@
+import React from "react";
+type AgentSession={id:string; state:string; knownCost:string; currency:string;
+  budget:string|null; unknownAttemptCount:number; sourceCutoff:string};
+export function AgentCostDashboard({sessions}: {sessions:AgentSession[]}) {
+  return <section aria-label="Agent session costs"><h2>Sessions: latest known cutoff</h2>
+    {sessions.length===0 && <p>No sessions in the authorized view.</p>}
+    {sessions.map(s=><article key={s.id}><h3>Session {s.id}</h3>
+      <dl><dt>State</dt><dd>{s.state}</dd><dt>Known subtotal</dt><dd>{s.knownCost} {s.currency}</dd>
+        <dt>Budget</dt><dd>{s.budget ?? "Unknown"}</dd>
+        <dt>Attempts with unknown cost</dt><dd>{s.unknownAttemptCount}</dd>
+        <dt>Data cutoff</dt><dd>{s.sourceCutoff}</dd></dl></article>)}
+  </section>;
+}
+// Host validates tenant/session access and response, handles refresh/errors/cancellation.
+// A polling interval is not real-time completeness, provider reconciliation or cap proof.

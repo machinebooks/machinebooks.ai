@@ -1,0 +1,3 @@
+aws sts get-caller-identity  # Which AWS account am I using?
+az account show              # Which Azure subscription?
+gcloud config list project   # Which GCP project?

@@ -1,0 +1,14 @@
+# Month 1 uses the declared base. Growth starts in month 2, not before month 1.
+from decimal import Decimal
+
+def twelve_month_capacity_scenario(base_cost, base_capacity, monthly_growth, investment):
+    cost,value,growth,initial=[Decimal(str(x)) for x in (base_cost,base_capacity,monthly_growth,investment)]
+    if any(not x.is_finite() for x in (cost,value,growth,initial)) or min(cost,value,initial)<0 or not -1<growth<=1:
+        raise ValueError("Invalid scenario")
+    costs,values=[],[]
+    for month in range(12):
+        costs.append(cost*(1+growth)**month)
+        values.append(value*(1+growth)**month)
+    return {"year1_cost":str(sum(costs)),"year1_capacity":str(sum(values)),
+            "year1_capacity_net_after_investment":str(sum(values)-sum(costs)-initial),
+            "cash_savings":None,"coverage":"declared_categories_only"}

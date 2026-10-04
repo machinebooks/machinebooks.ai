@@ -1,0 +1,7 @@
+# Review interface, not an automatic legal classification.
+# Assess intended use, territorial scope, operator role, Annex I/III,
+# exceptions, prohibited practices, Article 50 and the current schedule.
+# NIST AI RMF is voluntary unless an applicable contract or rule incorporates it.
+# GDPR does not require a DPIA for every system processing personal data.
+def classify_ai_act_risk(use_case, sector, user_facing, affects_rights):
+    raise NotImplementedError("A documented, context-specific regulatory review is required")

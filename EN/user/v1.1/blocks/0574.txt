@@ -1,0 +1,9 @@
+cd /home/usuario/propuesta-cliente
+claude -p "
+Read glosario.md for conventions.
+ROLE: Client analyst.
+Read datos/cliente-tech-solutions.md and datos/proyectos-anteriores.csv.
+Generate partes/analisis-cliente.md with the company profile, relationship history,
+analysis of the current need, opportunities and risks. Length: 800–1,200 words.
+Follow the glossary's naming and formatting conventions strictly.
+"

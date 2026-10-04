@@ -1,0 +1,12 @@
+# Phase 3: integrate the completed, checked phase outputs.
+cd /home/usuario/propuesta-cliente
+claude -p "
+ROLE: Proposal director
+Read partes/analisis-cliente.md, partes/estimacion-economica.md,
+and partes/documento-propuesta.md. Stop if a required part is missing.
+Integrate the analysis and estimate, verify that narrative and amounts
+match their sources, resolve or record discrepancies, and harmonize tone.
+Do not fill missing commitments with invented claims.
+Write resultado/propuesta-tech-solutions.md for human review;
+do not send it, approve it, or accept commercial terms.
+"

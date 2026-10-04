@@ -1,0 +1,7 @@
+# Async callback usage; authenticated host supplies bounded agent and metadata adapter.
+handler = CostTrackingCallbackHandler(
+    authorized_scope=authorized_scope, normalize_usage=normalize_usage,
+    durable_sink=durable_sink)
+result = await agent.ainvoke({"input": approved_document_text},
+                            config={"callbacks": [handler]})
+# The host validates document egress, agent/tool bounds and callback delivery.

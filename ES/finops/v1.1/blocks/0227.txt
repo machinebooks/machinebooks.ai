@@ -1,0 +1,22 @@
+# Partial preview for preliminary classification, not a complete legal review.
+LEGAL_TASKS = {"executive_summary", "entity_extraction", "action_recommendation"}
+
+def prepare_document_context(document, task, preview_chars=32000):
+    if not isinstance(document, str) or not document.strip() or len(document) > 2000000:
+        raise ValueError("Invalid or oversized document")
+    if task not in LEGAL_TASKS | {"preliminary_classification"}:
+        raise ValueError("Unknown task")
+    if type(preview_chars) is not int or not 256 <= preview_chars <= 100000:
+        raise ValueError("Invalid preview limit")
+    partial = task == "preliminary_classification" and len(document) > preview_chars
+    if partial:
+        start_chars = preview_chars // 2
+        end_chars = preview_chars - start_chars
+        text = document[:start_chars] + "\n[PARTIAL PREVIEW: middle omitted]\n" + document[-end_chars:]
+    else:
+        text = document
+    return {"text": text, "is_partial": partial, "source_characters": len(document)}
+
+# Characters are not a token count. The host checks the selected model limit.
+# Full legal tasks must use complete text or validated retrieval with coverage.
+# If adequate coverage cannot fit, reject or split and evaluate; never silently clip.

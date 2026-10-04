@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Se ejecutó el hook tras Write o Edit'"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "fixture_kind": "illustrative_approved_scenario_not_observed_results",
+  "currency": "USD",
+  "base_amount": "48800",
+  "adjustments": [
+    {"id": "promotion", "low": "16200", "expected": "19400", "high": "28200", "evidence_ref": "fictional-fixture-promotion"},
+    {"id": "recommendations", "low": "3000", "expected": "6300", "high": "15000", "evidence_ref": "fictional-fixture-service"}
+  ],
+  "low": "68000", "expected": "74500", "high": "92000",
+  "interval_kind": "scenario_range", "confidence_level": null
+}

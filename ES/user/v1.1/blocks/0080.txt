@@ -1,0 +1,39 @@
+Lee el archivo C:\Users\miusuario\Documents\ventas_marzo_2024.csv
+
+El archivo tiene estas columnas: Fecha, Cliente, Producto, Región,
+Importe, Estado.
+
+Genera un informe ejecutivo de ventas de marzo 2024 con esta estructura:
+
+1. RESUMEN EJECUTIVO (5-8 líneas)
+   - Ventas totales del mes
+   - Comparativa con febrero (archivo: ventas_febrero_2024.csv, misma carpeta)
+   - Variación porcentual
+   - Dato más destacable del mes
+
+2. ANÁLISIS POR REGIÓN (tabla + gráfico de barras)
+   - Ventas por región
+   - Porcentaje sobre el total
+   - Variación respecto a febrero
+
+3. TOP 10 CLIENTES (tabla)
+   - Nombre, importe total, número de operaciones
+   - Marca con * los que son nuevos respecto a febrero
+
+4. ANÁLISIS POR PRODUCTO (tabla + gráfico circular)
+   - Ventas por categoría de producto
+   - Porcentaje del total
+
+5. OPERACIONES EN ESTADO PENDIENTE
+   - Número y valor de operaciones no cerradas
+   - Antigüedad media
+
+6. CONCLUSIONES Y RECOMENDACIONES (3-5 puntos)
+   - Tendencias identificadas
+   - Riesgos detectados
+   - Acciones sugeridas para abril
+
+Genera el informe en formato Markdown con los gráficos como imágenes PNG.
+Tono profesional pero directo. Si algún dato es negativo, dilo claramente.
+Guarda todo en C:\Users\miusuario\Documents\Informes\informe_ventas_marzo_2024\
+Antes de calcular, declara moneda, periodo, estados incluidos en ventas y fecha de corte para la antigüedad de pendientes; solicita las reglas ausentes. Reconcilia filas, duplicados, abonos y totales. Marca variación porcentual no calculable cuando la base sea cero. Los clientes sin ventas registradas en febrero no se califican automáticamente como nuevos. Conserva cálculos y referencias, y deja hipótesis sin evidencia como pendientes.

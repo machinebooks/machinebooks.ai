@@ -1,0 +1,22 @@
+# Pure alert selection uses configured values, no magic fallback budget or send action.
+from decimal import Decimal
+
+def budget_alert_level(spend,budget,levels):
+    if spend is None or budget is None:
+        return {"state":"unknown","level":None,"notification_sent":False}
+    used,limit=Decimal(str(spend)),Decimal(str(budget))
+    if any(not x.is_finite() or x<0 for x in (used,limit)) or len(levels)>10:
+        raise ValueError("Invalid financial snapshot")
+    parsed=[]
+    for name,row in levels.items():
+        threshold=Decimal(str(row["threshold"]))
+        if not threshold.is_finite() or not 0<=threshold<=1:
+            raise ValueError("Invalid threshold")
+        parsed.append((threshold,name))
+    if limit==0:
+        return {"state":"zero_budget","level":"exhausted","notification_sent":False}
+    eligible=[(threshold,name) for threshold,name in parsed if used/limit>=threshold]
+    return {"state":"snapshot_only","level":max(eligible)[1] if eligible else None,
+            "notification_sent":False}
+# Host worker uses bounded tenant batches, atomic leases with renewal/fencing and
+# durable deduplication. An expiring Redis lock alone does not guarantee exclusivity.

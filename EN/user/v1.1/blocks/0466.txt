@@ -1,0 +1,10 @@
+ILLUSTRATIVE PRE-DEPLOYMENT STATUS EXAMPLE:
+  Deployment: api-server (3 replicas, 3 available)
+  Image: registry.empresa.invalid/api-server:2.4.3
+  Assumed pods:
+    api-server-7d8f9c6b5-abc12  Running  Ready  0 restarts  5 days
+    api-server-7d8f9c6b5-def34  Running  Ready  0 restarts  5 days
+    api-server-7d8f9c6b5-ghi56  Running  Ready  0 restarts  5 days
+
+These data do not come from an evidenced execution.
+Check actual state and recovery; wait for authorization.

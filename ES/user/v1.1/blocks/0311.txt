@@ -1,0 +1,7 @@
+Revisa métricas autorizadas del entorno MySQL, sin cambios:
+conexiones, límites, capacidad y consultas lentas si hay registros.
+El estado de backups requiere registros del sistema de respaldo y
+pruebas de restauración; no se deduce sólo del acceso a MySQL.
+Las métricas de disco o fragmentación pueden requerir herramientas
+adicionales y revisión del responsable. No ejecutes OPTIMIZE ni cambies
+configuración. Define los umbrales del semáforo y marca lo no verificable.

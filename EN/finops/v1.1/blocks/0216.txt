@@ -1,0 +1,19 @@
+from decimal import Decimal, ROUND_HALF_UP
+
+# Same productive-hour basis as the annual profile: 1328 / 12 monthly.
+annual_productive_capacity = Decimal("1328")
+monthly_productive_capacity = annual_productive_capacity / 12
+required_hours = Decimal("100")
+ramp_factors = (Decimal("0.35"), Decimal("0.55"))
+delivered_hours = annual_productive_capacity * sum(ramp_factors) / 12
+remaining_hours = max(Decimal("0"), required_hours - delivered_hours)
+two_month_allocated_cost = Decimal("58") * annual_productive_capacity * 2 / 12
+consultant_cost = Decimal("95") * required_hours
+cent = Decimal("0.01")
+print(f"Delivered hours: {delivered_hours}")
+print(f"Remaining hours: {remaining_hours}")
+print(f"Allocated employee cost: EUR {two_month_allocated_cost.quantize(cent, rounding=ROUND_HALF_UP)}")
+print(f"Consultant cost: EUR {consultant_cost.quantize(cent, rounding=ROUND_HALF_UP)}")
+# 99.6 hours delivered; 0.4 still needed; EUR 12837.33 versus EUR 9500.00.
+# The consultant scenario assumes immediate availability and equivalent quality.
+# Neither partial comparison includes recruitment, supervision or later value.

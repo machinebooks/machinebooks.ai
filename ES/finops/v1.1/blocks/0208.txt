@@ -1,0 +1,20 @@
+from decimal import Decimal, ROUND_HALF_UP
+
+available_hours_year = Decimal("1660")
+productive_factor = Decimal("0.80")
+allocation = Decimal("0.70")
+productive_hours_year = available_hours_year * productive_factor
+productive_hours_month = productive_hours_year / 12
+senior_month = productive_hours_month * allocation * Decimal("75")
+solutions_month = productive_hours_month * allocation * Decimal("58")
+team_month = senior_month + solutions_month
+team_year = productive_hours_year * allocation * Decimal("133")
+
+def display_eur(value):
+    return value.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+print("Responsable preventa, EUR/mes:", display_eur(senior_month))
+print("Ingeniero soluciones, EUR/mes:", display_eur(solutions_month))
+print("Equipo atribuido, EUR/mes:", display_eur(team_month))
+print("Equipo atribuido, EUR/año:", display_eur(team_year))
+# Presentation rounding happens after calculation, never before annualization.

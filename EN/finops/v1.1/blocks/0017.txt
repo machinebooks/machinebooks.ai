@@ -1,0 +1,12 @@
+# Narrative-only host contract, with no financial or optimization execution authority.
+async def analyze_cost_snapshot(approved_snapshot, authorize, principal, reviewer):
+    scope = await authorize(principal, "cost.narrative", snapshot_id=approved_snapshot["id"])
+    if scope != approved_snapshot["scope"]:
+        raise ValueError("Snapshot scope mismatch")
+    narrative = await reviewer(snapshot=approved_snapshot,
+        instructions="Explain subtotals and unknowns. Form hypotheses for review. Do not invent ROI or savings.")
+    if not isinstance(narrative,str) or len(narrative)>6000:
+        raise ValueError("Invalid bounded narrative")
+    return {"snapshot_id":approved_snapshot["id"], "narrative":narrative,
+            "state":"pending_human_review", "actions_authorized":False}
+# Host pins provider/model, input limits, timeout, tariff, data scope and durable metadata.

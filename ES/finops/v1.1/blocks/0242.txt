@@ -1,0 +1,96 @@
+from decimal import Decimal, InvalidOperation
+from time import monotonic
+from uuid import uuid4
+
+def budget_amount(raw):
+    if raw is None or isinstance(raw, bool):
+        raise ValueError("Known non-negative EUR amount required")
+    try:
+        value = Decimal(str(raw))
+    except (ValueError, InvalidOperation):
+        raise ValueError("Invalid EUR amount") from None
+    if not value.is_finite() or value < 0:
+        raise ValueError("Invalid EUR amount")
+    return value
+
+class WorkflowBudget:
+    # Single-process sequential illustration, not a durable concurrent ledger.
+    def __init__(self, workflow_id, objective, total_eur, timeout_seconds=300):
+        if not isinstance(workflow_id, str) or not 1 <= len(workflow_id) <= 256:
+            raise ValueError("Bounded workflow identity required")
+        if not isinstance(objective, str) or not 1 <= len(objective) <= 2000:
+            raise ValueError("Bounded objective required")
+        if type(timeout_seconds) is not int or not 1 <= timeout_seconds <= 3600:
+            raise ValueError("Invalid execution deadline")
+        self.workflow_id, self.objective = workflow_id, objective
+        self.total_eur, self.incurred_eur = budget_amount(total_eur), Decimal("0")
+        self.started, self.timeout_seconds = monotonic(), timeout_seconds
+        self.reservations, self.events, self.agent_costs = {}, {}, {}
+        self.assumed_bound_exceeded = False
+
+    @property
+    def remaining_eur(self):
+        return self.total_eur - self.incurred_eur - sum(self.reservations.values(), Decimal("0"))
+
+    @property
+    def elapsed_seconds(self):
+        return max(0, monotonic() - self.started)
+
+    @property
+    def time_remaining_seconds(self):
+        return max(0, self.timeout_seconds - self.elapsed_seconds)
+
+    @property
+    def remaining_fraction(self):
+        return self.remaining_eur / self.total_eur if self.total_eur else Decimal("0")
+
+    def reserve(self, event_id, upper_bound_eur):
+        if not isinstance(event_id, str) or not 1 <= len(event_id) <= 256:
+            raise ValueError("Bounded event identity required")
+        bound = budget_amount(upper_bound_eur)
+        if bound <= 0 or event_id in self.reservations or event_id in self.events:
+            raise ValueError("Positive bound and unused event identity required")
+        if len(self.events) + len(self.reservations) >= 10000:
+            raise ValueError("Illustrative ledger event limit reached")
+        if self.assumed_bound_exceeded or self.time_remaining_seconds <= 0 or bound > self.remaining_eur:
+            return False
+        self.reservations[event_id] = bound
+        return True
+
+    def reconcile(self, event_id, agent_id, actual_eur):
+        if not isinstance(agent_id, str) or not 1 <= len(agent_id) <= 256:
+            raise ValueError("Bounded agent identity required")
+        actual = budget_amount(actual_eur)
+        if event_id in self.events:
+            recorded_agent, recorded_actual, recorded_bound = self.events[event_id]
+            if (recorded_agent, recorded_actual) != (agent_id, actual):
+                raise ValueError("Conflicting replay of a cost event")
+            return actual <= recorded_bound and self.incurred_eur <= self.total_eur
+        if event_id not in self.reservations:
+            raise ValueError("Reconciliation requires a prior reservation")
+        bound = self.reservations.pop(event_id)
+        self.events[event_id] = (agent_id, actual, bound)
+        self.incurred_eur += actual
+        self.agent_costs[agent_id] = self.agent_costs.get(agent_id, Decimal("0")) + actual
+        self.assumed_bound_exceeded = self.assumed_bound_exceeded or actual > bound
+        # Record the full incurred cost even when the assumed bound was wrong.
+        return actual <= bound and self.incurred_eur <= self.total_eur
+
+class AgentBudgetManager:
+    def __init__(self):
+        self.workflows = {}
+
+    def create_workflow(self, objective, total_eur, timeout_seconds=300):
+        budget = WorkflowBudget(str(uuid4()), objective, total_eur, timeout_seconds)
+        self.workflows[budget.workflow_id] = budget
+        return budget
+
+    def summary(self, workflow_id):
+        budget = self.workflows[workflow_id]
+        return {"workflow_id": workflow_id, "incurred_eur": budget.incurred_eur,
+                "reserved_eur": sum(budget.reservations.values(), Decimal("0")),
+                "remaining_eur": budget.remaining_eur, "agent_costs": dict(budget.agent_costs)}
+
+# The host enforces tenant identity, approved limits and real call timeout.
+# A production ledger needs transactional reservation, persistence and recovery.
+# Failed/unknown calls retain reservations until liability is reconciled.

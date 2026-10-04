@@ -1,0 +1,24 @@
+Tengo dos fuentes de datos:
+1. Carpeta con 30 albaranes escaneados en PDF: D:\Almacen\Albaranes_Marzo
+2. Un Excel con los pedidos del mes: D:\Almacen\Pedidos_Marzo.xlsx
+
+Para cada albarán, extrae:
+- Número de albarán
+- Proveedor
+- Fecha de entrega
+- Lista de artículos con cantidad recibida
+
+Después, cruza con los pedidos del Excel y genera un informe de discrepancias:
+- Artículos pedidos pero no recibidos
+- Artículos recibidos con cantidad diferente a la pedida
+- Artículos recibidos sin pedido correspondiente
+
+Genera dos archivos:
+1. albaranes_extraidos.csv con todos los datos de los albaranes
+2. discrepancias_marzo.csv con solo las diferencias encontradas
+Trabaja con copias autorizadas y un destino nuevo sin sobrescribir.
+Define claves de pedido, albarán y artículo; conserva fuentes y páginas.
+Revisa duplicados, entregas parciales, unidades y períodos.
+No unas sólo por nombre del proveedor ni conviertas ausencia en cero.
+Reconcilia todas las filas y deja claves ausentes o ambiguas pendientes.
+Revisa el informe antes de enviarlo o modificar pedidos.

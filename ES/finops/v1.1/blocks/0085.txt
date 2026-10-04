@@ -1,0 +1,5 @@
+from models.budget_config import BudgetConfig
+# Reuse the canonical Chapter 6 registry/table, Numeric money and UTC version validity.
+# BudgetCounter contains observed and reserved spend; config is not a mutable ledger.
+# Host adds validated throttle policy (alert <= throttle < block <=1) if required.
+# Workflow caps combine with tenant, global, service and user caps, never replace them.

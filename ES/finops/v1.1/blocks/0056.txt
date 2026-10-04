@@ -1,0 +1,11 @@
+import React from "react";
+export const KPICard = ({label, value, status = "unknown"}: {
+  label: string; value: string; status?: "ok" | "warning" | "alert" | "unknown";
+}) => {
+  const states = {ok: "Dentro del umbral", warning: "Revisar umbral",
+    alert: "Umbral superado", unknown: "Datos incompletos"};
+  return <section aria-label={label} className="rounded border p-4">
+    <h3>{label}</h3><p>{value}</p><p>Estado: {states[status]}</p>
+  </section>;
+};
+// Status uses visible text. Trend/quality requires a validated comparison window.

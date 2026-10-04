@@ -1,0 +1,8 @@
+Generate the weekly status report for all projects.
+Read each project's estado.md, compare it with last week's
+report, and generate the new report with:
+- Executive summary (5 lines maximum)
+- Status of each project (traffic light: green/yellow/red)
+- Week's progress
+- Risks and blockers
+- Actions for next week

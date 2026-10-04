@@ -1,0 +1,26 @@
+import math
+
+class EmbeddingService:
+    def __init__(self, approved_embedder, model_version, dimension):
+        if type(dimension) is not int or not 1 <= dimension <= 4096:
+            raise ValueError("dimension")
+        self.embedder,self.model_version,self.dimension=approved_embedder,model_version,dimension
+
+    async def embed(self,text):
+        if not isinstance(text,str) or not 1 <= len(text) <= 20000:
+            raise ValueError("text size")
+        result = await self.embedder(text)
+        vector = result["vector"]
+        if result["model_version"]!=self.model_version or len(vector)!=self.dimension:
+            raise ValueError("embedding identity mismatch")
+        if any(isinstance(x,bool) or not isinstance(x,(int,float)) or not math.isfinite(x) for x in vector):
+            raise ValueError("finite vector required")
+        return vector
+
+    async def embed_batch(self,texts):
+        if not isinstance(texts,list) or len(texts)>100:
+            raise ValueError("batch size")
+        return [await self.embed(text) for text in texts]
+# Adapter implements a pinned local or approved external endpoint with timeout,
+# authorization and tracking. No external fallback is configured in this example.
+# Model/dimension changes require separate index identity, migration and evaluation.

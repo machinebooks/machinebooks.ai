@@ -1,0 +1,4 @@
+@server.tool()
+async def buscar_cliente(nombre: str) -> str:
+    # Read the complete validated fixture implementation above.
+    ...

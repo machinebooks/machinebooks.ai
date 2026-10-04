@@ -1,0 +1,8 @@
+mi-proyecto/
+├── datos/           ← Input data (read-only for agents)
+├── partes/          ← Partial results from each agent
+├── resultado/       ← Integrated final document
+├── logs/            ← Execution logs for each agent
+├── CLAUDE.md        ← General project instructions
+└── glosario.md      ← Coherence conventions
+The read-only annotation is a requirement: configure and test effective permissions.

@@ -1,0 +1,12 @@
+# Heuristic signal only; no guarantee of anonymization, absence of PII or retention law.
+import re
+PII_PATTERNS={"email":r"[\w.+-]+@[\w-]+\.[A-Za-z]+", "possible_dni":r"\b[0-9]{8}[A-Z]\b"}
+
+def assess_pii_indicators(content):
+    if not isinstance(content,str) or len(content)>64000:
+        raise ValueError("Bounded text required")
+    counts={name:sum(1 for _ in re.finditer(pattern,content)) for name,pattern in PII_PATTERNS.items()}
+    return {"indicator_counts":counts,"state":"review_required" if any(counts.values()) else "no_indicator_found",
+            "personal_data_absent_proven":False,"retention_days":None}
+# Matches/raw content are neither logged nor persisted here. Host determines legal
+# basis, sensitivity/context, minimization, retention/holds and approved provider egress.

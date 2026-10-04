@@ -1,0 +1,7 @@
+# Interface only. This chapter does not provide a complete production pipeline.
+# Contract: authenticate context; validate every call before execution;
+# bind approval to the exact action; reserve quotas atomically;
+# revalidate regenerated calls; minimise data; await durable audit;
+# handle cancellation, partial effects and tool errors explicitly.
+async def process_request(user_input, session):
+    raise NotImplementedError("Application-specific security adapters are required")

@@ -1,0 +1,15 @@
+# Partial read-only inventory; these commands do not reconstruct a complete timeline.
+# Debian/Ubuntu current package log only; review timestamps and retained rotations.
+grep -E ' (install|upgrade) ' /var/log/dpkg.log | tail -20
+
+# Files modified within 48 hours; modification time is not proof of content changes.
+find /etc -type f -mmin -2880 -ls
+
+# Current application releases, not proof of deployment history.
+ls -lt /opt/webapp/releases/
+
+# Current authorized user's crontab, not a history of edits.
+crontab -l
+
+# Available service journal; retain failures and verify coverage and timezone.
+journalctl --utc --since '48 hours ago' -u webapp --no-pager -o short-iso

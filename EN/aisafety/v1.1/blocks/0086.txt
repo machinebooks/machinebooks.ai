@@ -1,0 +1,6 @@
+# Monitoring-report interface; metrics alone do not establish Article 72 compliance.
+# Require authorised data, an explicit UTC period and metric definitions.
+# Check collection coverage and errors; missing data must remain unknown.
+# Keep incidents, detector candidates and control activations distinct.
+def generate_ai_act_report(prometheus_url, period_days=90):
+    raise NotImplementedError("A validated monitoring and regulatory reporting adapter is required")

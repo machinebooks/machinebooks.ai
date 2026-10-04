@@ -1,0 +1,31 @@
+## Conciliación bancaria — Marzo 2024
+
+### Resumen
+- Movimientos banco: 340
+- Registros ERP: 285
+- Pares confirmados supuestos: 261
+- Banco sin correspondencia: 79
+- ERP sin correspondencia: 24
+
+### Pares confirmados supuestos (261)
+[Los 261 pares coincidentes con referencia cruzada]
+
+### Banco sin correspondencia (79)
+| # | Fecha banco | Concepto | Importe | Posible coincidencia |
+|---|-------------|----------|---------|---------------------|
+| 1 | 03/03/2024 | COMISION MANTENIMIENTO | -45,00 | Sin correspondencia (comisión bancaria) |
+| 2 | 05/03/2024 | TRANSFERENCIA REF.4521 | -2.340,00 | ERP fila 89: 2.340,00 fecha 08/03 |
+| 3 | 12/03/2024 | RECIBO SEGUROS MAPFRE | -1.890,50 | No encontrado en ERP |
+[...]
+
+### ERP sin correspondencia (24)
+| # | Fecha ERP | Proveedor | Importe | Estado | Posible causa |
+|---|-----------|-----------|---------|--------|---------------|
+| 1 | 28/03/2024 | Suministros Industriales | -3.450,00 | Pagado | Posible pago en abril; pendiente de extracto y referencia |
+| 2 | 15/03/2024 | Consultoría Técnica | -8.900,00 | Pagado | No encontrado en banco |
+[...]
+
+### Estadísticas
+- Proporción ilustrativa de movimientos del banco emparejados: 261/340 = 76,8%
+- Importes pendientes ilustrativos: -12.456,30 (banco) / -18.230,00 (ERP); no comparables sin puente de conciliación
+- Comisiones candidatas ilustrativas: 12 movimientos por 890,45; verificar evidencia

@@ -1,0 +1,13 @@
+# Work context
+
+I manage 6 projects. Each has a directory in /proyectos/:
+- /proyectos/migracion-erp/ — ERP migration. Phase 2 of 4.
+- /proyectos/portal-clientes/ — Customer portal. Testing.
+- /proyectos/automatizacion-rrhh/ — HR automation. Starting.
+- /proyectos/consolidacion-datos/ — Data consolidation. Phase 3 of 3.
+- /proyectos/app-movil/ — Mobile app. UX design.
+- /proyectos/compliance-gdpr/ — GDPR compliance. Audit in progress.
+
+Each project has estado.md with updated metrics.
+Weekly reports go in /informes/ as informe-semanal-YYYY-MM-DD.md.
+The template is /plantillas/informe-semanal.md.

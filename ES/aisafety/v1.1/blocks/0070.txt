@@ -1,0 +1,8 @@
+# RAG ingestion interface; no vector-store or embedding implementation is supplied.
+# Verify source authority, tenant and document ACLs before any data transfer.
+# Use reviewed parsing and classification; unresolved alerts must not silently index.
+# Preserve provenance and explicit length policy; do not truncate evidence silently.
+# Configure typed metadata for the pinned store, not comma-joined role substrings.
+class SecureRAGIngestion:
+    def ingest_document(self, text, metadata):
+        raise NotImplementedError("A reviewed ingestion, classification and storage adapter is required")

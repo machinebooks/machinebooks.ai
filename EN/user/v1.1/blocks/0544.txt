@@ -1,0 +1,43 @@
+cd /home/usuario/reporting-mensual
+
+claude -p "
+FINANCIAL REPORTING PIPELINE — JANUARY 2025
+
+PHASE 1 — OBTAIN AND VALIDATE
+Read datos/facturacion-enero.csv, datos/gastos-enero.csv, datos/cobros-enero.csv,
+and datos/presupuesto-q1.csv. Record rows, hashes, columns, types,
+currency, period, and exceptions in informes/validacion-enero.md.
+Use Decimal amounts with two decimal places; dates must be in January 2025.
+Stop delivery if a critical source or valid field is missing.
+A clearly identified partial draft is allowed; it must not be sent.
+
+PHASE 2 — PREPARE
+Filter status Issued in invoices; report Draft separately.
+Group invoiced amounts by client. Separate Paid/Pending expenses.
+Reconcile collections by invoice identity: do not sum files without
+resolving duplicates, credits, partial payments, and differences.
+Filter budget month January and document the comparison basis.
+Retain source rows and an exception report.
+
+PHASE 3 — ANALYZE
+Calculate issued invoicing, reconciled collections, collected/invoiced ratio
+(only with a valid denominator), and paid/pending expenses by category.
+Do not call invoiced amounts minus paid expenses operating margin: these
+mix accrual and cash bases. Only calculate margin with income and expenses
+on the same accounting basis and with sufficient evidence.
+Compare budget and actual by category on the same basis; budget is not
+actual spending. Mark missing data and zero denominators.
+Identify top invoicing, variances, receivables, and outstanding payments.
+
+PHASE 4 — PREPARE DELIVERY
+Generate informes/informe-financiero-enero-2025.md with an executive summary,
+defined KPIs, income by client and collections, excluded drafts,
+expenses by category and state, budget versus actual, evidence-based
+recommendations, and validation appendix. Trace each amount to its source.
+Check totals and European numeric format 1.234,56 EUR before presentation.
+Wait for human review. Do not email or publish automatically.
+Record failure causes and return an error; do not declare success.
+For this fixture, require a unique client and concept match between
+invoices and collections; record absent unique IDs and due dates.
+Do not classify balances as overdue or recognize income from Issued status.
+"

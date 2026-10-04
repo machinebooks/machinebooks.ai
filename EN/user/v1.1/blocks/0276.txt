@@ -1,0 +1,9 @@
+The file informe-anual.xlsx has 4 sheets:
+- "Resumen" — summary table with totals by quarter
+- "Detalle Q1" — first quarter detail
+- "Detalle Q2" — second quarter detail
+- "Gráficos" — embedded Excel charts
+
+Extract the data from the "Detalle Q1" and "Detalle Q2" sheets, consolidate
+them into a single CSV file, and verify that the totals match the
+"Resumen" sheet. Ignore the "Gráficos" sheet.

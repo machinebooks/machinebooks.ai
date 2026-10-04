@@ -1,0 +1,8 @@
+From C17’s empresa-demo.db, read-only, with a 2024-03-31 cutoff:
+1. Extract Q1 2024 net sales of completed orders by zone and
+   category, using transaction prices and discounts.
+2. Do not calculate budget variance: the database contains no budget.
+   If a validated budget is provided, confirm criteria and mapping first.
+3. Generate a chart and table of monthly trends with sources and limits.
+4. Write a 10-line summary without unestablished causes.
+5. Export new copies under informes/2024-Q1/ without overwriting.

@@ -1,0 +1,13 @@
+{
+  "kind": "illustrative_budget_templates",
+  "currency": "USD",
+  "instantiated": false,
+  "budgets": [
+    {"scope":"global","scope_id":"","period":"monthly","budget_usd":"200","alert":"0.80","throttle":"0.95","block":"1.00"},
+    {"scope":"service","scope_id":"proposal_section","period":"daily","budget_usd":"12","alert":"0.75","throttle":"0.90","block":"1.00"},
+    {"scope":"service","scope_id":"index_updater","period":"daily","budget_usd":"5","alert":"0.80","throttle":"0.95","block":"1.00"},
+    {"scope":"service","scope_id":"chat_assistant","period":"daily","budget_usd":"8","alert":"0.80","throttle":"0.95","block":"1.00"},
+    {"scope":"service","scope_id":"risk_evaluator","period":"daily","budget_usd":"15","alert":"0.80","throttle":"0.95","block":"1.00"},
+    {"scope":"user_template","scope_id":"not_a_counter_key","period":"daily","budget_usd":"5","alert":"0.80","throttle":"0.95","block":"1.00"}
+  ]
+}

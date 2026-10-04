@@ -1,0 +1,1 @@
+claude --permission-mode dontAsk --tools "Read,Glob,Grep" --disallowedTools "mcp__*" --allowedTools "Read,Glob,Grep" --max-turns 10 -p "Busca el texto solicitado en las copias autorizadas. Cita rutas y registra archivos no leídos. No escribas archivos."

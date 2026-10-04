@@ -1,0 +1,18 @@
+set -euo pipefail
+: "${DOCKER_CONTEXT:?Set the reviewed Docker context}"
+compose=(docker --context "$DOCKER_CONTEXT" compose
+  --project-name staging --file /opt/staging/docker-compose.yml)
+
+# Named volumes/bind mounts and recovery were reviewed before approval.
+"${compose[@]}" config --quiet
+"${compose[@]}" stop
+"${compose[@]}" build --no-cache api-backend worker
+
+# Requires Compose supporting --wait and --wait-timeout.
+# A service without a healthcheck only needs to be running.
+if ! "${compose[@]}" up -d --wait --wait-timeout 120; then
+  "${compose[@]}" logs --since 30s --no-color >&2 ||
+    echo "Log collection failed; readiness is unverified." >&2
+  exit 1
+fi
+"${compose[@]}" ps --format "table {{.Name}}\t{{.Status}}\t{{.Ports}}"

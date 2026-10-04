@@ -1,0 +1,9 @@
+Clean a copy of ventas-Q3.csv with these rules:
+- Required columns: Fecha, Cliente, Producto, Cantidad, Precio, and ID_operación.
+- Retain rows missing required values as exceptions rather than deleting them.
+- Missing price: pending; do not mix text markers into a numeric column.
+- Confirm every date’s source format; ambiguous dates remain pending.
+- Date+customer+product does not establish duplication; confirm ID and provenance.
+- Different quantities can represent distinct transactions; do not keep the largest.
+- Preserve original names, refunds, zeros, and negative quantities.
+- Show proposals and reconciliation before applying authorized changes.

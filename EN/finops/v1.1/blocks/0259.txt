@@ -1,0 +1,12 @@
+-- Historical CUR Athena schema; host supplies fixed authorized table and partitions.
+SELECT line_item_product_code AS service,
+       line_item_currency_code AS currency,
+       SUM(line_item_unblended_cost) AS unblended_subtotal
+FROM cur_database.cur_table
+WHERE year = '2026' AND month = '03'
+  AND line_item_usage_start_date >= TIMESTAMP '2026-03-01 00:00:00'
+  AND line_item_usage_start_date < TIMESTAMP '2026-04-01 00:00:00'
+GROUP BY line_item_product_code, line_item_currency_code
+ORDER BY unblended_subtotal DESC
+LIMIT 20;
+-- Top rows only; not amortized/net TCO. CUR versions/schema/finality may differ.

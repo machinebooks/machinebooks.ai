@@ -1,0 +1,18 @@
+I need to plan my week. Give me a complete analysis:
+
+1. CALENDAR: List all my meetings from Monday to Friday,
+   with time, duration, attendees, and topic. Identify overlaps
+   and gaps of more than 30 minutes.
+
+2. EMAIL: Review my emails from the last 3 business days.
+   Extract any commitments I've made (things I promised to do
+   or send) and any tasks assigned to me.
+
+3. TASKS: Read the file C:\Users\myuser\pending-tasks.md
+   and show me the tasks with their priority and deadline.
+
+4. PROPOSAL: Cross-reference everything and give me a proposal for
+   distributing tasks in the week's free gaps, prioritizing:
+   - First: tasks with a deadline this week
+   - Second: commitments made by email
+   - Third: important tasks without a deadline

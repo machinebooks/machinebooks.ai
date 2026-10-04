@@ -1,0 +1,7 @@
+Diagnóstico rápido ficticio:
+nginx: activo; api-server: detenido; MySQL: activo.
+Memoria actual utilizada: 94%; no prueba el estado previo al fallo.
+La aplicación registra un fallo de asignación y atribuye la terminación al OOM killer.
+Hipótesis: presión de memoria o límite del proceso/cgroup.
+Contrasta la atribución con registros de kernel/cgroup y el periodo exacto.
+Revisa también el error upstream de nginx; no declares causa confirmada.

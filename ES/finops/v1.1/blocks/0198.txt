@@ -1,0 +1,12 @@
+# Synthetic bounded probe through the approved tracked pipeline, never customer text.
+import time
+
+async def provider_probe(pipeline,scope,service_name):
+    started=time.monotonic()
+    try:
+        result=await pipeline.complete(scope,service_name,{"messages":[{"role":"user","content":"Responde OK."}],"probe":True})
+    except Exception:
+        return {"state":"probe_failed","observed_at_monotonic":time.monotonic(),"cost_known":False}
+    return {"state":"probe_responded","latency_ms":int((time.monotonic()-started)*1000),
+            "cost_known":result.get("observed_cost_usd") is not None}
+# A charged single probe is not a quality test, availability SLA or failover authority.

@@ -1,0 +1,9 @@
+En el directorio /opt/staging/ hay un docker-compose.yml con
+6 servicios: nginx, api-backend, worker, redis, postgres y
+meilisearch. Necesito:
+1. Detener sólo los servicios de este proyecto en el contexto revisado
+2. Reconstruir las imágenes de api-backend y worker (han cambiado)
+3. Levantar todo
+4. Verificar que cada servicio está healthy
+5. Mostrar los logs de los últimos 30 segundos si alguno falla
+6. Dame un resumen del estado final

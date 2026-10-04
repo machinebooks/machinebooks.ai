@@ -1,0 +1,11 @@
+# Metadata illustration, not deployable images or cloud tagging enforcement.
+services:
+  api:
+    image: example.invalid/educational-api:fixture-v1
+    labels:
+      finops.environment: staging
+      finops.team: backend
+      finops.service: api
+      finops.cost-center: CC-FIXTURE
+# Host pins a reviewed image digest. Docker labels are separate from AWS/Azure/GCP
+# resource tags; propagation and shared-cost allocation require explicit adapters.

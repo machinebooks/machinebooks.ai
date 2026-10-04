@@ -1,0 +1,4 @@
+Review CPU requests, available metrics, and the controller managing
+api-server in the authorized context. Propose an HPA with minimum 3,
+maximum 10, and target CPU utilization of 70%.
+Do not treat manual scaling to 5 as a fixed replica count under HPA.

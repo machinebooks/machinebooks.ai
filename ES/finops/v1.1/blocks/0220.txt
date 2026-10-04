@@ -1,0 +1,13 @@
+import React from "react";
+type Props = {currency: string; estimatedCost: string|null; estimateMethod: string;
+  candidateCost: string|null; candidateEligible: boolean; onPropose?: ()=>void};
+export function CostAwarenessBadge(props: Props) {
+  return <div role="status"><p>Estimación ({props.estimateMethod}):
+    {props.estimatedCost ?? "No disponible"} {props.currency}</p>
+    <p>Escenario alternativo: {props.candidateCost ?? "No disponible"} {props.currency}.
+      Requiere validar calidad, datos y consumo.</p>
+    {props.candidateEligible && props.onPropose && <button type="button" onClick={props.onPropose}>Proponer revisión</button>}
+  </div>;
+}
+// Host estimates serialized full input/cache/output/tools with versioned rates.
+// This display does not tokenize, reserve funds or directly switch providers.

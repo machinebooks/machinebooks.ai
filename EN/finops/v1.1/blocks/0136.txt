@@ -1,0 +1,10 @@
+# Read-only hypotheses over an approved aggregate; no schedule or delivery is implied.
+async def analyze_capacity_change(scope, snapshot, reviewer):
+    if snapshot["scope"]!=scope or not snapshot["comparable_windows"]:
+        raise ValueError("Comparable authorized snapshots required")
+    text=await reviewer(snapshot=snapshot,
+        instructions="Formulate hypotheses about change. Distinguish observation from configuration. Do not attribute causation or recommend executing changes.")
+    if not isinstance(text,str) or len(text)>2000:
+        raise ValueError("Invalid bounded narrative")
+    return {"snapshot_id":snapshot["id"],"hypotheses":text,"state":"pending_human_review"}
+# Host enforces provider/data scope, tariff, timeout and immutable snapshot provenance.

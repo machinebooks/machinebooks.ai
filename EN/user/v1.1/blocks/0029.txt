@@ -1,0 +1,14 @@
+┌─────────────────────────────────────────────────────┐
+│                    THE AGENT                        │
+├───────────────┬─────────────────┬───────────────────┤
+│     TOOLS     │    CONTEXT      │    AUTONOMY       │
+│               │                 │                   │
+│  Read         │  System         │  Assisted         │
+│  Write        │  CLAUDE.md      │    (you decide)   │
+│  Execute      │  Conversation   │  Semi-autonomous  │
+│  Search       │  Current        │    (agent         │
+│  MCP          │    instruction  │     proposes)     │
+│               │                 │  Autonomous       │
+│               │                 │    (agent         │
+│               │                 │     executes)     │
+└───────────────┴─────────────────┴───────────────────┘

@@ -1,0 +1,6 @@
+# Interface for an aggregate transparency report, not a compliance decision.
+# Period statistics require period-specific evidence; rolling 30-day counts
+# must remain separate. Check review and evaluation dates independently.
+# Dates must be aware UTC, non-future, and assessed against an explicit policy.
+def generate_transparency_report(systems, period_start, period_end):
+    raise NotImplementedError("A validated inventory and reporting adapter is required")

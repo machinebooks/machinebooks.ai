@@ -1,0 +1,6 @@
+# GNU/Linux cron example; verify that the installed scheduler supports CRON_TZ.
+# Create /home/usuario/logs and configure PATH and authorized client permissions first.
+# Calendar day 1 is not the first working day; use a reviewed business calendar if required.
+CRON_TZ=UTC
+PATH=/usr/local/bin:/usr/bin:/bin
+0 8 1 * * /usr/bin/flock -n /home/usuario/logs/reporting-mensual.lock /bin/bash -c 'months=(enero febrero marzo abril mayo junio julio agosto septiembre octubre noviembre diciembre); previous=$(date -u -d "$(date -u +\%Y-\%m-01) -1 day" +\%Y-\%m); number=${previous#*-}; year=${previous\%\%-*}; exec /home/usuario/scripts/pipeline-financiero-mensual.sh "${months[10#$number-1]}" "$year"'

@@ -1,5 +1,12 @@
 # El FinOps Engineer y la Máquina — Código de ejemplo
 
+## Código de la versión 1.1
+
+Los 273 bloques didácticos de la versión 1.1 están en [v1.1/blocks](v1.1/blocks). El [manifiesto](v1.1/manifest.json) indica el capítulo o sección, la posición del bloque y su SHA-256. Cada TXT conserva exactamente el texto, los saltos de línea y las tabulaciones del Word final; puede copiarse para preparar pruebas con las dependencias y condiciones indicadas en el libro. La extracción no acredita ejecución ni idoneidad para producción.
+
+Las carpetas anteriores se conservan como material de la edición previa y pueden contener una selección diferente. La referencia para esta revisión es la carpeta `v1.1`. La aplicación de escritorio y el núcleo de producción son privados; no hay ni se prevé una versión Community. Este repositorio publica exclusivamente ejemplos complementarios.
+
+
 > **Gobernar el coste de la IA y la nube**
 
 Código extraído de los capítulos en español del libro **"El FinOps Engineer y la Máquina"** de Carlos Pérez González.
@@ -8,10 +15,10 @@ Parte de la serie **El Profesional y la Máquina**.
 Cada fichero contiene bloques de código didáctico tal y como aparecen en el libro.
 Los comentarios y nombres de variables están en el idioma original del capítulo.
 
-## Estructura
+## Estructura del material anterior
 
 Los ficheros se organizan por capítulo (`cap-XX/`) o por ruta extraída del código fuente.
-Cada fichero incluye un comentario de cabecera indicando el capítulo de origen.
+Los ficheros anteriores incluyen una cabecera con el capítulo de origen; los TXT de `v1.1` conservan el bloque sin cabeceras añadidas y usan el manifiesto para identificarlo.
 
 ## Importante
 

@@ -1,0 +1,7 @@
+# Document marking interface; no attribution is implemented.
+class DocumentWatermarker:
+    def watermark(self, text, doc_id, tenant_id):
+        raise NotImplementedError("A tested marking and authorized copy mapping adapter is required")
+
+    def extract_watermark(self, text):
+        raise NotImplementedError("Verify complete markers and report uncertain matches")

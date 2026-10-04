@@ -1,0 +1,63 @@
+=== Illustrative AWS Cost Report — March 2026 (through day 21) ===
+
+TOTAL SPENDING: 4,872.34 €
+(February same period: 4,156.20 € → +17.2%)
+
+BREAKDOWN BY SERVICE:
+┌───────────────────┬──────────┬──────────┬──────────┐
+│ Service           │ Mar 2026 │ Feb 2026 │ Change   │
+├───────────────────┼──────────┼──────────┼──────────┤
+│ EC2               │ 2,340.12 │ 2,105.30 │ +11.2%   │
+│ RDS               │   987.45 │   945.60 │  +4.4%   │
+│ S3                │   456.23 │   412.10 │ +10.7%   │
+│ Lambda            │   234.56 │   189.40 │ +23.8% ⚠│
+│ CloudFront        │   198.34 │   187.20 │  +6.0%   │
+│ Other             │   655.64 │   316.60 │ +107.1% ⚠│
+└───────────────────┴──────────┴──────────┴──────────┘
+
+⚠ Lambda has grown 23.8%. Possible cause: more invocations
+  or functions with more allocated memory.
+⚠ "Other" has risen 107%. Investigate what new services
+  are being used.
+
+TOP 5 MOST EXPENSIVE RESOURCES:
+1. i-0a1b2c3d (prod-db-primary, r5.2xlarge) — 456.78 €
+2. i-0e4f5g6h (prod-app-01, c5.2xlarge)    — 312.45 €
+3. i-0i7j8k9l (prod-app-02, c5.2xlarge)    — 312.45 €
+4. db-cluster-prod (RDS Aurora r5.large)     — 287.90 €
+5. i-0m1n2o3p (staging-full, m5.xlarge)     — 198.34 €
+
+LOW UTILIZATION INSTANCES (CPU < 15%, 7 days):
+┌───────────────────┬────────┬─────────┬──────────┐
+│ Instance          │ Type   │ Avg CPU │ Cost/mo  │
+├───────────────────┼────────┼─────────┼──────────┤
+│ i-0q4r5s6t (dev-test)│ m5.large│  3.2%  │  87.60 € │
+│ i-0u7v8w9x (staging-2)│ t3.large│  7.1%  │  62.40 € │
+│ i-0y1z2a3b (analytics)│ c5.xlarge│ 11.4%  │ 124.80 € │
+└───────────────────┴────────┴─────────┴──────────┘
+
+ILLUSTRATIVE POTENTIAL SAVINGS: up to 274.80 €/month if these 3 instances
+can be shut down or downsized without affecting dependencies or service.
+Low CPU does not establish lack of use; review other metrics and authorize the change.
+
+UNATTACHED EBS VOLUMES:
+┌────────────┬────────┬──────────┬────────────────────┐
+│ Volume ID  │ Size   │ Cost/mo  │ Created            │
+├────────────┼────────┼──────────┼────────────────────┤
+│ vol-0abc123│ 500 GB │   50.00 €│ 2025-11-14         │
+│ vol-0def456│ 200 GB │   20.00 €│ 2025-12-03         │
+│ vol-0ghi789│ 100 GB │   10.00 €│ 2026-01-22         │
+└────────────┴────────┴──────────┴────────────────────┘
+
+ILLUSTRATIVE POTENTIAL SAVINGS: up to 80 €/month if these volumes are
+confirmed unnecessary and deletion is authorized.
+(Verify they don't contain needed data before deleting.)
+
+SUMMARY OF RECOMMENDATIONS:
+- Assess authorized shutdown or downsizing: up to 274.80 €/month
+- Assess authorized deletion of unnecessary volumes: up to 80 €/month
+- Investigate Lambda growth (+23.8%)
+- Investigate "Other" services growth (+107%)
+- Conditional illustrative potential savings: up to 354.80 €/month (~355 €/month)
+
+Teaching values in EUR. They do not represent a real AWS bill or verified USD/EUR conversion.

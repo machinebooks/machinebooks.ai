@@ -1,0 +1,12 @@
+set -euo pipefail
+: "${KUBE_CONTEXT:?Set the reviewed cluster context}"
+kubectl --context "$KUBE_CONTEXT" cluster-info
+k=(kubectl --context "$KUBE_CONTEXT" --namespace production)
+
+# Only after rotation through the approved external secret mechanism.
+"${k[@]}" get secret api-credentials \
+  -o jsonpath='{.metadata.name}{" "}{.metadata.resourceVersion}{"\n"}'
+# Metadata does not verify the secret value. Restart requires separate approval.
+"${k[@]}" rollout restart deployment/api-server
+"${k[@]}" rollout status deployment/api-server --timeout=60s
+# Verify affected application function separately without printing secrets.

@@ -1,0 +1,20 @@
+Prepare a draft for the monthly close for March 2024:
+
+1. Read the ERP expenses (gastos-erp-marzo.csv) and the bank statement
+   (extracto-marzo.csv)
+
+2. Propose matches by reference and approved Q1 criteria;
+   amount and date (±5 days) are filters, not proof of identity
+
+3. Classify all expenses according to the mapping in mapeo-categorias-2024.json
+
+4. Compare with the monthly budget (presupuesto-2024.xlsx: identify and confirm the March sheet/column)
+
+5. Generate:
+   - Reconciliation report with pending transactions
+   - Monthly variance report
+   - Comparison with previous months (January and February)
+   - List of pending actions (unreconciled transactions, unclassified expenses)
+
+6. Save copies in a new folder under cierres/2024-03/; do not overwrite
+   earlier reports. Do not post adjustments or approve the close.

@@ -1,0 +1,19 @@
+# Append-only host receipt; a table does not prove immutable custody or deployment.
+from sqlalchemy import Column,String,DateTime,Boolean,JSON,UniqueConstraint
+from database import Base
+
+class PolicyChangeLog(Base):
+    __tablename__="policy_change_log"
+    id=Column(String(36),primary_key=True)
+    tenant_scope=Column(String(100),nullable=False)
+    artifact_digest=Column(String(64),nullable=False)
+    deployed_commit=Column(String(64),nullable=False)
+    prior_artifact_digest=Column(String(64),nullable=True)
+    approval_receipt=Column(JSON,nullable=False)
+    recorded_at=Column(DateTime(timezone=True),nullable=False)
+    environment=Column(String(20),nullable=False)
+    application_verified=Column(Boolean,nullable=False)
+    rollback_verified=Column(Boolean,nullable=False)
+    __table_args__=(UniqueConstraint("tenant_scope","artifact_digest","environment"),)
+# Host captures authoritative identity/approval/application proof, UTC and protected
+# retention, never raw secrets or YAML payloads in generic deployment logs.

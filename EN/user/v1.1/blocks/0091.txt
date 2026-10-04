@@ -1,0 +1,9 @@
+1. Read the 50 invoice PDFs in C:\Facturas\Q1_2024
+2. Extract supplier, date, amount, and category with source references
+3. Generate a Q1 expense report with:
+   - Total expense by category
+   - Monthly expense trend
+   - Top 10 suppliers by amount
+   - Q1 2023 comparison using C:\Facturas\resumen_Q1_2023.csv
+   - Alerts for suppliers whose expenses grew by more than 25%
+Do not invent missing comparison data. Validate totals and exceptions.

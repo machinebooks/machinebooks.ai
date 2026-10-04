@@ -1,0 +1,25 @@
+# Illustrative generation configurations, not security controls.
+# Parameters and allowed combinations depend on the model API.
+# Lower temperature may reduce sampling variation; it does not
+# guarantee safe output, determinism, or instruction compliance.
+
+low_sampling_config = {
+    "temperature": 0.1,
+    "top_k": 40,
+    "top_p": 0.9,
+}
+
+creative_sampling_config = {
+    "temperature": 0.9,
+    "top_k": 100,
+    "top_p": 0.95,
+}
+
+zero_temperature_config = {
+    "temperature": 0.0,
+    "top_k": 1,
+    "top_p": 1.0,
+}
+# Check parameter support before sending a configuration.
+# Record model versions, inputs, outputs, tools, and test conditions.
+# Measure variation and harmful outcomes in repeated evaluations.

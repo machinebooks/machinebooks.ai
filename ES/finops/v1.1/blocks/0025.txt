@@ -1,0 +1,29 @@
+# Educational ainvoke outline: adapter and sink are authenticated host contracts.
+import asyncio
+import time
+import uuid
+
+class LLMUsageTracker:
+    def __init__(self, client, authorized_scope, normalize_usage, durable_sink):
+        if not authorized_scope:
+            raise ValueError("Authorized scope required")
+        self.client, self.scope = client, authorized_scope
+        self.normalize_usage, self.sink = normalize_usage, durable_sink
+
+    async def ainvoke(self, messages):
+        if not isinstance(messages, list) or not 1 <= len(messages) <= 100:
+            raise ValueError("Bounded messages required")
+        request_id, start = str(uuid.uuid4()), time.monotonic()
+        response, status, metadata = None, "failed_usage_unknown", None
+        try:
+            response = await asyncio.wait_for(self.client.ainvoke(messages), timeout=60)
+            metadata = self.normalize_usage(response)
+            status = "completed"
+            return response
+        finally:
+            # Sink acknowledgement is awaited; host handles cancellation and sink failure.
+            # No payload or exception text; an attempted finally is not a durability proof.
+            await self.sink(self.scope, request_id, status, metadata,
+                int((time.monotonic() - start) * 1000))
+# Host limits serialized input, output, retries and adapter metadata; missing usage is NULL.
+# invoke/astream and shutdown recovery require explicit implementations and testing.

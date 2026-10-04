@@ -1,0 +1,31 @@
+claude -p "
+SATISFACTION ANALYSIS PIPELINE — Q1 2025
+
+PHASE 1 — OBTAIN:
+Read datos/encuestas-q1.csv. Check that dimension scores are between 1 and 10,
+dates belong to Q1 2025, and rows have no missing required fields.
+Record invalid rows and stop final delivery on material errors.
+
+PHASE 2 — PREPARE:
+- Calculate means for general, communication, quality, and deadlines.
+- Group by client (including repeated surveys) and month.
+- Identify surveys with overall score below 7.
+
+PHASE 3 — ANALYZE:
+- Yes/No recommendation balance: percentage Yes minus percentage No across all 10
+  valid responses, including Maybe. Fixture: 80% - 10% = 70 percentage points.
+  This is not NPS; actual NPS requires a sourced 0–10 recommendation scale.
+- Highest and lowest dimensions; monthly movement with sample counts.
+- Clients with low scores and the affected dimensions.
+- Assess associations with deadlines without claiming unsupported correlation.
+- Recurring themes in comments, preserving source references.
+
+PHASE 4 — PREPARE:
+Create informes/satisfaccion-q1-2025.md with a five-line executive summary,
+dimension averages and monthly comparisons, client ranking, surveys below 7
+and proposed action, monthly changes, three improvement priorities, and
+relevant sourced comment quotes. Protect personal data and distinguish
+observations from proposed actions. Every finding needs an associated
+recommendation. Check sample sizes and calculations before human review.
+Do not send the report automatically.
+"

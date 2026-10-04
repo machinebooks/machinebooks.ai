@@ -1,0 +1,8 @@
+Analyze copies of access.log and its rotations, including .gz, under
+/var/log/nginx/. First confirm the combined format.
+For the example, count events from 2026-03-15T00:00:00Z inclusive
+to 2026-03-22T00:00:00Z exclusive by event timestamp, not mtime.
+Filter the status field for 500, 502, 503, or 504, not arbitrary numbers.
+Show totals by code, the top 10 request targets, and daily UTC counts.
+Flag invalid lines, skipped files, and possible rotation overlaps.
+Do not modify logs or write global temporary files.

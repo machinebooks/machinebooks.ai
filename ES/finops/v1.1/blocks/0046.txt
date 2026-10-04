@@ -1,0 +1,23 @@
+from sqlalchemy import Column, String, Numeric, Integer, DateTime, UniqueConstraint, CheckConstraint
+from .base import Base
+
+class BudgetCounter(Base):
+    __tablename__ = "budget_counters"
+    tenant_id = Column(String(36), primary_key=True)
+    scope = Column(String(16), primary_key=True)
+    scope_id = Column(String(128), primary_key=True)
+    period = Column(String(8), primary_key=True)
+    window_start_utc = Column(DateTime, primary_key=True)
+    window_end_utc = Column(DateTime, nullable=False)
+    accumulated_usd = Column(Numeric(24, 12), nullable=False)
+    reserved_usd = Column(Numeric(24, 12), nullable=False)
+    unpriced_calls = Column(Integer, nullable=False)
+    call_count = Column(Integer, nullable=False)
+    last_updated_utc = Column(DateTime, nullable=False)
+    __table_args__ = (
+        CheckConstraint("accumulated_usd >= 0 AND reserved_usd >= 0"),
+        CheckConstraint("unpriced_calls >= 0 AND call_count >= unpriced_calls"),
+        CheckConstraint("window_end_utc > window_start_utc"),
+    )
+# MySQL connection uses UTC; adapter stores UTC-naive DATETIME consistently.
+# Global scope uses scope_id="". Ledger uniqueness is separate from counter keys.

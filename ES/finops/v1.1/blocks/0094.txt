@@ -1,0 +1,69 @@
+import asyncio
+from datetime import date
+from decimal import Decimal
+
+async def get_cloud_costs(readers, authorized_scope, arguments):
+    if set(arguments)-{"provider","start_date","end_date","granularity"}:
+        raise ValueError("unknown fields")
+    start,end = date.fromisoformat(arguments["start_date"]),date.fromisoformat(arguments["end_date"])
+    if not 0 < (end-start).days <= 366:
+        raise ValueError("bounded exclusive interval required")
+    granularity = arguments.get("granularity","MONTHLY")
+    if granularity not in {"DAILY","MONTHLY"}:
+        raise ValueError("granularity")
+    provider = arguments["provider"]
+    providers = list(readers) if provider=="all" else [provider]
+    if not providers or len(providers)>3 or any(p not in readers for p in providers):
+        raise ValueError("provider outside authorized readers")
+    results = []
+    for name in providers:
+        snapshot = await asyncio.wait_for(readers[name](
+            authorized_scope=authorized_scope,start_date=start.isoformat(),end_date=end.isoformat(),
+            granularity=granularity,group_by="SERVICE",max_pages=20,max_rows=2000),timeout=30)
+        rows = snapshot["rows"]
+        if not isinstance(rows,list) or len(rows)>2000 or type(snapshot["complete"]) is not bool:
+            raise ValueError("reader schema")
+        normalized = []
+        for row in rows:
+            amount = row.get("amount")
+            cost = None if amount is None else Decimal(str(amount))
+            if cost is not None and not cost.is_finite():
+                raise ValueError("finite cost required")
+            if not isinstance(row["currency"],str) or not isinstance(row["service"],str):
+                raise ValueError("cost dimensions")
+            normalized.append({"service":row["service"],"currency":row["currency"],
+                "amount":None if cost is None else str(cost),"estimated":row.get("estimated")})
+        results.append({"provider":name,"rows":normalized,"complete":snapshot["complete"],
+                        "source_as_of_utc":snapshot.get("source_as_of_utc")})
+    return {"providers":results,"window":{"start":start.isoformat(),"end_exclusive":end.isoformat()},
+            "currency_combined":False,"action_authorized":False}
+
+async def get_top_service_costs(readers,scope,provider,start,end,top_n):
+    if type(top_n) is not int or not 1 <= top_n <= 20 or provider=="all":
+        raise ValueError("top limit/provider")
+    result = await get_cloud_costs(readers,scope,{"provider":provider,"start_date":start,"end_date":end})
+    snapshot = result["providers"][0]
+    totals = {}
+    unknown = False
+    for row in snapshot["rows"]:
+        if row["amount"] is None:
+            unknown = True
+            continue
+        key = (row["currency"],row["service"])
+        totals[key] = totals.get(key,Decimal(0))+Decimal(row["amount"])
+    currencies = {key[0] for key in totals}
+    ranking = {currency:[{"service":s,"amount":str(v)} for (c,s),v in
+        sorted(totals.items(),key=lambda x:x[1],reverse=True) if c==currency][:top_n] for currency in currencies}
+    return {"ranking_by_currency":ranking,"complete":snapshot["complete"] and not unknown,
+            "window":result["window"],"action_authorized":False}
+
+async def compare_cloud_periods(readers,scope,provider,start,end,previous_start,previous_end):
+    current_days = (date.fromisoformat(end)-date.fromisoformat(start)).days
+    previous_days = (date.fromisoformat(previous_end)-date.fromisoformat(previous_start)).days
+    current = await get_cloud_costs(readers,scope,{"provider":provider,"start_date":start,"end_date":end})
+    previous = await get_cloud_costs(readers,scope,{"provider":provider,"start_date":previous_start,"end_date":previous_end})
+    return {"current":current,"previous":previous,"duration_days":[current_days,previous_days],
+            "exposure_normalized":False,"causal_or_statistical_claim":False}
+# Scoped async readers implement provider pagination, units, metric, corrections,
+# row/time bounds and blocking-SDK worker isolation. They are host contracts.
+# Never sum mixed currencies or UsageQuantity units; API data may remain estimated.

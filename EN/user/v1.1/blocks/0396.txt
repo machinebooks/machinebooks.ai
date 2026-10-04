@@ -1,0 +1,10 @@
+# Restart only after reviewing incident evidence and authorizing this action.
+set -euo pipefail
+read -r -p "Type APPLY to authorize the reviewed restart: " confirmation
+[ "$confirmation" = "APPLY" ] || exit 1
+sudo systemctl restart webapp
+systemctl is-active --quiet webapp
+curl --fail --show-error --silent --max-time 5 --output /dev/null \
+  http://localhost:8080/health
+# Success here is a current observation, not proof of root-cause repair.
+# Review logs, workload, and recurrence evidence separately.

@@ -1,0 +1,8 @@
+mi-trabajo/
+├── CLAUDE.md          ← instructions for the agent
+├── proyectos/         ← subfolders per project
+├── datos/             ← CSVs, Excel, input data
+├── informes/          ← generated reports
+├── plantillas/        ← reusable templates
+└── .claude/
+    └── commands/      ← custom commands

@@ -1,0 +1,43 @@
+import json
+
+def process_tool_call(name, arguments, inventory, policy):
+    if not isinstance(arguments, dict):
+        raise ValueError("object required")
+    if name == "inventory_summary" and not arguments:
+        return inventory
+    if name == "propose_tag_correction" and set(arguments) == {"resource_id", "proposed_tags"}:
+        return propose_tag_correction(**arguments, inventory=inventory, policy=policy)
+    raise ValueError("unsupported tool or fields")
+
+def run_tag_audit_agent(adapter, inventory, policy):
+    messages = [{"role": "user", "content": "Revisa el inventario autorizado"}]
+    proposals = []
+    for _ in range(8):
+        response = adapter.call(messages, TAG_AUDIT_TOOLS,
+                                max_output_tokens=2048, timeout_seconds=60)
+        if response["stop_reason"] == "end_turn":
+            text = response.get("text", "")
+            if not isinstance(text, str) or len(text) > 12000:
+                raise ValueError("bounded text required")
+            return {"text": text, "proposals": proposals,
+                    "inventory_complete": inventory["complete"],
+                    "review_complete": True, "action_authorized": False}
+        if response["stop_reason"] != "tool_use":
+            return {"proposals": proposals, "review_complete": False,
+                    "reason": "unexpected_stop", "action_authorized": False}
+        calls = response.get("calls", [])
+        if not 1 <= len(calls) <= 4:
+            raise ValueError("tool count")
+        results = []
+        for call in calls:
+            result = process_tool_call(call["name"], call["arguments"], inventory, policy)
+            if call["name"] == "propose_tag_correction":
+                proposals.append(result)
+            results.append({"id": call["id"], "result": result})
+        messages.extend(adapter.to_messages(response, results))
+        if len(json.dumps(messages)) > 100000:
+            break
+    return {"proposals": proposals, "review_complete": False,
+            "reason": "limit", "action_authorized": False}
+# Adapter is a host contract, not an SDK implementation. RDS is not audited here.
+# The host meters calls and validates scope, data exposure and adapter responses.

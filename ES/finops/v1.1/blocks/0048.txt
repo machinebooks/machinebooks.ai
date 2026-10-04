@@ -1,0 +1,28 @@
+from sqlalchemy import Column, String, Numeric, DateTime, Boolean, CheckConstraint, UniqueConstraint
+from .base import Base
+
+class BudgetConfig(Base):
+    __tablename__ = "budget_configs"
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), nullable=False)
+    scope = Column(String(16), nullable=False)
+    scope_id = Column(String(128), nullable=False)
+    period = Column(String(8), nullable=False)
+    version = Column(String(64), nullable=False)
+    budget_usd = Column(Numeric(24, 12), nullable=False)
+    alert_threshold = Column(Numeric(6, 5), nullable=False)
+    block_threshold = Column(Numeric(6, 5), nullable=False)
+    valid_from_utc = Column(DateTime, nullable=False)
+    valid_until_utc = Column(DateTime, nullable=False)
+    is_active = Column(Boolean, nullable=False)
+    __table_args__ = (
+        UniqueConstraint("tenant_id", "scope", "scope_id", "period", "version"),
+        CheckConstraint("budget_usd >= 0"),
+        CheckConstraint("alert_threshold >= 0 AND alert_threshold < block_threshold AND block_threshold <= 1"),
+        CheckConstraint("valid_until_utc > valid_from_utc"),
+        CheckConstraint("period IN ('daily','weekly','monthly')"),
+        CheckConstraint("scope IN ('global','tenant','service','user','workflow')"),
+    )
+# Host rejects overlapping active versions and expands explicit user templates.
+# An override is an authorized, expiring version for that user; other caps still apply.
+# Review dates do not expire permissions. MySQL storage and session use UTC.

@@ -1,0 +1,29 @@
+Generate a complete dashboard combining the data from kpis-2024.csv.
+The dashboard should have:
+
+TOP ROW — Key indicators (4 boxes with large numbers):
+- Total 2024 revenue; 2023 comparison unavailable without a source
+- Dataset result (revenue − expenses), with percentage of revenue
+- Net customers gained during the year
+- Aggregate NPS = 100×(total promoters − total detractors)/total responses
+
+MIDDLE ROW — Main charts (2 charts):
+- Left: Monthly trend of revenue, expenses, and profit
+- Right: New vs. lost customers evolution with net balance
+
+BOTTOM ROW — Secondary charts (3 charts):
+- Left: Monthly average ticket with annual order-weighted average
+- Center: Monthly NPS on a −100 to 100 scale and counts
+- Right: Monthly conversion rate with annual visit-weighted reference
+
+STYLE:
+- White background
+- Title: "KPI Dashboard — 2024"
+- Subtitle with generation date
+- Sober and professional colors (dark blue, gray, green for positive, red for negative)
+
+Generate two versions:
+1. dashboard-2024.png — high-resolution static image (for printing or inserting in presentations)
+2. dashboard-2024.html — interactive version with embedded resources and equivalent table.
+Check values, zero denominators, embedded-data privacy, and readability
+at final size; do not present the dataset result as tax net profit.

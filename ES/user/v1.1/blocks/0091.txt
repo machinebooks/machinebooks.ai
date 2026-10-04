@@ -1,0 +1,9 @@
+1. Lee las 50 facturas PDF de C:\Facturas\Q1_2024
+2. Extrae los datos de cada una (proveedor, fecha, importe, categoría) con referencias a la fuente
+3. Con esos datos, genera un informe de gastos del Q1 con:
+   - Gasto total por categoría
+   - Evolución mensual del gasto
+   - Top 10 proveedores por importe
+   - Comparativa con Q1 2023 (archivo: C:\Facturas\resumen_Q1_2023.csv)
+   - Alertas: proveedores cuyo gasto ha crecido más del 25%
+No inventes datos comparativos ausentes. Valida totales y excepciones.

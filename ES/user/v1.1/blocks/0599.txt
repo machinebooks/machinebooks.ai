@@ -1,0 +1,11 @@
+  VERDE — Ejecución acotada
+  │ Datos y destinos autorizados; lectura y borradores revisables
+  │
+  AMARILLO — Revisar el resultado
+  │ Archivos y contenido con alcance y recuperación comprobados
+  │
+  NARANJA — Supervisar por pasos
+  │ Efectos externos o datos importantes; límites y pruebas por operación
+  │
+  ROJO — Detener la acción prevista
+    Faltan autorización, alcance, controles o recuperación

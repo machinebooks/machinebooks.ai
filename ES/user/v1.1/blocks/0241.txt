@@ -1,0 +1,46 @@
+Ejemplo ficticio: corte jueves 21/nov/2024, 17:00, Europe/Madrid.
+Genera un borrador del informe de estado semanal del proyecto. Consulta estas
+fuentes:
+
+1. GITHUB: repositorio "mi-empresa/proyecto-migracion"
+   - Pull requests fusionados hasta el corte: distingue cierre,
+     fusión, despliegue y aceptación
+   - Issues abiertas y cerradas en los últimos 7 días
+   - Issues etiquetadas como "bloqueante" o "urgente"
+
+2. EMAIL: emails de la última semana que contengan "migración",
+   "proyecto" o nombres de los miembros del equipo (Pedro, Ana,
+   Carlos, Laura)
+
+3. FICHEROS:
+   - C:\Users\miusuario\proyectos\migracion\riesgos.md
+   - C:\Users\miusuario\proyectos\migracion\hitos.md
+
+Formato del informe:
+
+# Informe de estado — Proyecto Migración de Datos
+## Semana del 18 al 22 de noviembre de 2024
+
+### Resumen ejecutivo
+[3 líneas máximo]
+
+### Avance de la semana
+- Tareas con aceptación confirmada (referencia y evidencia)
+- Marca pendientes datos no confirmados; no inventes avances
+- Hitos alcanzados
+- Métricas: X tareas completadas de Y planificadas
+
+### Bloqueos activos
+- Lista de bloqueos con responsable y acción necesaria
+
+### Riesgos
+- Riesgos actualizados del fichero de riesgos + nuevos
+  detectados esta semana
+
+### Plan semana que viene
+- Tareas prioritarias
+- Hitos esperados
+- Reuniones clave
+
+### Decisiones necesarias
+- Si hay algo que necesite aprobación de dirección, listarlo aquí

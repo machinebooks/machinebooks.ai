@@ -1,0 +1,23 @@
+#!/bin/bash
+# Local execution record. Configure external notification separately.
+set -Eeuo pipefail
+umask 077
+: "${LOG_DIR:?Set the approved local log directory}"
+operation=${1:?Supply the absolute path of the reviewed executable script}
+[[ "$operation" == /* && -f "$operation" && -x "$operation" ]] || exit 2
+mkdir -p -- "$LOG_DIR"
+run_dir=$(mktemp -d "$LOG_DIR/run-$(date -u +%Y%m%dT%H%M%SZ)-XXXXXX")
+log_file="$run_dir/execution.log"
+on_error() {
+    local code="$1" line="$2"
+    trap - ERR
+    printf 'FAILED code=%s line=%s time=%s\n' "$code" "$line" \
+      "$(date -u +%FT%TZ)" | tee -a "$log_file" >&2 || true
+    exit "$code"
+}
+trap 'on_error "$?" "$LINENO"' ERR
+printf 'START %s\n' "$(date -u +%FT%TZ)" >> "$log_file"
+"$operation" >> "$log_file" 2>&1
+printf 'COMMAND_EXIT_0 %s; content validation pending\n' \
+  "$(date -u +%FT%TZ)" >> "$log_file"
+# This records process status, not artifact freshness or correctness.

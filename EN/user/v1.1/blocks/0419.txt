@@ -1,0 +1,5 @@
+Prepare a staging security group for review in an explicit VPC and region:
+- SSH from the actual authorized IP; 203.0.113.10 is documentation only, not my IP.
+- HTTP/HTTPS under the approved IPv4 and IPv6 scope.
+- PostgreSQL from 10.0.1.0/24 only if it matches the practice network.
+Check dependencies, effective rules and impact before applying changes.

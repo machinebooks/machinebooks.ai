@@ -1,0 +1,14 @@
+import json
+
+async def generate_monthly_narrative(approved_snapshot, tracked_adapter):
+    payload = json.dumps(approved_snapshot, default=str, ensure_ascii=False)
+    if len(payload.encode("utf-8")) > 20000:
+        raise ValueError("snapshot size")
+    result = await tracked_adapter.review(
+        payload=payload, max_output_tokens=512, timeout_seconds=60)
+    if result["stop_reason"] != "end_turn" or not isinstance(result.get("text"), str) or len(result["text"]) > 5000:
+        return {"status":"incomplete", "text":None}
+    return {"status":"pending_human_review", "text":result["text"],
+            "facts_verified":False, "published":False}
+# Approved metadata only; no raw logs. Host accounts for call and evaluation cost.
+# Haiku 4.5 reference input/output is 1/5 USD per M, not 0.80; provider is optional.

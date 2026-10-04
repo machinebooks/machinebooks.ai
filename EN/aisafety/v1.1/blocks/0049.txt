@@ -1,0 +1,21 @@
+# Illustrative assessment record; this function performs no infrastructure checks.
+from dataclasses import dataclass
+@dataclass
+class InfrastructureCheck:
+    component: str
+    check: str
+    status: str
+    evidence_reference: str | None
+
+def assess_electron(app_path, verified_results):
+    records = []
+    for check in ("asar_integrity", "binary_signing", "dll_search_path"):
+        result = verified_results.get(check, {})
+        status = result.get("status", "not_tested")
+        evidence = result.get("evidence_reference")
+        if status not in {"pass", "fail", "not_tested"}:
+            raise ValueError("Unknown assessment status")
+        if status != "not_tested" and not evidence:
+            raise ValueError("Tested status requires evidence")
+        records.append(InfrastructureCheck("electron", check, status, evidence))
+    return records

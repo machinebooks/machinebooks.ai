@@ -1,0 +1,31 @@
+# Request-scoped session; host authenticates tariff access and pins version/FX.
+from datetime import timezone
+from app.models.llm_pricing import LLMModelPricing
+from app.services.cost_calculator import calculate_call_cost
+
+class PricingService:
+    def __init__(self, db):
+        self.db = db
+
+    def get_active_pricing(self, provider, model_id, at_utc, tariff_scope, version):
+        if at_utc.tzinfo is None or at_utc.utcoffset() is None:
+            raise ValueError("Aware timestamp required")
+        cutoff = at_utc.astimezone(timezone.utc).replace(tzinfo=None)
+        return (self.db.query(LLMModelPricing).filter(
+            LLMModelPricing.provider == provider,
+            LLMModelPricing.model_id == model_id,
+            LLMModelPricing.currency == "USD",
+            LLMModelPricing.tariff_scope == tariff_scope,
+            LLMModelPricing.version == version,
+            LLMModelPricing.effective_date <= cutoff).one_or_none())
+
+    def cost_for_call(self, provider, model_id, at_utc, tariff_scope, version,
+            input_tokens, output_tokens, cached_input_tokens=0,
+            cache_write_tokens=0, eur_exchange_rate=None):
+        pricing = self.get_active_pricing(provider, model_id, at_utc, tariff_scope, version)
+        if pricing is None:
+            return None
+        return calculate_call_cost(pricing, input_tokens, output_tokens,
+            cached_input_tokens, cache_write_tokens, eur_exchange_rate)
+# Selection requires a previously validated validity interval and immutable version.
+# Do not share a SQLAlchemy Session singleton or infer latest pricing for historical calls.

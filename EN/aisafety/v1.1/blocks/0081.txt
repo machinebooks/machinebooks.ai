@@ -1,0 +1,8 @@
+# Fraction of blocked activations within each guardrail type, not responses.
+sum by (guardrail_type) (
+  rate(ai_security_guardrail_activations_total{action="blocked"}[6h])
+)
+/
+sum by (guardrail_type) (
+  rate(ai_security_guardrail_activations_total[6h])
+)

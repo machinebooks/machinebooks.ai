@@ -1,0 +1,13 @@
+cd /home/usuario/propuesta-cliente
+claude -p "
+ROLE: Proposal director.
+Read the three files in partes/ and glosario.md.
+Integrate everything into resultado/propuesta-final.md:
+1. Insert analisis-cliente.md at [INSERTAR_ANALISIS]
+2. Insert estimacion-economica.md at [INSERTAR_PRESUPUESTO]
+3. Check figures, dates, names and tone for consistency
+4. Correct any inconsistency
+5. The final document should read as if one person wrote it
+Stop if checked parts, sources, figures, or period are missing. Resolve only
+supported inconsistencies; record disagreements and do not approve or send.
+"

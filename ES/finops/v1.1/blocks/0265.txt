@@ -1,0 +1,19 @@
+# Native Advisor list is paged; host supplies credential/subscription scope and timeouts.
+from itertools import islice
+
+def advisor_cost_review(advisor,authorized_resource_ids):
+    rows=[]
+    iterator=advisor.recommendations.list(filter="Category eq 'Cost'")
+    for position,rec in enumerate(islice(iterator,1001)):
+        if position>=1000:
+            raise ValueError("Advisor inventory limit")
+        resource=getattr(getattr(rec,"resource_metadata",None),"resource_id",None)
+        if resource not in authorized_resource_ids:
+            continue
+        properties=rec.extended_properties or {}
+        rows.append({"resource_id":resource,"recommendation_id":rec.id,
+            "impact":rec.impact,"estimated_annual_amount":properties.get("annualSavingsAmount"),
+            "currency":properties.get("savingsCurrency"),"source":"Azure Advisor",
+            "state":"pending_review","provider_changed":False})
+    return rows
+# Native estimates may omit currency/amount; no universal units or realized savings.

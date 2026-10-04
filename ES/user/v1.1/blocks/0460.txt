@@ -1,0 +1,21 @@
+set -euo pipefail
+: "${DOCKER_CONTEXT:?Set the reviewed Docker context}"
+compose=(docker --context "$DOCKER_CONTEXT" compose
+  --project-name staging --file /opt/staging/docker-compose.yml)
+
+"${compose[@]}" ps api-backend
+"${compose[@]}" logs --tail 100 --no-color api-backend
+ids="$("${compose[@]}" ps --all -q api-backend)"
+mapfile -t containers <<< "$ids"
+[ "${#containers[@]}" -eq 1 ] && [ -n "${containers[0]}" ] || {
+  echo "Expected exactly one reviewed backend container." >&2
+  exit 1
+}
+docker --context "$DOCKER_CONTEXT" inspect "${containers[0]}" |
+  jq '.[0] | {
+    State: (.State | {Status, ExitCode, OOMKilled, Restarting}),
+    environment_variable_names: [.Config.Env[]? | split("=")[0]],
+    HostConfig: {Memory: .HostConfig.Memory}
+  }'
+# A restarting container may not accept exec.
+# Query database catalogs separately; ICMP does not prove PostgreSQL access.

@@ -1,0 +1,12 @@
+# Historical author-reported case, not verified invoices, customers or causal results.
+PRICING_CASE_V3={
+    "evidence_state":"historical_reported_unverified",
+    "reported_customers":23,"reported_mrr_eur":"8450","annualized_mrr_eur":"101400",
+    "illustrative_tiers":[{"count":8,"monthly_eur":"175"},{"count":10,"monthly_eur":"375"},
+                          {"count":4,"monthly_eur":"650"},{"count":1,"monthly_eur":"700"}],
+    "reported_contribution_margin_pct":"61.3",
+    "reported_fair_use_alert_count":3,"reported_overage_count":1,
+    "causal_effect_of_pricing":None,"customer_acceptance_verified":False,
+}
+# 8*175+10*375+4*650+700=8450; annualized MRR is a projection, not collected ARR.
+# Prior iterations and anecdotes do not establish pricing causality or audited margins.

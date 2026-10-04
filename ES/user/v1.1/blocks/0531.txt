@@ -1,0 +1,7 @@
+Necesito automatizar la generación de un informe semanal de estado
+de proyecto. Los datos están en datos/tareas.csv y datos/incidencias.csv.
+El informe debe generarse cada lunes a las 9:00 y guardarse en
+informes/estado-semanal-FECHA.md.
+
+Crea el script de ejecución, configura los permisos necesarios y dame
+la línea de cron que necesito añadir.

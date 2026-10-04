@@ -1,0 +1,7 @@
+# Bounded metric labels; no tenant/user IDs or free-text reasons in exporter labels.
+from prometheus_client import Counter,Histogram,Gauge
+policy_blocks=Counter("finops_policy_blocks_total","Policy blocks",["task_class","reason_code"])
+policy_eval_duration=Histogram("finops_policy_eval_seconds","Policy evaluation seconds",["task_class"])
+budget_usage_ratio=Gauge("finops_budget_usage_ratio","Declared ratio from zero to one or above",["scope_class"])
+# Host restricts enums/cardinality and exporter access. Unknown/zero-denominator budget
+# ratios are omitted and represented by a separate availability metric, never fabricated zero.

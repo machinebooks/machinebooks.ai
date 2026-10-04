@@ -1,0 +1,32 @@
+# MCP Python SDK 2.3.0; current API supports protocol 2026-07-28.
+from mcp.server import MCPServer
+from pydantic import StrictInt
+from typing import Any
+
+def build_billing_server(readers, authorized_scope):
+    server = MCPServer("educational-cloud-billing")
+
+    @server.tool()
+    async def get_cloud_costs(provider: str, start_date: str, end_date: str,
+                              granularity: str = "MONTHLY") -> dict[str, Any]:
+        return await safe_get_cloud_costs(readers,authorized_scope,
+            {"provider":provider,"start_date":start_date,"end_date":end_date,
+             "granularity":granularity})
+
+    @server.tool()
+    async def get_top_services(provider: str, start_date: str, end_date: str,
+                               top_n: StrictInt = 10) -> dict[str, Any]:
+        return await get_top_service_costs(readers,authorized_scope,provider,
+                                           start_date,end_date,top_n)
+
+    @server.tool()
+    async def compare_periods(provider: str, current_start: str, current_end: str,
+                              previous_start: str, previous_end: str) -> dict[str, Any]:
+        return await compare_cloud_periods(readers,authorized_scope,provider,
+            current_start,current_end,previous_start,previous_end)
+    return server
+
+def run_authorized_stdio(readers, authorized_scope):
+    build_billing_server(readers,authorized_scope).run(transport="stdio")
+# Host constructs job-scoped readers/principal and launches the stdio runner.
+# No account/credentials/tenant from model input; HTTP deployment needs its own auth.

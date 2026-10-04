@@ -1,0 +1,4 @@
+# Illustrative single URL; host supplies authenticated session without printing tokens.
+# Start/end are UTC and end-exclusive. Download requires authorized tenant/field scope.
+curl --fail --get "https://api.example.invalid/api/v1/audit/export/csv"   --data-urlencode "start=2025-01-01T00:00:00Z"   --data-urlencode "end=2026-01-01T00:00:00Z"   --output "audit_export_2025.csv"
+# No live service, authentication header or export is executed by this printed example.

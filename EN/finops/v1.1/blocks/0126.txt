@@ -1,0 +1,26 @@
+# Versioned illustrative configuration; no observation is created by this schema.
+from sqlalchemy import Column, String, Numeric, DateTime, Boolean, UniqueConstraint, CheckConstraint
+from database import Base
+
+class HumanBaselineConfig(Base):
+    __tablename__ = "human_baseline_config"
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), nullable=False)
+    task_type = Column(String(100), nullable=False)
+    role = Column(String(50), nullable=False)
+    version = Column(String(100), nullable=False)
+    currency = Column(String(3), nullable=False)
+    human_minutes = Column(Numeric(24, 8), nullable=False)
+    hourly_cost = Column(Numeric(24, 8), nullable=False)
+    supervision_fraction = Column(Numeric(12, 8), nullable=False)
+    capture_fraction = Column(Numeric(12, 8), nullable=False)
+    is_bottleneck = Column(Boolean, nullable=False)
+    valid_from = Column(DateTime(timezone=True), nullable=False)
+    evidence_ref = Column(String(200), nullable=False)
+    __table_args__ = (
+        UniqueConstraint("tenant_id", "task_type", "role", "version"),
+        CheckConstraint("human_minutes >= 0 AND hourly_cost >= 0"),
+        CheckConstraint("supervision_fraction >= 0 AND supervision_fraction <= 1"),
+        CheckConstraint("capture_fraction >= 0 AND capture_fraction <= 1"),)
+# Validate finite inputs, UTC, reviewer and effective version in the host. Changes
+# create a new version; a bottleneck label never overrides the approved fraction.

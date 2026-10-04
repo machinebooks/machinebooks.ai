@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "google-planning-read": {
+      "command": "uvx",
+      "args": ["workspace-mcp==2.0.0", "--transport", "stdio",
+               "--permissions", "gmail:readonly", "calendar:readonly"],
+      "env": {
+        "GOOGLE_CLIENT_SECRET_PATH": "C:\\Users\\YOUR_USER\\mcp-credentials\\client_secret.json"
+      }
+    }
+  }
+}

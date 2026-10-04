@@ -1,0 +1,15 @@
+Genera un dashboard interactivo en HTML con los datos de ventas-2024.csv.
+Debe incluir:
+
+1. Selector de zona comercial (desplegable) que filtre todos los gráficos
+2. Selector de rango de fechas
+3. Gráfico de evolución de ventas (se actualiza al cambiar los filtros)
+4. Tabla con el detalle de los datos filtrados
+5. KPIs del período seleccionado
+
+El dashboard debe funcionar sin servidor — todo en un único fichero HTML
+que se pueda abrir con doble clic en un navegador compatible.
+Incluye Plotly.js, datos y código de filtros en el archivo; no uses
+CDN ni peticiones externas. Programa y prueba que cada selector
+actualiza gráficos, tabla y KPIs con el mismo subconjunto. Comprueba
+sin red y no incluyas datos que el destinatario no deba ver.

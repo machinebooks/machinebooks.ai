@@ -1,0 +1,22 @@
+# Cross-platform consolidation requires an approved common currency/window/FX/scope.
+from decimal import Decimal
+
+def consolidate_capacity_snapshots(snapshots, common_scope):
+    if not 1<=len(snapshots)<=50:
+        raise ValueError("Bounded portfolio required")
+    ids=set(); costs=[]; values=[]
+    for snapshot in snapshots:
+        if snapshot["id"] in ids or snapshot["consolidation_scope"]!=common_scope:
+            raise ValueError("Duplicate or incompatible snapshot")
+        ids.add(snapshot["id"])
+        if not snapshot["coverage_complete"]:
+            return {"state":"incomplete","portfolio_return":None}
+        costs.append(Decimal(snapshot["cost"]))
+        values.append(Decimal(snapshot["capacity_value"]))
+    if any(not x.is_finite() or x<0 for x in costs+values):
+        raise ValueError("Invalid amounts")
+    cost,value=sum(costs),sum(values)
+    return {"cost":str(cost),"capacity_value":str(value),
+            "portfolio_partial_return":None if cost==0 else str((value-cost)/cost),
+            "cash_savings":None,"full_roi":None}
+# Host prevents double allocation across platforms and retains per-source provenance.

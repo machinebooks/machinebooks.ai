@@ -1,0 +1,21 @@
+> Clean and consolidate all files with these rules:
+
+  1. Standard columns: Fecha, Proveedor, Concepto, Importe, IVA
+  2. Map confirmed fields only. Tax, IVA, and IVA_pct are not
+     equivalent: distinguish amount, percentage rate, net base, and total.
+     Retain original May and December fields and their uncertainties.
+  3. Dates: confirm each source format; ambiguous dates remain pending.
+     Display confirmed dates as DD/MM/YYYY.
+  4. Decimal separator: comma (Spanish format)
+  5. If VAT is missing, mark it pending a source; do not impute a rate or confuse net base and gross total
+  6. Remove completely empty rows
+  7. Verify transaction identity before removing duplicate candidates
+  8. Between September and October, retain candidates until provenance and precedence are confirmed
+  9. Retain negative amounts and verify their purpose; do not assume all are refunds
+  10. Add source Mes, file, sheet, row, and transaction identity.
+      Do not confuse file month with accrual date.
+  11. Sort by date ascending
+
+  Generate the consolidated file as gastos-2024-consolidado.xlsx
+  and a report of changes, rules, exceptions, and reconciliation.
+  Work on copies and do not overwrite outputs without confirmation.

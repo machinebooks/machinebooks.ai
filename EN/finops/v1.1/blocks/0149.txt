@@ -1,0 +1,18 @@
+from dataclasses import dataclass
+from datetime import datetime
+from decimal import Decimal
+
+@dataclass(frozen=True)
+class UnitEconomicsReport:
+    tenant_id: str
+    period_start: datetime
+    period_end: datetime
+    source_version: str
+    currency: str
+    active_users_definition: str
+    active_users: int
+    known_token_subtotal: Decimal
+    unknown_cost_count: int
+    avg_known_token_cost_per_active_user: Decimal | None
+    marginal_cost: Decimal | None
+    full_tco: bool

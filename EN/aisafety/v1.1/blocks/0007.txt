@@ -1,0 +1,25 @@
+# Illustrative token allocation; no security guarantee.
+CONTEXT_WINDOW = 200_000
+PLANNED_INSTRUCTION_TOKENS = 10_000  # illustrative 5% allocation
+ALERT_RATIO = 0.03  # illustrative review threshold, not attack resistance
+
+INSTRUCTION_DISTRIBUTION = {
+    "main_system_prompt": 3_000,
+    "final_reminder": 1_500,
+    "rag_prefixes": 500,
+    "tool_suffixes": 500,
+    "periodic_reminders": 2_000,
+    "reserve": 2_500,
+}
+assert sum(INSTRUCTION_DISTRIBUTION.values()) == PLANNED_INSTRUCTION_TOKENS
+CONTENT_TOKENS = CONTEXT_WINDOW - PLANNED_INSTRUCTION_TOKENS
+
+def meets_illustrative_allocation(instruction_tokens_used):
+    if type(instruction_tokens_used) is not int:
+        raise ValueError("Token count must be an integer")
+    if not 0 <= instruction_tokens_used <= CONTEXT_WINDOW:
+        raise ValueError("Token count is outside the example window")
+    return instruction_tokens_used / CONTEXT_WINDOW >= ALERT_RATIO
+
+# This checks an example allocation, not model behavior or authorization.
+# Use the model tokenizer and evaluate attacks and legitimate tasks separately.

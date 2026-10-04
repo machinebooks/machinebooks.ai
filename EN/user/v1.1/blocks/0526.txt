@@ -1,0 +1,22 @@
+#!/bin/bash
+# backup-diario.sh — Backup only; no automatic deletion or external message.
+set -euo pipefail
+umask 077
+source_dir="/home/usuario/documentos-activos"
+backup_dir="/home/usuario/backups"
+mkdir -p "$backup_dir"
+exec 9>"$backup_dir/.backup.lock"
+flock -n 9 || exit 1
+stamp=$(date -u +%Y-%m-%dT%H-%M-%SZ)
+temporary=$(mktemp "$backup_dir/.backup-XXXXXX.tar.gz")
+trap 'rm -f -- "$temporary"' EXIT
+tar -czf "$temporary" -C "$(dirname "$source_dir")" "$(basename "$source_dir")"
+tar -tzf "$temporary" >/dev/null
+destination="$backup_dir/backup-$stamp.tar.gz"
+[ ! -e "$destination" ] || exit 1
+mv -- "$temporary" "$destination"
+sha256sum "$destination" > "$destination.sha256"
+printf '%s\n' "Archive created and listing verified; restoration test pending."
+# Test restoration into an isolated directory and compare content before retention.
+# An archive listing alone does not prove restorability.
+# Retention deletion and notifications require their own reviewed configuration.

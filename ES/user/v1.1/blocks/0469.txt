@@ -1,0 +1,16 @@
+set -euo pipefail
+: "${KUBE_CONTEXT:?Set the reviewed cluster context}"
+kubectl --context "$KUBE_CONTEXT" cluster-info
+k=(kubectl --context "$KUBE_CONTEXT" --namespace production)
+
+: "${REVIEWED_POD:?Set one reviewed Ready Pod from this Deployment}"
+"${k[@]}" get pods -l app=api-server \
+  -o custom-columns='NAME:.metadata.name,PHASE:.status.phase,READY:.status.containerStatuses[*].ready,IMAGE:.spec.containers[*].image'
+# Requires curl in this reviewed container; checks only this Pod's local endpoint.
+http_code="$("${k[@]}" exec "$REVIEWED_POD" -c api-server -- \
+  curl --max-time 5 --fail --silent --show-error \
+  -o /dev/null -w '%{http_code}' http://localhost:8080/health)"
+[ "$http_code" = 200 ] || exit 1
+printf 'Selected Pod local /health: HTTP %s\n' "$http_code"
+"${k[@]}" get events --sort-by=.metadata.creationTimestamp
+# Response contents, all Pods, external access, and application function remain pending.

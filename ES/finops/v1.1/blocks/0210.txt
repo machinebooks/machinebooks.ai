@@ -1,0 +1,18 @@
+# Pseudonymous allocation remains personal data when people can be reidentified.
+from sqlalchemy import Column,String,Numeric,Date,ForeignKey,CheckConstraint,UniqueConstraint
+from database import Base
+
+class StaffAllocation(Base):
+    __tablename__="staff_allocations"
+    id=Column(String(36),primary_key=True)
+    tenant_id=Column(String(64),nullable=False)
+    person_pseudonym=Column(String(100),nullable=False)
+    project_code=Column(String(100),nullable=False)
+    role_profile_id=Column(String(36),ForeignKey("role_cost_profiles.id"),nullable=False)
+    month=Column(Date,nullable=False)
+    allocation_fraction=Column(Numeric(12,8),nullable=False)
+    version=Column(String(100),nullable=False)
+    __table_args__=(CheckConstraint("allocation_fraction >= 0 AND allocation_fraction <= 1"),
+        UniqueConstraint("tenant_id","person_pseudonym","project_code","month","version"),)
+# Host validates first-of-month and same-tenant role ownership, protects person mapping,
+# and atomically limits the sum across all projects to one per person/month/version.

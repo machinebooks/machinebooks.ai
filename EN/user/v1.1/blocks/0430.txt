@@ -1,0 +1,1 @@
+Prepare start/stop of a fixed approved allowlist of development instances with explicit account, profile and region. Verify EBS and tag before changing anything and wait for transition. Schedule Monday–Friday at 08:00/20:00 UTC only after reviewing dependencies, recovery and permissions; cron must not depend on an expired human session.

@@ -1,0 +1,8 @@
+Petición autorizada y acotada
+  → comprobar clasificación de datos, soberanía y candidatos previamente aprobados
+  → seleccionar un candidato elegible para la tarea
+  → invocar con límites y registrar el intento
+  → si falla, comprobar si otro candidato aprobado admite los mismos datos
+  → si no existe, devolver fallo pendiente; no enviar automáticamente a una API externa
+  → validar respuesta y conservar costes conocidos/desconocidos de cada intento
+La tarifa de tokens local puede ser cero; infraestructura y operación no son gratuitas.

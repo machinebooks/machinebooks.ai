@@ -1,0 +1,19 @@
+# Reference fixture checked 2026-10-04; not an approval or deployed policy.
+version: fixture-v1
+approval_state: pending
+currency: EUR
+period: monthly
+alert_threshold: "0.80"
+action_at_limit: block
+model_routing:
+  rules:
+    - {task_type: simple_query, model: claude-haiku-4-5, max_input_tokens: 8000, max_output_tokens: 512}
+    - {task_type: offer_generation, model: claude-sonnet-4-6, max_input_tokens: 8000, max_output_tokens: 4000}
+    - {task_type: compliance_report, model: claude-opus-4-6, max_input_tokens: 16000, max_output_tokens: 8000}
+  unknown_task_action: reject
+fallback:
+  strategy: approved_candidates_only
+  max_retries: 2
+  on_exhaustion: reject
+# Every candidate needs host-approved data/region/tool/quality/price scope. A cheaper
+# model is not an automatic fallback for confidential input or exhausted reservations.

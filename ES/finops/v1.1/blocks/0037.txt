@@ -1,0 +1,32 @@
+import json
+
+def validate_terraform_plan(plan, policy, taggable_types):
+    changes = plan.get("resource_changes", [])
+    if not isinstance(changes, list) or len(changes) > 10000:
+        raise ValueError("bounded changes required")
+    violations, reviewed = [], 0
+    for item in changes:
+        if item.get("mode") != "managed":
+            continue
+        change = item["change"]
+        actions = change.get("actions", [])
+        if not ({"create", "update"} & set(actions)):
+            continue
+        if item["type"] not in taggable_types:
+            violations.append({"address": item["address"], "status": "unclassified"})
+            continue
+        reviewed += 1
+        field = taggable_types[item["type"]]
+        unknown = change.get("after_unknown", {}).get(field)
+        tags = (change.get("after") or {}).get(field)
+        if unknown or not isinstance(tags, dict):
+            invalid = ["unknown_tags"]
+        else:
+            invalid = invalid_tags(tags, policy)
+        if invalid:
+            violations.append({"address": item["address"], "invalid": invalid})
+    return {"reviewed": reviewed, "violations": violations,
+            "tag_check_passed": bool(reviewed) and not violations,
+            "deploy_authorized": False}
+# Types/fields (tags_all, tags, labels) and canonical adapters are explicit inputs.
+# Tagless types need a documented exclusion; unknown resources prevent a full pass.

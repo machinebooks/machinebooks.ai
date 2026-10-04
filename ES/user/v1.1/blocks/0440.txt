@@ -1,0 +1,4 @@
+# Listar VMs en Azure
+az vm list -d --output table \
+  --query '[].{Name:name, ResourceGroup:resourceGroup,
+    Size:hardwareProfile.vmSize, State:powerState, Location:location}'

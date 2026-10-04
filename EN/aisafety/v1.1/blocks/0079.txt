@@ -1,0 +1,26 @@
+# Prometheus rules. Thresholds are illustrative and need local validation.
+# Configuration-change detection must instrument its counter independently;
+# Info values remain 1 when a hash label changes. Also monitor missing data.
+groups:
+  - name: ai_security
+    rules:
+      - alert: HighInjectionCandidates
+        expr: sum(rate(ai_security_injection_attempts_total{severity="high"}[10m])) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+      - alert: PIICandidatesRequireReview
+        expr: sum(increase(ai_security_pii_detections_total[5m])) > 0
+        labels:
+          severity: warning
+      - alert: UnapprovedPromptConfigurationChange
+        expr: sum(increase(ai_security_system_prompt_unapproved_changes_total[5m])) > 0
+        labels:
+          severity: critical
+      - alert: ElevatedBlockedToolRatio
+        expr: >
+          sum(rate(ai_security_tool_invocations_total{result="blocked"}[10m]))
+          / sum(rate(ai_security_tool_invocations_total[10m])) > 0.3
+        for: 5m
+        labels:
+          severity: warning

@@ -1,0 +1,8 @@
+Cruza el fichero ventas_Q3.csv con catalogo_productos.xlsx usando el código de
+producto como clave. Añade a cada venta el nombre del producto, su precio unitario
+y su categoría. Calcula el importe total (cantidad × precio). Genera un resumen
+agrupado por categoría con total de unidades e importe.
+Verifica que el catálogo tiene una clave única y no nula por producto.
+Conserva todas las ventas, identifica claves sin correspondencia y detén
+el cruce si una clave del catálogo multiplicaría filas. Confirma vigencia
+del precio y reconcilia filas e importes antes y después.

@@ -1,0 +1,7 @@
+DIAGNÓSTICO ILUSTRATIVO, INCOMPLETO:
+Estado supuesto: Restarting, salida 1; log supuesto: conexión rechazada.
+La inspección omite valores sensibles y consulta un contenedor identificado por Compose.
+Una conexión rechazada exige comprobar destino, puerto, listener y momento.
+No demuestra ausencia de base de datos, fallo de autenticación ni causa de OOM.
+PENDIENTE: correlacionar logs, configuración efectiva, catálogos, permisos,
+persistencia y migraciones. No se ha autorizado crear ni reiniciar recursos.

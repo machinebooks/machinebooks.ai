@@ -1,0 +1,5 @@
+In /etc/nginx/nginx.conf, I need to:
+1. Increase worker_connections from 768 to 2048
+2. Add a rate limiting block of 10 requests per second per IP
+3. Enable gzip for JSON and HTML responses
+4. Verify the configuration is correct after the changes

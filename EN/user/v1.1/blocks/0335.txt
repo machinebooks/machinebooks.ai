@@ -1,0 +1,8 @@
+Generate a reusable script that does the following:
+1. Read the file kpis-[YEAR].csv from the current folder
+2. Generate the dashboard with the corporate style from estilo-corporativo.json
+3. Save the PNG and HTML versions with the date in the name
+4. Also generate a text summary of the main KPIs
+
+Save the script as generar-dashboard.py with usage instructions
+in the comments at the top.

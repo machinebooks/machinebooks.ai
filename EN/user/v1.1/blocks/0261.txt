@@ -1,0 +1,7 @@
+Cross-reference the file ventas_Q3.csv with catalogo_productos.xlsx using the
+product code as the key. Add to each sale the product name, unit price,
+and category. Calculate the total amount (quantity × price). Generate a
+summary grouped by category with total units and amount.
+Verify a unique, non-null product key in the catalog. Retain every sale,
+identify unmatched keys, and stop if a catalog key would multiply rows.
+Confirm price validity and reconcile rows and amounts before and after.

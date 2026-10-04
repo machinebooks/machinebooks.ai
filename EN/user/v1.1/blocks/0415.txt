@@ -1,0 +1,6 @@
+Do a basic security check of this server:
+- Users with SSH access
+- Ports open to the outside
+- Services listening that shouldn't be
+- Suspicious permissions on sensitive files
+- Recent failed access attempts

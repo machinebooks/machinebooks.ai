@@ -1,0 +1,4 @@
+Revisa CPU requests, métricas disponibles y el controlador que gestiona
+api-server en el contexto autorizado. Propón un HPA con mínimo 3,
+máximo 10 y objetivo de utilización CPU del 70 %.
+No mantengas un escalado manual a 5 como si fuera una réplica fija bajo HPA.

@@ -1,0 +1,17 @@
+┌───────────────────────────────────────────────────────┐
+│               TU SISTEMA PERSONAL                     │
+├──────────────┬───────────────┬─────────────────────────┤
+│  CLAUDE.md   │  CONEXIONES   │ COMANDOS PERSONALIZADOS │
+│  (config)    │  MCP          │ (.claude/commands/)     │
+│              │               │                         │
+│  Preferen-   │  Gmail        │  /email                 │
+│    cias      │  Calendar     │  /informe-semanal       │
+│  Reglas      │  GitHub       │  /reunion               │
+│  Contexto    │  Slack        │  /datos                 │
+└──────────────┴───────────────┴─────────────────────────┘
+                        │
+                  ┌─────┴─────┐
+                  │  RUTINA   │
+                  │  DIARIA   │
+                  │  (cron)   │
+                  └───────────┘

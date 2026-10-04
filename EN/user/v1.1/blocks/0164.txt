@@ -1,0 +1,32 @@
+# servidor.py — Local MCP fixture with no API or credentials.
+from mcp.server.fastmcp import FastMCP
+from pydantic import StrictInt
+import json
+
+server = FastMCP("gestion-empresa")
+CLIENTS = [{"id": 1, "nombre": "Empresa de prueba", "email": "cliente@example.invalid", "ciudad": "Madrid"}]
+ORDERS = [{"id": 101, "cliente_id": 1, "fecha": "2026-03-01", "importe": 100.0, "estado": "entregado"}]
+
+@server.tool()
+async def buscar_cliente(nombre: str) -> str:
+    if not 1 <= len(nombre.strip()) <= 100:
+        return "Error: empty or excessively long name."
+    return json.dumps([c for c in CLIENTS if nombre.casefold() in c["nombre"].casefold()], ensure_ascii=False)
+
+@server.tool()
+async def pedidos_cliente(cliente_id: StrictInt) -> str:
+    if isinstance(cliente_id, bool) or cliente_id < 1:
+        return "Error: invalid identifier."
+    return json.dumps([o for o in ORDERS if o["cliente_id"] == cliente_id], ensure_ascii=False)
+
+@server.tool()
+async def resumen_ventas(mes: StrictInt, anio: StrictInt) -> str:
+    if isinstance(mes, bool) or isinstance(anio, bool) or not 1 <= mes <= 12 or not 2000 <= anio <= 2100:
+        return "Error: invalid month or year."
+    selected = [o for o in ORDERS if o["fecha"].startswith(f"{anio:04d}-{mes:02d}")]
+    total = sum(o["importe"] for o in selected)
+    return json.dumps({"total_pedidos": len(selected), "importe_total": total,
+                       "pedido_medio": total / len(selected) if selected else 0}, ensure_ascii=False)
+
+if __name__ == "__main__":
+    server.run(transport="stdio")

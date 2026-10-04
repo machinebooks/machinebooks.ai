@@ -1,0 +1,24 @@
+Genera el informe de desviación presupuestaria del Q1 2024 con:
+
+1. Tabla resumen: por cada partida del presupuesto, muestra presupuestado,
+   real (ERP de devengo + sólo tarjetas confirmadas no registradas ya en ERP), desviación absoluta y porcentual, semáforo
+   (valor absoluto del porcentaje: verde <5%, amarillo 5%–15% inclusive, rojo >15%; presupuesto cero: no aplicable)
+
+2. Desglose mensual: evolución enero-febrero-marzo de cada partida
+
+3. Top 5 desviaciones: las partidas con mayor desviación, con detalle
+   de los principales gastos que la componen
+
+4. Movimientos sin clasificar: lista de gastos que no se pudieron
+   asignar a ninguna partida del presupuesto
+
+5. Conciliación resumida: resumen del estado de la conciliación bancaria
+
+6. Proyección anual: si la tendencia del Q1 se mantiene, escenario Q1×4 respecto al presupuesto, con supuestos y
+   sin tratarlo como pronóstico confirmado
+
+7. Resumen ejecutivo: 5-7 líneas para el comité de dirección
+
+Genera dos salidas:
+- informe-desviacion-Q1-2024.xlsx con todas las tablas formateadas
+- Un resumen en pantalla con los hallazgos principales

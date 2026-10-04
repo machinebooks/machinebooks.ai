@@ -1,0 +1,14 @@
+ILLUSTRATIVE NETWORK DIAGNOSIS:
+
+Both containers are assumed on staging_default and DNS resolves
+redis to 172.18.0.4; the connection to redis:6379 is refused.
+That alone does not establish bind 127.0.0.1 as the cause.
+Check the process, port, effective configuration, network, and time
+with authorized permissions. A local PING does not prove api-backend access.
+
+If loopback-only listening is confirmed to block a legitimate client,
+review an authorized private interface or network together with ACLs,
+authentication, protected mode, and TLS where applicable.
+Do not switch to bind 0.0.0.0 as an automatic fix or publish 6379
+without controlling exposure. Repeat tests from the authorized client
+before treating connectivity as resolved.

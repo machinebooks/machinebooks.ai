@@ -1,0 +1,19 @@
+# Workflow review signals, not a compliance verdict; inputs are owned host snapshots.
+def audit_review_signals(rows):
+    if len(rows)>10000:
+        raise ValueError("Bounded audit view required")
+    unknown_review=0; missing_required=0; unapproved_execution=0
+    for row in rows:
+        if type(row["requires_human_review"]) is not bool:
+            raise ValueError("Invalid review requirement")
+        if row["requires_human_review"]:
+            if row["review_receipt"] is None:
+                missing_required+=1
+        else:
+            unknown_review+=int(row["legal_assessment_ref"] is None)
+        unapproved_execution+=int(row["execution_observed"] is True and row["execution_approval_ref"] is None)
+    return {"missing_required_review_count":missing_required,
+            "unassessed_optional_count":unknown_review,
+            "observed_execution_missing_approval_count":unapproved_execution,
+            "regulatory_compliance_confirmed":False}
+# Host validates identities, versions, receipt ordering/binding and source coverage.

@@ -1,0 +1,4 @@
+I need to investigate why the api-backend service can't
+connect to an external service. I want to get inside the container
+and verify network connectivity, DNS, and environment
+variables.

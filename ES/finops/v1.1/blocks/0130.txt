@@ -1,0 +1,21 @@
+# Endpoint cores: authorization supplies tenant/object scope; no client cost or role.
+from uuid import UUID
+from datetime import datetime, timedelta, timezone
+
+async def roi_summary(principal, authorize, repository, days=30):
+    if type(days) is not int or not 1 <= days <= 365:
+        raise ValueError("Invalid period")
+    scope = await authorize(principal, "roi.read")
+    end = datetime.now(timezone.utc)
+    return await repository.capacity_summary(scope=scope, start=end-timedelta(days=days), end=end)
+
+async def record_task_decision(principal, authorize, repository, workflow_id, accepted, expected_version):
+    UUID(workflow_id)
+    if type(accepted) is not bool or not expected_version:
+        raise ValueError("Invalid decision")
+    scope = await authorize(principal, "roi.decide", workflow_id=workflow_id)
+    # One host transaction checks ownership/version, all attempt costs including
+    # failures, baseline effective at completion, pinned currency/FX and deduplication.
+    return await repository.record_owned_decision_once(
+        scope=scope, workflow_id=workflow_id, accepted=accepted,
+        expected_version=expected_version, decided_at=datetime.now(timezone.utc))

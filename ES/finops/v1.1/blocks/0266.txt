@@ -1,0 +1,5 @@
+from google.cloud import billing_v1
+
+# Use approved workload identity or another ADC mechanism.
+# Host authorization, credential scope and tenant isolation remain mandatory.
+client = billing_v1.CloudBillingClient()

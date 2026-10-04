@@ -1,0 +1,20 @@
+Create empresa-demo.db only in a new practice folder, with entirely
+synthetic data and an expected-results manifest.
+Use declared keys and relationships; verify foreign_key_check.
+
+1. zonas(id, nombre): 8 zones total, 7 in Spain plus International.
+2. comerciales(id, zona_id, nombre): 30 fictional salespeople.
+3. clientes(id, zona_id, comercial_id, nombre, fecha_alta, activo): 2,000.
+4. productos(id, categoria, nombre): 150 products, 10 categories.
+5. pedidos(id, cliente_id, fecha, estado): 8,000 from 2022-04-01 through
+   2024-03-31; states completed, pending, and cancelled.
+6. lineas_pedido(id, pedido_id, producto_id, cantidad, precio_unitario,
+   descuento): 20,000; price belongs to the transaction, not the catalog.
+7. facturas(id, pedido_id, fecha_emision, fecha_vencimiento, importe,
+   importe_cobrado): 7,000, with documented credits and partial payments.
+
+Define EUR, tax basis, ISO dates, and a 2024-03-31 cutoff. Registration
+precedes or equals the first order. Introduce fictional seasonality
+and 5% overdue invoices based on balance and cutoff date;
+check these assumptions against the manifest. Do not use real data or
+overwrite an existing database. No quotes table is included.

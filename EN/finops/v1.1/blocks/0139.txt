@@ -1,0 +1,14 @@
+# Constant-month scenario. Caller supplies an approved complete period/FX snapshot.
+from decimal import Decimal, ROUND_CEILING
+
+def constant_business_case(monthly_cost, monthly_capacity, investment):
+    cost,value,initial=[Decimal(str(x)) for x in (monthly_cost,monthly_capacity,investment)]
+    if any(not x.is_finite() or x<0 for x in (cost,value,initial)):
+        raise ValueError("Invalid financial assumptions")
+    net=value-cost
+    recovery=None if net<=0 else initial/net
+    return {"year1_capacity_net":str(net*12-initial),
+        "capacity_recovery_months":None if recovery is None else str(recovery),
+        "first_completed_recovery_month":None if recovery is None else int(recovery.to_integral_value(rounding=ROUND_CEILING)),
+        "cash_payback":None,"full_roi":None,"state":"illustrative_constant_scenario"}
+# Limits and assumptions travel with the immutable snapshot; consumers must retain them.

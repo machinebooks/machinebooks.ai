@@ -1,0 +1,1 @@
+Prepara start/stop de una lista fija aprobada de instancias de desarrollo, con cuenta, perfil y región explícitos. Verifica EBS y etiqueta antes de cambiar nada y espera la transición. Planifica L–V a las 08:00/20:00 UTC sólo tras revisar dependencias, recuperación y permisos; cron no debe depender de una sesión humana expirada.

@@ -1,0 +1,18 @@
+# Propuesta comercial para Tech Solutions
+
+## Contexto
+Estamos preparando una propuesta comercial para Tech Solutions.
+El trabajo se divide entre tres agentes especializados.
+Los datos de referencia están en datos/.
+El glosario de coherencia está en glosario.md.
+
+## Regla fundamental
+Cada agente DEBE leer glosario.md antes de empezar su tarea
+y seguir las convenciones de formato y nomenclatura definidas ahí.
+
+## Archivos de salida
+- partes/analisis-cliente.md — Análisis del cliente (Agente A)
+- partes/estimacion-economica.md — Presupuesto detallado (Agente B)
+- partes/narrativa-propuesta.md — Texto de la propuesta (Agente C)
+- resultado/propuesta-final.md — Documento integrado final
+Las instrucciones no conceden ACL ni aseguran cumplimiento; comprobar salidas.

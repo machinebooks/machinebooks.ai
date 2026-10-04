@@ -30,11 +30,11 @@ Publication status varies by title and language; the editing and unavailable-mat
 
 El estado de publicación varía por título e idioma. Las entradas en edición o con material no disponible no anuncian publicación ni disponibilidad de ejemplos. Consulta **[machinebooks.ai](https://machinebooks.ai/)** para los detalles y enlaces actuales.
 
-## Review status — 3 October 2026
+## Review status — 4 October 2026
 
-The published examples refer to earlier editions. The books are undergoing a v1.1 review; corrected repository paths and catalogue descriptions do not mean that every code example has been updated or validated.
+Educational blocks from the v1.1 revisions of User, FinOps, and AI Safety are separated into `ES/<book>/v1.1/` and `EN/<book>/v1.1/`, with source manifests and SHA-256 hashes. Earlier material is preserved. The other titles remain under review; this code synchronization does not itself announce eBook publication or establish execution of every snippet.
 
-Los ejemplos publicados corresponden a ediciones anteriores. La revisión v1.1 de los libros está en curso; corregir rutas y descripciones del catálogo no significa que todo el código esté actualizado o validado.
+Los bloques didácticos de la revisión v1.1 de Usuario, FinOps y AI Safety están separados en `ES/<libro>/v1.1/` y `EN/<libro>/v1.1/`, con manifiestos de origen y SHA-256. El material anterior se conserva. Los demás títulos siguen en revisión; esta sincronización del código no anuncia por sí misma la publicación de los eBooks ni acredita ejecución de cada fragmento.
 
 ## How to use
 

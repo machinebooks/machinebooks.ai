@@ -1,0 +1,27 @@
+┌─────────────────────────────────────────────────┐
+│                CONTEXT WINDOW                    │
+│                                                  │
+│  ┌──────────────────────────────────────────┐   │
+│  │  SYSTEM PROMPT                            │   │
+│  │  "You are a technical support assistant.  │   │
+│  │   Do not answer questions about national  │   │
+│  │   security, weapons, or illegal activity."│   │
+│  └──────────────────────────────────────────┘   │
+│                                                  │
+│  ┌──────────────────────────────────────────┐   │
+│  │  CONVERSATION HISTORY                     │   │
+│  │  (previous user messages                   │   │
+│  │   and model responses)                     │   │
+│  └──────────────────────────────────────────┘   │
+│                                                  │
+│  ┌──────────────────────────────────────────┐   │
+│  │  EXTERNAL DATA (RAG, tools)               │   │
+│  │  ← Potential indirect injection point      │   │
+│  └──────────────────────────────────────────┘   │
+│                                                  │
+│  ┌──────────────────────────────────────────┐   │
+│  │  CURRENT USER MESSAGE                     │   │
+│  │  ← Potential direct injection point        │   │
+│  └──────────────────────────────────────────┘   │
+│                                                  │
+└─────────────────────────────────────────────────┘

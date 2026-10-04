@@ -1,0 +1,12 @@
+EJEMPLO ILUSTRATIVO DE ROLLBACK:
+  Estado supuesto: 3 pods con imagen v2.4.3.
+  Duración supuesta: 32 segundos; no medida ni garantizada.
+  Historial supuesto:
+    Revisión 3: v2.4.3 — rollback
+    Revisión 2: v2.5.0 — desplegada y revertida
+    Revisión 1: v2.4.3 — original
+
+PENDIENTE: recuperar las salidas reales del historial y del rollout,
+verificar imágenes y probar la función afectada con autorización.
+Los comandos anteriores no consultan /health ni el historial final posterior al rollback;
+no acreditan esos resultados ni recuperación de datos o migraciones.

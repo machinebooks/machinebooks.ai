@@ -1,0 +1,25 @@
+# Pipeline de reporting financiero mensual
+
+## Contexto del ejemplo
+Empresa de servicios tecnológicos: ocho empleados y facturación anual aproximada de 1,2 millones EUR.
+Los CSV de datos/ son las fuentes del ejemplo; conserva su procedencia y periodo.
+
+## Reglas de cálculo
+- EUR con Decimal y dos decimales; no convertir moneda sin fuente y fecha
+- Emitida se incluye en facturación emitida; Borrador se informa aparte
+- Pagado identifica salida de caja; Pendiente es obligación pendiente
+- No confundir estos estados con reconocimiento contable de ingresos o gastos
+- Reconcilia ERP, banco, tarjetas, abonos y pagos parciales antes de agregar
+- Compara presupuesto y real sobre la misma base y categoría
+- Desviación: (real - presupuesto) / presupuesto * 100, si presupuesto no es cero
+- No llames margen operativo a facturado menos gasto pagado
+
+## Formato y aceptación
+Markdown con fuentes y tablas; formato 12.500,00 EUR y 85,3%.
+Resumen ejecutivo, facturación, cobros, gastos por estado, presupuesto y recomendaciones.
+Registra ausencias y errores; detén entrega final si falta una fuente crítica.
+La salida debe abrirse y cotejarse completa antes de revisión humana; no se envía sola.
+- Presupuesto Q1 y CSV son fixtures de 2025; no prueban datos actuales.
+- No hay fecha de vencimiento ni identificador único de factura: no clasificar vencidas.
+- Para el fixture, reconciliar sólo (cliente, concepto) con coincidencia única.
+- Cobros no prueban ingreso devengado, ni facturación emitida prueba ese devengo.

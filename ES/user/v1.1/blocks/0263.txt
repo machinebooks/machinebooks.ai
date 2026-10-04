@@ -1,0 +1,30 @@
+## Diagnóstico de ficheros — gastos-2024/
+
+### Estructura por fichero
+
+| Fichero | Filas | Columnas | Formato fecha | Problemas |
+|---------|-------|----------|---------------|-----------|
+| gastos-enero.csv | 234 | Fecha, Proveedor, Concepto, Importe, IVA | DD/MM/YYYY | Ninguno |
+| gastos-febrero.xlsx | 198 | Date, Supplier, Concept, Amount, Tax | MM/DD/YYYY | Columnas en inglés |
+| gastos-marzo.csv | 267 | Fecha, Proveedor, Concepto, Importe | DD-MM-YYYY | Falta columna IVA |
+| gastos-abril.csv | 215 | Fecha;Proveedor;Concepto;Importe;IVA | DD/MM/YYYY | Separador punto y coma |
+| gastos-mayo.xlsx | 189 | Fecha, Proveedor, Descripción, Importe, IVA, Total | DD/MM/YYYY | Columna extra "Total" |
+| gastos-junio.csv | 243 | Fecha, Proveedor, Concepto, Importe, IVA | DD/MM/YYYY | 3 filas vacías |
+| gastos-julio.csv | 201 | Fecha, Proveedor, Concepto, Importe, IVA | DD/MM/YYYY | 12 duplicados exactos |
+| gastos-agosto.xlsx | 156 | Fecha, Proveedor, Concepto, Importe, IVA | DD/MM/YYYY | Ninguno |
+| gastos-septiembre.csv | 278 | Fecha, Proveedor, Concepto, Importe, IVA | DD/MM/YYYY | 5 importes negativos |
+| gastos-octubre.csv | 245 | Fecha, Proveedor, Concepto, Importe, IVA | DD/MM/YYYY | 8 registros repetidos de septiembre |
+| gastos-noviembre.xlsx | 220 | Fecha, Proveedor, Concepto, Importe, IVA | DD/MM/YYYY | Ninguno |
+| gastos-diciembre.csv | 312 | Fecha_operacion, Nombre_proveedor, Concepto, Importe_EUR, IVA_pct | YYYY-MM-DD | Columnas renombradas |
+
+### Resumen de problemas
+- 2 ficheros con columnas en formato diferente (febrero en inglés, diciembre renombradas)
+- 4 formatos de fecha distintos
+- 1 fichero sin columna IVA (marzo)
+- 1 fichero con separador punto y coma (abril)
+- 1 fichero con columna extra (mayo)
+- 3 filas vacías (junio)
+- 12 duplicados exactos (julio)
+- 8 duplicados entre septiembre y octubre
+- 5 importes negativos en septiembre (podrían ser devoluciones)
+Los 12 y 8 duplicados son candidatos pendientes de identidad de operación; conserva las devoluciones y resuelve el solape entre septiembre y octubre antes de calcular totales.

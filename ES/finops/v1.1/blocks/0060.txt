@@ -1,0 +1,13 @@
+def get_current_budget_status(authorized_budgets, now):
+    snapshot = check_budget_snapshot(authorized_budgets, "0", now)
+    states = snapshot["states"]
+    if not states or any(s["status"] == "unknown" for s in states):
+        status = "unknown"
+    elif any(s["status"] == "blocked" for s in states):
+        status = "alert"
+    elif any(s["status"] == "warning" for s in states):
+        status = "warning"
+    else:
+        status = "ok"
+    return {"status":status, "states":states, "execution_authorized":False}
+# Host scopes/authenticates route. Display status is not a reservation or permit.

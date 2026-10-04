@@ -1,0 +1,67 @@
+import time
+import threading
+from decimal import Decimal
+from uuid import uuid4
+
+class ProviderCircuitBreaker:
+    def __init__(self, baseline_usd_per_minute, spike_multiplier=5,
+                 min_spend_usd=1, window_seconds=600, open_timeout_seconds=300,
+                 clock=time.monotonic):
+        self.baseline = Decimal(str(baseline_usd_per_minute))
+        self.multiplier = Decimal(str(spike_multiplier))
+        self.minimum = Decimal(str(min_spend_usd))
+        if any(not v.is_finite() for v in (self.baseline,self.multiplier,self.minimum)) or self.baseline <= 0 or self.multiplier <= 1 or self.minimum < 0:
+            raise ValueError("finite calibrated thresholds required")
+        if type(window_seconds) is not int or not 1 <= window_seconds <= 3600 or type(open_timeout_seconds) is not int or not 1 <= open_timeout_seconds <= 86400:
+            raise ValueError("time bounds")
+        self.window,self.timeout,self.clock = window_seconds,open_timeout_seconds,clock
+        self.state,self.opened_at,self.probe = "closed",None,None
+        self.records,self.permits,self.lock = [],set(),threading.Lock()
+
+    def allow_request(self):
+        with self.lock:
+            now = self.clock()
+            if self.state == "open":
+                if now-self.opened_at < self.timeout:
+                    return None
+                self.state = "half_open"
+            if self.state == "half_open" and self.probe is not None:
+                return None
+            if len(self.permits) >= 1000:
+                return None
+            permit = str(uuid4())
+            self.permits.add(permit)
+            if self.state == "half_open":
+                self.probe = permit
+            return permit
+
+    def cancel_uncalled_permit(self, permit):
+        with self.lock:
+            self.permits.discard(permit)
+            if self.probe == permit:
+                self.probe = None
+
+    def record_attempt(self, permit, observed_cost_usd):
+        cost = None if observed_cost_usd is None else Decimal(str(observed_cost_usd))
+        if cost is not None and (not cost.is_finite() or cost < 0):
+            raise ValueError("finite cost required")
+        with self.lock:
+            if permit not in self.permits:
+                raise ValueError("unmatched permit")
+            self.permits.remove(permit)
+            now = self.clock()
+            self.records = [(t,c) for t,c in self.records if now-t < self.window]
+            if cost is not None:
+                self.records.append((now,cost))
+            spend = sum((c for _,c in self.records),Decimal(0))
+            spike = spend >= self.minimum and spend*60/self.window > self.baseline*self.multiplier
+            if cost is None or spike:
+                self.state,self.opened_at = "open",now
+            elif permit == self.probe:
+                self.state = "closed"
+            if permit == self.probe:
+                self.probe = None
+            return self.state
+# Process-local example with one half-open probe; no multi-worker/distributed guarantee.
+# Baseline is pinned/calibrated before comparison, not updated with the spike itself.
+# It observes charged failures too; unknown cost opens for review. It cannot undo cost.

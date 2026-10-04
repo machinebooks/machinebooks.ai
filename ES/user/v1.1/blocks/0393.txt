@@ -1,0 +1,2 @@
+free -h
+cat /proc/meminfo | grep -i "memavailable\|memtotal\|swaptotal\|swapfree"

@@ -1,0 +1,23 @@
+# Reconciliation diagnostic; neither difference nor equal totals proves coverage.
+from decimal import Decimal
+
+def validate_tracking_completeness(known_cost, invoice_cost, priced_calls, total_calls):
+    if any(type(n) is not int or n < 0 for n in (priced_calls, total_calls)) or priced_calls > total_calls:
+        raise ValueError("Invalid call denominator")
+    def amount(value):
+        if value is None:
+            return None
+        result = Decimal(str(value))
+        if not result.is_finite():
+            raise ValueError("Invalid amount")
+        return result
+    known, invoice = amount(known_cost), amount(invoice_cost)
+    difference = None if known is None or invoice is None else invoice - known
+    return {"known_cost": known, "invoice_cost": invoice,
+        "signed_difference": difference,
+        "absolute_difference": None if difference is None else abs(difference),
+        "relative_difference_pct": (difference / invoice * 100
+            if difference is not None and invoice > 0 else None),
+        "priced_calls": priced_calls, "unpriced_calls": total_calls - priced_calls,
+        "coverage_proven": False}
+# Host aligns scope, UTC period, currency, credits, taxes, cache and revisions first.

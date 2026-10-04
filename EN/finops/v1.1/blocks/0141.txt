@@ -1,0 +1,10 @@
+# Read approved server-side assumptions; no client tenant or investment overwrite.
+async def executive_summary(principal,authorize,repository,snapshot_id):
+    scope=await authorize(principal,"business_case.read",snapshot_id=snapshot_id)
+    snapshot=await repository.approved_business_case(scope=scope,snapshot_id=snapshot_id)
+    if snapshot is None:
+        return {"state":"unavailable","summary":None}
+    if snapshot["scope"]!=scope:
+        raise ValueError("Scope mismatch")
+    return {"state":"approved_scenario","summary":snapshot}
+# Snapshot contains source window/FX versions, scenarios, assumptions and limitations.

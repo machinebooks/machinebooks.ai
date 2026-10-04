@@ -1,0 +1,8 @@
+Genera el informe semanal de estado de todos los proyectos.
+Lee el estado.md de cada proyecto, compáralo con el informe
+de la semana pasada, y genera el nuevo informe con:
+- Resumen ejecutivo (5 líneas máximo)
+- Estado de cada proyecto (semáforo: verde/amarillo/rojo)
+- Avances de la semana
+- Riesgos y bloqueos
+- Acciones para la próxima semana

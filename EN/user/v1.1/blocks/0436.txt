@@ -1,0 +1,7 @@
+Prepare a partial inventory of the authorized AWS account:
+1. Rules allowing TCP/22 or all traffic to 0.0.0.0/0 and ::/0.
+2. S3 public-policy/ACL indicators and Block Public Access; effective access pending.
+3. RDS PubliclyAccessible flag; not equivalent to verified external connectivity.
+4. All access keys for each IAM user, status and creation date.
+5. IAM users’ console profiles and MFA devices.
+Do not change resources. State region and scope; root, roles, federation and S3 objects are reviewed separately.

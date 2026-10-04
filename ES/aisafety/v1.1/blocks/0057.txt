@@ -1,0 +1,16 @@
+# Integration contract, not a sandbox implementation.
+# A temporary directory does not isolate host files or the network.
+class SandboxedExecutor:
+    def __init__(self, backend=None):
+        self.backend = backend
+
+    def execute(self, command, code):
+        if self.backend is None:
+            raise RuntimeError("No isolation backend configured; execution denied")
+        if command not in {"python3", "node"}:
+            raise ValueError("Unsupported runtime")
+        # The trusted backend must enforce filesystem/network isolation,
+        # privilege limits, bounded output and termination of descendants.
+        # Enforcement must be verified separately before accepting code.
+        return self.backend.execute(runtime=command, source=code,
+            timeout_seconds=30, output_limit_bytes=10_000)

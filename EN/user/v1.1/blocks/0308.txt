@@ -1,0 +1,11 @@
+Analyze the 24 months from 2022-04-01 through 2024-03-31 inclusive.
+Define sales as net amounts of completed orders in EUR,
+using transaction prices and discounts; separate credits.
+Include every month, including months with zero sales.
+
+Show distinct order counts, amounts, and average order value.
+With no orders, average order value is not applicable. For cancellations,
+use cancelled/all orders in the month; show the denominator.
+For monthly change, a zero baseline is not applicable, not infinity.
+Conclude seasonality only if data and methodology support it.
+Show the top 5 increases and a summary with limitations and queries.

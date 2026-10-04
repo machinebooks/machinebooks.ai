@@ -1,0 +1,8 @@
+Proceso de referencia; requiere configuración real y evidencias:
+1. Proponer el cambio en una rama con motivos y alcance.
+2. Validar esquema, rangos, soberanía, modelos elegibles e impacto por ventanas comparables.
+3. Obtener aprobación vinculada al diff exacto y al ámbito; invalidarla si cambia el diff.
+4. Proteger la rama y desplegar un artefacto inmutable identificado por digest a staging.
+5. Evaluar staging según criterios de cobertura; quince minutos no prueban producción.
+6. Promover el mismo artefacto con autorización y conservar recibo, versión y rollback.
+Un merge o un tag no demuestra aprobación, aplicación ni eficacia del control.

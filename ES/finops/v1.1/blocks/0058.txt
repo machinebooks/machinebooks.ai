@@ -1,0 +1,11 @@
+{
+  "title": "Observed LLM cost and latency; correlation is not causality",
+  "type": "timeseries",
+  "targets": [{"datasource": {"type": "mysql", "uid": "authorized-finops-view"},
+    "rawSql": "SELECT $__timeGroupAlias(timestamp,'5m'), AVG(latency_ms) AS latency_ms, CASE WHEN COUNT(total_cost_usd)=COUNT(*) THEN SUM(total_cost_usd) ELSE NULL END AS cost_usd FROM authorized_usage_view WHERE $__timeFilter(timestamp) GROUP BY 1 ORDER BY 1",
+    "format": "time_series"}],
+  "fieldConfig": {"overrides": [
+    {"matcher": {"id":"byName","options":"latency_ms"},"properties":[{"id":"unit","value":"ms"}]},
+    {"matcher": {"id":"byName","options":"cost_usd"},"properties":[{"id":"unit","value":"currencyUSD"}]}
+  ]}
+}

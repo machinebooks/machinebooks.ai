@@ -1,0 +1,14 @@
+# Display an illustrative proposal only; this does not write or restart anything.
+cat <<'EOF'
+# Proposed webapp.service drop-in; review capacity and effective parent limits.
+[Unit]
+StartLimitIntervalSec=60
+StartLimitBurst=3
+[Service]
+MemoryHigh=1536M
+MemoryMax=2G
+Restart=on-failure
+RestartSec=10
+EOF
+# MemoryHigh throttles; MemoryMax may invoke OOM within the unit.
+# Restart depends on termination state and rate limits; it does not repair a leak.

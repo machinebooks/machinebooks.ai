@@ -1,0 +1,1 @@
+sum by (user_type) (increase(ai_security_injection_attempts_total[1h]))

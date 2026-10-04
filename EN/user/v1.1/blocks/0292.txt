@@ -1,0 +1,7 @@
+Find candidate duplicate payments in gastos-erp-2024.xlsx.
+The same vendor, amount, and date do not prove duplication: separate
+transactions may exist. Confirm payment ID, invoice, bank reference,
+and credits before marking a duplicate as confirmed.
+Group candidates by vendor/amount/date and preserve every record
+with provenance and evidence. Separate confirmed, candidate, and
+rejected cases; do not delete rows or automatically request refunds.

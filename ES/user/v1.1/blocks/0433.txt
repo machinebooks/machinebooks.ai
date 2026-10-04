@@ -1,0 +1,6 @@
+Revisa un bucket general-purpose autorizado, con perfil, cuenta y región correctos:
+1. Último punto disponible de StandardStorage en GiB y fecha; no es tamaño total de todas las clases.
+2. NumberOfObjects con AllStorageTypes y su fecha; revisa la definición del proveedor.
+3. Configuración de lifecycle; distingue NoSuchLifecycleConfiguration de AccessDenied.
+4. Marca datos ausentes, sin tratarlos como cero.
+La última escritura, la inactividad y el ahorro Glacier requieren trazas y una estimación separadas; estas dos métricas no los demuestran.

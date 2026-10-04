@@ -1,0 +1,4 @@
+In the file /opt/app/config.json, I need to:
+1. Change the value of "database.host" from "localhost" to "db-prod.empresa.invalid"
+2. Add a new key "cache.ttl" with value 3600
+3. Show me the final result to verify before saving

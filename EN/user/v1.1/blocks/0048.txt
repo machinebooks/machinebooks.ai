@@ -1,0 +1,16 @@
+I have analyzed 87 PDF files in the folder. Here is what I found:
+
+- 72 invoices with identifiable date and supplier
+- 8 files that appear to be budgets, not invoices
+- 4 duplicate files (same content, different name)
+- 3 files I could not read (possibly low-quality scans)
+
+Proposed plan:
+- Create 12 subfolders (01-January through 12-December)
+- Rename and move the 72 identified invoices
+- Move the 8 budgets to a separate folder called "Budgets"
+- Move the 4 duplicates to a "Duplicates_review" folder
+- Move the 3 unreadable ones to a "Review_manually" folder
+- Generate the CSV with the complete inventory
+
+Shall I proceed?

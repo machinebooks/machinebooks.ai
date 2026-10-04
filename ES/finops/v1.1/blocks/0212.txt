@@ -1,0 +1,7 @@
+# Costs come from approved server-side sources, never frontend query price fields.
+async def project_cost_view(principal,authorize,repository,project_code,start,end):
+    scope=await authorize(principal,"project_cost.read",project_code=project_code,start=start,end=end)
+    return await repository.project_cost_snapshot(scope=scope,project_code=project_code,
+                                                 start=start,end=end,missing_as_zero=False)
+# Host validates bounded calendar UTC period, source/FX versions, staff allocation
+# coverage and category overlap; permission includes tenant and specific project scope.

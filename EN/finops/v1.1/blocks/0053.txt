@@ -1,0 +1,6 @@
+def get_budget_status(budgets, now):
+    result = check_budget_snapshot(budgets, "0", now)
+    return {"budgets":result["states"], "execution_authorized":False}
+# Route receives only scopes authorized by the host. No justification/identity leaks.
+# Per-scope daily/weekly/monthly windows and fresh counters are mandatory.
+# Missing counters are unknown; a zero limit is blocked, never "ok".

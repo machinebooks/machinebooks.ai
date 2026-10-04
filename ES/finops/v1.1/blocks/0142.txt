@@ -1,0 +1,51 @@
+# Monthly scenario, EUR throughout. Capacity value is not realised cash.
+from decimal import Decimal, ROUND_HALF_UP
+
+
+def generate_tco_table(
+    base_monthly_llm_cost, base_monthly_value, engineering_year1,
+    engineering_recurring, infra_annual, growth_rates, other_annual_cost,
+):
+    values = [base_monthly_llm_cost, base_monthly_value, engineering_year1,
+              engineering_recurring, infra_annual, other_annual_cost]
+    if any(v is None or isinstance(v, bool) for v in values):
+        raise ValueError("Known numeric EUR amounts required")
+    cost, value, initial, maintenance, infra, other = map(
+        lambda v: Decimal(str(v)), values
+    )
+    if any(not v.is_finite() or v < 0 for v in
+           (cost, value, initial, maintenance, infra, other)):
+        raise ValueError("Amounts must be finite and non-negative")
+    if not isinstance(growth_rates, (list, tuple)) or len(growth_rates) != 5:
+        raise ValueError("Five monthly growth rates, one per year, required")
+    if any(v is None or isinstance(v, bool) for v in growth_rates):
+        raise ValueError("Known numeric growth rates required")
+    growth_rates = [Decimal(str(v)) for v in growth_rates]
+    if any(not v.is_finite() or v <= -1 for v in growth_rates):
+        raise ValueError("Monthly growth must be finite and greater than -1")
+
+    rows = []
+    for year, growth in enumerate(growth_rates, start=1):
+        annual_cost = annual_value = Decimal(0)
+        for _ in range(12):
+            annual_cost += cost
+            annual_value += value
+            cost *= 1 + growth
+            value *= 1 + growth
+        engineering = initial if year == 1 else maintenance
+        total = annual_cost + engineering + infra + other
+        row = {
+            "year": year, "llm_cost_eur": annual_cost,
+            "engineering_eur": engineering, "infra_eur": infra,
+            "other_annual_cost_eur": other, "total_cost_eur": total,
+            "potential_value_eur": annual_value,
+            "net_potential_value_eur": annual_value - total,
+        }
+        rows.append({k: float(v.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
+                     if isinstance(v, Decimal) else v for k, v in row.items()})
+    return rows
+
+# Month one uses the starting values. Subsequent months compound the stated
+# rate. Cost and potential value grow equally only as an explicit scenario.
+# Populate other_annual_cost with review, licences and attributable operations;
+# pass zero only when those items are explicitly outside the comparison.

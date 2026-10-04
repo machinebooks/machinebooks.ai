@@ -1,0 +1,5 @@
+Revisa con permiso los certificados TLS de este servidor:
+- ¿Cuándo expira el primer certificado X.509 de cada fichero accesible?
+- ¿Hay alguno ya expirado o que expire en menos de treinta días?
+- Informa de ficheros o directorios que no puedes comprobar.
+La revisión de cadena, nombre, servicio expuesto y renovación se hace por separado.

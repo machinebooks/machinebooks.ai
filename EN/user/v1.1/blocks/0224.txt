@@ -1,0 +1,15 @@
+Migration meeting Nov20 10:00
+
+- Pedro says main migration ok but 3 tables pending
+- Ana: customers table has incompatible format, proposes converting
+  data at source
+- Carlos says better to modify target schema, cleaner
+- DECISION: modify target schema. Carlos handles it. Deadline Friday 22
+- Blocker production access nighttime only. Need extended window
+- DECISION: Pedro requests window from Systems for weekend Nov 23-24
+- Go-live date: MAINTAINED December 6
+- Ana validates converted data before Nov 27
+- Next meeting: Tuesday 26 at 10
+
+Note: Carlos concerned about data quality for old customers.
+May have duplicates. Ana reviews.

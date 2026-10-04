@@ -1,0 +1,11 @@
+# Internal review triage only; task name cannot establish legal AI Act category.
+INTERNAL_REVIEW_RULES={"legal_review":"priority_review","compliance_report":"priority_review",
+    "risk_analysis":"priority_review","rightsizing_agent":"priority_review"}
+
+def interaction_review_priority(task_type):
+    if not isinstance(task_type,str) or not 1<=len(task_type)<=100:
+        raise ValueError("Invalid task metadata")
+    return {"internal_priority":INTERNAL_REVIEW_RULES.get(task_type,"assessment_required"),
+            "ai_act_legal_category":None,"execution_authorized":False}
+# Legal classification needs intended purpose, deployment context, affected persons,
+# role and applicable Annex/Article assessment; no legal medium-risk class is asserted.

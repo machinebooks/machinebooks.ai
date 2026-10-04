@@ -1,0 +1,1 @@
+claude -p "Generate an inventory of the twenty test-corpus files. Exclude inventario.md, inventario-semi.md, and inventario-auto.md. List paths, type, and size, duplicate candidates verified by hash, classification, and cleanup recommendations. Save inventario-auto.md. Do not modify or delete originals. Reconcile all twenty paths with the initial record and declare exceptions."

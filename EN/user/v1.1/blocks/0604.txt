@@ -1,0 +1,10 @@
+HISTORICAL EXERCISE; retain protected original fiscal invoices.
+Read only the already reviewed minimized copies in /facturas/enero-2025-copias/.
+Do not access /facturas/enero-2025/ or unauthorized originals.
+Extract exercise identifier, date, vendor commercial name,
+description, currency, taxable base, VAT rate and amount, and total.
+Do not invent unreadable fields or omit rejections: record them for review.
+Do not include accounts, tax identifiers, or contacts excluded from the copy.
+Save facturas-enero-2025.csv; check duplicates and totals by currency,
+and reconcile inventory, rows, rejections, and amounts before distribution.
+This analysis output does not replace tax or accounting records.

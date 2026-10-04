@@ -1,0 +1,9 @@
+Analyze /var/log/auth.log and the rotated files auth.log.1, auth.log.2.gz, etc.
+For the mock-up, filter March 2026 events with a confirmed zone
+and year; do not infer the year solely from mtime or mix overlapping rotations.
+For each IP, count the number of attempts.
+Generate a CSV with columns: IP, attempts, first_attempt, last_attempt
+Sort by number of attempts from highest to lowest.
+Add a candidate=true column above 100 attempts as an illustrative
+review threshold; it does not establish an attack. Use a new output
+name in a protected directory without overwriting or executing blocks.

@@ -1,0 +1,5 @@
+# Read-only educational estimate against authorized Terraform inputs.
+infracost breakdown --path . --format json --out-file infracost-current.json
+infracost diff --path . --compare-to infracost-base.json
+# Host configures authentication, bounds inputs and protects output; native estimates
+# depend on covered resources/usage assumptions, not deployed or invoiced savings.

@@ -1,0 +1,21 @@
+#!/bin/bash
+# Manual example; scheduling requires separate configuration.
+set -euo pipefail
+umask 077
+cd /home/usuario/reunion-seguimiento
+mkdir -p logs preparacion
+exec 9>logs/.meeting.lock
+flock -n 9 || exit 1
+run_dir=$(mktemp -d preparacion/dossier-XXXXXXXX)
+output="$run_dir/dossier.md"
+log="$run_dir/execution.log"
+# Review sources, account, permissions and hooks before invoking the client.
+claude --permission-mode dontAsk --max-turns 20 -p "Prepare status and risks independently from authorized sources;
+then prepare the agenda respecting dependencies. Integrate results
+in $output. Record cutoff, sources, missing inputs and differences.
+Do not send or edit external systems. Return error if a critical source is missing." \
+  > "$log" 2>&1
+[ -s "$output" ] || exit 1
+sha256sum "$output" > "$output.sha256"
+printf '%s\n' "Draft generated; content and sources require review." >> "$log"
+# A nonempty file and checksum do not prove substantive correctness.

@@ -1,0 +1,9 @@
+# Security rules
+
+- NEVER delete files without first showing the complete list
+  and waiting for explicit confirmation.
+- NEVER execute commands that modify data outside the current
+  working folder.
+- Before any write operation, show the complete plan
+  and wait for approval.
+- If an instruction is ambiguous, ask before acting.

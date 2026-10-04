@@ -1,0 +1,13 @@
+EJEMPLO ILUSTRATIVO DE VERIFICACIÓN:
+  Pods supuestos con imagen v2.5.0:
+    api-server-8e9f0d7c6-jkl78  Running  Ready  v2.5.0
+    api-server-8e9f0d7c6-mno90  Running  Ready  v2.5.0
+    api-server-8e9f0d7c6-pqr12  Running  Ready  v2.5.0
+  Respuesta supuesta: {"status": "ok", "version": "2.5.0"}
+  Eventos supuestos: Normal, sin errores.
+
+PENDIENTE: comprobar pods, imagen, respuesta y función con evidencias reales.
+La petición anterior consulta un pod; no verifica todos ni el acceso externo.
+Comprueba que la revisión e imagen anteriores siguen disponibles y que
+la recuperación es compatible con configuración, datos y migraciones.
+Estas salidas no acreditan un despliegue ejecutado ni un rollback viable.

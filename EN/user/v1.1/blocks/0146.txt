@@ -1,0 +1,14 @@
+I need a commitment audit for the Delta project from the last 2 weeks.
+Please:
+
+1. Search in Gmail the Delta project team's emails where someone committed
+   to doing something (look for expressions like "I'll take care of it", "I've got it",
+   "by Friday", "I'll do it", "that's on me").
+2. Search in Slack the #project-delta channel for messages where someone took on
+   a task or gave a delivery date.
+3. Check in Jira the DELTA project tickets that were created or updated
+   in the last 2 weeks.
+4. Cross-reference all the information and give me a table with:
+   - Person | Commitment | Source (email/Slack/Jira) | Promised date | Status
+   Especially identify commitments that are not reflected in a Jira ticket
+   (those are the ones most at risk of falling through the cracks).

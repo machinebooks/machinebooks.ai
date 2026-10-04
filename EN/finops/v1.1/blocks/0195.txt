@@ -1,0 +1,11 @@
+# Supporting evidence index, not complete Article-11/Annex-IV documentation.
+async def technical_documentation_index(principal,authorize,repository,system_id,version):
+    scope=await authorize(principal,"technical_documentation.read",system_id=system_id,version=version)
+    evidence=await repository.assessed_system_evidence(scope=scope,system_id=system_id,version=version)
+    if evidence["scope"]!=scope or evidence["system_version"]!=version:
+        raise ValueError("Evidence mismatch")
+    return {"document_kind":"supporting_evidence_index","evidence":evidence,
+            "article_11_applicability":evidence["legal_assessment"],
+            "annex_iv_complete":False,"state":"pending_expert_review"}
+# Host includes intended purpose, architecture/data/validation/risks/oversight/change
+# history and assessed legal timetable. Financial counts alone cannot complete a DTS.

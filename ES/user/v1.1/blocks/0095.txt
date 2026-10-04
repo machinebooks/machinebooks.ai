@@ -1,0 +1,6 @@
+1. Organiza los archivos de C:\Datos\Q1_bruto por tipo (facturas, informes, otros)
+2. De las facturas, extrae los datos a un CSV
+3. Con ese CSV, genera el informe de gastos del Q1
+
+Todo de una vez. Guarda los resultados intermedios por si necesito revisarlos.
+Trabaja sobre una copia y conserva inventario y hashes. Define para cada paso entradas, salidas y comprobaciones de cobertura, cálculos y conservación. Ante fallo, datos ausentes o comprobación incumplida, no avances al siguiente paso: registra lo pendiente y solicita revisión. Guarda los códigos de salida y las excepciones.

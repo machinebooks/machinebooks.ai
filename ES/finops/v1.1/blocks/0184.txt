@@ -1,0 +1,13 @@
+# Model returns at most three hypotheses over host-approved metadata.
+async def generate_policy_proposals(snapshot,reviewer):
+    proposals=await reviewer(snapshot=snapshot,max_proposals=3)
+    if not isinstance(proposals,list) or len(proposals)>3:
+        raise ValueError("Invalid bounded proposals")
+    for proposal in proposals:
+        if set(proposal)!={"candidate_id","hypothesis"} or proposal["candidate_id"] not in snapshot["candidate_ids"]:
+            raise ValueError("Unknown candidate")
+        if not isinstance(proposal["hypothesis"],str) or len(proposal["hypothesis"])>1000:
+            raise ValueError("Invalid hypothesis")
+    return {"snapshot_id":snapshot["id"],"proposals":proposals,
+            "state":"pending_human_review","pr_created":False,"policy_changed":False}
+# Host independently computes financial impact and validates policy/quality/data scope.

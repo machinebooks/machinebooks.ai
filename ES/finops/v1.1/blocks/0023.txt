@@ -1,0 +1,4 @@
+# Host supplies one authorized provider adapter and durable metadata sink.
+llm = LLMUsageTracker(client=authorized_client, authorized_scope=authorized_scope,
+                      normalize_usage=normalize_usage, durable_sink=durable_sink)
+response = await llm.ainvoke(approved_messages)

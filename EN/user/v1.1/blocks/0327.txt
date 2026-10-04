@@ -1,0 +1,21 @@
+I analyzed gastos-departamentos-2024.xlsx and generated 4 visualizations:
+
+1. **Total monthly trend** (line chart)
+   Chosen because the data is a time series with 12 points.
+   Shows the overall spending trend.
+
+2. **Composition by department** (stacked bars, month by month)
+   Chosen because there are multiple categories that sum to a total.
+   Allows seeing how each department's proportion changes.
+
+3. **Department ranking** (horizontal bars with total amount)
+   Chosen to facilitate direct comparison between departments.
+   Sorted from highest to lowest spending.
+
+4. **Spending heatmap** (heat map: departments × months)
+   Chosen because with 7 departments and 12 months, a heatmap allows
+   identifying at a glance where spending is concentrated and whether
+   there are seasonal patterns by department.
+
+All 4 charts are saved as individual PNGs and also
+combined in an interactive HTML (dashboard-gastos-2024.html).

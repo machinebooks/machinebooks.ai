@@ -1,0 +1,63 @@
+=== Informe ilustrativo de costes AWS — Marzo 2026 (hasta día 21) ===
+
+GASTO TOTAL: 4.872,34 €
+(Febrero mismo período: 4.156,20 € → +17,2%)
+
+DESGLOSE POR SERVICIO:
+┌───────────────────┬──────────┬──────────┬──────────┐
+│ Servicio          │ Mar 2026 │ Feb 2026 │ Variación│
+├───────────────────┼──────────┼──────────┼──────────┤
+│ EC2               │ 2.340,12 │ 2.105,30 │ +11,2%   │
+│ RDS               │   987,45 │   945,60 │  +4,4%   │
+│ S3                │   456,23 │   412,10 │ +10,7%   │
+│ Lambda            │   234,56 │   189,40 │ +23,8% ⚠│
+│ CloudFront        │   198,34 │   187,20 │  +6,0%   │
+│ Otros             │   655,64 │   316,60 │ +107,1% ⚠│
+└───────────────────┴──────────┴──────────┴──────────┘
+
+⚠ Lambda ha crecido un 23,8%. Posible causa: más invocaciones
+  o funciones con más memoria asignada.
+⚠ "Otros" ha subido un 107%. Investigar qué servicios nuevos
+  se están usando.
+
+TOP 5 RECURSOS MÁS CAROS:
+1. i-0a1b2c3d (prod-db-primary, r5.2xlarge) — 456,78 €
+2. i-0e4f5g6h (prod-app-01, c5.2xlarge)    — 312,45 €
+3. i-0i7j8k9l (prod-app-02, c5.2xlarge)    — 312,45 €
+4. db-cluster-prod (RDS Aurora r5.large)     — 287,90 €
+5. i-0m1n2o3p (staging-full, m5.xlarge)     — 198,34 €
+
+INSTANCIAS CON BAJA UTILIZACIÓN (CPU < 15%, 7 días):
+┌───────────────────┬────────┬─────────┬──────────┐
+│ Instancia         │ Tipo   │ CPU med.│ Coste/mes│
+├───────────────────┼────────┼─────────┼──────────┤
+│ i-0q4r5s6t (dev-test)│ m5.large│  3,2%  │  87,60 € │
+│ i-0u7v8w9x (staging-2)│ t3.large│  7,1%  │  62,40 € │
+│ i-0y1z2a3b (analytics)│ c5.xlarge│ 11,4%  │ 124,80 € │
+└───────────────────┴────────┴─────────┴──────────┘
+
+AHORRO POTENCIAL ILUSTRATIVO: hasta 274,80 €/mes si se confirma que estas 3
+instancias pueden apagarse o reducirse sin afectar dependencias ni servicio.
+CPU baja no demuestra ausencia de uso; revisa otras métricas y autoriza el cambio.
+
+VOLÚMENES EBS NO ASOCIADOS:
+┌────────────┬────────┬──────────┬────────────────────┐
+│ Volume ID  │ Tamaño │ Coste/mes│ Creado             │
+├────────────┼────────┼──────────┼────────────────────┤
+│ vol-0abc123│ 500 GB │   50,00 €│ 2025-11-14         │
+│ vol-0def456│ 200 GB │   20,00 €│ 2025-12-03         │
+│ vol-0ghi789│ 100 GB │   10,00 €│ 2026-01-22         │
+└────────────┴────────┴──────────┴────────────────────┘
+
+AHORRO POTENCIAL ILUSTRATIVO: hasta 80 €/mes si se confirma que estos
+volúmenes no son necesarios y se autoriza su eliminación.
+(Verifica que no contengan datos necesarios antes de borrar.)
+
+RESUMEN DE RECOMENDACIONES:
+- Evaluar apagado o redimensionado autorizado: hasta 274,80 €/mes
+- Evaluar eliminación autorizada de volúmenes no necesarios: hasta 80 €/mes
+- Investigar el crecimiento de Lambda (+23,8%)
+- Investigar el crecimiento de "Otros" servicios (+107%)
+- Ahorro potencial ilustrativo condicionado: hasta 354,80 €/mes (~355 €/mes)
+
+Importes didácticos en EUR. No representan facturación real de AWS ni una conversión USD/EUR verificada.

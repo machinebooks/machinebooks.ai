@@ -1,0 +1,6 @@
+# Evaluation interface; no default external judge or data transfer is authorised.
+# Pin DeepEval and configure the approved judge, dataset, metric direction and thresholds.
+# Toxicity score semantics vary by version; verify whether higher means safer.
+# Missing outputs or empty tests must not report success.
+def evaluate_response_quality(test_cases, metrics, approved_judge):
+    raise NotImplementedError("A version-pinned, reviewed evaluation adapter is required")

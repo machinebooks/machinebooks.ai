@@ -1,0 +1,19 @@
+┌─────────────────────────────────────────────┐
+│  Layer 6: Incident response                 │
+│  (alerts, kill switch, rollback)            │
+├─────────────────────────────────────────────┤
+│  Layer 5: Continuous monitoring              │
+│  (Prometheus, Grafana, anomaly detection)   │
+├─────────────────────────────────────────────┤
+│  Layer 4: Output validation                  │
+│  (PII filter, content classifier, format)   │
+├─────────────────────────────────────────────┤
+│  Layer 3: Separation of privileges           │
+│  (tool permissions, sandbox, ACLs)          │
+├─────────────────────────────────────────────┤
+│  Layer 2: Model refusal + guardrails         │
+│  (system prompt, Constitutional AI, RLHF)   │
+├─────────────────────────────────────────────┤
+│  Layer 1: Input validation                   │
+│  (input sanitization, injection detection)  │
+└─────────────────────────────────────────────┘

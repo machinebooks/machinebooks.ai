@@ -1,0 +1,24 @@
+from botocore.exceptions import ClientError
+
+def prepare_rightsizing_plan(instance_arn,current_type,proposed_type):
+    if not all(isinstance(v,str) and 1<=len(v)<=256 for v in (instance_arn,current_type,proposed_type)):
+        raise ValueError("plan identifiers")
+    if current_type==proposed_type:
+        raise ValueError("no change")
+    return {"instance_arn":instance_arn,"before":current_type,"after":proposed_type,
+            "status":"pending_human_review","action_authorized":False}
+
+def check_rightsizing_permission_only(ec2,authorized_instance_id,proposed_type):
+    try:
+        ec2.modify_instance_attribute(InstanceId=authorized_instance_id,
+            InstanceType={"Value":proposed_type},DryRun=True)
+    except ClientError as error:
+        if error.response["Error"]["Code"]=="DryRunOperation":
+            return {"permission_check":"accepted","provider_changed":False,
+                    "compatibility_or_rollback_proven":False}
+        raise
+    raise RuntimeError("unexpected DryRun result; no mutation attempted")
+# Host preauthorizes scope and IDs before this read/permission check. A real executor
+# also validates fresh plan/resource version, state, architecture/storage/network/SLO,
+# downtime, recovery, idempotency and expiry. Those private controls are not supplied.
+# This example never stops, resizes or starts an instance, even on an unexpected reply.

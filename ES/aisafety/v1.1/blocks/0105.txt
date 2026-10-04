@@ -1,0 +1,20 @@
+# Conceptual schema: not the importable JSON of a Grafana dashboard.
+# Instrument inventory gauges and a timestamp (Unix seconds).
+# Instrument incidents as a Counter and containment as a Histogram (hours).
+# A query without samples is shown as 'no data', never as zero.
+panels:
+  - title: "Cobertura de evaluaciones"
+    query: >
+      100 * sum(ai_systems_with_security_review)
+      / sum(ai_systems_total)
+  - title: "Incidentes de seguridad IA (ultimos 30 dias)"
+    query: >
+      sum(increase(ai_security_incidents_total[30d]))
+  - title: "Tiempo medio de contencion (ultimos 30 dias)"
+    query: >
+      sum(increase(ai_incident_containment_duration_hours_sum[30d]))
+      / sum(increase(ai_incident_containment_duration_hours_count[30d]))
+    unit: hours
+  - title: "Sistemas sin evaluacion en mas de 90 dias"
+    query: >
+      (time() - ai_system_last_security_review_timestamp_seconds) > 90 * 86400

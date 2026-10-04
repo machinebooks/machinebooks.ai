@@ -1,0 +1,19 @@
+def allocate_child_caps(total_eur, fractions):
+    # Uses budget_amount above; caps derive from the approved original budget.
+    total = budget_amount(total_eur)
+    if not isinstance(fractions, dict) or not 1 <= len(fractions) <= 50:
+        raise ValueError("A bounded named child allocation is required")
+    parsed = {}
+    for agent_id, fraction in fractions.items():
+        if not isinstance(agent_id, str) or not 1 <= len(agent_id) <= 256:
+            raise ValueError("Bounded child identity required")
+        parsed[agent_id] = budget_amount(fraction)
+    if sum(parsed.values(), Decimal("0")) > 1:
+        raise ValueError("Child fractions exceed the approved parent budget")
+    return {agent_id: total * fraction for agent_id, fraction in parsed.items()}
+
+# All children reserve and reconcile unique events in the SAME parent ledger.
+# A child-specific cap also needs enforcement by the host, including outstanding
+# reservations; allocating this dictionary alone does not implement that control.
+# Aggregates are views of each event once, never new parent cost events.
+# Parallel delegation requires a transactional shared ledger, not this dictionary.

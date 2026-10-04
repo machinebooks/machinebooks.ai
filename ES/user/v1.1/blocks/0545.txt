@@ -1,0 +1,46 @@
+#!/bin/bash
+# pipeline-financiero-mensual.sh REPORT_MONTH REPORT_YEAR
+# Requires authorized inputs and client/tool permissions limited to draft output.
+set -euo pipefail
+
+REPORT_MONTH=${1:?Indica el mes utilizado en los nombres de entrada}
+REPORT_YEAR=${2:?Indica el año del informe}
+case "$REPORT_MONTH" in
+  enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre) ;;
+  *) echo "Mes inválido para los archivos de este ejemplo" >&2; exit 1 ;;
+esac
+[[ $REPORT_YEAR =~ ^[0-9]{4}$ ]] || exit 1
+
+WORK_ROOT=${WORK_ROOT:-/home/usuario}
+[[ "$WORK_ROOT" == /* ]] || exit 1
+RUN_ID=$(date -u +%Y%m%dT%H%M%SZ)-$$
+LOG="$WORK_ROOT/logs/pipeline-financiero-$RUN_ID.log"
+REPORT_FILE="informes/informe-financiero-$REPORT_MONTH-$REPORT_YEAR-$RUN_ID.md"
+mkdir -p "$WORK_ROOT/logs"
+exec 9>"$WORK_ROOT/logs/financial-pipeline.lock"
+flock -n 9 || exit 1
+cd "$WORK_ROOT/reporting-mensual"
+mkdir -p informes
+for input in "datos/facturacion-$REPORT_MONTH.csv" "datos/gastos-$REPORT_MONTH.csv" "datos/cobros-$REPORT_MONTH.csv"; do
+  [[ -r $input && -s $input ]] || exit 1
+done
+shopt -s nullglob
+budget_files=(datos/presupuesto-q*.csv)
+((${#budget_files[@]} > 0)) || exit 1
+for input in "${budget_files[@]}"; do
+  [[ -r $input && -s $input ]] || exit 1
+done
+
+claude --permission-mode dontAsk --max-turns 20 -p "
+Prepara un borrador del informe financiero de $REPORT_MONTH $REPORT_YEAR.
+Lee el CLAUDE.md del proyecto para las instrucciones del flujo.
+Utiliza datos/facturacion-$REPORT_MONTH.csv, datos/gastos-$REPORT_MONTH.csv,
+datos/cobros-$REPORT_MONTH.csv y los archivos datos/presupuesto-q*.csv aplicables.
+Verifica que los datos y el presupuesto correspondan al período solicitado.
+Registra entradas ausentes o contradictorias; no inventes cifras.
+Escribe el borrador solamente en $REPORT_FILE. No lo envíes ni lo apruebes.
+" >> "$LOG" 2>&1
+
+# Existence is not a quality, schema or accounting check.
+[[ -s $REPORT_FILE ]] || exit 1
+echo "Borrador preparado; pendientes la verificación numérica y la aprobación humana." >> "$LOG"

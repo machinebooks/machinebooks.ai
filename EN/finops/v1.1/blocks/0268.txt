@@ -1,0 +1,12 @@
+# Native budget definition only; creating it is a separately authorized provider write.
+from google.cloud.billing import budgets_v1 as billing_budgets_v1
+from google.type import money_pb2
+
+budget=billing_budgets_v1.Budget(display_name="educational-budget-fixture",
+    budget_filter=billing_budgets_v1.Filter(projects=["projects/123456789012"]),
+    amount=billing_budgets_v1.BudgetAmount(specified_amount=money_pb2.Money(currency_code="USD",units=5000)),
+    threshold_rules=[billing_budgets_v1.ThresholdRule(threshold_percent=p,
+        spend_basis=billing_budgets_v1.ThresholdRule.Basis.CURRENT_SPEND) for p in (0.8,1.0)])
+# Host verifies billing account/project scope, approval and idempotency before invoking
+# BudgetServiceClient.create_budget. This alerts-only definition is not a spending cap;
+# separately supported project spend-cap Preview uses its own eligibility/controls.

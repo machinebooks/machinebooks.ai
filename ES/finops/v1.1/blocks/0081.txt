@@ -1,0 +1,90 @@
+# tools/tco_analysis.py
+# Educational USD scenario. Capacity, quality and privacy are separate gates.
+# Fixed annual cost must include all comparable, non-overlapping cost items.
+from dataclasses import dataclass
+from decimal import Decimal, InvalidOperation, ROUND_CEILING, ROUND_HALF_UP
+
+
+@dataclass
+class SelfHostedTCO:
+    gpu_capex_annual: float
+    electricity_annual: float
+    hardware_other_annual: float
+    ops_engineering_annual: float
+
+
+@dataclass
+class APIUsageProfile:
+    monthly_operations: int
+    avg_input_tokens: int
+    avg_output_tokens: int
+    api_input_price: float
+    api_output_price: float
+
+
+def calculate_breakeven(tco, profile, local_cost_per_operation=0):
+    def amount(value):
+        if isinstance(value, bool):
+            raise ValueError("A cost or price cannot be a boolean")
+        try:
+            result = Decimal(str(value))
+        except (InvalidOperation, ValueError):
+            raise ValueError("Unknown cost or price") from None
+        if not result.is_finite() or result < 0:
+            raise ValueError("Costs and prices must be finite and non-negative")
+        return result
+
+    counts = (profile.monthly_operations, profile.avg_input_tokens,
+              profile.avg_output_tokens)
+    if any(type(n) is not int or not 0 <= n <= 2_147_483_647 for n in counts):
+        raise ValueError("Operation and token counts must be bounded integers")
+    annual_fixed = sum((amount(value) for value in (
+        tco.gpu_capex_annual, tco.electricity_annual,
+        tco.hardware_other_annual, tco.ops_engineering_annual,
+    )), Decimal(0))
+    api_per_operation = (
+        Decimal(profile.avg_input_tokens) * amount(profile.api_input_price)
+        + Decimal(profile.avg_output_tokens) * amount(profile.api_output_price)
+    ) / Decimal(1_000_000)
+    local_variable = amount(local_cost_per_operation)
+    contribution = api_per_operation - local_variable
+    annual_operations = Decimal(profile.monthly_operations) * 12
+    api_annual = annual_operations * api_per_operation
+    local_annual = annual_fixed + annual_operations * local_variable
+
+    if contribution <= 0:
+        breakeven = None
+        growth = None
+        reason = "No finite crossover: local variable cost is not lower"
+    else:
+        breakeven = int((annual_fixed / 12 / contribution).to_integral_value(
+            rounding=ROUND_CEILING))
+        growth = (float((Decimal(breakeven) / profile.monthly_operations).quantize(
+            Decimal("0.1"), rounding=ROUND_HALF_UP))
+            if profile.monthly_operations else None)
+        reason = "Economic estimate; verify throughput, quality and full TCO"
+
+    return {
+        "tco_annual": float(annual_fixed),
+        "current_api_annual_cost": float(api_annual),
+        "current_local_annual_cost": float(local_annual),
+        "cost_per_operation_api": float(api_per_operation),
+        "local_variable_cost_per_operation": float(local_variable),
+        "breakeven_monthly_ops": breakeven,
+        "current_monthly_ops": profile.monthly_operations,
+        "growth_factor_needed": growth,
+        "self_hosted_cheaper_now": local_annual < api_annual,
+        "scope": reason,
+    }
+
+
+if __name__ == "__main__":
+    tco = SelfHostedTCO(4_000, 735, 2_387, 4_020)
+    # Named Haiku4.5 reference: USD1/M input and USD5/M output, 2026-10-04.
+    profile = APIUsageProfile(40_000, 500, 50, 1.00, 5.00)
+    result = calculate_breakeven(tco, profile)
+    print(f"TCO anual self-hosted: ${result['tco_annual']:,.0f}")
+    print(f"Coste API anual del escenario: ${result['current_api_annual_cost']:,.0f}")
+    print(f"Breakeven estimado: {result['breakeven_monthly_ops']:,} ops/mes")
+    print(f"Factor de crecimiento: {result['growth_factor_needed']}x")
+    print(f"Self-hosted más barato al volumen actual: {result['self_hosted_cheaper_now']}")

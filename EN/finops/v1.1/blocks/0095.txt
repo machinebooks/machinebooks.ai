@@ -1,0 +1,12 @@
+from mcp.server.mcpserver.exceptions import ToolError
+
+async def safe_get_cloud_costs(readers,scope,arguments):
+    try:
+        return await get_cloud_costs(readers,scope,arguments)
+    except (TimeoutError,ConnectionError):
+        return {"status":"unavailable","complete":False,"retry_policy_required":True}
+    except (ValueError,TypeError):
+        raise ToolError("Invalid query or data") from None
+# Provider-specific SDK errors are mapped by the reader to bounded operational states;
+# invalid arguments/schema are not swallowed. Host handles bounded exponential retry
+# and query quotas; no final 24–48h guarantee or wider-range remedy is invented.

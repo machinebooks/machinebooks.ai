@@ -1,0 +1,13 @@
+from dataclasses import dataclass
+from decimal import Decimal
+
+@dataclass(frozen=True)
+class BusinessCaseScenario:
+    name: str
+    monthly_cost: Decimal
+    monthly_capacity_value: Decimal
+    monthly_growth: Decimal
+    investment: Decimal
+    source_version: str
+    currency: str
+# Already adjusted capacity cannot be discounted again by a cohort acceptance rate.

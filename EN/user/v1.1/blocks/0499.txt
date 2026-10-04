@@ -1,0 +1,31 @@
+FICTIONAL HISTORICAL EXAMPLE; review maintained images and digest before execution.
+Analysis of docker-compose.yml:
+
+1. nginx (reverse proxy)
+   Image: nginx:1.25-alpine
+   Ports: 80:80, 443:443
+   Depends on: api-backend
+   Health check: curl localhost:80/health every 10 seconds
+   Volumes: ./nginx.conf mounted as configuration
+
+2. api-backend (main application)
+   Image: registry.empresa.invalid/api:latest
+   Ports: 8080 (internal only, not published to the host)
+   Depends on: postgres, redis
+   Health check: curl localhost:8080/api/health every 15 seconds
+   Environment variable names: 12 (DATABASE_URL, REDIS_URL, etc.)
+   Do not print their values in the report.
+
+3. worker (background processing)
+   Image: registry.empresa.invalid/api:latest (same as backend)
+   Command: celery -A app worker
+   Depends on: postgres, redis
+   Health check: NOT CONFIGURED
+   ...
+
+Observations:
+- A missing healthcheck removes that signal; Docker unhealthy does not
+  itself trigger a restart. Review restart policy and process exit state.
+- :latest is a mutable image reference. Record version and digest for rollback.
+- No memory limits are configured in the shown file.
+- Review database grants, readiness, and Redis exposure before deployment.

@@ -1,0 +1,16 @@
+claude -p "
+Revisa los logs de todos los pipelines de la última semana
+en la carpeta /home/usuario/logs/.
+
+Para cada pipeline, indica:
+- Fecha de última ejecución
+- Estado: completado / completado con advertencias / fallido
+- Tiempo de ejecución (si está disponible en el log)
+- Errores o advertencias encontrados
+
+Genera un resumen en /home/usuario/logs/panel-semanal-$(date -u +%Y-%m-%d).md
+con formato de tabla.
+Contrasta con el inventario y horario esperado; indica NO EJECUTADO o
+DESCONOCIDO cuando falte evidencia. Un archivo no vacío no significa aprobación.
+No muestres secretos de los logs y no sobrescribas paneles anteriores.
+"

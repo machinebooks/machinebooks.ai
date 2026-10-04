@@ -1,0 +1,15 @@
+# Cost scenario, not proof of token-cap enforcement or acquired customers.
+from decimal import Decimal
+
+def trial_cost_scenario(users,monthly_cost,trial_days,reference_days,conversion_rate):
+    u,c,conversion=[Decimal(str(x)) for x in (users,monthly_cost,conversion_rate)]
+    if any(not x.is_finite() for x in (u,c,conversion)) or min(u,c)<0 or not 0<=conversion<=1:
+        raise ValueError("Invalid assumptions")
+    if type(trial_days) is not int or type(reference_days) is not int or not 1<=trial_days<=365 or not 1<=reference_days<=31:
+        raise ValueError("Invalid day assumptions")
+    cost=u*c*trial_days/reference_days
+    return {"declared_trial_cost":str(cost),
+        "trial_cost_per_conversion":None if conversion==0 else str(cost/conversion),
+        "full_cac":None,"enforced_cap_proven":False}
+# A cap needs priced model/cache/tool mix and atomic enforcement. min(cost, token_cap)
+# cannot demonstrate capped expenditure, conversion or savings.

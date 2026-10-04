@@ -1,0 +1,14 @@
+class CloudActionSafetyGuard:
+    READ_ONLY_ACTIONS = frozenset({"describe_instances", "describe_volumes", "get_cost_and_usage"})
+
+    def validate_automatic_action(self, action, authorized_read_scope):
+        # Conservative local filter, not a complete authorization system.
+        if not isinstance(action, str) or action not in self.READ_ONLY_ACTIONS:
+            return False, "Mutation or unknown action requires a separately approved host plan"
+        if authorized_read_scope is not True:
+            return False, "Authenticated read scope has not been established"
+        return True, None
+
+# An LLM risk label, a resource name or supplied tags are not authorization.
+# The host establishes scope from its own identity and resource inventory.
+# All writes, including tagging and resizing, remain outside this allowlist.

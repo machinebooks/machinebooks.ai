@@ -1,0 +1,4 @@
+Fictional inventory of 14 instances: production 5 running; staging 2 running and 1 stopped; development 3 running and 1 stopped; 2 untagged running.
+LaunchTime dates indicate launch according to the queried field, not the last state change or continuously running duration.
+An untagged resource requires identifying its owner and function; it does not authorize shutdown or deletion.
+These counts represent neither the initial scenario’s 37 instances nor actual AWS output.

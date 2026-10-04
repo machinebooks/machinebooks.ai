@@ -1,0 +1,5 @@
+# Read-only inventory; do not change code ownership to the web runtime.
+stat -c '%U:%G %a %n' /var/www/app /var/www/app/uploads /var/www/app/.env
+find /var/www/app -maxdepth 2 -type d -printf '%u:%g %m %p\n'
+# Review deployment owner, runtime writes, groups, and ACLs before applying a plan.
+# Mode 600 allows its owner to read AND write; it is not read-only.

@@ -1,0 +1,14 @@
+# Synthetic inventory records, not deployment evidence.
+# Models, owners, dates and controls below are placeholders for local verification.
+inventory = [
+    {"system_id": "AI-001", "name": "HR assistant",
+     "model_provider": "configured-provider",
+     "model_name": "approved-model-version",
+     "deployment_date": None, "owner_team": "HR",
+     "risk_review": "pending", "controls_verified": []},
+    {"system_id": "AI-002", "name": "Financial analysis agent",
+     "model_provider": "configured-provider",
+     "model_name": "approved-model-version",
+     "deployment_date": None, "owner_team": "Finance",
+     "risk_review": "pending", "controls_verified": []},
+]

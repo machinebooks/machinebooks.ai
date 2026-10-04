@@ -1,0 +1,4 @@
+# Stop the reviewed allowlist at 20:00 UTC Monday-Friday
+0 20 * * 1-5 /opt/scripts/cloud-scheduler.sh stop >> /var/log/cloud-scheduler.log 2>&1
+# Start the reviewed allowlist at 08:00 UTC Monday-Friday
+0 8 * * 1-5 /opt/scripts/cloud-scheduler.sh start >> /var/log/cloud-scheduler.log 2>&1

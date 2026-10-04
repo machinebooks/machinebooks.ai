@@ -1,0 +1,13 @@
+Define the educational, non-PGC mapping for synthetic data:
+Personnel=EXP-PERS; External services=EXP-EXT; Supplies=EXP-SUM;
+Rent=EXP-ALQ; Marketing=EXP-MKT; Travel=EXP-VIA; IT=EXP-IT;
+Training=EXP-FORM; Other=EXP-OTR. Unknown codes remain pending.
+
+Retain source file/row, ID, and amount basis for each source.
+Bank descriptions and card categories only suggest candidates;
+confirm references and relationships before assigning an expense.
+ERP, bank, and cards may show the same transaction.
+Do not sum them: use ERP as the accrual base and add only confirmed
+card expenses not already recorded in that base. Bank charges
+reconcile cash; they do not add the expense a second time.
+Generate the consolidated view and exceptions without modifying originals.

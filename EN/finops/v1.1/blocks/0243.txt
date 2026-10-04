@@ -1,0 +1,17 @@
+def budget_context(budget):
+    fraction = budget.remaining_fraction
+    if budget.time_remaining_seconds <= 0 or budget.remaining_eur <= 0:
+        state = "stop"
+    elif fraction < Decimal("0.20"):
+        state = "request_review"
+    elif fraction < Decimal("0.70"):
+        state = "efficiency_review"
+    else:
+        state = "normal"
+    return {"workflow_id": budget.workflow_id, "total_eur": str(budget.total_eur),
+            "remaining_eur": str(budget.remaining_eur), "remaining_fraction": str(fraction),
+            "state": state, "time_remaining_seconds": budget.time_remaining_seconds,
+            "instruction": "Preserve required quality and coverage. Describe unfinished work; request approved scope or budget changes."}
+
+# Uses WorkflowBudget and Decimal from the preceding block.
+# This information never raises a limit or authorizes skipping required review.

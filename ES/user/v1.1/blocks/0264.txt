@@ -1,0 +1,21 @@
+> Limpia y consolida todos los ficheros con estas reglas:
+
+  1. Columnas estándar: Fecha, Proveedor, Concepto, Importe, IVA
+  2. Mapear sólo campos confirmados. Tax, IVA e IVA_pct no son
+     equivalentes: distingue importe, tipo porcentual, base y total.
+     Conserva los campos originales de mayo y diciembre y sus dudas.
+  3. Fechas: confirmar formato de cada origen; ambiguas pendientes.
+     Representación de salida DD/MM/YYYY sólo para fechas confirmadas.
+  4. Separador decimal: coma (formato español)
+  5. Si falta IVA, deja el importe pendiente de fuente; no imputes un tipo ni confundas base y total
+  6. Eliminar filas completamente vacías
+  7. Verificar identidad de operación antes de eliminar candidatos duplicados
+  8. Entre septiembre y octubre, conservar candidatos hasta confirmar procedencia y precedencia
+  9. Conservar importes negativos y verificar su concepto; no asumir que todos son devoluciones
+  10. Añadir Mes de origen, archivo, hoja, fila e identidad de operación.
+      No confundir mes de archivo con fecha de devengo.
+  11. Ordenar por fecha ascendente
+
+  Genera el fichero consolidado como gastos-2024-consolidado.xlsx
+  y un informe de cambios, reglas, excepciones y reconciliación.
+  Trabaja sobre copias y no sobrescribas salidas sin confirmación.

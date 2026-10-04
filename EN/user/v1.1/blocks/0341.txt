@@ -1,0 +1,15 @@
+Generate an interactive HTML dashboard with the data from ventas-2024.csv.
+It should include:
+
+1. Commercial zone selector (dropdown) that filters all charts
+2. Date range selector
+3. Sales trend chart (updates when filters change)
+4. Table with the filtered data detail
+5. KPIs for the selected period
+
+The dashboard must work without a server — everything in a single HTML
+file that opens with a double click in a compatible browser.
+Embed Plotly.js, data, and filter code; use no CDN or external requests.
+Implement and test that each selector updates charts, table, and KPIs
+from the same subset. Check offline and include no data the recipient
+is not authorized to see.

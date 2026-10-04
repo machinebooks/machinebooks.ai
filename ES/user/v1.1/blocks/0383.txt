@@ -1,0 +1,9 @@
+Maqueta ficticia — 2026-03-21T08:30:00Z
+CPU: 23% en una muestra definida; no es la carga de uptime.
+RAM: alrededor del 78%; valorar MemAvailable, límites y presión.
+/: 71%; /var: 89%, con 11 GB libres según esta maqueta.
+Unidades nginx, mysql, redis y api-server: estados observados en el instante.
+Registros consultados: tres consultas lentas y doce respuestas 404.
+Un 404 no identifica por sí solo bots; cero registros no prueba ausencia de fallos.
+Red: 234 conexiones; compararlas con una referencia medida.
+Antes de rotar logs o proponer un índice, verifica retención, datos y plan de ejecución.

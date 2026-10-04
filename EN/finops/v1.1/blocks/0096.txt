@@ -1,0 +1,44 @@
+import asyncio
+import json
+from mcp import Client
+
+async def run_cost_agent(server_or_transport, question, tracked_adapter):
+    if not isinstance(question,str) or not 1 <= len(question) <= 4000:
+        raise ValueError("question size")
+    allowed = {"get_cloud_costs","get_top_services","compare_periods"}
+    messages = [{"role":"user","content":question}]
+    calls_count = 0
+    async with Client(server_or_transport) as client:
+        discovered = await client.list_tools()
+        tools = [{"name":t.name,"description":t.description or "Read tool",
+                  "input_schema":t.input_schema} for t in discovered.tools if t.name in allowed]
+        for _ in range(8):
+            response = await asyncio.wait_for(tracked_adapter(messages,tools,max_output_tokens=2048),timeout=60)
+            if response["stop_reason"] == "end_turn":
+                text = response.get("text")
+                if not isinstance(text,str) or len(text)>12000:
+                    raise ValueError("response size")
+                return {"answer":text,"tools_called":calls_count,"status":"pending_human_review"}
+            if response["stop_reason"] != "tool_use":
+                break
+            calls = response.get("calls",[])
+            if not 1 <= len(calls) <= 4 or calls_count+len(calls)>16:
+                break
+            messages.append({"role":"assistant","content":response["assistant_content"]})
+            results = []
+            for call in calls:
+                if call["name"] not in {t["name"] for t in tools}:
+                    raise ValueError("unauthorized tool")
+                result = await asyncio.wait_for(client.call_tool(call["name"],call["arguments"]),timeout=35)
+                calls_count += 1
+                payload = result.structured_content
+                if len(json.dumps(payload)) > 50000:
+                    raise ValueError("tool output size")
+                results.append({"id":call["id"],"is_error":result.is_error,"result":payload})
+            messages.append({"role":"user","content":tracked_adapter.encode_tool_results(results)})
+            if len(json.dumps(messages))>150000:
+                break
+    return {"answer":None,"tools_called":calls_count,"status":"incomplete"}
+# Manual bounded Messages-style loop, not an Agent SDK implementation.
+# Host selects scoped transport, minimal subprocess environment, tracked adapter,
+# data permissions, deadline and budget for model/tool calls; metadata is untrusted.

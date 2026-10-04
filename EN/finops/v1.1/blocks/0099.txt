@@ -1,0 +1,30 @@
+from sqlalchemy import Column, String, Numeric, DateTime, Boolean, UniqueConstraint, CheckConstraint
+from .base import Base
+
+class CloudCostMetric(Base):
+    __tablename__ = "cloud_cost_metrics"
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), nullable=False)
+    account_id = Column(String(128), nullable=False)
+    provider = Column(String(20), nullable=False)
+    service = Column(String(100), nullable=False)
+    region = Column(String(50), nullable=False)
+    currency = Column(String(3), nullable=False)
+    metric = Column(String(64), nullable=False)
+    granularity = Column(String(16), nullable=False)
+    amount = Column(Numeric(24, 12), nullable=True)
+    usage_quantity = Column(Numeric(24, 12), nullable=True)
+    usage_unit = Column(String(64), nullable=True)
+    period_start_utc = Column(DateTime, nullable=False)
+    period_end_utc = Column(DateTime, nullable=False)
+    source_version = Column(String(128), nullable=False)
+    source_as_of_utc = Column(DateTime, nullable=False)
+    estimated = Column(Boolean, nullable=False)
+    __table_args__ = (
+        UniqueConstraint("tenant_id","account_id","provider","service","region",
+            "currency","metric","granularity","period_start_utc","source_version"),
+        CheckConstraint("period_end_utc > period_start_utc"),
+    )
+# Host validates UTC, currency/unit and revisions, ingests idempotently and selects
+# one latest permitted source version per period. NULL is not zero; hourly resolution
+# is not invented for daily provider data. Anomaly/review records reference source IDs.

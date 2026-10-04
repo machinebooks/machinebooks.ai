@@ -1,0 +1,6 @@
+The nginx error analysis we did before, turn it into
+a reusable script that:
+- Accepts the number of days to analyze as a parameter
+- Has an --output parameter to choose format (text or CSV)
+- Includes help with --help
+- Is saved in /usr/local/bin/nginx-error-report

@@ -1,0 +1,16 @@
+# Internal incident record; statutory reporting depends on assessed system/role/context.
+from sqlalchemy import Column,String,DateTime,ForeignKey,Integer
+from database import Base
+
+class LLMAIIncident(Base):
+    __tablename__="llm_ai_incidents"
+    id=Column(String(36),primary_key=True)
+    tenant_id=Column(String(64),nullable=False)
+    usage_id=Column(String(36),ForeignKey("llm_usage_logs.id"),nullable=True)
+    internal_severity=Column(String(20),nullable=False)
+    protected_case_ref=Column(String(200),nullable=False)
+    detected_at=Column(DateTime(timezone=True),nullable=False)
+    authority_report_receipt=Column(String(200),nullable=True)
+    affected_users_count=Column(Integer,nullable=True)
+# Unknown affected counts are NULL. No universal "medium/high" legal obligation,
+# automatic authority report, raw descriptions or identifying data are implied.

@@ -1,0 +1,15 @@
+# Native Messages API tool declaration; actual bounded loop is shown in chapter 13.
+COST_TOOL={"name":"get_aws_costs","description":"Authorized bounded AWS cost query",
+    "input_schema":{"type":"object","additionalProperties":False,
+        "properties":{"days":{"type":"integer","minimum":1,"maximum":366}},"required":["days"]}}
+
+def handle_cost_tool(name,arguments,authorized_reader):
+    if name!="get_aws_costs" or not isinstance(arguments,dict) or set(arguments)!={"days"}:
+        raise ValueError("Unknown tool or schema")
+    days=arguments["days"]
+    if type(days) is not int or not 1<=days<=366:
+        raise ValueError("Invalid day bound")
+    return authorized_reader(days)
+# Host reader uses UTC end-exclusive days, native CE pages, account/currency/Estimated
+# metadata and bounded output. A first messages.create reply alone has not invoked a
+# tool; tool_use dispatch and tool_result return require the bounded manual loop.

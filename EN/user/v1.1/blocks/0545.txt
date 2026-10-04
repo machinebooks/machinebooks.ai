@@ -1,0 +1,46 @@
+#!/bin/bash
+# pipeline-financiero-mensual.sh REPORT_MONTH REPORT_YEAR
+# Requires authorized inputs and client/tool permissions limited to draft output.
+set -euo pipefail
+
+REPORT_MONTH=${1:?Pass the month used in the input filenames}
+REPORT_YEAR=${2:?Pass the reporting year}
+case "$REPORT_MONTH" in
+  enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre) ;;
+  *) echo "Invalid month for this example's filenames" >&2; exit 1 ;;
+esac
+[[ $REPORT_YEAR =~ ^[0-9]{4}$ ]] || exit 1
+
+WORK_ROOT=${WORK_ROOT:-/home/usuario}
+[[ "$WORK_ROOT" == /* ]] || exit 1
+RUN_ID=$(date -u +%Y%m%dT%H%M%SZ)-$$
+LOG="$WORK_ROOT/logs/pipeline-financiero-$RUN_ID.log"
+REPORT_FILE="informes/informe-financiero-$REPORT_MONTH-$REPORT_YEAR-$RUN_ID.md"
+mkdir -p "$WORK_ROOT/logs"
+exec 9>"$WORK_ROOT/logs/financial-pipeline.lock"
+flock -n 9 || exit 1
+cd "$WORK_ROOT/reporting-mensual"
+mkdir -p informes
+for input in "datos/facturacion-$REPORT_MONTH.csv" "datos/gastos-$REPORT_MONTH.csv" "datos/cobros-$REPORT_MONTH.csv"; do
+  [[ -r $input && -s $input ]] || exit 1
+done
+shopt -s nullglob
+budget_files=(datos/presupuesto-q*.csv)
+((${#budget_files[@]} > 0)) || exit 1
+for input in "${budget_files[@]}"; do
+  [[ -r $input && -s $input ]] || exit 1
+done
+
+claude --permission-mode dontAsk --max-turns 20 -p "
+Prepare a draft financial report for $REPORT_MONTH $REPORT_YEAR.
+Read the project's CLAUDE.md for workflow instructions.
+Use datos/facturacion-$REPORT_MONTH.csv, datos/gastos-$REPORT_MONTH.csv,
+datos/cobros-$REPORT_MONTH.csv and the applicable datos/presupuesto-q*.csv files.
+Verify that the data and budget refer to the requested period.
+Record missing or contradictory inputs; do not invent figures.
+Write the draft only to $REPORT_FILE. Do not send it or approve it.
+" >> "$LOG" 2>&1
+
+# Existence is not a quality, schema or accounting check.
+[[ -s $REPORT_FILE ]] || exit 1
+echo "Draft prepared; numerical verification and human approval remain pending." >> "$LOG"

@@ -1,0 +1,8 @@
+Generate a read-only snapshot for GNU/Linux with Bash:
+1. Uptime and load; load is not CPU percentage.
+2. Memory using MemAvailable and filesystems; illustrative thresholds >90% and >85%.
+3. Units nginx, postgresql, redis-server and webapp; distinguish unknown state.
+4. Accessible journal records at err priority or more severe in the last twelve hours.
+5. Five established TCP remote peers, supporting IPv4 and IPv6; not necessarily inbound connections.
+6. Recorded logins; not proof of complete access coverage.
+Mark errors and missing data; an incomplete report ends with a nonzero status.

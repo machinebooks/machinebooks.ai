@@ -1,0 +1,43 @@
+from decimal import Decimal
+from datetime import timedelta
+
+def period_bounds(period, now):
+    if now.tzinfo is None or now.utcoffset() != timedelta(0):
+        raise ValueError("UTC required")
+    day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    if period == "daily":
+        return day, day + timedelta(days=1)
+    if period == "weekly":
+        start = day - timedelta(days=day.weekday())
+        return start, start + timedelta(days=7)
+    if period == "monthly":
+        start = day.replace(day=1)
+        return start, (start.replace(day=28) + timedelta(days=4)).replace(day=1)
+    raise ValueError("unsupported period")
+
+def check_budget_snapshot(budgets, upper_bound_usd, now):
+    upper = Decimal(str(upper_bound_usd))
+    if not upper.is_finite() or upper < 0 or len(budgets) > 20:
+        raise ValueError("invalid estimate or budget count")
+    states = []
+    for budget in budgets:
+        start, end = period_bounds(budget["period"], now)
+        if (budget.get("window_start") != start or budget.get("window_end") != end
+            or budget.get("complete") is not True or budget.get("fresh") is not True):
+            states.append({"status":"unknown", "ratio":None})
+            continue
+        values = [Decimal(str(budget[k])) for k in
+                  ("spent_usd", "reserved_usd", "limit_usd", "alert", "block")]
+        spent, reserved, limit, alert, block = values
+        if any(not x.is_finite() or x < 0 for x in values) or not 0 <= alert < block <= 1:
+            raise ValueError("invalid budget values")
+        ratio = (spent + reserved + upper) / limit if limit else None
+        status = ("blocked" if limit == 0 or ratio >= block else
+                  "warning" if ratio >= alert else "within_snapshot")
+        states.append({"status":status, "ratio":ratio})
+    return {"states":states, "snapshot_within_limits":bool(states) and
+            all(s["status"] in {"within_snapshot", "warning"} for s in states),
+            "execution_authorized":False}
+# This read cannot reserve. Before a call the host locks all applicable scopes,
+# validates prices/upper bounds/freshness, and atomically reserves or refuses.
+# Cached counters may inform display, never bypass unknown cost or reservation.

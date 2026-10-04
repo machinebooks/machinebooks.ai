@@ -1,0 +1,9 @@
+set -euo pipefail
+: "${DOCKER_CONTEXT:?Set the reviewed Docker context}"
+compose=(docker --context "$DOCKER_CONTEXT" compose
+  --project-name staging --file /opt/staging/docker-compose.yml)
+
+"${compose[@]}" exec -T postgres psql -X -v ON_ERROR_STOP=1 \
+  -U app -d staging_db -c \
+  "SELECT id, version, status, deployed_at FROM deployments
+   ORDER BY deployed_at DESC, id DESC LIMIT 10;"

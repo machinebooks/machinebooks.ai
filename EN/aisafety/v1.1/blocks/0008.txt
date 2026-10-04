@@ -1,0 +1,32 @@
+# Illustrative context estimate; not an integrity or security check.
+import hashlib
+
+def estimate_context_for_review(system_prompt, messages, max_tokens=200_000):
+    if type(max_tokens) is not int or max_tokens <= 0:
+        raise ValueError("max_tokens must be a positive integer")
+    if not isinstance(system_prompt, str):
+        raise ValueError("system_prompt must be text")
+    if not isinstance(messages, list):
+        raise ValueError("messages must be a list")
+    contents = []
+    for message in messages:
+        if not isinstance(message, dict) or not isinstance(message.get("content"), str):
+            raise ValueError("This example only accepts text content")
+        contents.append(message["content"])
+
+    # Rough character estimate; roles and protocol overhead are omitted.
+    estimated_instruction_tokens = (len(system_prompt) + 3) // 4
+    estimated_total_tokens = estimated_instruction_tokens + sum(
+        (len(content) + 3) // 4 for content in contents
+    )
+    alerts = []
+    if estimated_total_tokens > max_tokens:
+        alerts.append("Estimate exceeds the example limit; use the model tokenizer")
+    return {
+        "estimated_tokens": estimated_total_tokens,
+        "instruction_text_sha256": hashlib.sha256(system_prompt.encode()).hexdigest(),
+        "alerts": alerts,
+    }
+# A hash of the current input is not evidence that instructions were preserved.
+# Integrity requires comparison with an approved reference and the sent request.
+# This estimate cannot determine attack resistance or whether truncation occurs.

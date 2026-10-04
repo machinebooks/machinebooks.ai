@@ -1,0 +1,10 @@
+Analyze the folder C:\Users\myuser\Documents\Invoices_2024.
+I want you to:
+1. Read each PDF to identify the supplier and invoice date
+2. Rename each file with the format: YYYY-MM-DD_supplier_invoice.pdf
+3. Create subfolders by month (01-January, 02-February, etc.)
+4. Move each invoice to its corresponding month
+5. Generate a summary CSV with: original file, new file, supplier, date, amount if found
+
+Before executing anything, show me the complete plan.
+Work on a copy. Retain paths and hashes for all 87 inputs. Confirm duplicates by content. Detect proposed-name collisions; when invoices share date and supplier, add the invoice number or a stable unique suffix without overwriting. Reconcile all inputs and outputs, including budgets and exceptions, and wait for plan approval.

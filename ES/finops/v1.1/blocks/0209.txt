@@ -1,0 +1,17 @@
+# Versioned cost role; direct salary/employer costs exclude structural overhead.
+from sqlalchemy import Column,String,Numeric,DateTime,UniqueConstraint
+from database import Base
+
+class RoleCostProfile(Base):
+    __tablename__="role_cost_profiles"
+    id=Column(String(36),primary_key=True)
+    tenant_id=Column(String(64),nullable=False)
+    role_code=Column(String(100),nullable=False)
+    version=Column(String(100),nullable=False)
+    currency=Column(String(3),nullable=False)
+    direct_hourly_cost=Column(Numeric(24,8),nullable=False)
+    structural_overhead_fraction=Column(Numeric(12,8),nullable=False)
+    annual_productive_hours=Column(Numeric(24,8),nullable=False)
+    effective_from=Column(DateTime(timezone=True),nullable=False)
+    __table_args__=(UniqueConstraint("tenant_id","role_code","version"),)
+# Host validates finite nonnegative values, approved local assumptions and UTC version.

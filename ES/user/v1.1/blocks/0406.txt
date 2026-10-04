@@ -1,0 +1,4 @@
+Los usuarios dicen que la aplicación web va lenta desde esta mañana.
+No hay errores, simplemente tarda mucho. Ayúdame a diagnosticar.
+La aplicación es Python (Flask) detrás de nginx, con PostgreSQL
+como base de datos y Redis como caché.

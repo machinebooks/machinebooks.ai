@@ -1,0 +1,18 @@
+Illustrative status example after bringing up:
+
+┌──────────────────┬─────────────────────┬──────────────────┐
+│ Name             │ Status              │ Ports            │
+├──────────────────┼─────────────────────┼──────────────────┤
+│ nginx            │ Up 12s (healthy)    │ 0.0.0.0:80->80   │
+│ api-backend      │ Up 12s (healthy)    │ 8080/tcp         │
+│ worker           │ Up 12s              │                  │
+│ redis            │ Up 14s (healthy)    │ 6379/tcp         │
+│ postgres         │ Up 14s (healthy)    │ 5432/tcp         │
+│ meilisearch      │ Up 14s (healthy)    │ 7700/tcp         │
+└──────────────────┴─────────────────────┴──────────────────┘
+
+In this sample, all services appear running; verify actual state.
+✓ 5 of 6 report "healthy" status (worker does not have health check
+  configured, but is "Up"; functional readiness remains pending).
+
+Connectivity verification:

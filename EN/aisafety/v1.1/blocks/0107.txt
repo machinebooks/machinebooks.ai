@@ -1,0 +1,6 @@
+# Reporting contract. Zero systems or missing observations mean unknown, not 0% coverage.
+# Validate non-negative counts and numerator <= denominator before calculating ratios.
+# A pre-production finding ratio is not the number of incidents prevented.
+class MonthlyReport:
+    def executive_summary(self):
+        raise NotImplementedError("A validated reporting dataset and metric definitions are required")

@@ -1,0 +1,25 @@
+import json
+from datetime import date
+from decimal import Decimal
+
+def validate_extracted_fields(text):
+    if not isinstance(text,str) or len(text)>10000:
+        raise ValueError("bounded JSON required")
+    value = json.loads(text, parse_float=Decimal,
+        parse_constant=lambda s:(_ for _ in ()).throw(ValueError("nonfinite JSON")))
+    fields = {"titulo","presupuesto_base","fecha_limite","requiere_solvencia"}
+    if not isinstance(value,dict) or set(value)!=fields:
+        raise ValueError("extraction schema")
+    if not isinstance(value["titulo"],str) or not 1 <= len(value["titulo"]) <= 500:
+        raise ValueError("title")
+    amount = value["presupuesto_base"]
+    if isinstance(amount,bool) or not isinstance(amount,(int,Decimal)) or amount<0:
+        raise ValueError("amount")
+    if value["fecha_limite"] is not None:
+        date.fromisoformat(value["fecha_limite"])
+    if type(value["requiere_solvencia"]) is not bool:
+        raise ValueError("boolean field")
+    return value
+# Adapter may request supported schema-constrained output; instruction alone is not
+# that feature. Parse/schema failures remain failures, not {} or an invented default.
+# Host compares each field with the source, currency and timezone before acceptance.

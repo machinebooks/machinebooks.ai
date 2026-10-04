@@ -1,0 +1,16 @@
+claude -p "
+Review the logs of all pipelines from the last week
+in /home/usuario/logs/.
+
+For each pipeline, report:
+- Date of the last execution
+- Status: completed / completed with warnings / failed
+- Execution time, if available in the log
+- Errors or warnings found
+
+Generate a table-format summary at
+/home/usuario/logs/panel-semanal-$(date -u +%Y-%m-%d).md.
+Compare with the inventory and expected schedule; mark NOT RUN or
+UNKNOWN when evidence is missing. A nonempty file does not mean approval.
+Do not show log secrets or overwrite previous dashboards.
+"

@@ -1,0 +1,14 @@
+cd /home/usuario/propuesta-cliente
+claude -p "
+Lee glosario.md para convenciones.
+ROLE: Redactor comercial.
+Lee datos/cliente-tech-solutions.md para contexto.
+Genera partes/narrativa-propuesta.md con: resumen ejecutivo, comprensión
+de necesidad, solución propuesta, plan de trabajo (4 meses), equipo,
+garantías, argumentos comerciales, próximos pasos.
+Deja marcadores [INSERTAR_ANALISIS] y [INSERTAR_PRESUPUESTO].
+Tono: profesional, directo, sin florituras.
+La narrativa paralela es sólo un esquema provisional. Marca solución, equipo,
+garantías y cronograma como pendientes de análisis y estimación. No inventes
+conclusiones ajenas ni reemplaces marcadores antes de comprobar las partes.
+"

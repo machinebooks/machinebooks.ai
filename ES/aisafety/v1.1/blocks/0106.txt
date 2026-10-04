@@ -1,0 +1,6 @@
+# Interface only. No finding list, empty or otherwise, establishes deployment safety.
+# Contract: review scope/coverage, dated evidence, required controls, findings,
+# risk acceptance and the accountable human release decision.
+class SecurityEvaluation:
+    def is_deployable(self):
+        raise NotImplementedError("An evidence-based release policy is required")

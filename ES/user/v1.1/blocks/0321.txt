@@ -1,0 +1,12 @@
+Crea un fichero consultas-mensuales.sql con las siguientes consultas,
+bien comentadas en español:
+
+1. Resumen de ventas del mes (total pedidos, importe, ticket medio)
+2. Top 10 clientes por importe
+3. Ventas por zona comercial con comparativa vs. mes anterior
+4. Facturas pendientes de cobro por antigüedad
+5. Clientes nuevos del mes con su primera compra
+6. Productos con ventas decrecientes (3 meses consecutivos de caída)
+
+Cada consulta debe tener un comentario que explique qué hace, qué
+parámetros hay que cambiar (mes, año) y cómo interpretar el resultado.

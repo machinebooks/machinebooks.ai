@@ -1,0 +1,25 @@
+# Monthly financial reporting pipeline
+
+## Example context
+Technology services company: eight employees and approximately 1.2 million EUR annual invoicing.
+The CSVs in datos/ are example sources; preserve their provenance and period.
+
+## Calculation rules
+- EUR with Decimal and two decimal places; no currency conversion without a source and date
+- Issued counts toward issued invoicing; report Draft separately
+- Paid identifies a cash outflow; Pending is an outstanding obligation
+- Do not confuse those states with accounting recognition of income or expense
+- Reconcile ERP, bank, cards, credits, and partial payments before aggregation
+- Compare budget and actual on the same basis and category
+- Deviation: (actual - budget) / budget * 100, when budget is nonzero
+- Do not call invoiced amounts minus paid expenses operating margin
+
+## Format and acceptance
+Markdown with sources and tables; European format 12.500,00 EUR and 85,3%.
+Executive summary, invoices, collections, expenses by state, budget, and recommendations.
+Record missing data and errors; stop final delivery on a missing critical source.
+Open and check the complete output before human review; do not send it automatically.
+- Q1 budget and CSVs are 2025 fixtures; they do not establish current data.
+- No due date or unique invoice ID is supplied: do not classify overdue invoices.
+- For this fixture, reconcile only (client, concept) with a unique match.
+- Collections do not prove accrued income, nor does issued invoicing prove accrual.

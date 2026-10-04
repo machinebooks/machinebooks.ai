@@ -1,0 +1,50 @@
+import math
+import time
+
+class SemanticCache:
+    def __init__(self, dimension, threshold=.93, max_entries=1000, ttl_seconds=3600, clock=time.monotonic):
+        if type(dimension) is not int or not 1 <= dimension <= 4096:
+            raise ValueError("dimension")
+        if type(max_entries) is not int or not 1 <= max_entries <= 10000:
+            raise ValueError("capacity")
+        if isinstance(threshold, bool) or not math.isfinite(threshold) or not 0 < threshold <= 1:
+            raise ValueError("threshold")
+        if type(ttl_seconds) is not int or not 1 <= ttl_seconds <= 86400:
+            raise ValueError("TTL")
+        self.dimension, self.threshold, self.capacity = dimension, threshold, max_entries
+        self.ttl, self.clock, self.entries = ttl_seconds, clock, []
+
+    def vector(self, values):
+        if not isinstance(values, (list, tuple)) or len(values) != self.dimension:
+            raise ValueError("vector dimension")
+        if any(isinstance(v, bool) or not isinstance(v, (int,float)) or not math.isfinite(v) for v in values):
+            raise ValueError("finite vector required")
+        norm = math.hypot(*values)
+        if not norm or not math.isfinite(norm):
+            raise ValueError("nonzero finite norm required")
+        return tuple(v/norm for v in values)
+
+    def lookup(self, values, authorized_cache_scope):
+        vector, now = self.vector(values), self.clock()
+        self.entries = [e for e in self.entries if now-e[0] < self.ttl]
+        candidates = [e for e in self.entries if e[1] == authorized_cache_scope]
+        scored = [(sum(a*b for a,b in zip(vector,e[2])),e) for e in candidates]
+        if not scored:
+            return None
+        score, entry = max(scored, key=lambda x:x[0])
+        return entry[3] if score >= self.threshold else None
+
+    def store(self, values, response, authorized_cache_scope):
+        if not isinstance(authorized_cache_scope, tuple) or len(authorized_cache_scope) != 6:
+            raise ValueError("versioned cache scope required")
+        if not isinstance(response, str) or len(response) > 12000:
+            raise ValueError("response size")
+        self.entries.append((self.clock(), authorized_cache_scope, self.vector(values), response))
+        self.entries = self.entries[-self.capacity:]
+
+    def invalidate(self):
+        self.entries.clear()
+# Host supplies (tenant, permission_revision, service, source_version, model_version,
+# embedding_version); authorizes lookup again and disables reuse for unsafe tasks.
+# Same similarity does not prove equivalent answers. This is process-local memory,
+# not encrypted durable cache, multi-worker eviction or production isolation proof.

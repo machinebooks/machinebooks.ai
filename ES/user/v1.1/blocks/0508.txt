@@ -1,0 +1,23 @@
+#!/bin/bash
+# Local draft example; scheduling and enforced permissions are separate.
+set -euo pipefail
+umask 077
+cd -- /home/usuario/proyecto-actual
+test -r datos/progreso.csv
+test -r datos/incidencias.csv
+command -v claude >/dev/null
+mkdir -p informes
+exec 9>"$PWD/informes/.report.lock"
+flock -n 9 || exit 1
+RUN_DIR=$(mktemp -d "$PWD/informes/semanal-$(date -u +%Y-%m-%d)-XXXXXX")
+claude --permission-mode dontAsk --max-turns 20 -p "
+Genera un borrador del informe semanal de estado del proyecto:
+1. Lee los datos de avance en datos/progreso.csv
+2. Lee las incidencias abiertas en datos/incidencias.csv
+3. Calcula el porcentaje de avance global
+4. Identifica las 3 incidencias más críticas y justifica el criterio
+5. Escribe el borrador en $RUN_DIR/estado-semanal.md
+6. Genera $RUN_DIR/estado-semanal.pdf solo si hay una herramienta de exportación compatible autorizada; informa de cualquier limitación
+"
+test -s "$RUN_DIR/estado-semanal.md"
+printf '%s\n' "Borrador pendiente de revisión: $RUN_DIR/estado-semanal.md"

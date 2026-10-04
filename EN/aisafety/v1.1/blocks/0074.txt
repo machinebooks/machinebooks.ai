@@ -1,0 +1,7 @@
+# Classification interface; keyword absence must not silently classify as PUBLIC.
+# Combine the authoritative source label and access rules with reviewed signals.
+# Use explicit unknown/review states; confidence requires calibration, not constants.
+# Text-language coverage and PII candidates require independent regression tests.
+class DocumentClassifier:
+    def classify(self, text, source, pii_found):
+        raise NotImplementedError("An approved classification policy and tested adapter are required")

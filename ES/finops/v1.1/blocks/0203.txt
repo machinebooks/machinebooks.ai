@@ -1,0 +1,39 @@
+# Historical commitment candidates, not a forecast or an optimal contract.
+from decimal import Decimal, InvalidOperation, ROUND_CEILING
+
+
+def optimize_llm_commitment(monthly_costs, commitment_horizon_months=1,
+                            risk_tolerance=0.1):
+    if type(commitment_horizon_months) is not int or not 1 <= commitment_horizon_months <= 12:
+        raise ValueError("The illustrated horizon must be one to twelve months")
+    if not isinstance(monthly_costs, (list, tuple)) or len(monthly_costs) > 120:
+        raise ValueError("Use at most120 complete comparable monthly amounts")
+
+    def amount(value):
+        if isinstance(value, bool) or value is None:
+            raise ValueError("A known finite non-negative amount is required")
+        try:
+            result = Decimal(str(value))
+        except (InvalidOperation, ValueError):
+            raise ValueError("Invalid numeric amount") from None
+        if not result.is_finite() or result < 0:
+            raise ValueError("A known finite non-negative amount is required")
+        return result
+
+    costs = sorted(amount(value) for value in monthly_costs)
+    quantile = amount(risk_tolerance)
+    if not 0 < quantile <= 1:
+        raise ValueError("The selected historical quantile must be above zero and at most one")
+    if len(costs) < 3:
+        return {"status": "insufficient_data", "monthly_candidate": None,
+                "horizon_total": None, "sample_months": len(costs)}
+    index = int((quantile * len(costs)).to_integral_value(rounding=ROUND_CEILING)) - 1
+    candidate = costs[index]
+    return {"status": "historical_candidate", "monthly_candidate": candidate,
+            "horizon_total": candidate * commitment_horizon_months,
+            "sample_months": len(costs), "selected_quantile": quantile}
+
+# Costs must share currency, contract scope, complete duration and price basis.
+# risk_tolerance selects a historical quantile; it is not an estimated risk.
+# Before signing: forecast usage, review minimums, discounts, unused commitment
+# and eligibility. Do not treat this finite sample as a probability guarantee.

@@ -1,0 +1,24 @@
+I have two data sources:
+1. Folder with 30 scanned delivery notes in PDF: D:\Warehouse\DeliveryNotes_March
+2. An Excel with the month's orders: D:\Warehouse\Orders_March.xlsx
+
+For each delivery note, extract:
+- Delivery note number
+- Vendor
+- Delivery date
+- List of items with quantity received
+
+Then, cross-reference with the orders in the Excel and generate a discrepancy report:
+- Items ordered but not received
+- Items received with quantity different from what was ordered
+- Items received with no corresponding order
+
+Generate two files:
+1. delivery_notes_extracted.csv with all the data from the delivery notes
+2. discrepancies_march.csv with only the differences found
+Work with authorized copies and a new output destination without overwriting.
+Define order, delivery-note and item keys; retain sources and pages.
+Review duplicates, partial deliveries, units and periods.
+Do not join solely by vendor name or turn absence into zero.
+Reconcile every row and leave missing or ambiguous keys pending.
+Review the report before sending it or changing orders.

@@ -1,0 +1,17 @@
+# Plantilla: Extracción de facturas trimestrales
+# Guardar como: D:\Plantillas\instruccion_facturas.md
+
+Procesa todas las facturas PDF de la carpeta [RUTA].
+Extrae: proveedor, NIF, nº factura, fecha, concepto, base, tipo IVA,
+cuota IVA, total, forma de pago.
+Formato CSV con separador punto y coma.
+Fechas en DD/MM/YYYY. Importes con 2 decimales, punto como separador decimal.
+Si un campo no es legible: "NO LEGIBLE".
+Generar resumen al final con totales y lista de facturas a revisar.
+Antes de ejecutar, completa [RUTA], período, moneda, reglas y destino nuevo.
+No uses el nombre o fecha del archivo como único criterio contable.
+Conserva originales y referencias a página; inventaría todas las entradas.
+Documenta múltiples tipos de IVA y componentes del total sin perder vínculos.
+Distingue valores ausentes, ilegibles y ambiguos; no los sustituyas por cero.
+Comprueba campos críticos, cobertura, cálculos y excepciones.
+No distribuyas ni presentes declaraciones fiscales a partir del borrador.

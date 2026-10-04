@@ -1,0 +1,7 @@
+# Pending regression-test specification. Interfaces in this chapter are not
+# implementations, and this block does not report passed security tests.
+# PII: original-text spans, overlaps, false positives and minimised evidence.
+# Tools: missing/extra fields, type/range errors, approval and quota boundaries.
+# Input: known patterns, Unicode variants, legitimate text and length policy.
+def run_control_regressions():
+    raise NotImplementedError("Implement independent fixtures against the chosen adapters")

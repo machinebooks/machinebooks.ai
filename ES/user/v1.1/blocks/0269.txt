@@ -1,0 +1,8 @@
+> Analiza clientes-master.xlsx sin modificarlo:
+1. Señala candidatos por email o nombre+ciudad; coincidencia no prueba identidad.
+2. Conserva registros y procedencia, y propone fusiones sólo con evidencia.
+3. Comprueba sintaxis de email; no afirma existencia ni entrega.
+4. Normaliza teléfonos sólo con país, tipo y número confirmados; conserva origen.
+5. No deduzcas códigos postales sólo por ciudad; usa dirección y fuente autorizada.
+6. Clasifica antigüedad con fecha de alta y corte explícitos; fronteras sin solape.
+7. Presenta diff, excepciones y controles antes de autorizar cualquier cambio.

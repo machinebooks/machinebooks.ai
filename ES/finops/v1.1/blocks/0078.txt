@@ -1,0 +1,6 @@
+Comparación para volumen anual y prestaciones equivalentes:
+  annual_api_cost = api_fixed_cost + api_variable_cost_per_token * annual_tokens
+  annual_local_cost = local_fixed_tco + local_variable_cost_per_token * annual_tokens
+  crossover_tokens = (local_fixed_tco - api_fixed_cost) / (api_variable_cost_per_token - local_variable_cost_per_token)
+Solo hay cruce positivo si denominador y numerador lo permiten. Tarifas medias por
+mezcla/cache/calidad, capacidad, inversión, operación y utilización deben declararse.

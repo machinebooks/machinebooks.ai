@@ -1,0 +1,17 @@
+async def audit_routing_sample(metadata_rows, tracked_reviewer):
+    if not isinstance(metadata_rows, list) or len(metadata_rows) > 50:
+        raise ValueError("sample limit")
+    proposals = []
+    for row in metadata_rows:
+        actual = row["actual_tier"]
+        if actual not in {"fast", "balanced", "powerful"}:
+            raise ValueError("tier")
+        suggested = await tracked_reviewer(row["approved_task_metadata"], max_output_tokens=32)
+        if suggested not in {"fast", "balanced", "powerful"}:
+            proposals.append({"attempt_id":row["attempt_id"], "status":"invalid_judgment"})
+        elif suggested != actual:
+            proposals.append({"attempt_id":row["attempt_id"], "suggested":suggested,
+                              "status":"pending_human_review"})
+    return {"sample_size":len(metadata_rows), "proposals":proposals, "routing_changed":False}
+# Host supplies authorized, redacted, bounded sample metadata and metered reviewer.
+# Routing labels/metadata are a separate host evaluation schema, not C4 raw prompts.

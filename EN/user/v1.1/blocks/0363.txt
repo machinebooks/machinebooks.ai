@@ -1,0 +1,14 @@
+4 log files processed (2 compressed, 2 plain text).
+Total failed SSH attempts: 12,847 from 187 unique IPs.
+
+Top 5 IPs by attempts:
+  203.0.113.45    - 4,231 attempts (SUSPICIOUS) - RFC 5737 documentation address
+  198.51.100.12   - 2,108 attempts (SUSPICIOUS) - RFC 5737 documentation address
+  192.0.2.78      - 1,456 attempts (SUSPICIOUS) - RFC 5737 documentation address
+  ...
+
+CSV generated at: <protected_directory>/ssh_failed_logins_202603-<identifier>.csv
+
+Review: these counts are fictional. They establish neither
+geographic origin nor an attack; investigate dates, events, and
+context before proposing blocks. Do not apply them automatically.

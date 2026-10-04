@@ -1,0 +1,20 @@
+Genera la presentación de estado semanal del proyecto "Migración ERP"
+para la reunión del lunes 25 de marzo.
+
+Fuentes:
+- Estado de tareas: C:\Proyectos\MigracionERP\seguimiento_tareas.xlsx
+- Notas de la semana: C:\Proyectos\MigracionERP\notas_semana_12.txt
+- Incidencias: C:\Proyectos\MigracionERP\incidencias_marzo.csv
+
+Estructura (7 slides, presentación de 10 minutos):
+
+SLIDE 1: Portada con semáforo general del proyecto
+SLIDE 2: Lo que se completó esta semana (lista con checks)
+SLIDE 3: Lo que está en curso (lista con porcentaje de avance)
+SLIDE 4: Bloqueos y retrasos (con responsable y acción necesaria)
+SLIDE 5: Incidencias abiertas (tabla con prioridad)
+SLIDE 6: Plan de la próxima semana (5 actividades principales)
+SLIDE 7: Decisiones necesarias (qué necesito que aprobéis)
+
+Formato escueto. Sin adornos. Datos y acciones.
+Genera en Markdown y HTML.

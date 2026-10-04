@@ -1,0 +1,9 @@
+# Authorized repository selects calendar period and financial source/FX versions.
+async def get_unit_economics(principal,authorize,repository,month):
+    scope=await authorize(principal,"unit_economics.read",month=month)
+    snapshot=await repository.monthly_unit_economics(scope=scope,month=month)
+    if snapshot is None:
+        return {"state":"unavailable","report":None}
+    if snapshot["scope"]!=scope or snapshot["month"]!=month:
+        raise ValueError("Scope mismatch")
+    return {"state":"scoped_snapshot","report":snapshot}

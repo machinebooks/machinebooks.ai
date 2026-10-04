@@ -1,0 +1,24 @@
+from uuid import UUID
+
+async def sample_and_evaluate(approved_samples, tracked_reviewer):
+    if not isinstance(approved_samples, list) or len(approved_samples) > 30:
+        raise ValueError("sample limit")
+    outcomes = []
+    for sample in approved_samples:
+        UUID(sample["attempt_id"])
+        try:
+            judgment = await tracked_reviewer(sample["approved_content"], max_output_tokens=256)
+            if not isinstance(judgment, dict) or set(judgment) != {"quality", "reason"}:
+                raise ValueError("judgment schema")
+            if judgment["quality"] not in {"acceptable", "improvable", "unacceptable"}:
+                raise ValueError("quality label")
+            if not isinstance(judgment["reason"], str) or len(judgment["reason"]) > 1000:
+                raise ValueError("reason size")
+            outcomes.append({"attempt_id":sample["attempt_id"], "judgment":judgment,
+                             "status":"pending_human_review"})
+        except Exception:
+            outcomes.append({"attempt_id":sample["attempt_id"], "status":"retry_or_review_required"})
+    return {"outcomes":outcomes, "routing_changed":False, "published":False}
+# Host atomically claims authorized, expiring samples from last UTC 24h and persists
+# outcomes idempotently. Failed/invalid judgments remain reviewable, not completed.
+# An LLM label does not prove factual accuracy or hypothetical superiority of Opus.

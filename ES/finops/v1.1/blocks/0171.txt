@@ -1,0 +1,20 @@
+# Reference CI validation only; host repository supplies and tests the named scripts.
+name: Validar políticas FinOps
+on:
+  pull_request:
+    paths: ["policies/**", "schemas/**", "scripts/**"]
+permissions: {contents: read}
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {persist-credentials: false}
+      - name: Validar esquema y rangos
+        run: python scripts/validate_yaml_schema.py policies/
+      - name: Comparar versiones exactas y requisitos de aprobación
+        run: python scripts/check_policy_review.py
+      - name: Simular datos sintéticos declarados
+        run: python scripts/simulate_policy_impact.py --policies policies/ --usage-data data/fixture.json
+# No deploy job is shown. Host pins reviewed action SHAs/runtime, protects branches,
+# verifies authorized approvals against the diff and promotes an immutable artifact.

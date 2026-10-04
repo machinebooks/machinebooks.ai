@@ -1,0 +1,26 @@
+Analyze all the files in this directory and generate an inventory report
+with the following information:
+
+1. GENERAL SUMMARY: total number of files, total size,
+   date range (oldest and most recent).
+
+2. DISTRIBUTION BY TYPE: table with each file extension (.pdf, .docx,
+   .xlsx, etc.), how many files of each type, and total size per type.
+
+3. LARGEST FILES: the 10 files that take up the most space,
+   with name, size, and date.
+
+4. POSSIBLE DUPLICATES: if you find files with very similar names
+   or the exact same size, flag them as possible duplicates.
+
+5. RECOMMENDATIONS: suggest which files could be deleted (temporary,
+   old downloads) and how this folder could be better organized.
+
+Save the report in a file called "folder-inventory.md" in this
+same directory.
+
+Work only in the authorized test folder; do not follow links
+to external paths. Do not delete, move or modify originals.
+Record inputs, hashes, rejections and exceptions; names or size
+do not prove duplication. Use a new output and stop if it exists.
+Recommendations are proposals, without executing changes.

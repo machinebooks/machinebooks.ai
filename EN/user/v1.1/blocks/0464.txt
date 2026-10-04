@@ -1,0 +1,12 @@
+I need to prepare deployment of api-server version 2.5.0 in the
+"production" namespace. The new image is
+registry.empresa.invalid/api-server:2.5.0.
+Check context, permissions, prior state, and authorized recovery.
+Propose an update with maxUnavailable=0, maxSurge=1, and
+minReadySeconds=10. The progress deadline will be 120 seconds;
+rollout monitoring will have a 180-second limit.
+If a command or monitoring fails, stop the sequence and report
+the evidence. This example does not roll back automatically or set
+a separate 120-second timeout for each pod.
+Show status before, during, and after; wait for authorization for changes.
+The .invalid address is fictional. Use the reviewed actual digest in APPROVED_IMAGE.

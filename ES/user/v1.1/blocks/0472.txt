@@ -1,0 +1,14 @@
+set -euo pipefail
+: "${KUBE_CONTEXT:?Set the reviewed cluster context}"
+kubectl --context "$KUBE_CONTEXT" cluster-info
+k=(kubectl --context "$KUBE_CONTEXT" --namespace production)
+
+: "${REVIEWED_REVISION:?Set the explicitly approved compatible revision}"
+[[ "$REVIEWED_REVISION" =~ ^[1-9][0-9]*$ ]] || exit 1
+"${k[@]}" rollout history deployment/api-server --revision="$REVIEWED_REVISION"
+# Only after specific approval and coordination with other controllers/operators.
+"${k[@]}" rollout undo deployment/api-server --to-revision="$REVIEWED_REVISION"
+"${k[@]}" rollout status deployment/api-server --timeout=120s
+"${k[@]}" get pods -l app=api-server \
+  -o custom-columns='NAME:.metadata.name,IMAGE:.spec.containers[*].image'
+# Application function and data compatibility require separate checks.

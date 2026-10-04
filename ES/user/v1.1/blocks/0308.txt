@@ -1,0 +1,11 @@
+Analiza los 24 meses entre 2022-04-01 y 2024-03-31 inclusive.
+Define ventas como importes netos de pedidos completados en EUR,
+calculados con precios de operación y descuentos; separa abonos.
+Incluye todos los meses, incluso los de cero ventas.
+
+Muestra recuento de pedidos distintos, importe y ticket medio.
+Si no hay pedidos, ticket medio no aplicable. Para cancelaciones,
+usa cancelados/total de pedidos del mes; muestra el denominador.
+Para variación mensual, base cero = no aplicable, no infinito.
+Sólo concluye estacionalidad si los datos y el método la sustentan.
+Da top 5 crecimientos y un resumen con limitaciones y consultas.

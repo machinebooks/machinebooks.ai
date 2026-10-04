@@ -1,0 +1,49 @@
+# servidor_bd.py — Read-only SQLite teaching example.
+from contextlib import closing
+from pathlib import Path
+from mcp.server.fastmcp import FastMCP
+import sqlite3
+import os
+
+server = FastMCP("base-datos-empresa")
+DB_PATH = os.environ.get("DB_PATH", "empresa.db")
+ALLOWED = {sqlite3.SQLITE_SELECT, sqlite3.SQLITE_READ, sqlite3.SQLITE_FUNCTION}
+
+def authorize(action, arg1, arg2, database, trigger):
+    return sqlite3.SQLITE_OK if action in ALLOWED else sqlite3.SQLITE_DENY
+
+@server.tool()
+async def consultar(pregunta: str) -> str:
+    if not pregunta.strip() or len(pregunta) > 10000:
+        return "Error: invalid query."
+    try:
+        uri = Path(DB_PATH).resolve(strict=True).as_uri() + "?mode=ro"
+        with closing(sqlite3.connect(uri, uri=True, timeout=2)) as connection:
+            connection.setlimit(sqlite3.SQLITE_LIMIT_LENGTH, 1000000)
+            connection.setlimit(sqlite3.SQLITE_LIMIT_SQL_LENGTH, 10000)
+            connection.set_authorizer(authorize)
+            steps = 0
+            def progress():
+                nonlocal steps
+                steps += 1
+                return int(steps > 1000)
+            connection.set_progress_handler(progress, 1000)
+            with closing(connection.execute(pregunta)) as cursor:
+                if cursor.description is None:
+                    return "Error: invalid query."
+                columns = [description[0] for description in cursor.description]
+                rows = cursor.fetchmany(101)
+        result = " | ".join(columns) + "\n"
+        result += "\n".join(" | ".join(str(value) for value in row) for row in rows[:100])
+        if len(rows) > 100:
+            result += "\nResult limited to 100 rows."
+        return result
+    except (OSError, sqlite3.Error):
+        return "Error: query rejected or database unavailable."
+
+@server.tool()
+async def listar_tablas() -> str:
+    return await consultar("SELECT name FROM sqlite_schema WHERE type = 'table' ORDER BY name")
+
+if __name__ == "__main__":
+    server.run(transport="stdio")

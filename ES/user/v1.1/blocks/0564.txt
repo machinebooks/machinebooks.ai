@@ -1,0 +1,5 @@
+cd /home/usuario/propuesta-cliente
+claude -p "
+ROLE: Analista de cliente
+Investiga Tech Solutions con datos/cliente-tech-solutions.md y datos/proyectos-anteriores.csv. Genera partes/analisis-cliente.md con perfil, historial, necesidades, riesgos y oportunidades, conservando referencias a fuentes. Marca evidencia ausente o contradictoria sin inventar hechos.
+"

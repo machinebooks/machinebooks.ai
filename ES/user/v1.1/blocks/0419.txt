@@ -1,0 +1,5 @@
+Prepara para revisar un grupo de seguridad de staging en una VPC y región explícitas:
+- SSH desde la IP real autorizada; 203.0.113.10 es sólo documentación, no mi IP.
+- HTTP/HTTPS según el alcance IPv4 e IPv6 aprobado.
+- PostgreSQL desde 10.0.1.0/24 sólo si corresponde a la red de práctica.
+Comprueba dependencias, reglas efectivas e impacto antes de aplicar cambios.

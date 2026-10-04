@@ -1,0 +1,24 @@
+## Illustrative draft consolidation report
+
+### Numeric scenario requiring verification
+- Expected files: 12
+- Example input records: 2,758
+- Empty rows: 3
+- Duplicate candidates in July: 12
+- Cross-month candidates between September and October: 8
+- If removal of those 20 candidates is confirmed, 2,735 records remain.
+- If unconfirmed, retain them and report the actual result.
+- March VAT: pending a source; do not automatically apply 21%.
+- Expected date formats to review: 510 records
+- Columns to map: February (English→Spanish), December (renamed)
+
+### Illustrative values, pending checks against the transactions
+- Date range: 02/01/2024 — 30/12/2024
+- Amount: 1,847,392.45 EUR; net base and gross total must be defined from sources.
+- Total VAT: pending, not derivable from this sample.
+- Unique suppliers: 189; check identities and coverage.
+- Month column: retain provenance.
+
+### Expected delivery
+gastos-2024-consolidado.xlsx and a record of changes, exclusions, and pending items.
+Confirm rows, columns, amounts, and that the file opens before accepting it.

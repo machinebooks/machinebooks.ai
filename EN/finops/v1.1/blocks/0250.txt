@@ -1,0 +1,14 @@
+import React from "react";
+type SustainabilitySnapshot={cost:string|null; currency:string; kwh:string|null;
+  kgco2e:string|null; energyMethod:string; coverage:string; sourceCutoff:string};
+export function SustainabilityDashboard({snapshot}: {snapshot:SustainabilitySnapshot}) {
+  return <section aria-label="Cost and sustainability"><dl>
+    <dt>Known cost ({snapshot.currency})</dt><dd>{snapshot.cost ?? "Unknown"}</dd>
+    <dt>Estimated energy, kWh</dt><dd>{snapshot.kwh ?? "Unknown"}</dd>
+    <dt>Estimated emissions, kgCO₂e</dt><dd>{snapshot.kgco2e ?? "Unknowns"}</dd>
+    <dt>Method</dt><dd>{snapshot.energyMethod}</dd><dt>Coverage</dt><dd>{snapshot.coverage}</dd>
+    <dt>Cutoff</dt><dd>{snapshot.sourceCutoff}</dd></dl>
+    <p>Illustrative coefficients establish neither measured footprint nor regulatory reporting.</p>
+  </section>;
+}
+// Authorized host validates snapshot and handles loading/errors; no fabricated ROI.

@@ -1,0 +1,15 @@
+# Optional protected content vault; no universal statutory 90-day retention.
+from sqlalchemy import Column,String,DateTime,ForeignKey,Boolean
+from database import Base
+
+class LLMInteractionContent(Base):
+    __tablename__="llm_interaction_content"
+    id=Column(String(36),primary_key=True)
+    tenant_id=Column(String(64),nullable=False)
+    usage_id=Column(String(36),ForeignKey("llm_usage_logs.id"),nullable=False)
+    protected_object_ref=Column(String(200),nullable=False)
+    retention_policy_version=Column(String(100),nullable=False)
+    expires_at=Column(DateTime(timezone=True),nullable=True)
+    legal_hold=Column(Boolean,nullable=False)
+# Minimize collection. Host supplies legal basis, necessity, encryption/key access,
+# separate authorization, holds and deletion evidence including replicas/backups.

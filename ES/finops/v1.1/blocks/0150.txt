@@ -1,0 +1,36 @@
+# Host supplies users from an independent scoped monthly activity cohort plus ledger.
+from decimal import Decimal
+
+def unit_economics(user_rows,background_cost,coverage_complete):
+    if len(user_rows)>10000 or type(coverage_complete) is not bool:
+        raise ValueError("Invalid bounded cohort")
+    counts={"power":0,"average":0,"light":0,"unknown":0}
+    subtotal=Decimal(0); unknown=0; ids=set()
+    for row in user_rows:
+        if row["id"] in ids:
+            raise ValueError("Duplicate activity-cohort user")
+        ids.add(row["id"])
+        tokens=row["tokens"]
+        if tokens is not None and (type(tokens) is not int or tokens<0):
+            raise ValueError("Invalid token count")
+        profile="unknown" if tokens is None else "power" if tokens>=7000000 else "average" if tokens>=2000000 else "light"
+        counts[profile]+=1
+        if row["cost"] is None:
+            unknown+=1
+        else:
+            cost=Decimal(str(row["cost"]))
+            if not cost.is_finite() or cost<0:
+                raise ValueError("Invalid cost")
+            subtotal+=cost
+    background=None if background_cost is None else Decimal(str(background_cost))
+    if background is not None and (not background.is_finite() or background<0):
+        raise ValueError("Invalid background subtotal")
+    complete=coverage_complete and unknown==0 and background is not None
+    total=None if not complete else subtotal+background
+    return {"active_users":len(user_rows),"profile_counts":counts,
+        "known_user_token_subtotal":str(subtotal),"unknown_user_cost_count":unknown,
+        "background_cost":None if background is None else str(background),
+        "avg_token_cost_per_active_user":None if total is None or not user_rows else str(total/len(user_rows)),
+        "marginal_cost":None,"break_even_tenants":None,"full_tco":False}
+# Token bands are illustrative. MAU is not inferred solely from LLM calls; a zero-token
+# active user can belong to the cohort, while background requests have separate attribution.

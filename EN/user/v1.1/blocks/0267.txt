@@ -1,0 +1,23 @@
+## Annual expense analysis 2024 — fictional scenario
+Assumption: removal of 3 June blanks, 12 July duplicates, and 8 September
+candidates is confirmed after provenance checks. Without confirmation,
+retain candidates and recalculate; these rows do not establish real transactions.
+
+| Month | Records | Amount EUR | Versus average |
+|---|---|---|---|
+| January | 234 | 142,567.30 | -7.4% |
+| February | 198 | 128,340.50 | -16.6% |
+| March | 267 | 178,290.00 | 15.8% |
+| April | 215 | 156,780.20 | 1.8% |
+| May | 189 | 134,560.80 | -12.6% |
+| June | 240 | 162,890.45 | 5.8% |
+| July | 189 | 148,930.10 | -3.3% |
+| August | 156 | 98,450.30 | -36.1% |
+| September | 270 | 186,340.60 | 21.0% |
+| October | 245 | 168,290.40 | 9.3% |
+| November | 220 | 155,670.80 | 1.1% |
+| December | 312 | 186,281.00 | 21.0% |
+| Total | 2735 | 1,847,392.45 | |
+| Average | 228 | 153,949.37 | |
+
+The twelve rows total 1,847,392.45 EUR and 2,735 records. Monthly average is 153,949.37 EUR; 228 records is a rounded mean. These aggregate rows cannot identify suppliers, categories, new suppliers, top-10 shares, or seasonal causes. Those conclusions require the complete transaction dataset and remain pending.

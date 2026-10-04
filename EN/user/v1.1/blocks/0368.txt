@@ -1,0 +1,6 @@
+From the file /var/log/apache2/access.log, I want to know:
+- The 20 URLs with most requests on UTC date 2026-03-17
+- Of those 20, how many requests exceed 2 seconds according to %D
+- For those slow requests, distribution by target and UTC hour
+Confirm combined format with a final %D field; do not infer units or fields.
+Do not modify logs. Run the parser with file and date arguments.

@@ -1,0 +1,7 @@
+Ejemplo ilustrativo de resultados de las comprobaciones publicadas:
+  nginx: HTTP 200, si la comprobación anterior finaliza correctamente
+  API vía nginx: HTTP 200, si la comprobación anterior finaliza correctamente
+  Meilisearch: PENDIENTE; 7700/tcp no está publicado en el host
+  worker: PENDIENTE; estar Up no acredita readiness
+
+Uso de recursos:

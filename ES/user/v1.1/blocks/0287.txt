@@ -1,0 +1,7 @@
+Recalcula un escenario anual manteniendo todos los gastos reales del Q1.
+Estos importes ficticios ya incluidos en Q1 no se repiten en Q2–Q4:
+- Campaña de lanzamiento (Marketing): 15.000 EUR
+- Feria sectorial (Viajes): 4.200 EUR
+- Consultoría inicial (Servicios externos): 22.000 EUR
+Escenario = real Q1 + 3 × (real Q1 − 41.200 EUR).
+No borres gastos históricos ni modifiques el presupuesto; documenta supuestos.

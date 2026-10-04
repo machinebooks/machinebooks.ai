@@ -1,0 +1,11 @@
+# Endpoint cores: authorized scope replaces arbitrary query tenant IDs.
+from datetime import timedelta
+
+async def export_audit(principal,authorize,repository,start,end):
+    if start.tzinfo is None or end.tzinfo is None or start.utcoffset()!=timedelta(0) or end.utcoffset()!=timedelta(0) or not start<end or end-start>timedelta(days=366):
+        raise ValueError("Bounded end-exclusive UTC interval required")
+    scope=await authorize(principal,"audit.export",start=start,end=end,fields=AUDIT_FIELDS)
+    rows=await repository.authorized_audit_metadata(scope=scope,start=start,end=end,limit=10001)
+    return audit_metadata_csv(rows)
+# Host rejects limit overflow, validates every row's tenant/window and records export
+# receipt/purpose. Financial metadata is restricted even when prompts are excluded.

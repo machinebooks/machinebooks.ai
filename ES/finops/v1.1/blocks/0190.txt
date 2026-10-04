@@ -1,0 +1,19 @@
+# Read-only candidate plan; expiry alone does not authorize erasure.
+from datetime import timedelta
+
+def retention_candidates(rows,now,policy_version):
+    if now.tzinfo is None or now.utcoffset()!=timedelta(0) or len(rows)>1000 or not policy_version:
+        raise ValueError("UTC/policy/batch bounds required")
+    candidates=[]
+    for row in rows:
+        expires=row["expires_at"]
+        if expires is not None and (expires.tzinfo is None or expires.utcoffset()!=timedelta(0)):
+            raise ValueError("Invalid UTC expiry")
+        if row["retention_policy_version"]!=policy_version or type(row["legal_hold"]) is not bool:
+            raise ValueError("Policy/hold mismatch")
+        if expires is not None and expires<=now and row["legal_hold"] is False:
+            candidates.append(row["id"])
+    return {"candidate_ids":candidates,"state":"pending_authorized_erasure_review","deleted_count":0}
+# Host rechecks legal basis/holds/version inside protected deletion transactions,
+# includes object stores, replicas and backup policy, and captures deletion receipts.
+# A daily job and a decision_relevant flag do not establish GDPR compliance.

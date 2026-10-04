@@ -1,0 +1,4 @@
+Comprueba en modo lectura qué IPs candidatas figuran en las jails
+autorizadas de fail2ban. Presenta evidencia, impacto y propuesta de
+bloqueo sólo para revisión; no añadas IPs ni edites listas todavía.
+Verifica que no son proxies, IPs compartidas o accesos legítimos.

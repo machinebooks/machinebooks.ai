@@ -1,0 +1,11 @@
+mi-proyecto/
+├── trabajo/              ← Directorio de trabajo autorizado
+│   ├── datos-limpios/    ← Datos minimizados y revisados
+│   ├── informes/         ← Resultados generados por el agente
+│   └── borradores/       ← Documentos en proceso
+├── confidencial/         ← Requiere controles de acceso efectivos
+│   ├── datos-originales/ ← Ficheros con datos personales reales
+│   ├── credenciales/     ← Claves y tokens
+│   └── contratos/        ← Documentos legales originales
+└── .claude/
+    └── settings.json    ← Permisos compatibles; alcance verificado

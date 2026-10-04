@@ -1,0 +1,3 @@
+# Configure credentials through the protected mechanism of the service.
+# Do not place them in the script, prompt, history, or log.
+export PATH="/usr/local/bin:/usr/bin:/bin"

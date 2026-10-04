@@ -1,0 +1,7 @@
+# Conceptual adapter interface, not an MCP transport or SDK server.
+# Implement the negotiated protocol version, authentication and authorization,
+# strict JSON Schema validation, actor-scoped permissions and bound approvals.
+# Response handling and minimised audit persistence need separate adapters.
+class SecureMCPServer:
+    def handle_tool_call(self, tool_name, params, client_token):
+        raise NotImplementedError("A protocol-compatible, reviewed MCP adapter is required")

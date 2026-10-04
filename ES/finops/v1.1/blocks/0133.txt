@@ -1,0 +1,16 @@
+# Scoped, reconciled aggregate counts; threshold is an internal review policy.
+from decimal import Decimal
+
+def review_acceptance(observed_total, observed_accepted, declared_rate):
+    if type(observed_total) is not int or type(observed_accepted) is not int or not 0<=observed_accepted<=observed_total:
+        raise ValueError("Invalid cohort counts")
+    expected=Decimal(str(declared_rate))
+    if not expected.is_finite() or not 0<=expected<=1:
+        raise ValueError("Invalid reference rate")
+    rate=None if observed_total==0 else Decimal(observed_accepted)/observed_total
+    delta=None if rate is None else rate-expected
+    return {"observations":observed_total,"rate":None if rate is None else str(rate),
+        "difference_percentage_points":None if delta is None else str(delta*100),
+        "needs_review":observed_total>=20 and abs(delta)>Decimal("0.10"),
+        "reference_changed":False,"statistical_significance":None}
+# Host fixes tenant/task/role/baseline version/time cohort. No automatic baseline change.

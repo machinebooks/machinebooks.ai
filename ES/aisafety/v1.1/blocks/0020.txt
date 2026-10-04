@@ -1,0 +1,22 @@
+Usuario
+  │
+  ▼
+[Guardrail de entrada (código)]  ← Rechaza ataques obvios, flag ambiguos
+  │
+  ▼
+[Guardrail de entrada (prompt)]  ← Evalúa contexto para peticiones flagged
+  │
+  ▼
+[Modelo con alignment + system prompt]  ← El modelo decide con sus propias defensas
+  │
+  ▼
+[Guardrail de salida (código)]   ← Filtra PII, redacta datos sensibles
+  │
+  ▼
+[Guardrail de salida (prompt)]   ← Evalúa si la respuesta viola políticas
+  │
+  ▼
+[Monitorización]                 ← Detecta patrones, acumula señales, alerta
+  │
+  ▼
+Respuesta al usuario

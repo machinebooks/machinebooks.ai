@@ -1,0 +1,20 @@
+# Contexto del proyecto
+
+Este directorio contiene [descripción].
+
+## Estructura
+- /informes/ — Informes mensuales de estado (formato: informe-YYYY-MM.md)
+- /datos/ — Hojas de cálculo de seguimiento
+- /presentaciones/ — Decks para reuniones de seguimiento
+
+## Convenciones
+- Fechas: formato YYYY-MM-DD
+- Importes: euros con formato europeo (1.234,56 €)
+- Idioma: español de España
+- Documentos nuevos: siempre en Markdown salvo que se indique otro formato
+
+## Instrucciones para el agente
+- Cuando generes informes, usa la plantilla de /plantillas/
+- No borres nunca archivos sin preguntar
+- Si encuentras datos inconsistentes, señálalos en lugar de asumirlos
+- Estas instrucciones no sustituyen los permisos de ejecución ni los controles de acceso

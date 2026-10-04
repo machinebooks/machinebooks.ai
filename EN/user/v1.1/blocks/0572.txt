@@ -1,0 +1,18 @@
+# Commercial proposal for Tech Solutions
+
+## Context
+We are preparing a commercial proposal for Tech Solutions.
+The work is divided among three specialized agents.
+Reference data is in datos/.
+The coherence glossary is in glosario.md.
+
+## Fundamental rule
+Each agent MUST read glosario.md before starting their task
+and follow the format and naming conventions defined there.
+
+## Output files
+- partes/analisis-cliente.md — Client analysis (Agent A)
+- partes/estimacion-economica.md — Detailed budget (Agent B)
+- partes/narrativa-propuesta.md — Proposal text (Agent C)
+- resultado/propuesta-final.md — Final integrated document
+Instructions grant no ACL and ensure no compliance; check outputs.

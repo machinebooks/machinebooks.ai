@@ -1,0 +1,7 @@
+# Policy-evaluation interface, not a deployment authorisation.
+# Configure an organisation-approved model allowlist; no provider is required.
+# Reject unknown tiers, empty blocking-rule coverage, invalid/future/naive dates,
+# check errors, and unknown outcomes. Keep internal policy separate from law.
+# Return evidence, rule versions and unresolved checks to an authorised reviewer.
+def evaluate_system(system, rules):
+    raise NotImplementedError("A reviewed policy engine and deployment authority are required")

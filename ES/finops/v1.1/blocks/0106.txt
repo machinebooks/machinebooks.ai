@@ -1,0 +1,21 @@
+async def generate_rightsizing_recommendations(snapshot,approved_context,tracked_reviewer):
+    candidates=snapshot["candidates"]
+    if len(candidates)>10:
+        raise ValueError("review batch limit")
+    ids={c["instance_arn"] for c in candidates}
+    if len(ids)!=len(candidates):
+        raise ValueError("duplicate candidate")
+    if not candidates:
+        return {"reviews":[],"inventory_complete":snapshot["complete"],"action_authorized":False}
+    reviews=await tracked_reviewer(candidates,approved_context,max_output_tokens=2048)
+    if not isinstance(reviews,list) or len(reviews)!=len(candidates) or {r.get("instance_arn") for r in reviews}!=ids:
+        raise ValueError("exact candidate review set required")
+    for review in reviews:
+        if set(review)!={"instance_arn","risk_label","explanation"} or review["risk_label"] not in {"low","medium","high","unknown"}:
+            raise ValueError("review schema")
+        if not isinstance(review["explanation"],str) or len(review["explanation"])>1000:
+            raise ValueError("explanation size")
+    return {"reviews":reviews,"inventory_complete":snapshot["complete"],
+            "status":"pending_human_review","action_authorized":False}
+# Native IDs/options/currencies/savings remain immutable; model cannot replace them.
+# A low label does not authorize change. Empty/partial data is not a healthy fleet.

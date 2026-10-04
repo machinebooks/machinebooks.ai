@@ -1,0 +1,26 @@
+# Financial and energy snapshots have separate units/coverage/provenance.
+from dataclasses import dataclass
+from datetime import datetime
+from decimal import Decimal
+
+@dataclass(frozen=True)
+class EnergyEstimate:
+    estimated_kwh: Decimal | None
+    estimated_gco2e: Decimal | None
+    coefficient_version: str
+    boundary: str
+    evidence_state: str
+
+@dataclass(frozen=True)
+class UnifiedCostEvent:
+    id: str
+    tenant_id: str
+    timestamp: datetime
+    project_code: str
+    dimension: str
+    amount: Decimal | None
+    currency: str
+    source_version: str
+    energy: EnergyEstimate | None
+# Host validates finite values/UTC, measured vs illustrative inputs, energy boundary,
+# unit conversions and deduplication. Missing energy is unknown, not zero emissions.

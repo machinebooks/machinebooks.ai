@@ -1,0 +1,17 @@
+# Illustrative assumptions for arithmetic, not measured/validated customer results.
+INITIAL_BASELINES = [
+    {"task_type": "offer_generation", "role": "senior_consultant", "human_minutes": "120",
+     "hourly_cost": "55", "supervision_fraction": "0.10", "capture_fraction": "0.70",
+     "is_bottleneck": True, "currency": "EUR", "version": "fixture-v1"},
+    {"task_type": "technical_analysis", "role": "senior_consultant", "human_minutes": "90",
+     "hourly_cost": "55", "supervision_fraction": "0.15", "capture_fraction": "0.65",
+     "is_bottleneck": False, "currency": "EUR", "version": "fixture-v1"},
+    {"task_type": "compliance_report", "role": "compliance_officer", "human_minutes": "180",
+     "hourly_cost": "48", "supervision_fraction": "0.20", "capture_fraction": "0.60",
+     "is_bottleneck": True, "currency": "EUR", "version": "fixture-v1"},
+    {"task_type": "email_courtesy", "role": "junior_consultant", "human_minutes": "5",
+     "hourly_cost": "28", "supervision_fraction": "0.30", "capture_fraction": "0.40",
+     "is_bottleneck": False, "currency": "EUR", "version": "fixture-v1"},
+]
+# The separate 110-minute net example is not this 120-minute gross baseline.
+# No seed validates a 50-case sample, observed acceptance or confirmed negative ROI.

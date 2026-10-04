@@ -1,0 +1,13 @@
+ILLUSTRATIVE VERIFICATION EXAMPLE:
+  Assumed pods with image v2.5.0:
+    api-server-8e9f0d7c6-jkl78  Running  Ready  v2.5.0
+    api-server-8e9f0d7c6-mno90  Running  Ready  v2.5.0
+    api-server-8e9f0d7c6-pqr12  Running  Ready  v2.5.0
+  Assumed response: {"status": "ok", "version": "2.5.0"}
+  Assumed events: Normal, no errors.
+
+PENDING: verify pods, image, response, and function with actual evidence.
+The preceding request queries one pod; it checks neither all pods nor external access.
+Check that the previous revision and image remain available and that
+recovery is compatible with configuration, data, and migrations.
+These outputs establish neither an executed deployment nor viable rollback.

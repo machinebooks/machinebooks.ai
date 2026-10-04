@@ -1,0 +1,22 @@
+def inspect_volume_for_review(ec2,authorized_volume_id):
+    response=ec2.describe_volumes(VolumeIds=[authorized_volume_id])
+    rows=response.get("Volumes",[])
+    if len(rows)!=1 or rows[0]["VolumeId"]!=authorized_volume_id:
+        raise ValueError("unmatched volume")
+    volume=rows[0]
+    return {"resource_id":authorized_volume_id,"state":volume["State"],
+            "has_attachments":bool(volume.get("Attachments")),
+            "retention_and_dependencies_verified":False,"deletion_authorized":False}
+
+def inspect_address_for_review(ec2,authorized_allocation_id):
+    response=ec2.describe_addresses(AllocationIds=[authorized_allocation_id])
+    rows=response.get("Addresses",[])
+    if len(rows)!=1 or rows[0].get("AllocationId")!=authorized_allocation_id:
+        raise ValueError("unmatched allocation")
+    address=rows[0]
+    return {"resource_id":authorized_allocation_id,
+            "associated":bool(address.get("AssociationId") or address.get("NetworkInterfaceId")),
+            "dependencies_verified":False,"release_authorized":False}
+# Reads are not DeleteVolume/ReleaseAddress IAM DryRun checks. Host preauthorizes IDs,
+# bounds client/timeouts, and reviews holds, dependencies, IP pools and ownership.
+# No public IP, raw exception or delete/release call is returned or executed.

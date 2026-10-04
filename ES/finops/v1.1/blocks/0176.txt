@@ -1,0 +1,7 @@
+Proceso de rollback de referencia:
+1. Identificar el artefacto aplicado y la versión anterior aprobada.
+2. Preparar el revert sobre una rama; revisar conflictos y el diff completo.
+3. Validar política, caducidades, soberanía y compatibilidad de datos/esquemas.
+4. Aprobar y desplegar el artefacto anterior por el flujo protegido.
+5. Verificar aplicación y reconciliar decisiones/costes durante la transición.
+Un git revert o push no demuestra recuperación ni debe saltarse la aprobación.

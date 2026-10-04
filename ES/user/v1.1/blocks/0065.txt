@@ -1,0 +1,30 @@
+Tengo 50 facturas PDF en la carpeta C:\Users\miusuario\Documents\Facturas_Q1_2024.
+
+Necesito que extraigas de cada una los siguientes campos:
+- Nombre del proveedor
+- NIF del proveedor
+- Número de factura
+- Fecha de emisión
+- Concepto(s)
+- Base imponible
+- Tipo de IVA (%)
+- Importe de IVA
+- Total factura
+- Forma de pago (si aparece)
+
+Genera un archivo CSV con todos los datos, una fila por factura.
+Añade una columna "Nombre_archivo_original" para saber de qué PDF viene cada dato.
+Si no puedes leer algún campo, pon "NO LEGIBLE" en vez de inventar.
+Al final, muéstrame un resumen: total facturas procesadas, total importe,
+y lista de facturas donde algún campo no se pudo extraer.
+Usa sólo la copia autorizada; no modifiques originales ni sobrescribas.
+Registra todos los PDFs, páginas leídas y excepciones, con huella y
+referencia a página para cada campo. Separa ausente de ilegible y ambiguo.
+Conserva moneda, valor de origen y reglas de conversión y redondeo.
+Si una factura contiene varios tipos de IVA, conserva una tabla
+vinculada de líneas o tipos; no los comprimas en un tipo único.
+Distingue total de factura, saldo pendiente y pago realizado.
+Usa CSV UTF-8 con punto y coma y comillas cuando sean necesarias.
+Neutraliza contenido que una hoja de cálculo pudiera ejecutar como fórmula.
+Comprueba cada campo crítico contra el original y deja discrepancias pendientes.
+El resumen no es una liquidación fiscal ni acredita exactitud.

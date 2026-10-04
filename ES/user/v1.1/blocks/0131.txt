@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "cmd",
+      "args": [
+        "/d",
+        "/c",
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-filesystem@2026.8.31",
+        "C:\\Users\\TU_USUARIO\\Documents\\MCP-Test"
+      ]
+    }
+  }
+}

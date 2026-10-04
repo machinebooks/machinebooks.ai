@@ -1,0 +1,7 @@
+Perfect. Do the following:
+1. Create subfolders by category inside Downloads
+2. Move each file to its category
+3. Installers older than 6 months, move them to a "To_delete" folder
+4. Only among files confirmed identical by hash, propose which to keep from paths and references and which to move to "To_delete"; different versions remain pending approval
+5. Don't delete anything — just organize and give me the final summary
+Work on a copy, present the complete path plan, check collisions and references, and wait for approval before moving. Reconcile inventory and hashes after applying.

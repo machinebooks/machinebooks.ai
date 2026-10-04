@@ -1,0 +1,56 @@
+#!/bin/bash
+# Local draft; configure scheduling and enforced client/tool permissions separately.
+set -euo pipefail
+umask 077
+# informe-semanal.sh
+# Generates the weekly project status report
+# Scheduled to run every Monday at 9:00
+
+# Configuration
+PROYECTO_DIR="/home/usuario/mi-proyecto"
+FECHA=$(date -u +%Y-%m-%d)
+cd -- "$PROYECTO_DIR"
+test -r datos/tareas.csv
+test -r datos/incidencias.csv
+test -r datos/avance.csv
+command -v claude >/dev/null
+mkdir -p informes
+exec 9>"$PWD/informes/.report.lock"
+flock -n 9 || exit 1
+RUN_DIR=$(mktemp -d "$PWD/informes/semanal-$FECHA-XXXXXX")
+LOG_FILE="$RUN_DIR/generacion.log"
+
+# Create logs directory if it doesn't exist
+test -d "$RUN_DIR"
+
+# Log start
+echo "[$FECHA $(date -u +%H:%M:%SZ)] Starting weekly report generation" >> "$LOG_FILE"
+
+# Change to project directory (so Claude Code reads CLAUDE.md)
+cd -- "$PROYECTO_DIR"
+
+# Run Claude Code in non-interactive mode
+claude --permission-mode dontAsk --max-turns 20 -p "
+Generate the weekly project status report dated $FECHA.
+
+Steps:
+1. Read datos/tareas.csv and count tasks by status
+2. Read datos/incidencias.csv and list open incidents sorted by severity
+3. Read datos/avance.csv and calculate deviation from the plan
+4. Generate a complete report in $RUN_DIR/estado-semanal.md with:
+   - Executive summary (3 lines maximum)
+   - Progress table: planned vs. actual
+   - Tasks completed this week
+   - Tasks in progress and pending
+   - Open incidents sorted by severity
+   - General assessment and identified risks
+5. The report must be clear, professional, and based solely on actual data
+" >> "$LOG_FILE" 2>&1
+
+# Verify the report was generated
+if [ -s "$RUN_DIR/estado-semanal.md" ]; then
+    echo "[$FECHA $(date -u +%H:%M:%SZ)] Draft generated; review data and content" >> "$LOG_FILE"
+else
+    echo "[$FECHA $(date -u +%H:%M:%SZ)] ERROR: Report was not generated" >> "$LOG_FILE"
+    exit 1
+fi

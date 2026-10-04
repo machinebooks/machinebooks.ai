@@ -1,0 +1,6 @@
+Fictional mock-up: /var/log/app/ occupies 34 GB.
+The largest cited files already end in .gz: do not compress them again.
+Before moving older files, verify source, destination, space, open files,
+retention and hashes; moving within the same filesystem does not free its space.
+Deletion requires an authorized decision and a defined recovery plan.
+Review logrotate and application dependencies before configuring it.

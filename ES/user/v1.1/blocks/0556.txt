@@ -1,0 +1,55 @@
+#!/bin/bash
+# pipeline-maestro-mensual.sh REPORT_MONTH REPORT_YEAR
+# Illustrative draft workflow; configure scope and deny outbound communication.
+set -euo pipefail
+
+REPORT_MONTH=${1:?Indica el mes utilizado en los nombres de entrada}
+REPORT_YEAR=${2:?Indica el año del informe}
+case "$REPORT_MONTH" in
+  enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre) ;;
+  *) echo "Mes inválido para los archivos de este ejemplo" >&2; exit 1 ;;
+esac
+[[ $REPORT_YEAR =~ ^[0-9]{4}$ ]] || exit 1
+WORK_ROOT=${WORK_ROOT:-/home/usuario}
+[[ "$WORK_ROOT" == /* ]] || exit 1
+RUN_ID=$(date -u +%Y%m%dT%H%M%SZ)-$$
+RUN_ROOT="$WORK_ROOT/ejecuciones/$RUN_ID"
+LOG="$WORK_ROOT/logs/pipeline-maestro-$RUN_ID.log"
+mkdir -p "$WORK_ROOT/logs" "$WORK_ROOT/ejecuciones"
+exec 9>"$WORK_ROOT/logs/master-pipeline.lock"
+flock -n 9 || exit 1
+RUN_ROOT=$(mktemp -d "$WORK_ROOT/ejecuciones/run-$RUN_ID-XXXXXX")
+CONSOLIDATED="$RUN_ROOT/datos-consolidados-$REPORT_MONTH.csv"
+REPORT_FILE="$RUN_ROOT/informe-financiero-$REPORT_MONTH-$REPORT_YEAR.md"
+DRAFT_FILE="$RUN_ROOT/borrador-distribucion.md"
+
+echo "=== Pipeline maestro: $REPORT_MONTH $REPORT_YEAR ===" > "$LOG"
+
+# Phase 1: Consolidation under the authorized project configuration.
+cd "$WORK_ROOT/consolidacion"
+claude --permission-mode dontAsk --max-turns 20 -p "Consolida las entradas autorizadas de $REPORT_MONTH $REPORT_YEAR.
+Lee CLAUDE.md para los archivos de origen y esquemas esperados.
+Rechaza datos ausentes o períodos incompatibles. No inventes cifras.
+Escribe los datos consolidados provisionales solamente en $CONSOLIDATED." >> "$LOG" 2>&1
+[[ -s $CONSOLIDATED ]] || exit 1
+
+# Phase 2: Prepare a draft report from this run's output.
+cd "$WORK_ROOT/reporting-mensual"
+claude --permission-mode dontAsk --max-turns 20 -p "Lee $CONSOLIDATED y las entradas presupuestarias autorizadas
+indicadas en el CLAUDE.md del proyecto. Registra sus rutas y períodos.
+Prepara el borrador del análisis financiero de $REPORT_MONTH $REPORT_YEAR
+en $REPORT_FILE. Rechaza entradas ausentes o contradictorias.
+No lo apruebes ni envíes mensajes." >> "$LOG" 2>&1
+[[ -s $REPORT_FILE ]] || exit 1
+
+# Phase 3: Prepare a distribution draft; no email is sent.
+claude --permission-mode dontAsk --max-turns 20 -p "Lee $REPORT_FILE. Prepara $DRAFT_FILE con un borrador de correo:
+- Para: finance@example.invalid (dirección ilustrativa)
+- Cc: management@example.invalid (dirección ilustrativa)
+Asunto: Informe financiero $REPORT_MONTH $REPORT_YEAR
+Cuerpo: resume las tres conclusiones principales y el adjunto propuesto.
+No envíes el correo. Marca destinatarios, cifras y adjunto para revisión humana." >> "$LOG" 2>&1
+[[ -s $DRAFT_FILE ]] || exit 1
+
+# Nonempty outputs do not establish data quality or accounting correctness.
+echo "Borradores preparados; pendientes esquemas, conciliación y aprobación humana." >> "$LOG"

@@ -1,8 +1,15 @@
 # The User and the Machine — Companion Code
 
+## Version 1.1 code
+
+The 630 educational blocks from version 1.1 are in [v1.1/blocks](v1.1/blocks). The [manifest](v1.1/manifest.json) records each chapter or section, block position, and SHA-256. Each TXT preserves the exact text, line breaks, and tabs in the final English Word manuscript; copy it to prepare tests with the dependencies and conditions stated in the book. Extraction does not establish execution or production suitability.
+
+Earlier folders remain as material from the previous edition and may contain a different selection. Use `v1.1` for this revision. The desktop application and production core are private; there is no Community edition and none is planned. This repository publishes companion examples only.
+
+
 **AI Agents for Your Daily Work: From Asking to Delegating**
 
-This directory contains all the ready-to-use prompts and exercises from the book, organized by chapter. The prompts illustrate tasks for an AI client with the required tools, permissions, and data access. Claude Code, Claude Desktop, and claude.ai are the historical examples; adapt and validate the prompt for the client you use.
+The earlier `PARTE-*` folders contain a selection of Spanish prompts and exercises, organized by chapter. The `v1.1` folder contains the exact blocks from the revised English manuscript. The prompts illustrate tasks for an AI client with the required tools, permissions, and data access. Claude Code, Claude Desktop, and claude.ai are the historical examples; adapt and validate the prompt for the client you use.
 
 ## How to use
 
@@ -11,7 +18,7 @@ This directory contains all the ready-to-use prompts and exercises from the book
 3. Use the prompt in an AI client whose capabilities and permissions fit the exercise
 4. Adapt paths, names, and data to your situation
 
-## Structure
+## Earlier material structure
 
 ```
 user/
@@ -61,7 +68,7 @@ user/
 
 ## Notes
 
-- All prompts are in Spanish (matching the original book). The English edition references the same exercises.
+- Prompts in the earlier `PARTE-*` folders are in Spanish. The `v1.1` blocks follow the revised English manuscript, including any retained technical identifiers or original examples.
 - Paths use Windows format (`C:\Users\...`) by default — adapt to your OS.
 - Replace placeholder values (`TU_USUARIO`, `tu-token`, file paths) with your actual data.
 - No real API keys, credentials, or personal data are included in any exercise.

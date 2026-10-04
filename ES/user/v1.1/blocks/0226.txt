@@ -1,0 +1,64 @@
+# Acta de reunión — Proyecto Migración de Datos
+
+**Fecha:** Miércoles, 20 de noviembre de 2024, 10:00; duración pendiente de confirmación
+**Asistentes:** Pedro Martín, Ana García, Carlos Ruiz, [tu nombre]
+**Convocante:** pendiente de confirmación
+
+---
+
+## Resumen ejecutivo
+
+Se revisó el estado del proyecto de migración de datos. La migración
+de la base de datos principal está completada; quedan tres tablas. Se decidió modificar el esquema destino (en lugar de
+convertir datos en origen) y solicitar una ventana de mantenimiento
+ampliada. La fecha de go-live del 6 de diciembre se mantiene.
+
+---
+
+## Temas tratados
+
+### 1. Estado de la migración
+- Pedro indica que la migración principal está completada;
+  no consta la fecha.
+- Quedan por migrar tres tablas.
+- Las notas no confirman el estado del entorno de pruebas.
+
+### 2. Incompatibilidad de formato en tabla de clientes
+- Se identificó una incompatibilidad de formato en la tabla de
+  clientes entre el sistema origen y el destino.
+- Se evaluaron dos opciones:
+  - Opción A: Convertir los datos en origen antes de migrar
+    (propuesta por Ana).
+  - Opción B: Modificar el esquema de la base de datos destino
+    (propuesta por Carlos).
+- **Decisión:** Se aprueba la opción B — modificar el esquema destino.
+  Carlos la describe como una opción más limpia; es su valoración.
+
+### 3. Acceso a producción
+- El acceso a la base de datos de producción solo está disponible
+  en horario nocturno, el impacto sobre las pruebas requiere confirmación.
+- **Decisión:** Solicitar a Sistemas una ventana de mantenimiento
+  ampliada para el fin de semana del 23-24 de noviembre.
+
+### 4. Fecha de go-live
+- **Decisión:** Se mantiene la fecha de go-live del 6 de diciembre.
+
+### 5. Calidad de datos
+- Carlos advirtió sobre posibles duplicados en los datos de clientes
+  antiguos. Ana revisará los posibles duplicados; no consta un plazo.
+
+---
+
+## Acciones
+
+| # | Responsable | Acción | Fecha límite |
+| --- | --- | --- | --- |
+| 1 | Carlos Ruiz | Modificar esquema destino para resolver incompatibilidad | 22/nov |
+| 2 | Pedro Martín | Solicitar ventana de mantenimiento ampliada a Sistemas | Pendiente de confirmación |
+| 3 | Ana García | Validar datos; confirmar qué significa «convertidos» | Antes del 27/nov |
+| 4 | Ana García | Revisar calidad de datos de clientes antiguos (duplicados) | Pendiente de confirmación |
+
+---
+
+## Próxima reunión
+Martes 26 de noviembre, 10:00

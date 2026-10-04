@@ -1,0 +1,8 @@
+FICTIONAL SNAPSHOT EXAMPLE:
+3 nodes with assumed total capacity of 12 CPU and 48 GB.
+52 Pods: production 23, staging 12, monitoring 8, kube-system 9.
+Deployment staging/report-worker: 1 of 2 replicas Ready.
+Assumed usage: CPU 67%, 45%, 52%; memory 72%, 58%, 63%.
+Ready is read by condition type and its True, False, or Unknown value.
+The kubelet version comes from the actual query; this example recommends
+no specific version and establishes neither complete health nor an unready Pod's cause.

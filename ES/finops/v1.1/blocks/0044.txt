@@ -1,0 +1,7 @@
+# Conceptual tenant-scoped configuration, validated by chapter-6 schema/service.
+budget_snapshot = {
+    "tenant_id": "authorized-tenant", "scope": "service", "scope_id": "offer_generation",
+    "period": "monthly", "currency": "USD", "budget_amount": "500.00",
+    "alert_threshold": "0.80", "block_threshold": "1.00", "version": "fixture-v1",
+}
+# This dictionary neither reserves funds nor implements enforcement.

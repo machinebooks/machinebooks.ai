@@ -1,0 +1,7 @@
+Maqueta de certificados — instante de referencia 2026-03-21T00:00:00Z:
+/etc/letsencrypt/live/empresa.invalid/fullchain.pem: primer certificado, 67 días.
+/etc/ssl/certs/api.empresa.invalid.crt: primer certificado, 8 días.
+En esta maqueta, la segunda fecha de expiración es 2026-03-29T00:00:00Z.
+Son rutas y datos ficticios; no representan certificados públicos emitidos para .invalid.
+Comprueba el certificado servido, cadena, nombre y cliente para valorar el impacto.
+La renovación automática requiere revisar configuración y prueba autorizada.

@@ -1,0 +1,13 @@
+Fictional performance mock-up; not the output of executed commands:
+CPU: 87% over a sample interval; memory: 72% using a declared definition.
+I/O: 45 MB/s, requiring a baseline before labeling it high.
+Nginx: mean 4.2 s, P95 12.8 s, P99 28.3 s, only if the log records duration.
+Percentiles require the request dataset and a defined method.
+PostgreSQL: repeated events query; review EXPLAIN and statistics, rather than inferring
+a missing index or creating one without assessing selectivity, cost and deployment.
+Redis: calculate hit rate from differences in keyspace_hits and keyspace_misses
+over the same interval; cumulative counters alone do not describe the last hour.
+12% does not establish content loss or that the cache stopped working.
+Review restarts, expirations, evictions, request pattern and workload changes.
+Restarting workers does not guarantee cache warm-up and may increase workload.
+Validate hypotheses before applying mitigations and check the result.

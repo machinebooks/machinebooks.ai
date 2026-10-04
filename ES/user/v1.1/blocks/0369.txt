@@ -1,0 +1,37 @@
+#!/usr/bin/env python3
+# Read-only combined-log parser with a final Apache %D field (microseconds).
+import json
+import locale
+import re
+import sys
+from collections import Counter
+from datetime import datetime, timezone
+
+locale.setlocale(locale.LC_TIME, "C")
+day = datetime.fromisoformat(sys.argv[2]).date()
+pattern = re.compile(r'^\S+ \S+ \S+ \[([^\]]+)\] "((?:\\.|[^"\\])*)" [0-9]{3} '
+                     r'(?:[0-9]+|-) "(?:\\.|[^"\\])*" "(?:\\.|[^"\\])*" ([0-9]+)\s*$')
+visits, slow = Counter(), []
+with open(sys.argv[1], encoding="utf-8") as handle:
+    for line_number, line in enumerate(handle, 1):
+        match = pattern.match(line)
+        if not match:
+            raise ValueError(f"Unsupported combined+%D format at line {line_number}")
+        stamp = datetime.strptime(match[1], "%d/%b/%Y:%H:%M:%S %z")
+        stamp = stamp.astimezone(timezone.utc)
+        request = match[2].split()
+        if len(request) != 3:
+            raise ValueError(f"Unsupported request at line {line_number}")
+        if stamp.date() != day:
+            continue
+        target = request[1]
+        visits[target] += 1
+        if int(match[3]) > 2_000_000:
+            slow.append((target, stamp.hour))
+top = [target for target, count in visits.most_common(20)]
+hours = Counter((target, hour) for target, hour in slow if target in top)
+print(json.dumps({"date_utc": day.isoformat(), "top_visits": visits.most_common(20),
+                  "slow_requests_by_target_hour": [
+                      {"target": target, "hour_utc": hour, "count": count}
+                      for (target, hour), count in sorted(hours.items())]},
+                 ensure_ascii=False, indent=2))

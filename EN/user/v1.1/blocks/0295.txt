@@ -1,0 +1,6 @@
+Convert a copy of extracto-norma43.txt to CSV only using a parser
+compatible with the format version and issuing bank’s controls.
+Preserve transaction and value dates, references, currency, sign,
+amount, and opening/closing balances; check transaction counts and
+balance reconciliation. Flag absent fields without inventing values.
+Do not alter the original or accept the conversion without reconciliation.

@@ -1,0 +1,47 @@
+from calendar import monthrange
+from datetime import datetime, timezone
+from decimal import Decimal, InvalidOperation, ROUND_CEILING
+
+def review_fair_use(snapshot, observed_operations, operation_limit, collected_net_revenue,
+                    known_cost, cost_complete, elapsed_days=None):
+    # The host supplies a deduplicated tenant-scoped snapshot for this UTC month.
+    if not isinstance(snapshot, datetime) or snapshot.utcoffset() is None or snapshot.utcoffset().total_seconds() != 0:
+        raise ValueError("An aware UTC snapshot is required")
+    if type(observed_operations) is not int or observed_operations < 0:
+        raise ValueError("Known non-negative operation count required")
+    if type(operation_limit) is not int or operation_limit <= 0:
+        raise ValueError("A positive contractual operation limit is required")
+    if type(cost_complete) is not bool:
+        raise ValueError("Explicit cost completeness required")
+    days = monthrange(snapshot.year, snapshot.month)[1]
+    elapsed = snapshot.day if elapsed_days is None else elapsed_days
+    if type(elapsed) is not int or not 1 <= elapsed <= snapshot.day:
+        raise ValueError("Elapsed full/observed days must fit the snapshot")
+    amounts = []
+    for raw in (collected_net_revenue, known_cost):
+        if raw is None or isinstance(raw, bool):
+            raise ValueError("Known non-negative same-currency amounts required")
+        try:
+            value = Decimal(str(raw))
+        except (ValueError, InvalidOperation):
+            raise ValueError("Invalid amount") from None
+        if not value.is_finite() or value < 0:
+            raise ValueError("Invalid amount")
+        amounts.append(value)
+    revenue, cost = amounts
+    fraction = Decimal(observed_operations) / operation_limit
+    linear_projection = (Decimal(observed_operations) * days / elapsed).to_integral_value(rounding=ROUND_CEILING)
+    signal = "contract_review" if fraction >= 1 else "client_notice_review" if fraction >= Decimal("0.85") else "internal_notice" if fraction >= Decimal("0.70") else "none"
+    return {"month": snapshot.strftime("%Y-%m"), "operations_observed": observed_operations,
+            "usage_fraction": fraction, "linear_operations_projection": int(linear_projection),
+            "projection_assumption": "constant daily rate, not a forecast",
+            "known_cost": cost, "cost_complete": cost_complete,
+            "observed_partial_margin": (revenue - cost) / revenue if revenue and cost_complete else None,
+            "signal": signal, "charge_authorized": False}
+
+# Count contracted product operations, not every LLM subcall or failed attempt.
+# SQL uses [month_start_utc, snapshot_utc) plus authenticated tenant scope.
+# Unknown cost completeness is not zero cost. Forecast and observed margin differ.
+# Notices/charges require the actual contract, consecutive closed months if stated,
+# consent where applicable, idempotent billing and a separate authorized workflow.
+# No notification is sent and no overage is billed by this pure calculation.

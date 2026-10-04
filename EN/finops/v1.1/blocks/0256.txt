@@ -1,0 +1,17 @@
+from datetime import datetime, timedelta, timezone
+from decimal import Decimal
+
+# Forecast for the next UTC calendar month, with an explicit 80% interval.
+start = (datetime.now(timezone.utc).date().replace(day=28)
+         + timedelta(days=4)).replace(day=1)
+end = (start.replace(day=28) + timedelta(days=4)).replace(day=1)
+forecast = ce.get_cost_forecast(
+    TimePeriod={"Start": start.isoformat(), "End": end.isoformat()},
+    Metric="UNBLENDED_COST", Granularity="MONTHLY", PredictionIntervalLevel=80,
+)
+amount = Decimal(forecast["Total"]["Amount"])
+if not amount.is_finite():
+    raise ValueError("Invalid forecast")
+result = {"mean_amount": str(amount), "unit": forecast["Total"]["Unit"],
+          "interval_level": 80, "period": {"start": start.isoformat(), "end": end.isoformat()},
+          "intervals": forecast["ForecastResultsByTime"], "state": "provider_estimate"}

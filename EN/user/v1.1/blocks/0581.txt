@@ -1,0 +1,14 @@
+cd /home/usuario/informe-trimestral
+
+claude -p "
+ROLE: Report writer, revision.
+Read your original draft at borradores/informe-q1-v1.md.
+Read the review at borradores/revision-v1.md.
+
+Check each finding against the original sources. Apply only supported corrections;
+record disagreements and pending evidence without inventing solutions.
+Generate the revised version at borradores/informe-q1-v2.md.
+
+For each correction, add an entry at the end of the document
+in a '## Change log' section describing what changed and why.
+" > logs/redactor-v2.log 2>&1

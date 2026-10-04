@@ -1,0 +1,55 @@
+Genera el informe de cierre del primer trimestre de 2024.
+
+Fuentes:
+1. Ventas: C:\Informes\Q1\ventas_Q1_2024.xlsx
+2. Gastos: C:\Informes\Q1\gastos_Q1_2024.xlsx
+3. Proyectos: C:\Informes\Q1\estado_proyectos_Q1.xlsx
+4. Satisfacción: C:\Informes\Q1\encuesta_satisfaccion_Q1.csv
+
+Estructura del informe (10-12 páginas):
+
+PORTADA
+- Informe de cierre Q1 2024
+- Fecha de emisión
+- Clasificación: Uso interno
+
+1. RESUMEN EJECUTIVO (1 página)
+   - KPIs principales con semáforo respecto al objetivo
+   - Los 3 logros del trimestre
+   - Los 3 retos del próximo trimestre
+
+2. RESULTADOS FINANCIEROS (2-3 páginas)
+   - Ingresos vs. objetivo (tabla + gráfico)
+   - Gastos por categoría (tabla + gráfico)
+   - Margen de beneficio
+   - Comparativa con Q1 2023 si los datos están disponibles
+   - Desviaciones significativas con explicación
+
+3. ESTADO DE PROYECTOS (2 páginas)
+   - Tabla resumen: proyecto, estado, porcentaje de avance,
+     presupuesto consumido
+   - Proyectos en riesgo (detalle)
+   - Proyectos completados en el trimestre
+
+4. ANÁLISIS COMERCIAL (2 páginas)
+   - Evolución mensual de ventas (gráfico de líneas)
+   - Nuevos clientes vs. clientes perdidos
+   - Top 10 clientes por facturación
+   - Distribución por producto/servicio
+
+5. SATISFACCIÓN DEL CLIENTE (1-2 páginas)
+   - NPS o métrica equivalente
+   - Áreas mejor valoradas
+   - Áreas de mejora
+   - Comentarios destacados (anonimizados)
+
+6. CONCLUSIONES Y PLAN Q2 (1 página)
+   - Conclusiones del trimestre
+   - Objetivos Q2
+   - Acciones prioritarias
+
+Genera gráficos profesionales con colores consistentes.
+Tono profesional, orientado a dirección. Los datos negativos se
+presentan con claridad pero con propuesta de acción.
+Genera en Markdown y HTML.
+Usa solo objetivos y reglas de semáforo documentados. Calcula NPS únicamente si la encuesta contiene la escala y clasificación necesarias; no lo sustituyas por una métrica distinta sin definirla. Para clientes nuevos/perdidos y comparativas, exige historia y criterios de identificación suficientes. Si faltan fuentes, metas o reglas, declara la sección pendiente y no inventes causas ni resultados.

@@ -1,0 +1,7 @@
+# Validation interface only; it does not invoke a tool.
+# Require registered tools, required and allowed parameters, strict types,
+# constraints, authenticated actor scope, and an atomic quota reservation.
+# Approval must be bound to the actor, tool, arguments, scope and expiry.
+class ToolValidator:
+    def validate(self, tool_name, params):
+        raise NotImplementedError("A tested local permission and schema adapter is required")

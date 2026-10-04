@@ -1,0 +1,29 @@
+# Closed UTC days only; no adjustment can change the already accrued amount.
+from calendar import monthrange
+from datetime import date, timedelta
+from decimal import Decimal
+
+def forecast_closed_days(month, cutoff, daily_costs, trend="1", seasonality="1"):
+    start = date.fromisoformat(month + "-01")
+    days = monthrange(start.year, start.month)[1]
+    end = start + timedelta(days=days)
+    if not isinstance(cutoff, date) or not start < cutoff <= end:
+        raise ValueError("Cutoff must close at least one complete calendar day")
+    expected_dates = [start + timedelta(days=i) for i in range((cutoff-start).days)]
+    if set(daily_costs) != set(expected_dates):
+        raise ValueError("Missing or extra closed days")
+    amounts = [Decimal(str(daily_costs[d])) for d in expected_dates]
+    factors = [Decimal(str(trend)), Decimal(str(seasonality))]
+    if any(not x.is_finite() for x in amounts + factors):
+        raise ValueError("Nonfinite input")
+    if any(x < 0 or x > 10 for x in factors):
+        raise ValueError("Invalid declared scenario factor")
+    accrued = sum(amounts, Decimal(0))
+    remaining = (end-cutoff).days
+    projected = accrued / len(amounts) * remaining * factors[0] * factors[1]
+    return {"month": month, "closed_days": len(amounts), "remaining_days": remaining,
+            "data_cutoff": cutoff.isoformat(), "accrued_amount": str(accrued),
+            "remaining_scenario": str(projected), "base_amount": str(accrued+projected),
+            "interval": None, "method": "closed_daily_mean_declared_factors_v1"}
+# The caller supplies one scoped currency/source snapshot. Credits may be negative;
+# trend/seasonality factors require documented approval, not inferred confidence.

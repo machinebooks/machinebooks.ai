@@ -1,0 +1,57 @@
+import re
+from uuid import uuid4
+
+def invalid_tags(tags, policy):
+    invalid = []
+    for key, rule in policy.items():
+        value = tags.get(key)
+        if not isinstance(value, str) or not value or len(value) > 63:
+            invalid.append(key)
+        elif isinstance(rule, set) and value not in rule:
+            invalid.append(key)
+        elif isinstance(rule, str) and re.fullmatch(rule, value) is None:
+            invalid.append(key)
+    return invalid
+
+def list_untagged_ec2(ec2, policy, max_pages=20, max_rows=1000):
+    if type(max_pages) is not int or not 1 <= max_pages <= 20:
+        raise ValueError("page limit")
+    if type(max_rows) is not int or not 1 <= max_rows <= 1000:
+        raise ValueError("row limit")
+    rows, token, seen, total, compliant = [], None, set(), 0, 0
+    for _ in range(max_pages):
+        page = ec2.describe_instances(**({"NextToken": token} if token else {}))
+        for reservation in page.get("Reservations", []):
+            for item in reservation.get("Instances", []):
+                if item.get("State", {}).get("Name") == "terminated":
+                    continue
+                if total == max_rows:
+                    return {"resources": rows, "total": total,
+                            "compliant": compliant, "complete": False}
+                total += 1
+                tags = {t["Key"]: t["Value"] for t in item.get("Tags", [])}
+                missing = invalid_tags(tags, policy)
+                compliant += int(not missing)
+                rows.append({"resource_id": item["InstanceId"],
+                             "invalid_tags": missing})
+        token = page.get("NextToken")
+        if not token:
+            return {"resources": rows, "total": total,
+                    "compliant": compliant, "complete": True}
+        if token in seen:
+            break
+        seen.add(token)
+    return {"resources": rows, "total": total,
+            "compliant": compliant, "complete": False}
+
+def propose_tag_correction(resource_id, proposed_tags, inventory, policy):
+    if resource_id not in {r["resource_id"] for r in inventory["resources"]}:
+        raise ValueError("resource outside inventory")
+    if not isinstance(proposed_tags, dict) or set(proposed_tags) != set(policy):
+        raise ValueError("complete canonical tags required")
+    if invalid_tags(proposed_tags, policy):
+        raise ValueError("invalid tags")
+    return {"id": str(uuid4()), "resource_id": resource_id,
+            "proposed_tags": dict(proposed_tags), "status": "pending_review",
+            "persisted": False, "action_authorized": False}
+# Host constructs a scoped client with timeouts and persists proposals separately.

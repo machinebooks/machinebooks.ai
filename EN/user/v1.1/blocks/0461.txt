@@ -1,0 +1,7 @@
+ILLUSTRATIVE, INCOMPLETE DIAGNOSIS:
+Assumed status: Restarting, exit 1; assumed log: connection refused.
+Inspection omits sensitive values and queries a container identified by Compose.
+Connection refused requires checking destination, port, listener, and time.
+It does not establish a missing database, authentication failure, or OOM cause.
+PENDING: correlate logs, effective configuration, catalogs, permissions,
+persistence, and migrations. Creating or restarting resources is not authorized.

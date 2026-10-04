@@ -1,0 +1,21 @@
+# Example rules using the Chapter 19 metric definitions.
+# Candidates and blocked calls are signals for investigation, not confirmed incidents.
+groups:
+  - name: ai_security
+    rules:
+      - alert: HighInjectionCandidateRate
+        expr: sum(rate(ai_security_injection_attempts_total[5m])) > 10
+        for: 2m
+        labels:
+          severity: warning
+      - alert: RecentPIICandidates
+        expr: sum(increase(ai_security_pii_detections_total[5m])) > 0
+        labels:
+          severity: warning
+      - alert: ElevatedBlockedToolRatio
+        expr: >
+          sum(rate(ai_security_tool_invocations_total{result="blocked"}[5m]))
+          / sum(rate(ai_security_tool_invocations_total[5m])) > 0.3
+        for: 5m
+        labels:
+          severity: warning

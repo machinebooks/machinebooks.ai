@@ -1,0 +1,14 @@
+Analyze the four financial data files in the current folder:
+presupuesto-2024.xlsx, gastos-erp-Q1.csv, extracto-banco-Q1.csv, and
+gastos-tarjetas-Q1.xlsx.
+
+For each one, tell me:
+- Number of records
+- Available columns
+- Date range
+- Date format used
+- Total amounts
+- Detected issues (duplicates, empty fields, inconsistent formats)
+- Summary of categories or transaction types
+
+Don't modify anything yet.

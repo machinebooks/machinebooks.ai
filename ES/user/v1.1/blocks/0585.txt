@@ -1,0 +1,8 @@
+mi-proyecto/
+├── datos/           ← Datos de entrada (solo lectura para los agentes)
+├── partes/          ← Resultados parciales de cada agente
+├── resultado/       ← Documento final integrado
+├── logs/            ← Logs de ejecución de cada agente
+├── CLAUDE.md        ← Instrucciones generales del proyecto
+└── glosario.md      ← Convenciones de coherencia
+La anotación de solo lectura es un requisito: configura y prueba permisos efectivos.

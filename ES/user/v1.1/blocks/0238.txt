@@ -1,0 +1,14 @@
+Genera el informe semanal del proyecto de migración de datos.
+Consulta:
+1. Jira: tickets cerrados esta semana, tickets en progreso,
+   tickets bloqueados
+2. GitHub: pull requests mergeados esta semana
+3. Mis emails de la última semana relacionados con el proyecto
+4. El fichero de riesgos del proyecto (riesgos-migracion.md)
+
+Formato del informe:
+- Resumen ejecutivo (3 líneas)
+- Avance de la semana (qué se entregó)
+- Bloqueos y riesgos
+- Plan para la semana que viene
+- Métricas: tickets completados vs. planificados

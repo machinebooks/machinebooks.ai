@@ -1,0 +1,12 @@
+# Educational operation metadata; no actual private product/core is disclosed.
+from dataclasses import dataclass
+from decimal import Decimal
+
+@dataclass(frozen=True)
+class DocumentModelProposal:
+    operation: str
+    complexity: str
+    model_id: str
+    scenario_cost: Decimal | None
+    price_version: str
+    approval_state: str

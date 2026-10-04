@@ -1,0 +1,18 @@
+async def classify_waste_risk(resources,tracked_reviewer):
+    if not isinstance(resources,list) or len(resources)>20:
+        raise ValueError("resource limit")
+    ids={r["resource_key"] for r in resources}
+    if len(ids)!=len(resources):
+        raise ValueError("duplicate resource keys")
+    reviews=await tracked_reviewer(resources,max_output_tokens=2048)
+    if not isinstance(reviews,list) or len(reviews)!=len(resources) or {r.get("resource_key") for r in reviews}!=ids:
+        raise ValueError("exact resource review set required")
+    for review in reviews:
+        if set(review)!={"resource_key","risk_label","reasons"} or review["risk_label"] not in {"low","medium","high","unknown"}:
+            raise ValueError("review schema")
+        if not isinstance(review["reasons"],list) or len(review["reasons"])>3 or any(not isinstance(r,str) or len(r)>300 for r in review["reasons"]):
+            raise ValueError("reason bounds")
+    return {"reviews":reviews,"status":"pending_human_review","deletion_authorized":False}
+# Host scopes/redacts input, tracks cost, and treats names/tags as untrusted data.
+# Age, no targets and a low LLM label do not establish unused state or safe deletion.
+# Invalid/failed classification leaves the source inventory pending, never healthy.

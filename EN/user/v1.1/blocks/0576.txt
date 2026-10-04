@@ -1,0 +1,14 @@
+cd /home/usuario/propuesta-cliente
+claude -p "
+Read glosario.md for conventions.
+ROLE: Commercial writer.
+Read datos/cliente-tech-solutions.md for context.
+Generate partes/narrativa-propuesta.md with an executive summary, understanding
+of the need, proposed solution, four-month work plan, team,
+guarantees, commercial arguments and next steps.
+Leave [INSERTAR_ANALISIS] and [INSERTAR_PRESUPUESTO] placeholders.
+Tone: professional and direct, without flourishes.
+The parallel narrative is only a provisional outline. Mark solution, staffing,
+guarantees, and schedule pending analysis and estimate. Do not invent other
+agents' conclusions or replace placeholders before checking the parts.
+"

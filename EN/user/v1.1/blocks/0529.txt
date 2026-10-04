@@ -1,0 +1,9 @@
+FICTIONAL REGISTER EXAMPLE; dates and OK do not establish tests.
+# Configured recurring tasks
+
+| Task | Frequency | Script | Last verification |
+|---|---|---|---|
+| Weekly report | Monday 9:00 | informe-semanal.sh | 2025-01-20 OK |
+| File cleanup | Friday 18:00 | limpieza-semanal.sh | 2025-01-17 OK |
+| Daily backup | Every day 23:00 | backup-diario.sh | 2025-01-20 OK |
+| Monthly consolidation | 1st at 8:00 | consolidacion-mensual.sh | 2025-01-01 OK |

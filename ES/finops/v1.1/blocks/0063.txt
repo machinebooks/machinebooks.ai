@@ -1,0 +1,25 @@
+import re
+from dataclasses import dataclass
+
+@dataclass
+class RoutingContext:
+    prompt_text: str
+    num_documents: int = 0
+    expected_output: str = "text"
+
+def estimate_complexity(ctx):
+    if not isinstance(ctx.prompt_text, str) or len(ctx.prompt_text) > 100000:
+        raise ValueError("prompt size")
+    if type(ctx.num_documents) is not int or not 0 <= ctx.num_documents <= 100:
+        raise ValueError("document count")
+    if ctx.expected_output not in {"text", "json", "list", "bool"}:
+        raise ValueError("output format")
+    words = len(ctx.prompt_text.split())
+    score = (2 if words > 800 else 1 if words > 300 else -1 if words < 80 else 0)
+    score += 2 if ctx.num_documents >= 5 else 1 if ctx.num_documents >= 2 else 0
+    score -= int(ctx.expected_output in {"bool", "list"})
+    text = ctx.prompt_text.lower()
+    score += int(bool(re.search(r"\b(analiza|evalúa|justifica|compara)\b", text)))
+    score -= int(bool(re.search(r"\b(clasifica|extrae)\b", text)))
+    return "powerful" if score >= 3 else "fast" if score <= -1 else "balanced"
+# Spanish-language heuristic, not measured quality or authorization.

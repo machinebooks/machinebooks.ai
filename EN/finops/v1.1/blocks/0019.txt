@@ -1,0 +1,21 @@
+# Separate streaming outline: chapter-4 ainvoke does not implement this method.
+import asyncio
+import time
+import uuid
+
+async def stream_with_tracking(client, messages, scope, normalize_usage, sink):
+    request_id, start = str(uuid.uuid4()), time.monotonic()
+    metadata, completed = None, False
+    try:
+        async with asyncio.timeout(60):
+            async for event in client.astream_events(messages, version="v2"):
+                if event.get("event") == "on_chat_model_end":
+                    metadata = normalize_usage(event.get("data",{}).get("output"))
+                yield event
+            completed = True
+    finally:
+        await sink(scope, request_id,
+            "completed" if completed else "interrupted_usage_unknown", metadata,
+            int((time.monotonic()-start)*1000))
+# Host validates serialized bounds/counters, cancellation recovery and sink durability.
+# No terminal usage means unknown billing, not zero; this outline is not shutdown proof.

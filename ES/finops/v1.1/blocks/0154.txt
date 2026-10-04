@@ -1,0 +1,14 @@
+# Immutable cohort registration and activity membership come from the host repository.
+from datetime import date
+
+async def cohort_cost_analysis(repository,scope,cohort_month):
+    start=date.fromisoformat(cohort_month+"-01")
+    periods=[]
+    for offset in range(6):
+        number=start.year*12+start.month-1+offset
+        periods.append(date(number//12,number%12+1,1))
+    return await repository.cohort_monthly_costs(scope=scope,cohort_start=start,
+        periods=periods,active_definition="approved_monthly_product_activity",
+        include_background_allocation=True,missing_as_zero=False)
+# Contract filters tenant, source/currency/FX and end-exclusive UTC periods; retention,
+# reactivation and registration cohort stay distinct. Canonical ledger timestamp is timestamp.

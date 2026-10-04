@@ -1,0 +1,10 @@
+Reconcile copies of extracto-marzo-2024.csv and pagos-marzo-2024.xlsx.
+Define currency, signs, gross/net amounts, date conventions, and source keys.
+Propose candidates by transaction or invoice reference; amount and
+date (±3 days) only filter candidates, not confirm identity.
+Resolve one-to-many relationships and partial payments with evidence.
+Do not reuse a row in two matches or impute missing amounts.
+
+List confirmed matches, ambiguous candidates, and pending records
+from each source. Retain each decision’s reference, rule, and evidence.
+Do not modify or post entries to the originals.

@@ -1,0 +1,7 @@
+Genera una propuesta analítica usando sólo métricas y dimensiones
+que existan en las fuentes validadas. Muestra series, distribuciones
+y correlaciones con tamaño de muestra y limitaciones.
+No añadas intervalos de confianza sin modelo, método y nivel definidos;
+con 12 meses ficticios, no presentes correlaciones como causalidad.
+Si faltan zona, producto, canal o tipo de cliente, indica no disponible
+o solicita una fuente autorizada: no inventes esos desgloses.

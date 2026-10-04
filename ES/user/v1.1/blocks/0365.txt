@@ -1,0 +1,7 @@
+La partición /var está al 92%. Necesito liberar espacio.
+Muéstrame:
+1. Los 20 ficheros más grandes en /var
+2. Directorios que ocupan más de 1 GB
+3. Ficheros de log que podrían rotarse o comprimirse
+4. Paquetes en la caché de apt que ya no se necesitan
+No borres nada sin que yo confirme primero.

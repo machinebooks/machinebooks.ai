@@ -1,0 +1,40 @@
+from datetime import date
+from decimal import Decimal
+
+def build_team_category_plan():
+    teams = {"backend":"Backend Team", "frontend":"Frontend Team",
+             "data":"Data Team", "platform":"Platform Team", "security":"Security Team"}
+    return {"Name":"ByTeam", "RuleVersion":"CostCategoryExpression.v1",
+            "Rules":[{"Value":v,"Rule":{"Tags":{"Key":"team", "Values":[k],
+                        "MatchOptions":["EQUALS"]}}} for k,v in teams.items()],
+            "DefaultValue":"Unallocated"}
+# Plan only; host admin approval and idempotent provisioning precede creation.
+
+def get_cost_by_category(ce, category_name, start_date, end_date):
+    start, end = date.fromisoformat(start_date), date.fromisoformat(end_date)
+    if not 0 < (end-start).days <= 366 or category_name not in {"ByTeam", "ByService"}:
+        raise ValueError("unsupported query")
+    rows, token, seen = [], None, set()
+    for _ in range(20):
+        page = ce.get_cost_and_usage(TimePeriod={"Start":start_date, "End":end_date},
+            Granularity="MONTHLY", Metrics=["UnblendedCost"],
+            GroupBy=[{"Type":"COST_CATEGORY", "Key":category_name}],
+            **({"NextPageToken":token} if token else {}))
+        for period in page.get("ResultsByTime", []):
+            for group in period.get("Groups", []):
+                metric = group["Metrics"]["UnblendedCost"]
+                amount = Decimal(metric["Amount"])
+                if not amount.is_finite():
+                    raise ValueError("nonfinite cost")
+                rows.append({"period":period["TimePeriod"], "category_value":group["Keys"][0],
+                    "amount":amount, "currency":metric["Unit"], "estimated":period["Estimated"]})
+                if len(rows) > 2000:
+                    raise ValueError("row limit")
+        token = page.get("NextPageToken")
+        if not token:
+            return {"rows":rows, "complete":True}
+        if token in seen:
+            break
+        seen.add(token)
+    return {"rows":rows, "complete":False}
+# ByService needs its own configured category. Host supplies scoped client/timeouts.

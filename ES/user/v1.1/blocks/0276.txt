@@ -1,0 +1,9 @@
+El fichero informe-anual.xlsx tiene 4 hojas:
+- "Resumen" — tabla resumen con totales por trimestre
+- "Detalle Q1" — detalle del primer trimestre
+- "Detalle Q2" — detalle del segundo trimestre
+- "Gráficos" — gráficos de Excel incrustados
+
+Extrae los datos de las hojas "Detalle Q1" y "Detalle Q2", consolídalos
+en un único fichero CSV y verifica que los totales coinciden con la hoja
+"Resumen". Ignora la hoja "Gráficos".

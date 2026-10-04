@@ -1,0 +1,11 @@
+  GREEN — Bounded execution
+  │ Authorized data and destinations; reviewable reading and drafts
+  │
+  YELLOW — Review the result
+  │ Files and content with checked scope and recovery
+  │
+  ORANGE — Supervise step by step
+  │ External effects or important data; boundaries and evidence per operation
+  │
+  RED — Stop the proposed action
+    Authorization, scope, controls, or recovery are missing

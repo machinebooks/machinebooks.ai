@@ -1,0 +1,8 @@
+INTERPRETATION PENDING:
+Each completed query returns t or f at the reviewed destination.
+A psql error stops the sequence; it does not mean the object is absent.
+If staging_db or app is absent, first check connection, persistence, and migrations.
+Preparing an empty database or granting permissions are separate changes requiring
+an approved ownership, least-privilege, and recovery plan.
+GRANT on DATABASE does not itself grant schema or table access.
+Then test the application's actual connection through the authorized mechanism.

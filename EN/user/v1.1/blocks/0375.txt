@@ -1,0 +1,6 @@
+In /var/www/app/ prepare a permissions plan without applying changes:
+1. Identify the deployment user owning code and configuration.
+2. www-data should read code and write only to required runtime directories such as uploads/.
+3. Check whether directories 755 and files 644 are appropriate; document groups and ACLs before deciding uploads/ permissions.
+4. .env with 600 permits its owner to read and write; select a deployment owner and grant the service only necessary access.
+5. Present the changes and a verifiable backup. Wait for approval before execution.

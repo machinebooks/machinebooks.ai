@@ -1,0 +1,34 @@
+## Quality report — proveedores.xlsx
+
+### Summary
+- Total records: 800
+- Exact duplicates: 23
+- Probable duplicates (same NIF, different name): 8
+- Records without NIF: 47
+- Records without email: 12
+- Inconsistent phone formats: pending a verified rule
+
+### Exact duplicates (23)
+[List of the 23 duplicated rows with row number]
+
+### Probable duplicates (8)
+- Row 45: "Suministros García" / Row 312: "SUMINISTROS GARCIA S.L." (same NIF: <TEST_NIF_1>)
+- Row 128: "Consulting ABC" / Row 567: "ABC Consulting Group" (same NIF: <TEST_NIF_2>)
+[...]
+
+### Empty fields
+- Empty NIF: rows 23, 89, 134, 201, ...
+- Empty email: rows 56, 178, ...
+
+### Illustrative phone classification (mutually exclusive categories)
+- With +34 prefix and no dashes: 210 records
+- Without prefix or dashes: 450 records
+- With dashes: 80 records
+- Unrecognized format: 5 records (rows 34, 67, ...)
+- No phone number: 55 records
+Total: 800. Test NIFs are placeholders, not valid identifiers.
+
+### Recommendation
+I propose a diff with confirmed rules and row references.
+Matching NIFs require entity and provenance checks before merging.
+No changes until authorization; exceptions and the original will be retained.

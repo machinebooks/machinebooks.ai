@@ -1,0 +1,11 @@
+# Historical case candidates, not measured suitability or routing authorization.
+DOCUMENT_CANDIDATES={
+    ("classification","simple"):"claude-haiku-4-5",
+    ("entity_extraction","simple"):"claude-haiku-4-5",
+    ("entity_extraction","complex"):"claude-sonnet-4-6",
+    ("executive_summary","simple"):"claude-sonnet-4-6",
+    ("executive_summary","complex"):"claude-opus-4-6",
+    ("action_recommendation","complex"):"claude-opus-4-6",
+}
+# Unknown combinations need review. Actual eligibility includes validated quality,
+# serialized limits, approved data/region, tool scope and current versioned pricing.

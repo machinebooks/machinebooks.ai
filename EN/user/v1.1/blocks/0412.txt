@@ -1,0 +1,5 @@
+With permission, review this server’s TLS certificates:
+- When does the first X.509 certificate in each accessible file expire?
+- Are any already expired or expiring in less than thirty days?
+- Report files or directories you cannot check.
+Review chain, hostname, exposed service and renewal separately.

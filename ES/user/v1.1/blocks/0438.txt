@@ -1,0 +1,8 @@
+Maqueta de revisión, con datos ficticios:
+- Dos grupos tienen indicadores de reglas SSH abiertas; revisar IPv4, IPv6, rutas y controles efectivos.
+- Un bucket tiene un indicador de política pública; evaluar Block Public Access, ownership, ACL y access points antes de afirmar exposición.
+- RDS tiene PubliclyAccessible=true; verificar red y autorización para probar conectividad.
+- Tres usuarios tienen claves antiguas; distinguir estado, uso y proceso de sustitución sin interrumpir cargas.
+- Un usuario de consola carece de dispositivo MFA registrado; revisar identidad y política.
+MFA de una cuenta de servicio no protege automáticamente sus claves API: prioriza roles o credenciales temporales.
+No elimines buckets ni revoques reglas a partir de esta maqueta. Completa alcance y evidencias, revisa dependencias y autoriza cada cambio.

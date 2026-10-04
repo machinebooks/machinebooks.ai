@@ -1,0 +1,4 @@
+Generate an Excel file with one sheet per month (January, February, March).
+In each sheet, the invoices for that month in accounting format:
+numeric columns with 2 decimals, dates in DD/MM/YYYY format,
+and a totals row at the end.

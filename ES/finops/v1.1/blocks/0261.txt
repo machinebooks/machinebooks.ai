@@ -1,0 +1,16 @@
+# Native CE pagination and full March window; preserve every returned date group.
+def reservation_coverage_report(ce):
+    rows,token,seen=[],None,set()
+    for _ in range(20):
+        response=ce.get_reservation_coverage(TimePeriod={"Start":"2026-03-01","End":"2026-04-01"},
+            Granularity="MONTHLY",GroupBy=[{"Type":"DIMENSION","Key":"INSTANCE_TYPE"}],
+            **({"NextPageToken":token} if token else {}))
+        rows.extend(response.get("CoveragesByTime",[]))
+        token=response.get("NextPageToken")
+        if not token:
+            return {"rows":rows,"complete":True}
+        if token in seen:
+            break
+        seen.add(token)
+    return {"rows":rows,"complete":False}
+# Host account/partition scope, native coverage units and source freshness stay explicit.

@@ -1,0 +1,13 @@
+# Example tool descriptions; the host supplies scope and policy.
+TAG_AUDIT_TOOLS = [
+    {"name": "inventory_summary", "description": "Read authorized inventory",
+     "input_schema": {"type": "object", "properties": {},
+                      "additionalProperties": False}},
+    {"name": "propose_tag_correction", "description": "Prepare tag review",
+     "input_schema": {"type": "object", "properties": {
+         "resource_id": {"type": "string", "maxLength": 128},
+         "proposed_tags": {"type": "object", "maxProperties": 4}},
+         "required": ["resource_id", "proposed_tags"],
+         "additionalProperties": False}},
+]
+# No model-selected account, region, policy, confidence or action authority.

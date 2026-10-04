@@ -1,0 +1,13 @@
+from datetime import timedelta
+
+async def get_user_spending_ranking(repository, authorized_scope, now, days=30, limit=20):
+    if type(days) is not int or not 1 <= days <= 365 or type(limit) is not int or not 1 <= limit <= 100:
+        raise ValueError("bounded period and limit required")
+    if now.tzinfo is None or now.utcoffset() != timedelta(0):
+        raise ValueError("UTC required")
+    return await repository.scoped_attribution_snapshot(
+        scope=authorized_scope, start=now-timedelta(days=days), end=now,
+        limit=limit, include_override_justifications=False)
+# Host authenticates the route and enforces object access, aggregation/privacy rules,
+# [start,end), nullable unpriced cost, source freshness and coverage metadata.
+# A ranking is pseudonymous, not anonymous. No global override reasons are exposed.

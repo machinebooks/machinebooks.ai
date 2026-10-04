@@ -1,0 +1,7 @@
+Illustrative results for published endpoint checks:
+  nginx: HTTP 200, if the check above completes successfully
+  API via nginx: HTTP 200, if the check above completes successfully
+  Meilisearch: PENDING; 7700/tcp is not published on the host
+  worker: PENDING; being Up does not establish readiness
+
+Resource usage:

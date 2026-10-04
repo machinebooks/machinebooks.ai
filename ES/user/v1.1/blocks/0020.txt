@@ -1,0 +1,26 @@
+Analiza todos los archivos de este directorio y genera un informe de inventario
+con la siguiente información:
+
+1. RESUMEN GENERAL: número total de archivos, tamaño total,
+   rango de fechas (más antiguo y más reciente).
+
+2. DISTRIBUCIÓN POR TIPO: tabla con cada extensión de archivo (.pdf, .docx,
+   .xlsx, etc.), cuántos archivos hay de cada tipo y el tamaño total por tipo.
+
+3. ARCHIVOS MÁS GRANDES: los 10 archivos que más espacio ocupan,
+   con nombre, tamaño y fecha.
+
+4. POSIBLES DUPLICADOS: si encuentras archivos con nombres muy similares
+   o el mismo tamaño exacto, señálalos como posibles duplicados.
+
+5. RECOMENDACIONES: sugiere qué archivos podrían borrarse (temporales,
+   descargas antiguas) y cómo podría organizarse mejor esta carpeta.
+
+Guarda el informe en un archivo llamado "inventario-carpeta.md" en este
+mismo directorio.
+
+Trabaja sólo en la carpeta de prueba autorizada; no sigas enlaces
+a rutas externas. No borres, muevas ni modifiques originales.
+Registra entradas, hashes, rechazos y excepciones; nombres o tamaño
+no prueban duplicidad. Guarda en un destino nuevo y detente si existe.
+Las recomendaciones son propuestas, sin ejecutar cambios.

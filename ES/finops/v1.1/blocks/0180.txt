@@ -1,0 +1,7 @@
+# Illustrative levels; notification/action adapters are authorized host contracts.
+alerts:
+  warning: {threshold: "0.70", action: review}
+  alert: {threshold: "0.85", action: review}
+  critical: {threshold: "0.95", action: review, require_acknowledgement: true}
+  exhausted: {threshold: "1.00", action: reject_new_unreserved_calls}
+# Durable deduplication, destinations, receipts and reservation reconciliation are required.

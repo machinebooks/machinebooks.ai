@@ -1,0 +1,14 @@
+# Manual read-only SDK loop; recommendation metadata has no execution authority.
+from dataclasses import dataclass
+from decimal import Decimal
+
+@dataclass(frozen=True)
+class CloudReviewCandidate:
+    candidate_id: str
+    fully_qualified_resource_key: str
+    source_version: str
+    estimated_monthly_amount: Decimal | None
+    currency: str | None
+    dependencies_checked: bool
+    state: str = "pending_human_review"
+# Money thresholds do not determine safety, reversibility or legal authority.

@@ -1,0 +1,43 @@
+from decimal import Decimal
+
+def get_ec2_rightsizing_candidates(optimizer,authorized_arns):
+    if not isinstance(authorized_arns,set) or len(authorized_arns)>1000:
+        raise ValueError("authorized inventory limit")
+    candidates,token,seen,error_count = [],None,set(),0
+    for _ in range(20):
+        page = optimizer.get_ec2_instance_recommendations(
+            filters=[{"name":"Finding","values":["OVER_PROVISIONED"]}],
+            maxResults=100,**({"nextToken":token} if token else {}))
+        error_count += len(page.get("errors",[]))
+        for rec in page.get("instanceRecommendations",[]):
+            if rec["instanceArn"] not in authorized_arns:
+                continue
+            options=[]
+            for option in rec.get("recommendationOptions",[]):
+                savings=option.get("savingsOpportunity",{}).get("estimatedMonthlySavings",{})
+                raw=savings.get("value")
+                value=None if raw is None else Decimal(str(raw))
+                if value is not None and (not value.is_finite() or value<0):
+                    raise ValueError("invalid estimated saving")
+                options.append({"instance_type":option["instanceType"],
+                    "monthly_savings":None if value is None else str(value),
+                    "currency":savings.get("currency"),"rank":option.get("rank"),
+                    "performance_risk":option.get("performanceRisk")})
+            candidates.append({"instance_arn":rec["instanceArn"],
+                "current_type":rec["currentInstanceType"],"options":options,
+                "last_refresh_timestamp":str(rec.get("lastRefreshTimestamp")),
+                "utilization_metrics":rec.get("utilizationMetrics",[]),"action_authorized":False})
+            if len(candidates)>1000:
+                raise ValueError("candidate limit")
+        token=page.get("nextToken")
+        if not token:
+            return {"candidates":candidates,"complete":error_count==0,
+                    "provider_error_count":error_count}
+        if token in seen:
+            break
+        seen.add(token)
+    return {"candidates":candidates,"complete":False}
+# Host supplies scoped clients/timeouts and redacts metadata before model review.
+# Estimated savings are not current monthly cost, cash realization or approval.
+# CloudWatch hourly Average/Maximum are not instantaneous P99 or memory coverage;
+# memory requires configured agent metrics, and tags/metric queries need bounds.

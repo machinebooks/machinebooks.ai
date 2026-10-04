@@ -1,0 +1,46 @@
+from decimal import Decimal, InvalidOperation, ROUND_CEILING
+
+def known_decimal(value):
+    if isinstance(value, bool) or value is None:
+        raise ValueError("A known non-negative amount or fraction is required")
+    try:
+        result = Decimal(str(value))
+    except (ValueError, InvalidOperation):
+        raise ValueError("Invalid amount or fraction") from None
+    if not result.is_finite() or result < 0:
+        raise ValueError("Invalid amount or fraction")
+    return result
+
+def profile_cost(fractions, costs):
+    if not isinstance(fractions, tuple) or not isinstance(costs, tuple) or len(fractions) != 3 or len(costs) != 3:
+        raise ValueError("Three explicit profile fractions and same-currency costs required")
+    weights = tuple(known_decimal(value) for value in fractions)
+    amounts = tuple(known_decimal(value) for value in costs)
+    if sum(weights) != 1:
+        raise ValueError("Profile fractions must sum exactly to one")
+    return sum(weight * amount for weight, amount in zip(weights, amounts))
+
+def calculate_tier(max_users, fixed_monthly, allocated_paid_seats, profile_costs,
+                   base_mix, stress_mix, minimum_margin="0.45", target_margin="0.65", price_step="5"):
+    if type(max_users) is not int or type(allocated_paid_seats) is not int or not 1 <= max_users <= allocated_paid_seats <= 1000000:
+        raise ValueError("Valid tier size and explicit paid-seat allocation required")
+    fixed = known_decimal(fixed_monthly) * max_users / allocated_paid_seats
+    minimum, target, step = map(known_decimal, (minimum_margin, target_margin, price_step))
+    if not 0 <= minimum <= target < 1 or step <= 0:
+        raise ValueError("Margins must satisfy 0 <= minimum <= target < 1; step > 0")
+    base_cost = profile_cost(base_mix, profile_costs) * max_users + fixed
+    stress_cost = profile_cost(stress_mix, profile_costs) * max_users + fixed
+    floor_price = max(stress_cost / (1 - minimum), base_cost / (1 - target))
+    price = (floor_price / step).to_integral_value(rounding=ROUND_CEILING) * step
+    return {"max_users": max_users, "allocated_fixed_cost": fixed,
+            "base_cost": base_cost, "stress_cost": stress_cost,
+            "floor_price": floor_price, "monthly_price": price,
+            "base_margin": (price - base_cost) / price if price else None,
+            "stress_margin": (price - stress_cost) / price if price else None}
+
+# All amounts share a declared currency and tax basis supplied by the host.
+# The paid-seat denominator is a forecast to validate, not a guaranteed 100.
+# Example EUR profile costs (8.50, 3.60, 0.06) belong to this separate scenario.
+# An 8/67/25 base and 60/30/10 stress mix do not bound more extreme usage.
+# Complete costs, collection risk and willingness to pay need separate evidence.
+# Rounding goes upward, so it never breaches the calculated price floor.

@@ -1,0 +1,17 @@
+# Capacity-valued cumulative scenario; cash payback needs a separate cash-flow ledger.
+from decimal import Decimal
+
+def cumulative_capacity_return(capacity_value, operating_cost, engineering_investment, coverage_complete):
+    if type(coverage_complete) is not bool:
+        raise ValueError("Explicit coverage required")
+    amounts=[None if x is None else Decimal(str(x)) for x in
+             (capacity_value,operating_cost,engineering_investment)]
+    if any(x is not None and (not x.is_finite() or x<0) for x in amounts):
+        raise ValueError("Invalid financial snapshot")
+    if not coverage_complete or any(x is None for x in amounts):
+        return {"capacity_net_return":None,"cash_payback":None,"state":"incomplete"}
+    value,operations,investment=amounts
+    denominator=operations+investment
+    return {"capacity_net_value":str(value-denominator),
+            "capacity_net_return":None if denominator==0 else str((value-denominator)/denominator),
+            "cash_payback":None,"state":"declared_capacity_scenario"}

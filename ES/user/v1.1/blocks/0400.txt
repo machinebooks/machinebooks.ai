@@ -1,0 +1,8 @@
+Genera una instantánea de sólo lectura para GNU/Linux con Bash:
+1. Uptime y carga; la carga no es el porcentaje de CPU.
+2. Memoria con MemAvailable y discos; alertas ilustrativas >90% y >85%.
+3. Unidades nginx, postgresql, redis-server y webapp; distingue estado desconocido.
+4. Registros journal accesibles de prioridad err o más grave en las últimas doce horas.
+5. Cinco pares remotos TCP establecidos, con IPv4 e IPv6; no son necesariamente conexiones entrantes.
+6. Logins registrados; no demuestra cobertura completa de accesos.
+Marca errores y datos ausentes; un informe parcial termina con estado distinto de cero.

@@ -1,0 +1,11 @@
+STATUS PENDING EVIDENCE:
+Confirm rotation through the authorized secret procedure.
+Metadata reads neither show nor verify the DATABASE_PASSWORD value.
+A successful rollout establishes its own progress criterion, not HTTP200
+or application authentication with the new credential.
+Check the affected function and record its outcome without secrets.
+
+Base64 is encoding, not encryption. Kubernetes stores Secrets unencrypted
+in etcd by default, but encryption at rest can be configured.
+Verify that configuration and least-privilege RBAC permissions;
+an external manager does not replace effective access control.

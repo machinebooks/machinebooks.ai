@@ -1,0 +1,12 @@
+# Metric catalogue, not Prometheus server configuration.
+# Use the Chapter 19 definitions and instrument them through a reviewed adapter.
+- name: ai_security_injection_attempts_total
+  type: counter
+  labels: [severity, user_type, detection_method]
+- name: ai_security_guardrail_activations_total
+  type: counter
+  labels: [guardrail_type, action]
+- name: ai_security_pii_detections_total
+  type: counter
+  labels: [pii_type]
+# A model refusal rate needs its own defined dataset, window and denominator.

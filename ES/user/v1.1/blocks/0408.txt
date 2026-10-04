@@ -1,0 +1,10 @@
+Crea un script de diagnóstico rápido que pueda ejecutar cuando
+reciba una alerta de "servicio no responde". Que compruebe:
+1. Si el servicio está corriendo
+2. Si tiene suficiente memoria
+3. Las últimas 20 líneas del log
+4. Si hay bloqueos en la BD
+5. Si el disco está lleno
+
+Que acepte como parámetro el nombre del servicio.
+Uso: ./diagnostico-rapido.sh webapp

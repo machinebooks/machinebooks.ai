@@ -1,0 +1,27 @@
+## Agenda — Reunión de revisión: Proyecto Migración de Datos
+**Fecha:** Miércoles 20 de noviembre de 2024 (ejemplo ficticio), 10:00-11:00
+**Asistentes:** Pedro Martín, Ana García, Carlos Ruiz, [tu nombre]
+
+### 1. Revisión de estado (15 min)
+- La migración de la base de datos principal se completó el 12/nov
+  (email de Pedro del 12/nov)
+- Quedan por migrar 3 tablas secundarias (email de Ana del 14/nov)
+- El entorno de pruebas está operativo desde el 13/nov
+
+### 2. Problemas y bloqueos (20 min)
+- **Bloqueo 1:** Incompatibilidad de formato en la tabla de clientes
+  (reportado por Ana el 15/nov). Pendiente de decisión sobre si
+  convertir los datos o modificar el esquema destino.
+- **Bloqueo 2:** Acceso a la base de datos de producción solo
+  disponible en horario nocturno (email de Sistemas del 16/nov).
+  Impacta en el calendario.
+
+### 3. Decisiones necesarias (15 min)
+- ¿Convertir datos o modificar esquema? (Bloqueo 1)
+- ¿Solicitar ventana de mantenimiento ampliada? (Bloqueo 2)
+- Fecha de go-live: ¿mantenemos el 6 de diciembre o solicitamos
+  extensión?
+
+### 4. Próximos pasos (10 min)
+- Asignar responsables para cada decisión
+- Definir fechas de seguimiento

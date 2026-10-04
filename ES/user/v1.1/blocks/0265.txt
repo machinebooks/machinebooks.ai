@@ -1,0 +1,24 @@
+## Borrador ilustrativo de informe de consolidación
+
+### Escenario numérico que requiere verificación
+- Ficheros previstos: 12
+- Registros de entrada del ejemplo: 2.758
+- Filas vacías: 3
+- Candidatos duplicados en julio: 12
+- Candidatos entre septiembre y octubre: 8
+- Si se confirma eliminar esos 20 candidatos, quedan 2.735 registros.
+- Si no se confirma, conservarlos y comunicar el resultado real.
+- IVA de marzo: pendiente de fuente; no aplicar automáticamente el 21%.
+- Formatos de fecha previstos para revisar: 510 registros
+- Columnas por mapear: febrero (inglés→español), diciembre (renombradas)
+
+### Valores ilustrativos, pendientes de contraste con las operaciones
+- Rango de fechas: 02/01/2024 — 30/12/2024
+- Importe: 1.847.392,45 EUR; base y total deben definirse con las fuentes.
+- IVA total: pendiente, no deducible de esta muestra.
+- Proveedores únicos: 189; comprobar identidades y cobertura.
+- Columna de mes: conservar la procedencia.
+
+### Entrega prevista
+gastos-2024-consolidado.xlsx y registro de cambios, exclusiones y pendientes.
+Confirmar filas, columnas, importes y apertura del fichero antes de aceptarlo.

@@ -1,0 +1,6 @@
+Review one authorized general-purpose bucket with the correct profile, account and region:
+1. Latest available StandardStorage point in GiB and timestamp; not total size across all classes.
+2. NumberOfObjects with AllStorageTypes and its timestamp; review the provider’s definition.
+3. Lifecycle configuration; distinguish NoSuchLifecycleConfiguration from AccessDenied.
+4. Mark missing data rather than treating it as zero.
+Last write, inactivity and Glacier savings require separate traces and an estimate; these two metrics establish none of them.

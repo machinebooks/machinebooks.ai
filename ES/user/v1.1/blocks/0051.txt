@@ -1,0 +1,14 @@
+Analiza mi carpeta de Descargas (C:\Users\miusuario\Downloads).
+Clasifica todos los archivos en estas categorías:
+- Documentos (PDF, Word, Excel, PowerPoint)
+- Imágenes (JPG, PNG, GIF, capturas de pantalla)
+- Instaladores (EXE, MSI, DMG)
+- Vídeos y audio
+- Archivos comprimidos (ZIP, RAR)
+- Otros
+
+Para cada categoría, dime cuántos archivos hay y cuánto espacio ocupan.
+Identifica candidatos a duplicado y comprueba sus hashes.
+Informa la fecha de último acceso registrada y su fiabilidad según sistema y configuración; no la presentes como prueba de que alguien abrió o usó el archivo.
+
+Muéstrame el resultado antes de proponer ninguna acción.

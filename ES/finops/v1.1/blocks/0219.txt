@@ -1,0 +1,16 @@
+# Review plan with one scoped currency/tariff snapshot; nothing is sent to a user.
+from decimal import Decimal
+
+def cost_awareness_plan(observed_cost,candidate_cost,candidate_approved):
+    observed=None if observed_cost is None else Decimal(str(observed_cost))
+    candidate=None if candidate_cost is None else Decimal(str(candidate_cost))
+    if type(candidate_approved) is not bool or any(x is not None and (not x.is_finite() or x<0) for x in (observed,candidate)):
+        raise ValueError("Invalid bounded cost snapshot")
+    difference=None if observed is None or candidate is None else observed-candidate
+    return {"observed_cost":None if observed is None else str(observed),
+        "candidate_scenario_cost":None if candidate is None else str(candidate),
+        "difference":None if difference is None else str(difference),
+        "candidate_eligible":candidate_approved,"state":"pending_review",
+        "provider_changed":False,"notification_sent":False,"savings_realized":False}
+# Candidate scenario uses explicit normalized input/cache/output/tool mix and approved
+# data/quality/region scope. Lower price alone does not validate an equivalent result.

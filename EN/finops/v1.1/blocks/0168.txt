@@ -1,0 +1,62 @@
+# One bounded immutable read: digest and parsed policy describe identical bytes.
+import hashlib
+from copy import deepcopy
+from pathlib import Path
+import yaml
+
+
+class StrictPolicyLoader(yaml.SafeLoader):
+    pass
+
+
+def unique_mapping(loader, node, deep=False):
+    result = {}
+    for key_node, value_node in node.value:
+        key = loader.construct_object(key_node, deep=deep)
+        if not isinstance(key, str) or key in result:
+            raise ValueError("Policy keys must be unique strings")
+        result[key] = loader.construct_object(value_node, deep=deep)
+    return result
+
+
+StrictPolicyLoader.add_constructor(
+    yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, unique_mapping
+)
+
+
+class PolicyCache:
+    def __init__(self, root, validate_policy):
+        self.root = Path(root).resolve(strict=True)
+        if not self.root.is_dir() or not callable(validate_policy):
+            raise ValueError("Policy directory and schema validator required")
+        self.validate_policy = validate_policy
+        self._cache = {}
+
+    def get(self, path):
+        candidate = Path(path).resolve(strict=True)
+        if not candidate.is_relative_to(self.root) or candidate.suffix != ".yaml":
+            raise ValueError("Policy path must remain in the configured directory")
+        with candidate.open("rb") as stream:
+            raw = stream.read(65_537)
+        if len(raw) > 65_536:
+            raise ValueError("Policy exceeds 64 KiB")
+        digest = hashlib.sha256(raw).hexdigest()
+        old = self._cache.get(str(candidate))
+        if old is not None and old[0] == digest:
+            return deepcopy(old[1])
+        text = raw.decode("utf-8")
+        for event in yaml.parse(text, Loader=yaml.SafeLoader):
+            if isinstance(event, yaml.events.AliasEvent) or getattr(event, "anchor", None):
+                raise ValueError("Policy aliases and anchors are not allowed")
+        policy = yaml.load(text, Loader=StrictPolicyLoader)
+        if not isinstance(policy, dict):
+            raise ValueError("Policy must be a mapping")
+        # The host validator must raise on invalid schema, ranges, effective
+        # dates, unknown models and forbidden overrides. No permissive default.
+        self.validate_policy(policy)
+        self._cache[str(candidate)] = (digest, deepcopy(policy))
+        return deepcopy(policy)
+
+# Load failures propagate: the caller rejects requests until a valid approved
+# snapshot is available. SHA-256 identifies bytes; it does not prove approval.
+# Use atomic file replacement from an immutable approved deployment artifact.

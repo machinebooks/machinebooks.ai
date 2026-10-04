@@ -1,0 +1,8 @@
+# Numeric tables remain server-calculated; the model drafts prose only.
+async def generate_executive_narrative(approved_snapshot,reviewer):
+    text=await reviewer(snapshot=approved_snapshot,
+        instructions="Redacta en español, máximo 400 palabras. Conserva limitaciones y desconocidos. No inventes EBITDA, NPV, payback ni resultados auditados.")
+    if not isinstance(text,str) or len(text)>5000:
+        raise ValueError("Invalid narrative")
+    return {"snapshot_id":approved_snapshot["id"],"draft":text,"state":"pending_human_review"}
+# Host checks all quoted figures against the pinned snapshot before approval/publication.

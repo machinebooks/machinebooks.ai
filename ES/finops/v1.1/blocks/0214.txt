@@ -1,0 +1,16 @@
+import React from "react";
+type CostData = {categories: Record<string,string|null>; known_subtotal_eur: string;
+  declared_categories_complete: boolean; people_share_pct: string|null};
+export function TCOBreakdownChart({data}: {data: CostData}) {
+  return <section aria-label="Desglose de coste declarado">
+    <table><caption>Costes declarados, EUR; desconocidos visibles</caption>
+      <thead><tr><th scope="col">Categoría</th><th scope="col">Importe</th></tr></thead>
+      <tbody>{Object.entries(data.categories).map(([category,amount])=>
+        <tr key={category}><th scope="row">{category}</th><td>{amount ?? "Desconocido"}</td></tr>)}</tbody>
+    </table><p>Subtotal conocido: {data.known_subtotal_eur} EUR.</p>
+    <p>Proporción de personas: {data.people_share_pct ?? "No calculable"}.</p>
+    <p>{data.declared_categories_complete ? "Categorías declaradas completas" : "Cobertura incompleta"}.
+      La vista no acredita TCO completo.</p>
+  </section>;
+}
+// Authorized host validates response; no pie chart silently drops unknown categories.

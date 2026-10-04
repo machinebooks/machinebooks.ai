@@ -1,0 +1,14 @@
+Compare presupuesto-2024.xlsx, sheet "Q1", with gastos-Q1-2024.xlsx.
+For this fictional example use internal educational codes, not Spanish PGC accounts:
+EXP-PERS: Personnel; EXP-EXT: External services; EXP-SUM: Supplies;
+EXP-ALQ: Rent; EXP-MKT: Marketing; EXP-VIA: Travel; EXP-IT: IT.
+Each expense must appear in one line item only. Unmapped codes remain
+pending; do not infer actual account codes from a category name.
+
+Use EUR and the budget’s accrual and tax-base criteria.
+Variance = actual − budget; percentage = variance / budget.
+If budget is zero, the percentage is not applicable. Traffic light on
+absolute percentage: green <5%; yellow 5% through 15% inclusive; red >15%.
+Rank the top 5 by absolute percentage and show amounts as well.
+Present monthly trends and the Q1×4 annual scenario with assumptions.
+Causal explanations require evidence; otherwise leave them pending.

@@ -1,0 +1,15 @@
+import React from "react";
+type UnitSnapshot = {active_users: number; avg_token_cost_per_active_user: string | null;
+  known_user_token_subtotal: string; unknown_user_cost_count: number;
+  background_cost: string | null; marginal_cost: string | null; currency: string};
+export function UnitEconomicsDashboard({data}: {data: UnitSnapshot}) {
+  return <section aria-label="Unit economics"><dl>
+    <dt>Active users, declared monthly definition</dt><dd>{data.active_users}</dd>
+    <dt>Mean token cost per user ({data.currency})</dt><dd>{data.avg_token_cost_per_active_user ?? "Unknown"}</dd>
+    <dt>Known subtotal ({data.currency})</dt><dd>{data.known_user_token_subtotal}</dd>
+    <dt>Users with unknown cost</dt><dd>{data.unknown_user_cost_count}</dd>
+    <dt>Background task cost</dt><dd>{data.background_cost ?? "Unknown"}</dd>
+    <dt>Marginal cost</dt><dd>{data.marginal_cost ?? "Not estimated"}</dd>
+  </dl><p>Partial view; calculates neither complete TCO nor breakeven tenants.</p></section>;
+}
+// The host validates/authorizes the response and handles loading/error/cancellation.

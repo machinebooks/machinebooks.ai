@@ -1,0 +1,57 @@
+cd /home/usuario/propuesta-cliente
+
+claude -p "
+Use only facts supported by the sources; mark missing experience, satisfaction, staffing, and guarantees pending. The 10% discount, 21% VAT, 30/40/30 payment schedule, 30-day validity, and four-month timetable are illustrative parameters requiring commercial and tax review before commitments. The parallel narrative retains its placeholders; integrate only after checking the outputs. Do not send the proposal or approve its commercial terms.
+
+I need to prepare a commercial proposal for Tech Solutions.
+Read glosario.md for conventions and datos/cliente-tech-solutions.md
+for context.
+
+Divide the work into three parallel tasks:
+
+PARALLEL TASK 1 — Client analysis:
+- Read datos/cliente-tech-solutions.md and datos/proyectos-anteriores.csv
+- Generate an analysis at partes/analisis-cliente.md including:
+  * Company profile: industry, size and revenue
+  * Relationship history: projects, satisfaction and payments
+  * Analysis of the current need: request, reasons and urgency
+  * Opportunities: additional services we could offer
+  * Risks: what could go wrong and how to mitigate it
+- Length: 800–1,200 words
+
+PARALLEL TASK 2 — Financial estimate:
+- Read datos/tarifas-2025.csv and datos/servicios-catalogo.csv
+- Read the client's need in datos/cliente-tech-solutions.md
+- Generate a detailed budget at partes/estimacion-economica.md:
+  * Project phases: consulting, development, deployment and training
+  * For each phase: duration, required roles, allocation, unit cost and total
+  * Summary table with phase subtotals
+  * 10% existing-client discount
+  * Total excluding VAT, VAT (21%), and total including VAT
+  * Payment schedule: 30% at start, 40% at an intermediate milestone, 30% on delivery
+  * Format all amounts according to the glossary
+
+PARALLEL TASK 3 — Commercial narrative:
+- Read datos/cliente-tech-solutions.md for context
+- Generate the narrative at partes/narrativa-propuesta.md with these sections:
+  * Executive summary: one persuasive paragraph
+  * Understanding the need: restate the client's request
+  * Proposed solution: description in nontechnical language
+  * Work plan: four-month schedule with milestones
+  * Team: participating roles, without names
+  * Guarantees and post-deployment support
+  * Why choose us: based on documented satisfaction history
+  * Next steps: presentation meeting, 30-day validity
+  * Leave [INSERTAR_ANALISIS] and [INSERTAR_PRESUPUESTO] placeholders
+    where appropriate
+
+When the three tasks finish, integrate the results:
+1. Read the three files in partes/
+2. Integrate the analysis and budget into the narrative,
+   replacing the placeholders
+3. Check figures, dates, names and formatting for consistency
+4. Generate resultado/propuesta-final.md
+The parallel narrative is only a provisional outline. Mark solution, staffing,
+guarantees, and schedule pending analysis and estimate. Do not invent other
+agents' conclusions or replace placeholders before checking the parts.
+"

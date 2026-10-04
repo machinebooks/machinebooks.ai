@@ -1,0 +1,13 @@
+claude -p "
+ROLE: Quality reviewer
+Read resultado/propuesta-tech-solutions.md and check:
+- All figures are consistent: the budget total matches
+  the executive summary
+- Dates and deadlines are consistent throughout the document
+- The client's name is written consistently
+- Sections do not contradict each other
+- The tone is consistent from beginning to end
+
+If you find inconsistencies, generate a report at
+resultado/revision-calidad.md with each problem and its exact location.
+"

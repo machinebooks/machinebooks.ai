@@ -1,0 +1,39 @@
+Read the file C:\Users\myuser\Documents\ventas_marzo_2024.csv
+
+The file has these columns: Date, Customer, Product, Region,
+Amount, Status.
+
+Generate an executive sales report for March 2024 with this structure:
+
+1. EXECUTIVE SUMMARY (5-8 lines)
+   - Total sales for the month
+   - Comparison with February (file: ventas_febrero_2024.csv, same folder)
+   - Percentage variation
+   - Most notable data point of the month
+
+2. ANALYSIS BY REGION (table + bar chart)
+   - Sales by region
+   - Percentage of total
+   - Variation versus February
+
+3. TOP 10 CUSTOMERS (table)
+   - Name, total amount, number of transactions
+   - Mark with * those that are new compared to February
+
+4. ANALYSIS BY PRODUCT (table + pie chart)
+   - Sales by product category
+   - Percentage of total
+
+5. PENDING OPERATIONS
+   - Number and value of unclosed operations
+   - Average age
+
+6. CONCLUSIONS AND RECOMMENDATIONS (3-5 points)
+   - Identified trends
+   - Detected risks
+   - Suggested actions for April
+
+Generate the report in Markdown format with charts as PNG images.
+Professional but direct tone. If any data is negative, say it clearly.
+Save everything to C:\Users\myuser\Documents\Reports\sales_report_march_2024\
+Before calculating, state currency, period, statuses included in sales, and cutoff date for pending-operation age; request missing rules. Reconcile rows, duplicates, credits, and totals. Mark percentage change not computable when its baseline is zero. Customers without recorded February sales are not automatically new. Retain calculations and references, and leave unsupported hypotheses pending.

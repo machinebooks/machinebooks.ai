@@ -1,0 +1,42 @@
+# Compare complete tenant->EUR-limit snapshots, not unparsed YAML fragments.
+from decimal import Decimal
+
+
+def check_budget_increase(old_policy, new_policy):
+    if not isinstance(old_policy, dict) or not isinstance(new_policy, dict):
+        raise ValueError("Tenant budget snapshots must be mappings")
+    snapshots = []
+    for policy in (old_policy, new_policy):
+        parsed = {}
+        for tenant_id, amount in policy.items():
+            if not isinstance(tenant_id, str) or not tenant_id.strip():
+                raise ValueError("A non-empty tenant identifier is required")
+            if amount is None or isinstance(amount, bool):
+                raise ValueError("Unknown or boolean budgets are invalid")
+            limit = Decimal(str(amount))
+            if not limit.is_finite() or limit < 0:
+                raise ValueError("Budgets must be finite and non-negative")
+            parsed[tenant_id] = limit
+        snapshots.append(parsed)
+    old, new = snapshots
+    alerts = []
+    for tenant_id in sorted(old.keys() | new.keys()):
+        before, after = old.get(tenant_id), new.get(tenant_id)
+        if before is None or after is None:
+            reason = "new_budget" if before is None else "removed_budget"
+        elif after > before * Decimal("1.20"):
+            reason = "increase_above_20_percent"
+        else:
+            continue
+        alerts.append({
+            "tenant_id": tenant_id, "reason": reason,
+            "old_budget_eur": None if before is None else str(before),
+            "new_budget_eur": None if after is None else str(after),
+            "increase_percent": None if before is None or before == 0 or after is None
+                                else str((after - before) / before * 100),
+            "required_approver": "finops_team",
+        })
+    return alerts
+
+# Alerts are review requirements. This function cannot authenticate approvers,
+# protect branches, prevent repeated sub-threshold increases or block a merge.

@@ -1,0 +1,30 @@
+## File diagnostic — gastos-2024/
+
+### Structure by file
+
+| File | Rows | Columns | Date format | Issues |
+|------|------|---------|-------------|--------|
+| gastos-enero.csv | 234 | Fecha, Proveedor, Concepto, Importe, IVA | DD/MM/YYYY | None |
+| gastos-febrero.xlsx | 198 | Date, Supplier, Concept, Amount, Tax | MM/DD/YYYY | Columns in English |
+| gastos-marzo.csv | 267 | Fecha, Proveedor, Concepto, Importe | DD-MM-YYYY | Missing IVA column |
+| gastos-abril.csv | 215 | Fecha;Proveedor;Concepto;Importe;IVA | DD/MM/YYYY | Semicolon separator |
+| gastos-mayo.xlsx | 189 | Fecha, Proveedor, Description, Importe, IVA, Total | DD/MM/YYYY | Extra "Total" column |
+| gastos-junio.csv | 243 | Fecha, Proveedor, Concepto, Importe, IVA | DD/MM/YYYY | 3 empty rows |
+| gastos-julio.csv | 201 | Fecha, Proveedor, Concepto, Importe, IVA | DD/MM/YYYY | 12 exact duplicates |
+| gastos-agosto.xlsx | 156 | Fecha, Proveedor, Concepto, Importe, IVA | DD/MM/YYYY | None |
+| gastos-septiembre.csv | 278 | Fecha, Proveedor, Concepto, Importe, IVA | DD/MM/YYYY | 5 negative amounts |
+| gastos-octubre.csv | 245 | Fecha, Proveedor, Concepto, Importe, IVA | DD/MM/YYYY | 8 records repeated from September |
+| gastos-noviembre.xlsx | 220 | Fecha, Proveedor, Concepto, Importe, IVA | DD/MM/YYYY | None |
+| gastos-diciembre.csv | 312 | Fecha_operacion, Nombre_proveedor, Concepto, Importe_EUR, IVA_pct | YYYY-MM-DD | Renamed columns |
+
+### Summary of issues
+- 2 files with columns in different format (February in English, December renamed)
+- 4 different date formats
+- 1 file missing IVA column (March)
+- 1 file with semicolon separator (April)
+- 1 file with extra column (May)
+- 3 empty rows (June)
+- 12 exact duplicates (July)
+- 8 duplicates between September and October
+- 5 negative amounts in September (could be refunds)
+The 12 and 8 duplicate counts are candidates pending transaction-identity checks; retain returns and resolve the September/October overlap before totals.

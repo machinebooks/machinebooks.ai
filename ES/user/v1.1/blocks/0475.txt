@@ -1,0 +1,7 @@
+Prepara un plan para rotar DATABASE_PASSWORD del Secret
+"api-credentials" en el namespace "production" mediante el mecanismo
+secreto autorizado, fuera de esta conversación y sin imprimir el valor.
+Verifica destino, permisos, conservación de otras claves y recuperación.
+Tras confirmar por un canal autorizado que la rotación se completó,
+propón reiniciar api-server y comprobar el rollout y la función afectada.
+No incluyas la contraseña en la petición; espera autorización para cambios.

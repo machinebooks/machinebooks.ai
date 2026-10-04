@@ -1,0 +1,11 @@
+Analyze the database and look for anomalies that may require attention:
+
+1. Customers who have not placed any order in the last 6 months
+   but were active before (possible customer loss)
+2. Products with declining sales for 3 consecutive months
+3. Salespeople with a sales drop greater than 20% vs. the previous quarter
+4. Invoices overdue for more than 90 days with amounts exceeding 5,000
+5. Orders without an associated invoice (possible administrative error)
+6. Customers with more than 3 simultaneously overdue invoices
+
+For each anomaly, give me the specific list and a suggested action.

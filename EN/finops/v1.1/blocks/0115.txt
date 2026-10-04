@@ -1,0 +1,35 @@
+from datetime import timedelta
+
+def scan_snapshot_review_candidates(ec2,authorized_snapshot_ids,now,max_age_days=180):
+    if type(max_age_days) is not int or not 1<=max_age_days<=3650 or len(authorized_snapshot_ids)>1000:
+        raise ValueError("age/inventory limit")
+    if now.tzinfo is None or now.utcoffset()!=timedelta(0):
+        raise ValueError("UTC required")
+    rows,token,seen=[],None,set()
+    for _ in range(20):
+        page=ec2.describe_snapshots(OwnerIds=["self"],MaxResults=100,
+            **({"NextToken":token} if token else {}))
+        for snapshot in page.get("Snapshots",[]):
+            if snapshot["SnapshotId"] not in authorized_snapshot_ids:
+                continue
+            started=snapshot["StartTime"]
+            if started.tzinfo is None or started.utcoffset()!=timedelta(0) or started>now:
+                raise ValueError("snapshot time")
+            age=(now-started).days
+            if age>=max_age_days:
+                rows.append({"resource_id":snapshot["SnapshotId"],"age_days":age,
+                    "provisioned_volume_gib":snapshot["VolumeSize"],"incremental_storage_cost":None,
+                    "ami_or_backup_dependencies_checked":False,"retention_checked":False,
+                    "status":"pending_human_review","deletion_authorized":False})
+            if len(rows)>1000:
+                raise ValueError("candidate limit")
+        token=page.get("NextToken")
+        if not token:
+            return {"resources":rows,"inventory_complete":True}
+        if token in seen:
+            break
+        seen.add(token)
+    return {"resources":rows,"inventory_complete":False}
+# Age threshold is illustrative, not retention policy. Missing source volume or AMI
+# does not prove orphan state. VolumeSize is provisioned size, not incremental billed
+# snapshot bytes; chain/restore/backup/hold and real billing need protected review.

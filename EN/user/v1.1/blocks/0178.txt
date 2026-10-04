@@ -1,0 +1,25 @@
+import openpyxl
+
+@server.tool()
+async def consultar_hoja(hoja: str, filtro: str) -> str:
+    workbook = openpyxl.load_workbook("seguimiento-proyectos.xlsx", read_only=True, data_only=True)
+    try:
+        if hoja not in workbook.sheetnames:
+            return "Error: sheet unavailable."
+        rows = workbook[hoja].iter_rows(values_only=True)
+        headers = next(rows, None)
+        if headers is None or all(value is None for value in headers):
+            return "Empty sheet."
+        result = " | ".join(str(value) if value is not None else "" for value in headers)
+        matched = 0
+        for row in rows:
+            if filtro and not any(filtro.casefold() in str(value).casefold() for value in row if value is not None):
+                continue
+            result += "\n" + " | ".join(str(value) if value is not None else "" for value in row)
+            matched += 1
+            if matched == 50:
+                result += "\nMaximum 50 rows; more results may exist."
+                break
+        return result
+    finally:
+        workbook.close()

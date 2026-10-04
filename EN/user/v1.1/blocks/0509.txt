@@ -1,0 +1,8 @@
+#!/bin/bash
+# Configuration — modify these variables for your environment
+PROYECTO_DIR="/home/usuario/mi-proyecto"
+DATOS_DIR="$PROYECTO_DIR/datos"
+INFORMES_DIR="$PROYECTO_DIR/informes"
+LOG_DIR="$PROYECTO_DIR/logs"
+EMAIL_DESTINO="responsable@empresa.invalid"
+FECHA=$(date -u +%Y-%m-%d)

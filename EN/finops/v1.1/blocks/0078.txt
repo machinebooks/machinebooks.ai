@@ -1,0 +1,6 @@
+Comparison at equivalent annual volume and capabilities:
+  annual_api_cost = api_fixed_cost + api_variable_cost_per_token * annual_tokens
+  annual_local_cost = local_fixed_tco + local_variable_cost_per_token * annual_tokens
+  crossover_tokens = (local_fixed_tco - api_fixed_cost) / (api_variable_cost_per_token - local_variable_cost_per_token)
+A positive crossover exists only when numerator and denominator allow it. Declare
+weighted tariffs by mix/cache/quality, capacity, investment, operation and utilization.

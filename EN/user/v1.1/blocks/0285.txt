@@ -1,0 +1,10 @@
+Using source copies and the approved mapping:
+1. Propose ERP-bank matches by reference; amount and date (±5 days)
+   are supporting filters. Retain partial and grouped payments.
+2. Reconcile each card settlement against its transactions and bank
+   charges, including fees, adjustments, and cutoffs. Do not assume
+   one monthly charge; check the contract and statement.
+3. Build an accrual-to-cash bridge covering taxes, advances, outstanding
+   items, and overlaps. Do not sum ERP, cards, and bank as separate expenses.
+List confirmed matches, ambiguous candidates, and pending items with provenance.
+Do not post or delete records without the responsible person’s review.

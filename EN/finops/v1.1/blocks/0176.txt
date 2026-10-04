@@ -1,0 +1,7 @@
+Reference rollback process:
+1. Identify the applied artifact and previous approved version.
+2. Prepare the revert on a branch; review conflicts and the complete diff.
+3. Validate policy, expiry, sovereignty and data/schema compatibility.
+4. Approve and deploy the previous artifact through the protected process.
+5. Verify application and reconcile decisions/costs during transition.
+A git revert or push does not prove recovery or bypass approval.

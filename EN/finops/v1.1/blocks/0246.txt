@@ -1,0 +1,39 @@
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from decimal import Decimal
+
+@dataclass
+class SessionCostSnapshot:
+    # Reporting view derived from the durable host ledger.
+    session_id: str
+    approved_budget_eur: Decimal | None
+    known_incurred_eur: Decimal
+    cost_complete: bool
+    at_utc: datetime
+
+    def __post_init__(self):
+        if not isinstance(self.session_id, str) or not 1 <= len(self.session_id) <= 256:
+            raise ValueError("Bounded session identity required")
+        if self.approved_budget_eur is not None:
+            self.approved_budget_eur = budget_amount(self.approved_budget_eur)
+        self.known_incurred_eur = budget_amount(self.known_incurred_eur)
+        if type(self.cost_complete) is not bool or not isinstance(self.at_utc, datetime) or self.at_utc.utcoffset() is None or self.at_utc.utcoffset().total_seconds() != 0:
+            raise ValueError("Explicit completeness and aware UTC timestamp required")
+
+    @property
+    def used_fraction(self):
+        if not self.cost_complete or self.approved_budget_eur in (None, Decimal("0")):
+            return None
+        return self.known_incurred_eur / self.approved_budget_eur
+
+    @property
+    def exceeded(self):
+        if self.approved_budget_eur is None:
+            return None
+        if not self.cost_complete and self.known_incurred_eur <= self.approved_budget_eur:
+            return None
+        return self.known_incurred_eur > self.approved_budget_eur
+
+# Uses budget_amount above. A zero budget is a real limit, not unlimited.
+# Missing complete cost or budget is explicit, never a fabricated 0% consumed.
+# Reporting after an expense is not reservation, permission or a hard spending cap.

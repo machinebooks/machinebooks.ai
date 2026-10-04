@@ -1,0 +1,15 @@
+Run the monthly close process:
+
+1. Read datos/erp/, datos/banco/, datos/gastos/, and datos/facturas/
+2. Preserve provenance and transaction identities in a normalized table:
+   date, concept, amount, category, source
+3. Reconcile bank versus accounting; do not sum overlapping sources
+4. Compare actual and budget by expense category on a consistent basis
+5. Identify the 5 largest variances and suggest explanations to verify
+6. Generate the close report from plantillas/informe-cierre.md
+7. Generate 3 charts: monthly movement, actual versus budget, category distribution
+8. Save everything in informes/cierre-[month]-[year]/
+
+Highlight discrepancies above 500 EUR, and record smaller discrepancies
+as well. If a source is missing, identify it and stop final delivery.
+A partial draft must state its limitations and remain pending review.

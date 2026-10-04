@@ -1,0 +1,12 @@
+Illustrative multicloud example; not a real inventory.
+
+┌───────────────┬──────────┬────────────┬──────────┬─────────┐
+│ Name          │ Provider │ Type       │ Cost/mo  │ Avg CPU │
+├───────────────┼──────────┼────────────┼──────────┼─────────┤
+│ prod-db       │ AWS      │ r5.2xlarge │ 456.78 € │ 45.2%   │
+│ prod-app-01   │ AWS      │ c5.2xlarge │ 312.45 € │ 67.8%   │
+│ prod-app-02   │ AWS      │ c5.2xlarge │ 312.45 € │ 71.2%   │
+│ api-gateway   │ Azure    │ D4s_v3     │ 287.90 € │ 34.5%   │
+│ dev-test      │ AWS      │ m5.large   │  87.60 € │  3.2% ⚠│
+│ web-frontend  │ Azure    │ B2ms       │  78.40 € │ 12.1% ⚠│
+└───────────────┴──────────┴────────────┴──────────┴─────────┘

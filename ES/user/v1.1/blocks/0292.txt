@@ -1,0 +1,7 @@
+Busca candidatos a pagos duplicados en gastos-erp-2024.xlsx.
+Mismo proveedor, importe y fecha no prueban duplicación: pueden existir
+operaciones distintas. Confirma ID de pago, factura, referencia bancaria
+y abonos antes de marcar un duplicado como confirmado.
+Agrupa candidatos por proveedor/importe/fecha y conserva todos los
+registros con su procedencia y evidencia. Separa confirmados, candidatos
+y descartados; no elimines filas ni ordenes devoluciones automáticamente.

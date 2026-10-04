@@ -1,0 +1,7 @@
+Dashboard educativo de subtotales y capacidad
+  → uso LLM normalizado, con tarifa/versión y consumo desconocido visible
+  → coste cloud para el mismo periodo, cuenta, moneda y cobertura
+  → capacidad valorada con baseline/aceptación/revisión, separada de ahorro de caja
+  → conciliación de fuentes, FX fechado y costes de operación/ingeniería pendientes
+GET /finops/summary requiere autorización por tenant y datos del servidor.
+Un gráfico unificado no convierte subtotales en TCO completo ni acredita ROI.

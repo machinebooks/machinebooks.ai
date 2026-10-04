@@ -1,0 +1,19 @@
+Analyze this document and generate:
+
+1. EXECUTIVE SUMMARY (3-5 lines): to send to my boss,
+   who won't read the full document.
+
+2. PENDING DECISIONS: list each decision this document
+   requires, who should make it, and the deadline if mentioned.
+
+3. KEY DATA: extract all figures, dates, and proper names
+   into a structured table.
+
+4. RISKS: identify any risk, problem, or uncertainty
+   mentioned in the document.
+
+5. NEXT STEPS: generate the list of concrete actions that
+   follow from this document, with suggested owner if possible.
+
+Format: use Markdown with tables where appropriate.
+Tone: professional but direct.

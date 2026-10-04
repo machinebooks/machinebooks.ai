@@ -1,0 +1,14 @@
+from uuid import UUID
+
+async def record_rightsizing_review(repository,authenticated_principal,
+        authorized_scope,plan_id,expected_version,decision):
+    UUID(plan_id)
+    if type(decision) is not bool or not isinstance(expected_version,str) or not 1 <= len(expected_version)<=128:
+        raise ValueError("review decision/version")
+    return await repository.record_review_once(
+        principal=authenticated_principal,scope=authorized_scope,plan_id=plan_id,
+        expected_version=expected_version,decision=decision)
+# Host enforces role/object access, immutable plan hash/resource snapshot, expiry,
+# separation of duties and compare-and-set. Reviewer identity never comes from body.
+# This contract records a review; scheduling/execution requires separate revalidation
+# and transactional outbox. No cloud task is enqueued by this educational function.

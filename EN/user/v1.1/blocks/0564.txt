@@ -1,0 +1,9 @@
+cd /home/usuario/propuesta-cliente
+claude -p "
+ROLE: Client analyst
+Investigate Tech Solutions using datos/cliente-tech-solutions.md
+and datos/proyectos-anteriores.csv.
+Write partes/analisis-cliente.md with company profile, history with us,
+identified needs, risks, and opportunities. Preserve source references
+and mark missing or conflicting evidence rather than inventing facts.
+"

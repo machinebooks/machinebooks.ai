@@ -1,0 +1,9 @@
+# Reglas de seguridad
+
+- NUNCA elimines archivos sin mostrar primero la lista completa
+  y esperar confirmación explícita.
+- NUNCA ejecutes comandos que modifiquen datos fuera de la carpeta
+  de trabajo actual.
+- Antes de cualquier operación de escritura, muestra el plan
+  completo y espera aprobación.
+- Si una instrucción es ambigua, pregunta antes de actuar.

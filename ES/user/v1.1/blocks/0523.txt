@@ -1,0 +1,11 @@
+#!/bin/bash
+# Local draft only; the caller must verify the input run, content, and permissions.
+set -euo pipefail
+REPORT_FILE=${1:?Supply the absolute path of the verified current-run report}
+[[ $REPORT_FILE == /* && -s $REPORT_FILE ]] || exit 1
+DRAFT_FILE="${REPORT_FILE%.md}-email-draft.md"
+[[ $DRAFT_FILE != "$REPORT_FILE" && ! -e $DRAFT_FILE ]] || exit 1
+umask 077
+claude -p "Lee solo $REPORT_FILE y prepara en $DRAFT_FILE un borrador local de email para revisión humana. No envíes correo, publiques, subas archivos ni modifiques fuentes. Deja destinatarios pendientes de confirmación."
+[[ -s $DRAFT_FILE ]] || exit 1
+# Nonempty output does not validate freshness, accuracy, recipients, or authorization.

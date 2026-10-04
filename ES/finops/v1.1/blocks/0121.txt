@@ -1,0 +1,19 @@
+# Endpoint core: principal/scope derive from the host, never query tenant IDs.
+from decimal import Decimal
+
+async def current_month_forecast(principal, authorize, repository, month):
+    scope = await authorize(principal, "forecast.read", month=month)
+    row = await repository.latest_approved_forecast(scope=scope, month=month)
+    if row is None:
+        return {"state": "unavailable", "forecast": None}
+    if row["scope"] != scope or row["month"] != month:
+        raise ValueError("Repository scope mismatch")
+    amount = Decimal(row["expected_amount"])
+    budget = None if row["budget_amount"] is None else Decimal(row["budget_amount"])
+    if not amount.is_finite() or (budget is not None and (not budget.is_finite() or budget < 0)):
+        raise ValueError("Invalid financial snapshot")
+    deviation = None if budget in (None, 0) else (amount-budget)/budget*100
+    return {"state": "approved_scenario", "forecast": row,
+            "data_as_of": row["data_cutoff"], "deviation_pct": None if deviation is None else str(deviation),
+            "budget_state": "unknown" if budget is None else "zero_budget" if budget == 0 else
+                            "above_budget" if amount > budget else "within_declared_budget"}

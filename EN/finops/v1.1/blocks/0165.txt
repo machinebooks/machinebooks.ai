@@ -1,0 +1,11 @@
+finops-policies/
+  schemas/budget.schema.json
+  schemas/routing.schema.json
+  policies/global.yaml
+  policies/tenants/fixture-tenant.yaml
+  policies/task-types/offer_generation.yaml
+  policies/cloud/aws-scps.json
+  policies/cloud/azure-policies.json
+  exceptions/
+  .github/workflows/validate-policies.yml
+# Illustrative file layout; host supplies validators, approval and immutable deployments.

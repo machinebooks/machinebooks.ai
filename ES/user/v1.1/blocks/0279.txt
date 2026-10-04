@@ -1,0 +1,14 @@
+Compara presupuesto-2024.xlsx, hoja "Q1", con gastos-Q1-2024.xlsx.
+Para este ejemplo ficticio usa códigos internos educativos, no cuentas PGC:
+EXP-PERS: Personal; EXP-EXT: Servicios externos; EXP-SUM: Suministros;
+EXP-ALQ: Alquileres; EXP-MKT: Marketing; EXP-VIA: Viajes; EXP-IT: IT.
+Cada gasto debe aparecer en una sola partida. Los códigos no mapeados
+quedan pendientes; no deduzcas códigos reales a partir del nombre.
+
+Usa EUR y el mismo criterio de devengo y base de impuestos que el presupuesto.
+Desviación = real − presupuesto; porcentaje = desviación / presupuesto.
+Si el presupuesto es cero, el porcentaje es no aplicable. Semáforo sobre
+el valor absoluto: verde <5%; amarillo de 5% a 15% inclusive; rojo >15%.
+Ordena el top 5 por porcentaje absoluto y muestra también los importes.
+Presenta evolución mensual y escenario anual Q1×4, con sus supuestos.
+Explicaciones causales sólo si hay evidencia; en otro caso, pendientes.

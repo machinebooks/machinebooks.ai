@@ -1,0 +1,86 @@
+# services/cost_calculator.py
+# Educational token estimate: normalised input includes reads and writes.
+# The pricing row selects provider, model, currency, tier and cache-write TTL.
+# Extra tool/media charges and invoice adjustments are outside this example.
+from dataclasses import dataclass
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+
+
+@dataclass
+class CallCostBreakdown:
+    input_tokens: int
+    output_tokens: int
+    cached_input_tokens: int
+    cache_write_tokens: int
+    input_cost_usd: float
+    output_cost_usd: float
+    cached_input_cost_usd: float
+    cache_write_cost_usd: float
+    total_cost_usd: float
+    total_cost_eur: float
+    model_id: str
+    provider: str
+    cache_savings_usd: float
+
+
+def calculate_call_cost(
+    pricing,
+    input_tokens: int,
+    output_tokens: int,
+    cached_input_tokens: int = 0,
+    cache_write_tokens: int = 0,
+    eur_exchange_rate=None,
+) -> CallCostBreakdown:
+    counts = (input_tokens, output_tokens, cached_input_tokens, cache_write_tokens)
+    if any(type(n) is not int or not 0 <= n <= 2_147_483_647 for n in counts):
+        raise ValueError("Token counts must be non-negative database integers")
+    standard_input = input_tokens - cached_input_tokens - cache_write_tokens
+    if standard_input < 0:
+        raise ValueError("Cache partitions exceed normalised total input")
+
+    def rate(value, name):
+        try:
+            result = Decimal(str(value))
+        except (InvalidOperation, ValueError):
+            raise ValueError(f"Unknown or invalid {name}") from None
+        if not result.is_finite() or result < 0:
+            raise ValueError(f"Invalid {name}")
+        return result
+
+    input_price = rate(pricing.input_price_per_1m, "input price")
+    output_price = rate(pricing.output_price_per_1m, "output price")
+    cached_price = (rate(pricing.cached_input_price_per_1m, "cache-read price")
+                    if cached_input_tokens else Decimal(0))
+    write_price = (rate(pricing.cache_write_price_per_1m, "cache-write price")
+                   if cache_write_tokens else Decimal(0))
+    fx = rate(eur_exchange_rate, "EUR per USD exchange rate")
+    if fx == 0:
+        raise ValueError("Exchange rate must be positive and supplied explicitly")
+    million = Decimal(1_000_000)
+    input_cost = Decimal(standard_input) * input_price / million
+    output_cost = Decimal(output_tokens) * output_price / million
+    cached_cost = Decimal(cached_input_tokens) * cached_price / million
+    write_cost = Decimal(cache_write_tokens) * write_price / million
+    total = input_cost + output_cost + cached_cost + write_cost
+    read_savings = Decimal(cached_input_tokens) * (input_price - cached_price) / million
+
+    def display(value):
+        return float(value.quantize(Decimal("0.00000001"), rounding=ROUND_HALF_UP))
+
+    return CallCostBreakdown(
+        input_tokens=input_tokens, output_tokens=output_tokens,
+        cached_input_tokens=cached_input_tokens, cache_write_tokens=cache_write_tokens,
+        input_cost_usd=display(input_cost), output_cost_usd=display(output_cost),
+        cached_input_cost_usd=display(cached_cost), cache_write_cost_usd=display(write_cost),
+        total_cost_usd=display(total), total_cost_eur=display(total * fx),
+        model_id=pricing.model_id, provider=pricing.provider,
+        cache_savings_usd=display(read_savings),
+    )
+
+# Anthropic Messages exposes disjoint counters. The adapter must sum them:
+# total_input = usage.input_tokens + usage.cache_read_input_tokens \
+#               + usage.cache_creation_input_tokens
+# Pass total_input to input_tokens; pass each cache partition separately.
+# cache_savings_usd is the gross read saving, not net saving after write costs.
+# Rounded floats are presentation values; retain Decimal and pricing/FX provenance
+# in a reconciled ledger. Missing rates remain unknown; never substitute zero.

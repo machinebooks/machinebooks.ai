@@ -1,0 +1,20 @@
+# Scoped financial snapshots: unknown categories are not zero.
+from dataclasses import dataclass
+from decimal import Decimal
+from datetime import datetime
+
+@dataclass(frozen=True)
+class CostSnapshot:
+    tenant_id: str
+    source_version: str
+    period_start: datetime
+    period_end: datetime
+    currency: str
+    fx_version: str
+    llm_cost: Decimal | None
+    cloud_cost: Decimal | None
+    people_cost: Decimal | None
+    tools_cost: Decimal | None
+    overhead_cost: Decimal | None
+# chapter-3 build_tco_report validates common scope/window/FX before
+# producing a known subtotal. A dataclass alone does not establish complete TCO.

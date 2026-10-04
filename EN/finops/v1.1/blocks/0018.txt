@@ -1,0 +1,22 @@
+# Metadata-only exercise; authenticated host supplies an already scoped snapshot.
+from decimal import Decimal
+
+def get_user_cost_profiles(rows, complete, light_limit="1.5", power_limit="7"):
+    if not isinstance(rows, list) or len(rows) > 10000 or type(complete) is not bool:
+        raise ValueError("Invalid bounded snapshot")
+    light, power = Decimal(light_limit), Decimal(power_limit)
+    if not light.is_finite() or not power.is_finite() or not 0 <= light < power:
+        raise ValueError("Invalid policy thresholds")
+    profiles = []
+    for row in rows:
+        value = row.get("cost_eur")
+        cost = None if value is None else Decimal(str(value))
+        if cost is not None and (not cost.is_finite() or cost < 0):
+            raise ValueError("Invalid cost")
+        profile = "unknown" if cost is None or not complete else (
+            "power" if cost >= power else "average" if cost >= light else "light")
+        profiles.append({"pseudonymous_user_id": row["pseudonymous_user_id"],
+            "known_cost_eur": cost, "cost_profile": profile})
+    return {"users": profiles, "complete": complete, "policy_only": True}
+# Host enforces tenant/user scope and retention. A pseudonym is not automatic anonymity.
+# Include priced failures and use the same [start,end) window and dated currency rule.

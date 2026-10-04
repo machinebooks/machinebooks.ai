@@ -1,0 +1,26 @@
+# Educational append-only snapshot; the host supplies Base and transaction/ACLs.
+from sqlalchemy import Column, String, DateTime, Numeric, JSON, UniqueConstraint
+from database import Base
+
+class CostForecast(Base):
+    __tablename__ = "cost_forecasts"
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), nullable=False)
+    account_scope = Column(String(100), nullable=False)
+    provider = Column(String(20), nullable=False)
+    currency = Column(String(3), nullable=False)
+    forecast_month = Column(String(7), nullable=False)
+    source_version = Column(String(100), nullable=False)
+    method_version = Column(String(100), nullable=False)
+    data_cutoff = Column(DateTime(timezone=True), nullable=False)
+    generated_at = Column(DateTime(timezone=True), nullable=False)
+    base_amount = Column(Numeric(24, 8), nullable=False)
+    scenario_expected = Column(Numeric(24, 8), nullable=False)
+    scenario_low = Column(Numeric(24, 8), nullable=True)
+    scenario_high = Column(Numeric(24, 8), nullable=True)
+    scenario_inputs = Column(JSON, nullable=False)
+    __table_args__ = (UniqueConstraint(
+        "tenant_id", "account_scope", "provider", "currency", "forecast_month",
+        "source_version", "method_version", "data_cutoff"),)
+# Scope and aware UTC timestamps are validated before insertion. Scenario bounds
+# are not prediction intervals. Evaluation is a separate reconciled snapshot.

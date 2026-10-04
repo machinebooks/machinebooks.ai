@@ -1,0 +1,13 @@
+set -euo pipefail
+: "${DOCKER_CONTEXT:?Set the reviewed Docker context}"
+compose=(docker --context "$DOCKER_CONTEXT" compose
+  --project-name staging --file /opt/staging/docker-compose.yml)
+
+# Example approved local catalog reader; errors stop rather than mean "absent".
+"${compose[@]}" exec -T postgres psql -X -v ON_ERROR_STOP=1 \
+  -U postgres -d postgres -At -c \
+  "SELECT EXISTS (SELECT 1 FROM pg_database WHERE datname='staging_db');"
+"${compose[@]}" exec -T postgres psql -X -v ON_ERROR_STOP=1 \
+  -U postgres -d postgres -At -c \
+  "SELECT EXISTS (SELECT 1 FROM pg_roles WHERE rolname='app');"
+# Each successful query returns exactly t or f; do not use substring grep.

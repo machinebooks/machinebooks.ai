@@ -1,0 +1,17 @@
+-- Bind invoice_month and authorized_billing_account; fix the table in the host.
+WITH normalized AS (
+  SELECT billing_account_id, currency,
+    (SELECT ANY_VALUE(value) FROM UNNEST(labels) WHERE key = 'team') AS team,
+    cost, IFNULL((SELECT SUM(c.amount) FROM UNNEST(credits) c), 0) AS credits
+  FROM `authorized_project.billing_export.authorized_table`
+  WHERE invoice.month = @invoice_month
+    AND billing_account_id = @authorized_billing_account
+)
+SELECT billing_account_id, currency, COALESCE(team, 'Unallocated') AS team,
+  SUM(cost) AS gross_cost, SUM(credits) AS credits,
+  SUM(cost + credits) AS net_cost
+FROM normalized
+GROUP BY billing_account_id, currency, team
+ORDER BY net_cost DESC
+-- Credit aggregation occurs per billing row; it does not duplicate base cost.
+-- Host validates unique team labels, schema, permissions and export coverage.

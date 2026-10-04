@@ -1,0 +1,27 @@
+# Host repository already enforces tenant/time/currency/source scope and deduplication.
+from decimal import Decimal
+
+def capacity_summary(rows):
+    if len(rows) > 10000:
+        raise ValueError("Use bounded aggregate repository queries")
+    costs, values = [], []
+    for row in rows:
+        if type(row["accepted"]) is not bool:
+            raise ValueError("Invalid decision")
+        for key, target in (("known_incremental_cost",costs),("captured_capacity_value",values)):
+            value = None if row[key] is None else Decimal(row[key])
+            if value is not None and (not value.is_finite() or value < 0):
+                raise ValueError("Invalid snapshot")
+            target.append(value)
+    known_cost = sum((x for x in costs if x is not None), Decimal(0))
+    known_value = sum((x for x in values if x is not None), Decimal(0))
+    complete = bool(rows) and all(x is not None for x in costs+values)
+    net = known_value-known_cost if complete else None
+    ratio = net/known_cost if complete and known_cost > 0 else None
+    return {"task_count": len(rows), "accepted_count": sum(r["accepted"] for r in rows),
+            "known_cost_subtotal": str(known_cost), "known_capacity_subtotal": str(known_value),
+            "unknown_cost_count": costs.count(None), "unknown_value_count": values.count(None),
+            "coverage_complete": complete, "partial_net_return": None if ratio is None else str(ratio),
+            "full_roi": None, "cash_savings": None}
+# Aggregate ratio uses totals, not the mean of individual ratios. Negative tasks
+# remain in the ledger even when a policy stops future use of that task category.

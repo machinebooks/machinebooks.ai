@@ -1,0 +1,13 @@
+Define el mapeo educativo, no PGC, para los datos sintéticos:
+Personal=EXP-PERS; Servicios externos=EXP-EXT; Suministros=EXP-SUM;
+Alquileres=EXP-ALQ; Marketing=EXP-MKT; Viajes=EXP-VIA; IT=EXP-IT;
+Formación=EXP-FORM; Otros=EXP-OTR. Códigos desconocidos quedan pendientes.
+
+Conserva archivo/fila, ID y base de importe de cada fuente.
+Conceptos del banco y categorías de tarjeta sólo proponen candidatos;
+confirma referencias y relaciones antes de asignar un gasto.
+ERP, banco y tarjetas son vistas que pueden contener la misma operación.
+No las sumes: usa ERP como base de devengo e incorpora sólo gastos de
+tarjeta confirmados que no estén ya registrados en esa base. Los cargos
+bancarios sirven para conciliar caja, no para volver a sumar el gasto.
+Genera la vista consolidada y la lista de excepciones sin tocar originales.

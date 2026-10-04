@@ -1,0 +1,13 @@
+set -euo pipefail
+: "${AUTHORIZED_HOST:?Set the approved external DNS host, without a scheme}"
+# Requires these tools and a configured trusted CA store in the reviewed container.
+nslookup "$AUTHORIZED_HOST"
+nc -zv "$AUTHORIZED_HOST" 443
+python3 - <<'PY'
+import json, os, re
+print(json.dumps(sorted(name for name in os.environ
+                        if re.search(r'api|url|host|port', name, re.I))))
+PY
+openssl s_client -connect "$AUTHORIZED_HOST:443" -servername "$AUTHORIZED_HOST" \
+  -verify_hostname "$AUTHORIZED_HOST" -verify_return_error -brief </dev/null
+# Certificate/trust and handshake checks do not establish application authorization.

@@ -1,0 +1,20 @@
+Illustrative S3 storage analysis:
+
+Buckets with usage data:
+  app-uploads:       45.2 GB (lifecycle: transition after 90 days)
+  app-logs:         128.7 GB (lifecycle: expiration after 30 days)
+  ci-artifacts:      23.4 GB (lifecycle: expiration after 14 days)
+
+Review candidates without an identified lifecycle policy:
+  old-backups:      234.5 GB — illustrative EUR cost: 5.40/month
+  migration-temp:    67.8 GB — illustrative EUR cost: 1.56/month
+  demo-assets-2025:  12.3 GB — illustrative EUR cost: 0.28/month
+
+Storage size and lifecycle settings do not establish last writes
+or inactivity. Check actual access/write evidence, retention,
+recovery needs, retrieval charges, and minimum storage duration.
+Do not delete buckets or data based on this output.
+
+The illustrated costs sum to 7.24 EUR/month (86.88 EUR/year).
+They are neither an AWS USD invoice nor a verified currency conversion.
+Real savings require a sourced pricing and workload calculation.

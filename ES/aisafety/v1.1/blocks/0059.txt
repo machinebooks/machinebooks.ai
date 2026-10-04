@@ -1,0 +1,7 @@
+# Test specification interface. These are not executed or passed tests.
+# Use isolated local fixtures: unknown tools, missing and extra fields,
+# type/range errors, quota boundaries, approval states and response handling.
+# Empty suites must report not_tested, and count attempted checks explicitly.
+class AgentSecurityTestSuite:
+    def run(self):
+        raise NotImplementedError("Independent fixtures and a tested adapter are required")

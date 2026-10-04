@@ -1,0 +1,10 @@
+set -euo pipefail
+: "${DOCKER_CONTEXT:?Set the reviewed Docker context}"
+compose=(docker --context "$DOCKER_CONTEXT" compose
+  --project-name staging --file /opt/staging/docker-compose.yml)
+
+# Only after verifying worker concurrency, idempotency, dependencies, and recovery.
+# Fixed container_name or host ports may prevent scaling.
+"${compose[@]}" up -d --no-deps --scale worker=4 worker
+"${compose[@]}" ps worker --format "table {{.Name}}\t{{.Status}}"
+# Running status does not establish processing capacity or complete readiness.

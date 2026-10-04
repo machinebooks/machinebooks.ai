@@ -1,0 +1,3 @@
+# Garak CLI example for an offline blank target, not a model-security evaluation.
+# Check the pinned release and target plugins before using an authorised model.
+garak --target_type test --target_name Blank

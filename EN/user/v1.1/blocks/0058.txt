@@ -1,0 +1,9 @@
+Generate a file indice.html with a table listing all documents
+organized by folder, with the file name as a relative link.
+Add a column with the last modified date and the size.
+Include a search field at the top to filter by name.
+
+Use only authorized paths and a new destination without overwriting.
+Escape names when generating HTML and encode relative links.
+Check links, missing files and offline operation.
+Do not add external resources or publish folder information.

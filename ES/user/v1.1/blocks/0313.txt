@@ -1,0 +1,11 @@
+Analiza la base de datos y busca anomalías que puedan requerir atención:
+
+1. Clientes que no han hecho ningún pedido en los últimos 6 meses
+   pero estaban activos antes (posible pérdida de cliente)
+2. Productos con ventas decrecientes durante 3 meses consecutivos
+3. Comerciales con caída de ventas superior al 20% respecto al trimestre anterior
+4. Facturas vencidas hace más de 90 días por importe superior a 5.000
+5. Pedidos sin factura asociada (posible error administrativo)
+6. Clientes con más de 3 facturas vencidas simultáneamente
+
+Para cada anomalía, dame el listado concreto y una sugerencia de acción.

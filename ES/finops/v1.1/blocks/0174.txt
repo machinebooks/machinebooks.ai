@@ -1,0 +1,24 @@
+# Reject locked branches, including parent replacement and dotted-key ambiguity.
+LOCKED_PARAMS=("throttling.requests_per_day_global_limit",
+               "model_routing.forbidden_models","fallback.on_exhaustion")
+
+def validate_override_permissions(override,tenant_tier):
+    if not isinstance(override,dict) or len(override)>100:
+        raise ValueError("Bounded mapping required")
+    def paths(value,prefix="",depth=0):
+        if depth>10:
+            raise ValueError("Override depth limit")
+        result=[]
+        for key,item in value.items():
+            if not isinstance(key,str) or not key or "." in key:
+                raise ValueError("Unique schema keys required")
+            path=prefix+key
+            if isinstance(item,dict):
+                result.extend(paths(item,path+".",depth+1))
+            else:
+                result.append(path)
+        return result
+    leaves=paths(override)
+    return [{"param":locked,"error":"Locked parameter or parent replacement"}
+            for locked in LOCKED_PARAMS if any(p==locked or locked.startswith(p+".") for p in leaves)]
+# This structural check does not authenticate tenant tier or approve other fields.

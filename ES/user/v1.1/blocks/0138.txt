@@ -1,0 +1,3 @@
+claude mcp add --transport http --scope local github-read https://api.githubcopilot.com/mcp/readonly
+# Complete the authentication supported by your client.
+# Verify repository scope and the read-only tool list.

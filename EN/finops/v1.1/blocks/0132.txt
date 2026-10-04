@@ -1,0 +1,19 @@
+# Reuse chapter-4 instrumented ainvoke; host owns workflow/result/attempt linkage.
+async def generate_offer(client_data, principal, authorize, workflow_repository, tracked_llm):
+    scope = await authorize(principal, "offer.generate")
+    workflow = await workflow_repository.begin_owned_offer(scope=scope)
+    try:
+        messages = await workflow_repository.approved_messages(scope=scope, workflow_id=workflow["id"], inputs=client_data)
+        response = await tracked_llm.ainvoke(messages)
+        return await workflow_repository.store_result_and_link_owned_attempts(
+            scope=scope, workflow_id=workflow["id"], response=response)
+    except Exception:
+        await workflow_repository.mark_generation_failed_and_link_owned_attempts(
+            scope=scope, workflow_id=workflow["id"])
+        raise
+
+async def decide_offer(workflow_id, accepted, principal, authorize, repository, version):
+    return await record_task_decision(principal, authorize, repository,
+                                      workflow_id, accepted, version)
+# Repository contracts are supplied by the host and are not implemented here.
+# Content is separate from the metadata ledger; rejection retains all charged attempts.

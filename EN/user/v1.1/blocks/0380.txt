@@ -1,0 +1,4 @@
+# Read-only preview; no file replacement.
+# Review authorization, target, backup, owner, permissions and rollback before applying.
+jq '.database.host = "db-prod.empresa.invalid" | .cache.ttl = 3600' \
+  /opt/app/config.json

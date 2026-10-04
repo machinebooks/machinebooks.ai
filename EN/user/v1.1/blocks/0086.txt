@@ -1,0 +1,55 @@
+Generate the Q1 2024 closing report.
+
+Sources:
+1. Sales: C:\Reports\Q1\sales_Q1_2024.xlsx
+2. Expenses: C:\Reports\Q1\expenses_Q1_2024.xlsx
+3. Projects: C:\Reports\Q1\project_status_Q1.xlsx
+4. Satisfaction: C:\Reports\Q1\satisfaction_survey_Q1.csv
+
+Report structure (10-12 pages):
+
+COVER PAGE
+- Q1 2024 Closing Report
+- Issue date
+- Classification: Internal use
+
+1. EXECUTIVE SUMMARY (1 page)
+   - Main KPIs with traffic light against target
+   - Top 3 achievements of the quarter
+   - Top 3 challenges for the next quarter
+
+2. FINANCIAL RESULTS (2-3 pages)
+   - Revenue vs. target (table + chart)
+   - Expenses by category (table + chart)
+   - Profit margin
+   - Comparison with Q1 2023 if data is available
+   - Significant variances with explanation
+
+3. PROJECT STATUS (2 pages)
+   - Summary table: project, status, completion percentage,
+     budget consumed
+   - At-risk projects (detail)
+   - Projects completed during the quarter
+
+4. COMMERCIAL ANALYSIS (2 pages)
+   - Monthly sales trend (line chart)
+   - New customers vs. lost customers
+   - Top 10 customers by revenue
+   - Distribution by product/service
+
+5. CUSTOMER SATISFACTION (1-2 pages)
+   - NPS or equivalent metric
+   - Highest-rated areas
+   - Areas for improvement
+   - Notable comments (anonymized)
+
+6. CONCLUSIONS AND Q2 PLAN (1 page)
+   - Quarter conclusions
+   - Q2 objectives
+   - Priority actions
+
+Generate professional charts with consistent colors.
+Professional tone, management-oriented. Negative data is
+presented clearly but with proposed actions.
+Generate in Markdown and HTML.
+Use only documented targets and traffic-light rules. Calculate NPS only when the survey contains the required scale and classification; do not substitute a different metric without defining it. For new/lost customers and comparisons, require sufficient history and identity criteria. If sources, targets, or rules are missing, declare the section pending and do not invent causes or results.

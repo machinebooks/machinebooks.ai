@@ -1,0 +1,1 @@
+Propón para revisión un drop-in de webapp con MemoryHigh y MemoryMax, explicando las unidades y el límite efectivo del cgroup. Los 1536 MiB y 2 GiB de la maqueta no son valores universales. Revisa capacidad, patrón de carga, efectos de OOM y límites de reinicio. No sobrescribas archivos ni reinicies antes de aprobar el plan y su recuperación.

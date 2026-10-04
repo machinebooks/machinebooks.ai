@@ -1,0 +1,11 @@
+Compare Q1 2024 sales (file: sales_Q1_2024.csv) with Q1 2023
+(file: sales_Q1_2023.csv).
+
+For each region and product, calculate:
+- Absolute and percentage variation
+- Flag in red drops greater than 10%
+- Flag in green growth greater than 15%
+- Identify products with recorded 2023 sales and no recorded 2024 sales; do not call them discontinued without checking the catalog
+- Identify products with recorded 2024 sales and no recorded 2023 sales; do not call them new without sufficient history
+
+Generate a summary table and an analysis paragraph for each relevant finding.

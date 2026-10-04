@@ -1,0 +1,8 @@
+async def close_budget_window(repository, authorized_scope, period, now):
+    start,end = period_bounds(period,now)
+    return await repository.close_previous_window_once(
+        authorized_scope=authorized_scope, period=period, next_start=start, next_end=end)
+# Host freezes/reconciles the old window and persists immutable report before closure.
+# Counters are keyed by window; do not reset or overwrite historical spend to zero.
+# Unique scope/period/window closure makes retries idempotent; unresolved reservations
+# remain visible. Scheduler supplies explicit task args and UTC schedule; no mail here.

@@ -1,0 +1,24 @@
+# Two scoped queries against the chapter-4 schema; failures may be billable.
+from sqlalchemy import text
+from datetime import timezone
+
+def get_llm_costs_from_db(engine, authorized_scope, start, end):
+    if not authorized_scope or start.tzinfo is None or end.tzinfo is None or not start < end:
+        raise ValueError("Authorized scope and aware increasing UTC window required")
+    params = {"tenant": authorized_scope,
+        "start": start.astimezone(timezone.utc).replace(tzinfo=None),
+        "end": end.astimezone(timezone.utc).replace(tzinfo=None)}
+    clause = "tenant_id = :tenant AND timestamp >= :start AND timestamp < :end"
+    with engine.connect() as conn:
+        totals = conn.execute(text("SELECT COUNT(*) AS calls, "
+            "COUNT(total_cost_usd) AS priced_calls, SUM(total_cost_usd) AS known_cost_usd, "
+            "SUM(input_tokens) AS known_input, SUM(output_tokens) AS known_output "
+            "FROM llm_usage_logs WHERE " + clause), params).mappings().one()
+        models = conn.execute(text("SELECT model, COUNT(*) AS calls, "
+            "COUNT(total_cost_usd) AS priced_calls, SUM(total_cost_usd) AS known_cost_usd "
+            "FROM llm_usage_logs WHERE " + clause + " GROUP BY model"), params).mappings().all()
+    return {"totals": dict(totals), "by_model": [dict(row) for row in models],
+        "currency": "USD", "window": "[start,end)", "complete": False,
+        "invoice_reconciled": False}
+# The clause is fixed code; every external value is bound. NULL is not billed zero.
+# Host validates scope membership, [start,end) and coverage; FX is a separate dated rule.

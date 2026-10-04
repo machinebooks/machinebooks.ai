@@ -1,0 +1,35 @@
+Prepare the visualizations for a Q1 2024 results presentation.
+From kpis-2024.csv (January to March data only), generate 5 charts,
+one per slide:
+
+SLIDE 1 — Executive summary:
+A panel with the 4 main KPIs for the quarter (revenue, profit,
+net customer flow, weighted NPS). Compare with Q1 2023 only
+from a compatible source; otherwise mark unavailable.
+Large, clear, with trend arrows.
+
+SLIDE 2 — Revenue evolution:
+Bar chart with Q1 2024 monthly revenue. Include Q1 2023 revenue
+as reference only with a compatible source. Without it, do not
+draw invented year-over-year bars or percentages.
+
+SLIDE 3 — Profitability analysis:
+Chart showing revenue, expenses, and margin by month. Use bars
+for revenue and expenses, and a line for the margin percentage.
+
+SLIDE 4 — Customers and satisfaction:
+Two charts side by side:
+- Left: customer flow (new vs. lost)
+- Right: NPS trend
+
+SLIDE 5 — Outlook:
+Year-end projection chart based on the Q1 trend.
+Show optimistic/base/pessimistic scenarios with explicit assumptions.
+These are not statistical confidence intervals or guaranteed outcomes.
+
+Generate each chart as an individual PNG with transparent background,
+16:9 aspect ratio, 2400×1350 pixels at 300 DPI (8×4.5 inches). Name the files as
+slide-1-summary.png, slide-2-revenue.png, etc.
+
+Also generate a file with suggested texts to accompany
+each chart in the presentation.

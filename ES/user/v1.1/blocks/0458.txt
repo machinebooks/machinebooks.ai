@@ -1,0 +1,18 @@
+Ejemplo ilustrativo de métricas; confirma estado y servicio en tu entorno.
+
+┌──────────────────┬────────┬────────────────┬──────────────┐
+│ Nombre           │ CPU    │ Memoria        │ Red I/O      │
+├──────────────────┼────────┼────────────────┼──────────────┤
+│ api-backend      │ 2.3%   │ 245MB / 512MB  │ 12KB / 8KB   │
+│ worker           │ 0.8%   │ 178MB / 512MB  │ 4KB / 2KB    │
+│ postgres         │ 1.1%   │ 89MB / 256MB   │ 6KB / 4KB    │
+│ redis            │ 0.2%   │ 12MB / 128MB   │ 2KB / 1KB    │
+│ meilisearch      │ 0.4%   │ 156MB / 512MB  │ 3KB / 2KB    │
+│ nginx            │ 0.1%   │ 8MB / 64MB     │ 15KB / 12KB  │
+└──────────────────┴────────┴────────────────┴──────────────┘
+
+RESUMEN: Muestra de estado; validación funcional incompleta.
+- 6 servicios corriendo, 5 healthy
+- nginx y API: comprobar HTTP 200; Meilisearch y worker pendientes
+- Suma de la muestra: 688 MB RAM y 4,9% CPU; no acredita normalidad
+- Recomendación: añadir health check al servicio worker

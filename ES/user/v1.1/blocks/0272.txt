@@ -1,0 +1,5 @@
+> Convierte todos los ficheros .xlsx de la carpeta datos/ a CSV con codificación
+  UTF-8 y separador punto y coma. Elige hojas explícitas, conserva quoting
+  de delimitadores, comillas y saltos, y verifica parseo de ida y vuelta.
+  Detecta datos que una hoja de cálculo podría interpretar como fórmulas;
+  conserva el original y prepara una copia de visualización como texto.

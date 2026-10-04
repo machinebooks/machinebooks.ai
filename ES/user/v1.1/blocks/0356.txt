@@ -1,0 +1,8 @@
+Analiza copias de access.log y sus rotaciones, incluidas .gz, bajo
+/var/log/nginx/. Comprueba primero que usan el formato combined.
+Para el ejemplo, cuenta eventos entre 2026-03-15T00:00:00Z inclusive
+y 2026-03-22T00:00:00Z exclusive, según su timestamp, no mtime.
+Filtra el campo status 500, 502, 503 o 504; no cualquier número del texto.
+Da totales por código, top 10 de destinos de petición y distribución
+diaria UTC. Señala líneas inválidas, archivos omitidos y posibles
+solapes de rotación. No modifiques logs ni escribas temporales globales.

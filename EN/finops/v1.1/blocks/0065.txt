@@ -1,0 +1,7 @@
+async def complete_routed_call(router, tracker_factory, authorized_scope, service_name, ctx):
+    selection = router.select_model(authorized_scope, service_name, ctx)
+    tracker = tracker_factory(selection, authorized_scope)
+    return await tracker.ainvoke(ctx.prompt_text)
+# Factory configures the selected async adapter and output cap, native usage normalizer
+# and durable Chapter 4 sink. Host reserves all budget scopes before calling.
+# No unsupported tracker.record method or unmetered sync client is introduced.

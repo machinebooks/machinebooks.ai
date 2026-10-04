@@ -1,0 +1,17 @@
+# Illustrative contractual seats, not MAU; complete priced usage/reconciliation required.
+from decimal import Decimal, ROUND_HALF_UP
+
+def monthly_bill_fixture(contracted_seat_days,actual_tokens,base_price="65",daily_allowance=10000,overage_per_1000="0.01"):
+    if any(type(x) is not int or x<0 for x in (contracted_seat_days,actual_tokens,daily_allowance)):
+        raise ValueError("Invalid contract/usage counts")
+    base,rate=Decimal(base_price),Decimal(overage_per_1000)
+    if any(not x.is_finite() or x<0 for x in (base,rate)):
+        raise ValueError("Invalid contractual rates")
+    included=contracted_seat_days*daily_allowance
+    excess=max(0,actual_tokens-included)
+    overage=(Decimal(excess)*rate/1000).quantize(Decimal("0.01"),rounding=ROUND_HALF_UP)
+    return {"included_tokens":included,"overage_tokens":excess,
+            "base_eur":str(base),"overage_eur":str(overage),"total_eur":str(base+overage),
+            "state":"illustrative_before_tax_not_invoice"}
+# Host contract defines billable usage, cancelled/retried/background calls, seat changes,
+# pricing version, tax, credits and ledger finality. No production billing is shown.

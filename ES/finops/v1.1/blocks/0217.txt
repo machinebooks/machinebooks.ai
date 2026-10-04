@@ -1,0 +1,20 @@
+# Pure allocation validation; draft conversation cannot write a staff-cost ledger.
+from decimal import Decimal
+
+def validate_staff_allocation(allocations,approved_projects):
+    if not isinstance(allocations,dict) or len(allocations)>50:
+        raise ValueError("Bounded allocation mapping required")
+    total=Decimal(0)
+    for project,raw in allocations.items():
+        if project not in approved_projects or isinstance(raw,bool):
+            raise ValueError("Unknown project or invalid fraction")
+        fraction=Decimal(str(raw))
+        if not fraction.is_finite() or not 0<=fraction<=1:
+            raise ValueError("Invalid allocation fraction")
+        total+=fraction
+    if total>1:
+        raise ValueError("Total exceeds full-time capacity")
+    return {"allocated_fraction":str(total),"unallocated_fraction":str(1-total),
+            "state":"pending_owner_confirmation","persisted":False}
+# Host uses same-tenant projects, pseudonymous owner, month/version and protected
+# confirmation; cross-project totals are rechecked atomically at insertion.

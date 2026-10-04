@@ -1,0 +1,4 @@
+Gross read difference (USD) = read_tokens × (standard_input_USD_per_M − read_USD_per_M) / 1,000,000
+Net comparison = comparable baseline − write/read/output cost − added infrastructure and operation
+Cache writes can make the difference negative. Batch and cache terms must match the endpoint.
+This is a counterfactual cost comparison, not verified cash savings or net ROI.

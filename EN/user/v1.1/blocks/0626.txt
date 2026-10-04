@@ -1,0 +1,21 @@
+# CLAUDE.md — Monthly close
+
+## My role
+Financial controller. Responsible for the monthly close and reporting to management.
+
+## Data sources
+- ERP: CSV export of accounting entries (datos/erp/)
+- Bank: statements in OFX or CSV format (datos/banco/)
+- Expenses: employee expense sheets in Excel (datos/gastos/)
+- Invoices: vendor invoices in PDF (datos/facturas/)
+
+## Report format
+- Always in euros, two decimals, European format
+- Report structure: see plantillas/informe-cierre.md
+- Charts with corporate colors: blue (#003366), gray (#666666), green (#339966)
+
+## Security rules
+- Data contains confidential financial information
+- Verify tools, inference, destinations, and contracts before processing; a prompt does not prevent transmission
+- Process locally only with a client, model, and routes verified for that scope
+- Pseudonymize employee names in intermediate reports and protect the mapping; do not claim anonymization where reidentification remains possible

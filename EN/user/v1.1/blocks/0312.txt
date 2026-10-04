@@ -1,0 +1,22 @@
+Generate a read-only March 2024 monthly draft with a 2024-03-31
+cutoff from empresa-demo.db. Validate the schema first.
+
+CUSTOMERS: active according to the synthetic database’s field and cutoff,
+monthly registrations versus February, and distribution by zone. Activation:
+distinct March-cohort customers with at least one completed order
+by the cutoff, divided by all March registrations.
+
+SALES: completed March orders and year-over-year comparison,
+units and EUR calculated using transaction prices and discounts.
+Aggregate lines per order before joining invoices or customers.
+
+COLLECTIONS: per-invoice balance = amount − amount_collected, with verified
+credits. Overdue = outstanding balance and due date before cutoff.
+Age from issue: 0–29, 30–59, 60–89, and ≥90 days, without overlap.
+Do not infer missing payments or due dates. Show debt by customer.
+
+SALESPEOPLE: amounts and registrations with a defined attribution rule.
+Do not calculate quote-to-order conversion: this database has no quotes.
+
+Include SQL, parameters, sources, exceptions, and a 5–7-line summary.
+Export a new informe-negocio-marzo-2024.xlsx copy without overwriting.

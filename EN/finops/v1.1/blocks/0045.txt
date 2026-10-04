@@ -1,0 +1,6 @@
+# Authentication middleware constructs this scope from server-side identity.
+def make_usage_tracker(base_llm, authorized_scope, normalize_usage, durable_sink):
+    return LLMUsageTracker(base_llm=base_llm, authorized_scope=authorized_scope,
+                           normalize_usage=normalize_usage, durable_sink=durable_sink)
+# Scope includes tenant, user, service and calling application, as in Chapter 4.
+# Do not take tenant_id from an arbitrary request body.

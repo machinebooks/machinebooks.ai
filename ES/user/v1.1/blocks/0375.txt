@@ -1,0 +1,6 @@
+En /var/www/app/ necesito preparar un plan de permisos, sin aplicar cambios:
+1. Identifica el usuario de despliegue que posee el código y la configuración.
+2. www-data debe poder leer el código y escribir solo en directorios de runtime necesarios, como uploads/.
+3. Revisa si directorios 755 y ficheros 644 son adecuados; documenta grupo y ACL antes de decidir sobre uploads/.
+4. .env con 600 permite leer y escribir al propietario; elige un propietario de despliegue y concede al servicio solo el acceso necesario.
+5. Presenta los cambios y una copia verificable. Espera aprobación antes de ejecutarlos.

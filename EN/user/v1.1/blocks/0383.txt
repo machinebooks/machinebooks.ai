@@ -1,0 +1,9 @@
+Fictional mock-up—2026-03-21T08:30:00Z
+CPU: 23% over a defined sample; not the load from uptime.
+RAM: around 78%; assess MemAvailable, limits and pressure.
+/: 71%; /var: 89%, with 11 GB free in this mock-up.
+Units nginx, mysql, redis and api-server: states observed at that instant.
+Queried records: three slow queries and twelve 404 responses.
+A 404 alone does not identify bots; zero records do not establish absence of failures.
+Network: 234 connections; compare with a measured baseline.
+Before rotating logs or proposing an index, verify retention, data and execution plan.

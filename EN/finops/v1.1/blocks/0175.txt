@@ -1,0 +1,16 @@
+# Proposal only; host authorizes fresh MFA/role/tenant and validates strict policy schema.
+from datetime import datetime,timedelta,timezone
+from uuid import uuid4
+
+async def propose_emergency_override(principal,authorize,validated_override,reason,duration_hours=4):
+    if type(duration_hours) is not int or not 1<=duration_hours<=4 or not isinstance(reason,str) or not 1<=len(reason.strip())<=500:
+        raise ValueError("Invalid emergency bounds")
+    scope=await authorize(principal,"policy.emergency.propose",fresh_mfa=True)
+    if validate_override_permissions(validated_override,"authorized"):
+        raise ValueError("Locked fields")
+    now=datetime.now(timezone.utc)
+    return {"id":str(uuid4()),"scope":scope,"override":validated_override,
+            "created_at":now.isoformat(),"expires_at":(now+timedelta(hours=duration_hours)).isoformat(),
+            "reason":reason,"state":"pending_independent_approval","applied":False}
+# Host enforces expiry on EVERY read, immutable approvals, expected version, invalidation,
+# audit and recovery. No parser, write, notification, PR creation or automatic revert is shown.

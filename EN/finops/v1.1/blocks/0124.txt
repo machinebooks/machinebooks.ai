@@ -1,0 +1,24 @@
+# Reconciliation must match month, scope, currency and billing/source version.
+from decimal import Decimal
+
+def forecast_error(expected, actual, *, reconciled_final):
+    predicted, observed = Decimal(str(expected)), Decimal(str(actual))
+    if type(reconciled_final) is not bool or any(not x.is_finite() for x in (predicted, observed)):
+        raise ValueError("Invalid evaluation")
+    signed = predicted-observed
+    absolute = abs(signed)
+    ape = None if observed == 0 else absolute/abs(observed)*100
+    bias_pct = None if observed == 0 else signed/abs(observed)*100
+    return {"signed_error": str(signed), "absolute_error": str(absolute),
+            "absolute_percentage_error": None if ape is None else str(ape),
+            "signed_bias_pct": None if bias_pct is None else str(bias_pct),
+            "state": "final_reconciled" if reconciled_final else "provisional"}
+
+def mean_absolute_percentage_error(evaluations):
+    eligible = [Decimal(e["absolute_percentage_error"]) for e in evaluations
+                if e["state"] == "final_reconciled" and e["absolute_percentage_error"] is not None]
+    if any(not v.is_finite() or v < 0 for v in eligible):
+        raise ValueError("Invalid APE")
+    return {"mape": None if not eligible else str(sum(eligible)/len(eligible)),
+            "eligible_count": len(eligible), "excluded_count": len(evaluations)-len(eligible)}
+# Day 3 does not establish invoice finality; zero actual stays visible with APE null.

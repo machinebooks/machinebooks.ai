@@ -1,0 +1,6 @@
+Revisa el plan con estos límites:
+- Excluye PRY-012, PRY-014 y PRY-015 y verifica sus rutas y huellas.
+- Comprueba respaldo y restauración antes de ejecutar.
+- Registra origen, destino, huella previa, resultado y error por operación.
+- Impide técnicamente cambios fuera de las rutas aprobadas.
+- Ejecuta únicamente los lotes autorizados y detente ante discrepancias.

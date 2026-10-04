@@ -1,0 +1,20 @@
+from decimal import Decimal, ROUND_HALF_UP
+
+# Independent scenario: 40 weekly hours and one 0.80 factor.
+# Lost capacity is a valuation, not a payroll payment during a vacancy.
+weekly_capacity = Decimal("40") * Decimal("0.80")
+uncovered_capacity_value = Decimal("62") * weekly_capacity * 6
+monthly_replacement_value = Decimal("58") * weekly_capacity * Decimal("4.33")
+ramp_capacity_value = monthly_replacement_value * Decimal("0.40") * 4
+supervision_cost = Decimal("70") * Decimal("40") * Decimal("4.33") * Decimal("0.10") * 4
+combined_illustrative_value = uncovered_capacity_value + ramp_capacity_value + supervision_cost
+cent = Decimal("0.01")
+for name, value in (
+    ("Uncovered capacity", uncovered_capacity_value),
+    ("Ramp capacity", ramp_capacity_value),
+    ("Supervision", supervision_cost),
+    ("Combined illustrative value", combined_illustrative_value),
+):
+    print(f"{name}: EUR {value.quantize(cent, rounding=ROUND_HALF_UP)}")
+# 11904.00; 12858.37; 4849.60; 29611.97.
+# Recruitment cash costs and avoided losses require separate evidence.

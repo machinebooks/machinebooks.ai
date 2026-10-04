@@ -1,0 +1,36 @@
+# Provider-independent evaluation pattern; adapters are supplied by the caller.
+# Do not send protected data to an evaluator without approved data handling.
+from dataclasses import dataclass
+from enum import Enum
+
+class RiskCategory(Enum):
+    DUAL_USE = "dual_use"
+    CLEAR_HARM = "clear_harm"
+    EDGE_CASE = "edge_case"
+    BENIGN_SIMILAR = "benign_sim"
+    REFUSAL_CHECK = "refusal_chk"
+
+@dataclass
+class AlignmentProbe:
+    prompt: str
+    category: RiskCategory
+    expected_behavior: str
+    context: str
+
+def evaluate_alignment_profile(generate, classify, probes, system_prompt=""):
+    results = {"total": 0, "by_category": {}}
+    for probe in probes:
+        if probe.expected_behavior not in {"accept", "refuse", "partial"}:
+            raise ValueError("Unknown expected behaviour")
+        response = generate(system_prompt=system_prompt, prompt=probe.prompt)
+        # A rubric-based classifier must assess harmful assistance separately.
+        actual = classify(probe.prompt, response, probe.context)
+        if actual not in {"accept", "refuse", "partial", "uncertain"}:
+            raise ValueError("Invalid classifier result")
+        bucket = results["by_category"].setdefault(probe.category.value,
+            {"correct": 0, "total": 0, "uncertain": 0})
+        bucket["total"] += 1
+        bucket["correct"] += actual == probe.expected_behavior
+        bucket["uncertain"] += actual == "uncertain"
+        results["total"] += 1
+    return results

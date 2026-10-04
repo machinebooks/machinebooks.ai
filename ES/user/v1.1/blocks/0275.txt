@@ -1,0 +1,9 @@
+Limpia una copia de ventas-Q3.csv con estas reglas:
+- Columnas requeridas: Fecha, Cliente, Producto, Cantidad, Precio e ID_operación.
+- Conserva filas sin datos obligatorios como excepciones, sin borrarlas.
+- Precio ausente: pendiente; no conviertas la columna numérica en texto mixto.
+- Confirma el formato de cada fecha; las ambiguas quedan pendientes.
+- Fecha+cliente+producto no prueba duplicidad; confirma ID y procedencia.
+- Cantidades diferentes pueden ser operaciones distintas; no elijas la mayor.
+- Conserva nombres originales, devoluciones, ceros y cantidades negativas.
+- Presenta propuestas y reconciliación antes de aplicar cambios autorizados.

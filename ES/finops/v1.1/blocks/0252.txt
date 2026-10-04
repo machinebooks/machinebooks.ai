@@ -1,0 +1,44 @@
+# Observed arithmetic signal; it does not establish causal rebound.
+from dataclasses import dataclass
+from decimal import Decimal
+
+
+@dataclass
+class ReboundDiagnostic:
+    active: bool | None
+    unit_cost_reduction_pct: float | None
+    volume_growth_pct: float | None
+    total_spend_change_pct: float | None
+    explanation: str
+    recommendation: str
+
+
+class JevonsMonitor:
+    def diagnose(self, previous_unit_cost, current_unit_cost,
+                     previous_volume, current_volume):
+        costs = []
+        for value in (previous_unit_cost, current_unit_cost):
+            if type(value) not in (int, float, Decimal):
+                raise ValueError("Invalid unit cost")
+            amount = Decimal(str(value))
+            if not amount.is_finite() or amount < 0:
+                raise ValueError("Invalid unit cost")
+            costs.append(amount)
+        for value in (previous_volume, current_volume):
+            if type(value) is not int or not 0 <= value <= 1_000_000_000:
+                raise ValueError("Invalid volume")
+        previous, current = costs
+        if previous == 0 or previous_volume == 0:
+            return ReboundDiagnostic(None, None, None, None,
+                "Base insuficiente para ratios", "Revisar períodos y cobertura")
+        previous_spend = previous * previous_volume
+        current_spend = current * current_volume
+        reduction = (previous - current) / previous * 100
+        growth = Decimal(current_volume - previous_volume) / previous_volume * 100
+        change = (current_spend - previous_spend) / previous_spend * 100
+        candidate = reduction > 0 and change > 0
+        return ReboundDiagnostic(candidate, round(float(reduction), 2),
+            round(float(growth), 2), round(float(change), 2),
+            "Señal compatible con rebote; causalidad no demostrada" if candidate
+            else "No aparece esa combinación; calidad y cobertura por revisar",
+            "Comparar períodos, valor, precios y causas antes de decidir")

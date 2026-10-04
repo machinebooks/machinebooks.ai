@@ -1,0 +1,20 @@
+# Prometheus rule file, not Grafana SQL alert provisioning.
+# Host exporter must publish fresh, complete per-scope/window ratios and freshness.
+groups:
+  - name: finops-budget
+    rules:
+      - alert: LLMBudgetWarning
+        expr: finops_budget_ratio >= 0.8 and finops_budget_ratio < 1 and on(scope_id) finops_budget_snapshot_valid == 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Review budget at eighty percent"
+      - alert: LLMBudgetExceeded
+        expr: finops_budget_ratio >= 1 and on(scope_id) finops_budget_snapshot_valid == 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Budget threshold reached; review control"
+# Alerts do not implement blocking; missing/invalid snapshots need a separate alert.

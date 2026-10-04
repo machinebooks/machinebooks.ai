@@ -1,0 +1,6 @@
+# Isolation configuration contract; no reviewed image or deployment is supplied.
+# Require a reviewed image digest, a compatible non-root identity, minimal
+# read-only mounts, a bounded tmpfs, restricted network, capabilities and resources.
+# A host bind mount under /tmp is not ephemeral; a container is not proof of isolation.
+def build_mcp_isolation_configuration():
+    raise NotImplementedError("Supply and test a deployment-specific isolation configuration")

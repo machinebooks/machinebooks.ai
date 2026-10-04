@@ -1,0 +1,11 @@
+set -euo pipefail
+: "${DOCKER_CONTEXT:?Set the reviewed Docker context}"
+compose=(docker --context "$DOCKER_CONTEXT" compose
+  --project-name staging --file /opt/staging/docker-compose.yml)
+ids="$("${compose[@]}" ps --all --quiet)"
+[ -n "$ids" ] || exit 1
+# GNU/Linux Bash 4+; IDs come only from the reviewed Compose project.
+mapfile -t container_ids <<< "$ids"
+docker --context "$DOCKER_CONTEXT" stats --no-stream --format \
+  "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}}" \
+  "${container_ids[@]}"

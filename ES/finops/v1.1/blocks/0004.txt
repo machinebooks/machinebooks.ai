@@ -1,0 +1,37 @@
+# Read-only example; host scopes this client and configures native timeouts/retries.
+from datetime import datetime, timedelta, timezone
+from decimal import Decimal
+
+
+def fetch_aws_daily_costs(ce, days):
+    if type(days) is not int or not 1 <= days <= 90:
+        raise ValueError("Invalid day count")
+    end = datetime.now(timezone.utc).date()
+    request = {"TimePeriod": {"Start": (end - timedelta(days=days)).isoformat(),
+        "End": end.isoformat()}, "Granularity": "DAILY", "Metrics": ["UnblendedCost"],
+        "GroupBy": [{"Type": "DIMENSION", "Key": "SERVICE"}]}
+    rows, seen = [], set()
+    complete = False
+    for page in range(20):
+        response = ce.get_cost_and_usage(**request)
+        for day in response["ResultsByTime"]:
+            for group in day["Groups"]:
+                metric = group["Metrics"]["UnblendedCost"]
+                amount = Decimal(metric["Amount"])
+                if not amount.is_finite() or not isinstance(metric["Unit"], str):
+                    raise ValueError("Invalid provider amount or unit")
+                rows.append({"date": day["TimePeriod"]["Start"],
+                    "service": group["Keys"][0], "amount": str(amount),
+                    "unit": metric["Unit"], "estimated": day["Estimated"]})
+                if len(rows) > 10000:
+                    raise ValueError("Result exceeds educational bound")
+        token = response.get("NextPageToken")
+        if not token:
+            complete = True
+            break
+        if not isinstance(token, str) or len(token) > 8192 or token in seen:
+            raise ValueError("Invalid or repeated page token")
+        seen.add(token)
+        request["NextPageToken"] = token
+    return {"rows": rows, "complete": complete,
+            "time_period": request["TimePeriod"], "metric": "UnblendedCost"}

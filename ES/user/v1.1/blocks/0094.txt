@@ -1,0 +1,11 @@
+Compara las ventas de Q1 2024 (archivo: ventas_Q1_2024.csv) con las de
+Q1 2023 (archivo: ventas_Q1_2023.csv).
+
+Para cada región y producto, calcula:
+- Variación absoluta y porcentual
+- Señala en rojo las caídas superiores al 10%
+- Señala en verde los crecimientos superiores al 15%
+- Identifica productos con ventas registradas en 2023 y sin ventas registradas en 2024; no los llames descatalogados sin verificar el catálogo
+- Identifica productos con ventas registradas en 2024 y sin ventas registradas en 2023; no los llames nuevos sin historia suficiente
+
+Genera una tabla resumen y un párrafo de análisis para cada hallazgo relevante.

@@ -1,0 +1,12 @@
+# Read-only native Google account inventory; host supplies authorized client/timeout.
+from itertools import islice
+
+def billing_account_inventory(client,authorized_names):
+    rows=[]
+    for position,account in enumerate(islice(client.list_billing_accounts(timeout=20),1001)):
+        if position>=1000:
+            raise ValueError("Account inventory bound")
+        if account.name in authorized_names:
+            rows.append({"name":account.name,"open":account.open})
+    return {"accounts":rows,"cost_data_read":False}
+# Listing access is not cost-view permission. No personal/display names are printed.

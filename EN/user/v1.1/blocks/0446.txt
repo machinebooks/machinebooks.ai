@@ -1,0 +1,27 @@
+Illustrative right-sizing proposals — pending validation:
+
+1. dev-test (m5.large → t3.small)
+   Assumed average CPU: 3.2% | Memory: 12% of 8 GB
+   Assumed cost: 87.60 €/month → 18.90 €/month
+   Arithmetic saving: 68.70 €/month (78.4%)
+   Risk: PENDING — review peaks, CPU credits, memory,
+   dependencies, and capacity of the target instance family.
+
+2. web-frontend (Azure B2ms → B1ms)
+   Assumed average CPU: 12.1% | Memory: 22% of 8 GB
+   Assumed cost: 78.40 €/month → 39.20 €/month
+   Arithmetic saving: 39.20 €/month (50%)
+   Risk: PENDING — check that 2 GB covers peaks,
+   CPU credits, workload, and dependencies.
+
+3. analytics (c5.xlarge → c5.large)
+   Assumed average CPU: 11.4% | Memory: 35% of 8 GB
+   Assumed cost: 124.80 €/month → 62.40 €/month
+   Arithmetic saving: 62.40 €/month (50%)
+   Risk: PENDING — measure complete nightly batches,
+   target memory, network, and storage limits.
+
+Conditional scenario saving: 170.30 €/month (2,043.60 €/year).
+Teaching values in EUR, not current prices or a real bill.
+Authorize each change after validating capacity, dependencies, and rollback;
+a week of averages does not establish coverage of all peaks.

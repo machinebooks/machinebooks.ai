@@ -1,0 +1,38 @@
+Necesito generar el informe semanal de estado del proyecto "Migración ERP"
+para la semana del 18 al 22 de marzo de 2024.
+
+Fuentes de datos:
+1. Notas de la semana: C:\Proyectos\MigracionERP\notas_semana_12.txt
+2. Seguimiento de tareas: C:\Proyectos\MigracionERP\seguimiento_tareas.xlsx
+3. Resumen de incidencias: C:\Proyectos\MigracionERP\incidencias_marzo.csv
+
+Estructura del informe:
+
+CABECERA
+- Proyecto: Migración ERP
+- Periodo: 18-22 marzo 2024
+- Estado general: aplica solo las reglas Verde/Amarillo/Rojo documentadas y aprobadas; si faltan reglas, umbrales o datos, indica PENDIENTE
+
+RESUMEN EJECUTIVO (3-4 líneas)
+
+ACTIVIDADES COMPLETADAS ESTA SEMANA
+- Lista con responsable y fecha de cierre
+
+ACTIVIDADES EN CURSO
+- Lista con responsable, porcentaje de avance y fecha prevista
+
+ACTIVIDADES RETRASADAS
+- Lista con responsable, motivo del retraso y nueva fecha estimada
+
+INCIDENCIAS ABIERTAS
+- Número, descripción, impacto y estado
+
+RIESGOS IDENTIFICADOS
+- Descripción, probabilidad, impacto y mitigación propuesta
+
+PLAN PARA LA PRÓXIMA SEMANA
+- Principales actividades previstas
+
+Tono directo y factual. Sin adornos. Si hay problemas, que se vean claros.
+Genera en Markdown y en HTML.
+Identifica fecha de corte y fuente de cada indicador. No inventes motivos, probabilidades o fechas nuevas; separa datos observados, estimaciones e información pendiente. Conserva las reglas y cálculos usados y espera revisión antes de enviar.

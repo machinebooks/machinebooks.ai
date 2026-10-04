@@ -1,0 +1,28 @@
+# Illustrative neutral registry; pending fields do not establish compliance.
+provider: example_provider
+model_ids: ["approved-model-id"]
+review:
+  state: pending
+  as_of: "2026-10-04"
+  terms_url: null
+  terms_version: null
+  reviewed_at: null
+  next_review_due: null
+contract:
+  agreement_evidence_ref: null
+  dpa_evidence_ref: null
+  processing_locations: null
+  retention_terms: null
+  training_terms: null
+  transfer_safeguards_evidence_ref: null
+eligibility:
+  production_approved: false
+  approved_task_types: []
+  prohibited_task_types: []
+  applicable_roles_and_obligations: null
+  capability_evaluation_evidence_ref: null
+contact:
+  approved_escalation_channel_ref: null
+
+# Replace placeholders with reviewed contract evidence before activation.
+# The host enforces due-review, schema and eligibility; YAML alone does not.

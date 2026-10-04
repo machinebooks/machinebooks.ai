@@ -1,0 +1,17 @@
+# Read-only whole March (end-exclusive); values are native provider report fields.
+from decimal import Decimal
+
+def savings_plan_report(ce):
+    response=ce.get_savings_plans_utilization(
+        TimePeriod={"Start":"2026-03-01","End":"2026-04-01"},Granularity="MONTHLY")
+    total=response.get("Total")
+    if not total:
+        return {"state":"unavailable","report":None}
+    utilization=Decimal(total["Utilization"]["UtilizationPercentage"])
+    savings=Decimal(total["Savings"]["NetSavings"])
+    if not utilization.is_finite() or not 0<=utilization<=100 or not savings.is_finite():
+        raise ValueError("Invalid native report")
+    return {"state":"provider_report","utilization_pct":str(utilization),
+            "net_savings_native_amount":str(savings),"currency_source":"AWS report contract",
+            "rows":response.get("SavingsPlansUtilizationsByTime",[])}
+# Native NetSavings is not an independent audit or full-TCO/cash-saving claim.

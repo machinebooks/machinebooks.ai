@@ -1,0 +1,8 @@
+Desde empresa-demo.db del C17, sólo lectura, con corte 2024-03-31:
+1. Extrae ventas netas de pedidos completados del Q1 de 2024 por
+   zona y categoría, con precios históricos y descuentos.
+2. No calcules desviación presupuestaria: la base no tiene presupuesto.
+   Si se aporta uno validado, confirma criterios y mapeo antes de cruzarlo.
+3. Genera gráfico y tabla de evolución mensual con fuentes y límites.
+4. Escribe un resumen de 10 líneas sin causas no demostradas.
+5. Exporta copias nuevas bajo informes/2024-Q1/, sin sobrescribir.

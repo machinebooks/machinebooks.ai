@@ -1,0 +1,35 @@
+def run_budgeted_analysis(budget, tracked_step, upper_bound_eur, agent_id="principal", max_rounds=20):
+    # Uses WorkflowBudget, budget_amount, budget_context and uuid4 above.
+    if not callable(tracked_step) or type(max_rounds) is not int or not 1 <= max_rounds <= 20:
+        raise ValueError("Tracked step and bounded rounds required")
+    bound = budget_amount(upper_bound_eur)
+    if bound <= 0:
+        raise ValueError("Positive pre-call liability bound required")
+    history = []
+    for _ in range(max_rounds):
+        event_id = str(uuid4())
+        if not budget.reserve(event_id, bound):
+            return {"state": "limit", "result": None, "incurred_eur": budget.incurred_eur}
+        try:
+            response = tracked_step(objective=budget.objective, history=list(history),
+                                    financial_context=budget_context(budget),
+                                    event_id=event_id, timeout_seconds=budget.time_remaining_seconds)
+            if not isinstance(response, dict) or set(response) != {"cost_eur", "text", "state"}:
+                raise ValueError("Invalid normalized step response")
+            within_bound = budget.reconcile(event_id, agent_id, response["cost_eur"])
+            if not within_bound:
+                return {"state": "overrun", "result": None, "incurred_eur": budget.incurred_eur}
+            if response["state"] not in {"continue", "completed"} or not isinstance(response["text"], str) or not 1 <= len(response["text"]) <= 30000:
+                raise ValueError("Invalid step state or output")
+            history.append(response["text"])
+            if response["state"] == "completed":
+                return {"state": "completed", "result": response["text"], "incurred_eur": budget.incurred_eur}
+        except (OSError, TimeoutError, ValueError, TypeError):
+            return {"state": "unresolved", "result": None, "incurred_eur": budget.incurred_eur}
+    return {"state": "round_limit", "result": None, "incurred_eur": budget.incurred_eur}
+
+# The injected host adapter uses approved provider/model identities and records
+# native usage with a versioned tariff/FX. It cannot execute arbitrary tools.
+# upper_bound_eur covers the exact bounded step, including any approved tools.
+# Unknown liability stays reserved; retries and recovery require host policy.
+# A completed text is not proof of quality: acceptance is separately evaluated.

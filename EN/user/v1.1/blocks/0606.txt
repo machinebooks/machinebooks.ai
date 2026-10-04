@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(/.env)",
+      "Read(/.env.*)",
+      "Read(/**/*.env)",
+      "Read(/**/*.env.*)",
+      "Read(/credentials/**)",
+      "Read(/secrets/**)",
+      "Read(/**/*.pem)",
+      "Read(/**/*.key)",
+      "Read(/**/id_rsa*)",
+      "Read(/datos-personales/**)",
+      "Read(/rrhh/**)",
+      "Read(/nominas/**)",
+      "Read(/confidencial/**)",
+      "Read(/config/production.yaml)",
+      "Read(/config/database.yml)"
+    ]
+  }
+}

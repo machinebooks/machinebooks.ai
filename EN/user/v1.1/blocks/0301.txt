@@ -1,0 +1,32 @@
+## New customers — March 2024 vs. March 2023
+
+| Commercial zone | March 2023 | March 2024 | Variance | % |
+|-----------------|-----------|-----------|----------|---|
+| Centro | 45 | 52 | +7 | +15.6% |
+| Norte | 23 | 31 | +8 | +34.8% |
+| Este | 31 | 28 | -3 | -9.7% |
+| Sur | 18 | 22 | +4 | +22.2% |
+| Internacional | 14 | 19 | +5 | +35.7% |
+| Oeste | 12 | 15 | +3 | +25.0% |
+| Canarias | 8 | 11 | +3 | +37.5% |
+| Baleares | 5 | 7 | +2 | +40.0% |
+| **Total** | **156** | **185** | **+29** | **+18.6%** |
+
+### SQL query used:
+SELECT z.nombre as zona_comercial,
+  SUM(CASE WHEN c.fecha_alta >= '2023-03-01'
+    AND c.fecha_alta < '2023-04-01' THEN 1 ELSE 0 END) as marzo_2023,
+  SUM(CASE WHEN c.fecha_alta >= '2024-03-01'
+    AND c.fecha_alta < '2024-04-01' THEN 1 ELSE 0 END) as marzo_2024
+FROM clientes c
+JOIN zonas z ON c.zona_comercial = z.id_zona
+WHERE (c.fecha_alta >= '2023-03-01' AND c.fecha_alta < '2023-04-01')
+   OR (c.fecha_alta >= '2024-03-01' AND c.fecha_alta < '2024-04-01')
+GROUP BY z.nombre
+ORDER BY marzo_2024 DESC;
+
+### Observations:
+- Overall year-over-year growth of 18.6%
+- All zones are growing except Este (-9.7%)
+- Highest relative growth in Baleares (+40%) and Canarias (+37.5%)
+- Highest absolute growth in Norte (+8) and Centro (+7)

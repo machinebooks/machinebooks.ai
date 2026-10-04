@@ -1,0 +1,21 @@
+import asyncio
+
+async def complete_with_approved_fallback(request, approved_candidates, invoke_tracked):
+    if len(approved_candidates) > 3:
+        raise ValueError("candidate limit")
+    if type(request["max_tokens"]) is not int or not 1 <= request["max_tokens"] <= 8192:
+        raise ValueError("output cap")
+    for candidate in approved_candidates:
+        if candidate["ready"] is not True or candidate["data_transfer_authorized"] is not True:
+            continue
+        try:
+            result = await asyncio.wait_for(invoke_tracked(candidate,request),timeout=60)
+        except (TimeoutError,ConnectionError):
+            continue
+        if result["stop_reason"] != "end_turn" or not isinstance(result.get("text"),str) or len(result["text"])>12000:
+            raise ValueError("incomplete or invalid response")
+        return result
+    raise RuntimeError("no approved provider completed")
+# Host approves destination/model/data scope freshly, reserves every attempt and
+# records failures/cost uncertainty before fallback. /api/tags alone is not readiness.
+# Sovereign data cannot silently leave local scope; local API fee zero is not TCO zero.

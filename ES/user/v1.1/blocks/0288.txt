@@ -1,0 +1,20 @@
+Prepara un borrador para el cierre mensual de marzo 2024:
+
+1. Lee los gastos del ERP (gastos-erp-marzo.csv) y el extracto bancario
+   (extracto-marzo.csv)
+
+2. Propón coincidencias por referencias y criterios aprobados del Q1;
+   importe y fecha (±5 días) son filtros, no prueba de identidad
+
+3. Clasifica todos los gastos según el mapeo en mapeo-categorias-2024.json
+
+4. Compara con el presupuesto mensual (presupuesto-2024.xlsx: identifica y confirma la hoja/columna de marzo)
+
+5. Genera:
+   - Informe de conciliación con movimientos pendientes
+   - Informe de desviación del mes
+   - Comparativa con meses anteriores (enero y febrero)
+   - Lista de acciones pendientes (movimientos no conciliados, gastos sin clasificar)
+
+6. Guarda copias en una carpeta nueva bajo cierres/2024-03/; no sobrescribas
+   informes anteriores. No contabilices ajustes ni apruebes el cierre.

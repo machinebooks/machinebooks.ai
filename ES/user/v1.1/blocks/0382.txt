@@ -1,0 +1,6 @@
+Revisa el estado general de este servidor:
+- Uso de CPU, memoria y disco
+- Servicios que deberían estar corriendo: nginx, mysql, redis, api-server
+- Errores en los logs del sistema de las últimas 12 horas
+- Conexiones de red sospechosas (si las hay)
+Dime si hay algo que requiera atención.

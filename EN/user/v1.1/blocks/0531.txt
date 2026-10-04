@@ -1,0 +1,7 @@
+I need to automate the generation of a weekly project status
+report. The data is in datos/tareas.csv and datos/incidencias.csv.
+The report should be generated every Monday at 9:00 and saved in
+informes/estado-semanal-FECHA.md.
+
+Create the execution script, configure the necessary permissions, and give me
+the cron line I need to add.

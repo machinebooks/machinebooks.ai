@@ -1,0 +1,44 @@
+# Stable cohort allocation; the host supplies an approved immutable policy.
+import hashlib
+import hmac
+import json
+from decimal import Decimal, InvalidOperation
+
+
+def select_migration_model(tenant_id, cohort_id, policy_version,
+                           current_model, new_model, new_fraction, cohort_secret):
+    for value in (tenant_id, cohort_id, policy_version):
+        if not isinstance(value, str) or not value or len(value) > 256:
+            raise ValueError("Bounded authenticated scope and policy identifiers are required")
+    for model in (current_model, new_model):
+        if not isinstance(model, tuple) or len(model) != 2 or any(
+            not isinstance(value, str) or not value or len(value) > 256 for value in model
+        ):
+            raise ValueError("A model identity is a provider/model tuple")
+    if current_model == new_model:
+        raise ValueError("Migration requires two distinct model identities")
+    if not isinstance(cohort_secret, bytes) or len(cohort_secret) < 32:
+        raise ValueError("A protected cohort key of at least32 bytes is required")
+    if isinstance(new_fraction, bool) or new_fraction is None:
+        raise ValueError("A known fraction from zero to one is required")
+    try:
+        fraction = Decimal(str(new_fraction))
+    except (InvalidOperation, ValueError):
+        raise ValueError("Invalid migration fraction") from None
+    if not fraction.is_finite() or not 0 <= fraction <= 1:
+        raise ValueError("A finite fraction from zero to one is required")
+    scaled = fraction * 10_000
+    if scaled != scaled.to_integral_value():
+        raise ValueError("This example uses whole basis points")
+    payload = json.dumps([tenant_id, cohort_id, policy_version],
+                         ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    digest = hmac.new(cohort_secret, payload, hashlib.sha256).digest()
+    bucket = int.from_bytes(digest, "big") % 10_000
+    return new_model if bucket < int(scaled) else current_model
+
+# Cohort identifiers and the key remain stable through this policy's stages.
+# The percentage describes allocation over many cohorts, not an exact count
+# in each small batch. Zero selects only current; one selects only new.
+# Host authorization, eligibility, health, privacy, budget reservation and
+# tracked invocation are mandatory for the selected provider/model identity.
+# A new policy version/key reassigns cohorts; preserve the prior rollback state.

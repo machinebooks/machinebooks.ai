@@ -1,0 +1,39 @@
+#!/bin/bash
+# GNU/Linux backup archival exercise; inventory first, then explicit approval.
+set -euo pipefail
+umask 077
+BACKUP_DIR=/home/backups
+ARCHIVE_DIR="$BACKUP_DIR/archivo"
+RUN_ID=$(date -u +%Y%m%dT%H%M%SZ)-$$
+LOG_FILE="$BACKUP_DIR/movimiento-$RUN_ID.log"
+mkdir -p "$ARCHIVE_DIR"
+[[ -d $BACKUP_DIR && ! -L $BACKUP_DIR && ! -L $ARCHIVE_DIR ]] || exit 1
+[[ $(realpath "$ARCHIVE_DIR") == "$(realpath "$BACKUP_DIR")/archivo" ]] || exit 1
+exec 9>"$BACKUP_DIR/movimiento.lock"
+flock -n 9 || exit 1
+inventory=$(mktemp "$BACKUP_DIR/.inventory.XXXXXX")
+trap 'rm -f -- "$inventory"' EXIT
+find "$BACKUP_DIR" -maxdepth 1 -type f \( -name "*.sql" -o -name "*.sql.gz" \
+    -o -name "*.tar.gz" -o -name "*.bak" \) -mmin +43200 -print0 > "$inventory"
+mapfile -d '' files < "$inventory"
+for file in "${files[@]}"; do
+    target="$ARCHIVE_DIR/$(basename "$file")"
+    [[ -f $file && ! -L $file ]] || exit 1
+    [[ ! -e $target && ! -L $target ]] || exit 1
+    printf '%q -> %q\n' "$file" "$target"
+done
+read -r -p "Escribe APPLY para aplicar el inventario revisado: " confirmation
+[[ $confirmation == APPLY ]] || exit 1
+count=0
+for file in "${files[@]}"; do
+    target="$ARCHIVE_DIR/$(basename "$file")"
+    [[ ! -e $target && ! -L $target ]] || exit 1
+    before=$(sha256sum "$file" | cut -d ' ' -f 1)
+    mv -T --no-clobber -- "$file" "$target"
+    [[ ! -e $file && -f $target && ! -L $target ]] || exit 1
+    after=$(sha256sum "$target" | cut -d ' ' -f 1)
+    [[ $before == "$after" ]] || exit 1
+    printf '%s\t%q\t%q\t%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$file" "$target" "$after" >> "$LOG_FILE"
+    count=$((count+1))
+done
+printf 'Movimientos de esta ejecución verificados: %s\n' "$count"

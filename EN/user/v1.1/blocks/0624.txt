@@ -1,0 +1,24 @@
+trabajo/
+├── CLAUDE.md                  ← general configuration + project list
+├── .claude/
+│   └── commands/
+│       ├── estado-global.md
+│       ├── informe-semanal.md
+│       ├── ciclo-publicacion.md
+│       ├── cierre-dia.md
+│       └── revisar-servidores.md
+├── proyecto-alfa/
+│   ├── CLAUDE.md              ← Alpha-specific context
+│   └── ...
+├── proyecto-beta/
+│   ├── CLAUDE.md              ← Beta-specific context
+│   └── ...
+├── proyecto-gamma/
+│   ├── CLAUDE.md
+│   └── ...
+├── proyecto-delta/
+│   ├── CLAUDE.md
+│   └── ...
+└── proyecto-epsilon/
+    ├── CLAUDE.md
+    └── ...

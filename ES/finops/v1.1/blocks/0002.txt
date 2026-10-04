@@ -1,0 +1,25 @@
+# Historical compact projection; chapter 4 supplies the canonical example schema.
+# Unknown usage and cost are NULL. This model does not guarantee capture.
+from sqlalchemy import Column, Integer, String, Numeric, DateTime
+from datetime import datetime, timezone
+from app.database import Base
+
+class LLMUsageLog(Base):
+    __tablename__ = "llm_usage_log"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    tenant_id = Column(String(64), nullable=False, index=True)
+    user_id = Column(String(64), nullable=True, index=True)
+    service_type = Column(String(50), nullable=False)
+    provider_type = Column(String(30), nullable=False)
+    model_name = Column(String(100), nullable=False)
+    prompt_tokens = Column(Integer, nullable=True)
+    completion_tokens = Column(Integer, nullable=True)
+    total_tokens = Column(Integer, nullable=True)
+    cost_input = Column(Numeric(24, 12), nullable=True)
+    cost_output = Column(Numeric(24, 12), nullable=True)
+    cost_total = Column(Numeric(24, 12), nullable=True)
+    latency_ms = Column(Integer, nullable=True)
+    created_at = Column(DateTime, nullable=False,
+        default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
+# MySQL stores this boundary value as UTC; host sets the session timezone to UTC.
+# Domain timestamps remain aware. Validation and tariff provenance are host duties.

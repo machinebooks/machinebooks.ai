@@ -1,0 +1,10 @@
+A partir de los cierres mensuales de enero a diciembre de 2024 (carpeta
+cierres/), genera un análisis anual con:
+
+1. Evolución mensual de cada partida presupuestaria
+2. Estacionalidad: ¿qué meses tienen más gasto y en qué partidas?
+3. Proveedores cuya facturación ha crecido más de un 25% durante el año
+4. Partidas que han estado sistemáticamente por encima del presupuesto
+   (más de 3 meses consecutivos con desviación positiva)
+5. Efecto acumulado: desviación total anual real vs. lo que proyectabas
+   en Q1 basándote solo en los datos de los primeros tres meses

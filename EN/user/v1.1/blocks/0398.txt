@@ -1,0 +1,1 @@
+Propose a webapp drop-in for review using MemoryHigh and MemoryMax, explaining units and the effective cgroup limit. The mock-up's 1536 MiB and 2 GiB are not universal values. Review capacity, workload pattern, OOM effects and restart limits. Do not overwrite files or restart before approving the plan and its recovery.

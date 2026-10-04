@@ -1,0 +1,19 @@
+# Read-only definitions; authorized host configures the CUR client and timeout.
+import boto3
+
+cur_client = boto3.client("cur", region_name="us-east-1")
+definitions, seen = [], set()
+request = {"MaxResults": 5}
+complete = False
+for page in range(20):
+    response = cur_client.describe_report_definitions(**request)
+    definitions.extend(response["ReportDefinitions"])
+    token = response.get("NextToken")
+    if not token:
+        complete = True
+        break
+    if token in seen:
+        raise ValueError("Repeated report page token")
+    seen.add(token)
+    request["NextToken"] = token
+result = {"definitions": definitions, "complete": complete}

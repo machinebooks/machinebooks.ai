@@ -1,0 +1,14 @@
+cd /home/usuario/informe-trimestral
+
+claude -p "
+ROLE: Redactor de informes (corrección).
+Lee tu borrador original en borradores/informe-q1-v1.md.
+Lee el informe de revisión en borradores/revision-v1.md.
+
+Comprueba cada observación con las fuentes originales. Aplica sólo correcciones
+respaldadas; registra desacuerdos y evidencia pendiente sin inventar soluciones.
+Genera la versión corregida en borradores/informe-q1-v2.md.
+
+Para cada corrección aplicada, añade un comentario al final del documento
+en una sección '## Registro de cambios' que indique qué se cambió y por qué.
+" > logs/redactor-v2.log 2>&1

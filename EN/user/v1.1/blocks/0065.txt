@@ -1,0 +1,30 @@
+I have 50 PDF invoices in the folder C:\Users\myuser\Documents\Invoices_Q1_2024.
+
+I need you to extract the following fields from each one:
+- Vendor name
+- Vendor tax ID (NIF)
+- Invoice number
+- Issue date
+- Item description(s)
+- Taxable base
+- VAT rate (%)
+- VAT amount
+- Invoice total
+- Payment method (if present)
+
+Generate a CSV file with all the data, one row per invoice.
+Add a column "Original_filename" so I know which PDF each data came from.
+If you cannot read a field, put "NOT READABLE" instead of making it up.
+At the end, show me a summary: total invoices processed, total amount,
+and a list of invoices where some field could not be extracted.
+Use only the authorized copy; do not alter originals or overwrite outputs.
+Record every PDF, pages read and exceptions, with a hash and
+page reference for every field. Separate absent, unreadable and ambiguous.
+Retain currency, source values and conversion and rounding rules.
+If an invoice contains multiple VAT rates, retain a linked
+line-item or rate table; do not compress them into a single rate.
+Distinguish invoice total, outstanding balance and payment made.
+Use UTF-8 CSV with semicolons and quotes when required.
+Neutralize content that a spreadsheet could execute as a formula.
+Check every critical field against the original and leave discrepancies pending.
+The summary is not a tax return or proof of accuracy.

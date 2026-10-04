@@ -1,0 +1,16 @@
+# Decision Registry — Migration Project
+
+## DEC-001: Modify target schema (Nov 20)
+- **Context:** Format incompatibility in customers table
+- **Options evaluated:** (A) Convert data at source, (B) Modify target schema
+- **Decision:** Option B
+- **Reason:** Carlos describes the option as cleaner; confirm
+  whether that assessment was accepted as the decision’s reason
+- **Responsible:** Carlos Ruiz
+- **Impact:** Pending confirmation; not stated in the notes
+
+## DEC-002: Maintain go-live date Dec 6 (Nov 20)
+- **Context:** Accumulated blockers could justify a delay
+- **Decision:** Date is maintained
+- **Condition:** Not stated in the notes; the report’s fallback
+  plan is a proposal pending approval

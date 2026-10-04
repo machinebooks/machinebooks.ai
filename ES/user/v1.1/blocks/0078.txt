@@ -1,0 +1,17 @@
+Tengo dos fuentes:
+1. Las facturas originales en PDF: C:\Facturas\Marzo_2024\
+2. El Excel que preparó contabilidad: C:\Facturas\registro_marzo.xlsx
+
+Lee cada factura PDF y compara los datos extraídos con los del Excel.
+Genera un informe de discrepancias:
+- Facturas en el Excel que no tienen PDF correspondiente
+- Facturas en PDF que no aparecen en el Excel
+- Campos donde el dato del PDF no coincide con el del Excel
+  (especialmente importes, fechas y NIFs)
+No alteres las fuentes; usa un destino nuevo y sin sobrescritura.
+Define claves de factura y proveedor; comprueba duplicados y versiones.
+Retén página, celda y valor de cada discrepancia.
+Reconcilia todos los registros y distingue ausencia de ilegibilidad.
+No declares correcta una fila sólo porque ambos archivos coinciden;
+contrasta los campos críticos con el documento original.
+Deja ambigüedades y reglas fiscales pendientes de revisión.

@@ -1,0 +1,8 @@
+EJEMPLO FICTICIO DE AGRUPACIÓN POSTERIOR:
+- 43 mensajes de timeout de Redis entre 08:15:23 y 10:02:45.
+- 7 fallos al generar informes entre 09:30:12 y 09:58:34.
+- 2 avisos de disco sobre 80 % en /data.
+El comando anterior obtiene logs; no calcula estos recuentos ni sus causas.
+Comprobar timestamps, registros repetidos, intervalos y acceso antes de agrupar.
+Redis lento, informes bloqueados y disco ocupado son hipótesis que pueden ser
+independientes. Correlacionar evidencia antes de proponer una reparación.

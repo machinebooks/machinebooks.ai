@@ -1,0 +1,30 @@
+# Educational interface: authenticated host supplies a scoped read-only repository.
+from datetime import datetime, timedelta, timezone
+from decimal import Decimal
+
+async def get_finops_summary(repository, authorized_scope, period_days, eur_per_usd):
+    if not authorized_scope or type(period_days) is not int or not 1 <= period_days <= 90:
+        raise ValueError("Invalid authorized scope or window")
+    fx = Decimal(str(eur_per_usd))
+    if not fx.is_finite() or fx <= 0:
+        raise ValueError("Supply a positive dated EUR per USD rate")
+    end = datetime.now(timezone.utc)
+    start = end - timedelta(days=period_days)
+    data = await repository.read_summary(authorized_scope, start, end, limit=10000)
+    # Repository must enforce scope, [start,end), currencies and coverage.
+    amounts = {}
+    for key in ("llm_usd", "cloud_usd", "potential_capacity_eur"):
+        value = data.get(key)
+        amounts[key] = None if value is None else Decimal(str(value))
+        if amounts[key] is not None and not amounts[key].is_finite():
+            raise ValueError("Invalid summary amount")
+    covered = data.get("complete") is True
+    subtotal = (amounts["llm_usd"] + amounts["cloud_usd"]
+        if covered and amounts["llm_usd"] is not None and amounts["cloud_usd"] is not None else None)
+    partial_difference = (amounts["potential_capacity_eur"] - subtotal * fx
+        if subtotal is not None and amounts["potential_capacity_eur"] is not None else None)
+    return {"start_utc": start.isoformat(), "end_utc_exclusive": end.isoformat(),
+        "amounts": amounts, "eur_per_usd": str(fx), "complete": covered,
+        "operational_subtotal_usd": subtotal, "partial_scenario_difference_eur": partial_difference,
+        "cash_savings_proven": False, "full_tco": False}
+# This is a host contract, not a deployable FastAPI authentication implementation.

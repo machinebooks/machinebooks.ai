@@ -1,0 +1,8 @@
+Tengo un CSV de prácticas /tmp/ventas.csv con cabecera exacta:
+fecha,producto,region,unidades,importe. Fechas ISO válidas, importes EUR
+con punto decimal, sin comillas ni comas, tabs o saltos en campos.
+Valida ese subconjunto antes de usar awk; si no se cumple, detente y
+solicita un parser CSV compatible, no modifiques el original.
+Da totales por región, producto top por unidades (desempate por nombre),
+media por fila y mes, y las cinco fechas con más filas (no más ingresos).
+El ejemplo usa GNU/Linux y LC_ALL=C, sin red ni cambios de archivos.

@@ -1,0 +1,14 @@
+# Partial allocation fixture; Cost Explorer service totals do not name containers.
+monthly_costs:
+  "2025-03":
+    currency: EUR
+    source_version: fixture-v1
+    allocation_method: illustrative_not_measured
+    complete: false
+    services:
+      ai-service: {type: compute, cost_eur: "360"}
+      db: {type: storage, cost_eur: "210"}
+      qdrant: {type: storage, cost_eur: "180"}
+      redis: {type: compute, cost_eur: "90"}
+      worker-llm: {type: compute, cost_eur: "180"}
+# Host must supply resource mapping, actual bill and dated FX; no latency guarantee.

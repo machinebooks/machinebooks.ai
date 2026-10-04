@@ -1,0 +1,1392 @@
+{
+  "editorial_version": "1.1",
+  "source_word_sha256": "d29c5cfc4157273265aa9fb481f3b596f4ee5769d55e0f140634687c29149418",
+  "source_file": "AI-Safety-Engineer-and-the-Machine.docx",
+  "language": "en",
+  "scope": "educational SourceCode blocks; private desktop and core excluded",
+  "extraction": "literal w:t, line breaks w:br/w:cr and tabs w:tab in document order; UTF-8 without added headers",
+  "block_count": 115,
+  "execution_status": "not established by extraction",
+  "blocks": [
+    {
+      "id": 1,
+      "file": "blocks/0001.txt",
+      "word_paragraph_index_zero_based": 671,
+      "heading_context": [
+        "Chapter 2 — Model Cards: benchmarks, evaluations, and what they do not measure",
+        "3. Implementation",
+        "3.1 How to read a Model Card as an auditor"
+      ],
+      "sha256": "f99d1660e4af1ccd95cb61ec92ef6c4200fd8fe771bb8c8648a42be7c87a08d5",
+      "bytes": 1372
+    },
+    {
+      "id": 2,
+      "file": "blocks/0002.txt",
+      "word_paragraph_index_zero_based": 727,
+      "heading_context": [
+        "Chapter 2 — Model Cards: benchmarks, evaluations, and what they do not measure",
+        "3. Implementation",
+        "3.1 How to read a Model Card as an auditor"
+      ],
+      "sha256": "ad019c64f247407505aed2407ef1a7c54ae7e778cd4673b06145473955ebab9f",
+      "bytes": 1056
+    },
+    {
+      "id": 3,
+      "file": "blocks/0003.txt",
+      "word_paragraph_index_zero_based": 861,
+      "heading_context": [
+        "Chapter 2 — Model Cards: benchmarks, evaluations, and what they do not measure",
+        "3. Implementation",
+        "3.4 Building your own safety evaluations"
+      ],
+      "sha256": "49a23cdc2076fdf9352022074b51b80b99f0ab30770d326a2d36a18a73de83a5",
+      "bytes": 1070
+    },
+    {
+      "id": 4,
+      "file": "blocks/0004.txt",
+      "word_paragraph_index_zero_based": 935,
+      "heading_context": [
+        "Chapter 3 — Inside the model: tokenization, context, and attack surfaces",
+        "3. Implementation",
+        "3.1 The system prompt as a porous perimeter"
+      ],
+      "sha256": "407c92f0103930141252c584ef3260d496a8431f97b1985e4e39e10e9916e3f8",
+      "bytes": 2480
+    },
+    {
+      "id": 5,
+      "file": "blocks/0005.txt",
+      "word_paragraph_index_zero_based": 942,
+      "heading_context": [
+        "Chapter 3 — Inside the model: tokenization, context, and attack surfaces",
+        "3. Implementation",
+        "3.2 Temperature, top-k, top-p: predictability and security"
+      ],
+      "sha256": "3c5cf9ff8ba62d23eca3e8084a1b7dbf4281cf5bc57a553ec3309e43ccd05217",
+      "bytes": 717
+    },
+    {
+      "id": 6,
+      "file": "blocks/0006.txt",
+      "word_paragraph_index_zero_based": 949,
+      "heading_context": [
+        "Chapter 3 — Inside the model: tokenization, context, and attack surfaces",
+        "3. Implementation",
+        "3.3 Token probabilities and information leakage"
+      ],
+      "sha256": "4528aa4e46c7e846c75341e2213126ef246713798991b9e57d4b3fb80cbb4b6c",
+      "bytes": 959
+    },
+    {
+      "id": 7,
+      "file": "blocks/0007.txt",
+      "word_paragraph_index_zero_based": 992,
+      "heading_context": [
+        "Chapter 3 — Inside the model: tokenization, context, and attack surfaces",
+        "3. Implementation",
+        "3.3.2 Token allocation and limits of interpretation"
+      ],
+      "sha256": "a94c74ca6c7592aee5869ed9cfdb7862d2fe6f03d7b515f597602a4e51351d12",
+      "bytes": 1078
+    },
+    {
+      "id": 8,
+      "file": "blocks/0008.txt",
+      "word_paragraph_index_zero_based": 1008,
+      "heading_context": [
+        "Chapter 3 — Inside the model: tokenization, context, and attack surfaces",
+        "3. Implementation",
+        "3.3.4 Context overflow strategies and their security implications"
+      ],
+      "sha256": "3e9e6a1324dd4ab062230167b0b53de44f617819fe4612711f02a417bfbe3238",
+      "bytes": 1560
+    },
+    {
+      "id": 9,
+      "file": "blocks/0009.txt",
+      "word_paragraph_index_zero_based": 1163,
+      "heading_context": [
+        "Chapter 4 — Constitutional AI: from paper to practice",
+        "3. Implementation",
+        "3.3 An alignment robustness evaluator"
+      ],
+      "sha256": "092320774981f24bdf15f2ba255cb466e900232693867759d8fce3ec8e26ce8a",
+      "bytes": 1471
+    },
+    {
+      "id": 10,
+      "file": "blocks/0010.txt",
+      "word_paragraph_index_zero_based": 1281,
+      "heading_context": [
+        "Chapter 5 — The system prompt as a security contract",
+        "2. The decision",
+        "2.2 The system prompt as the only control: why it is insufficient"
+      ],
+      "sha256": "7f3ac331d3dbd1cdf6c64554e1e547ce8f26469cd47adf119d558cf59897630b",
+      "bytes": 47
+    },
+    {
+      "id": 11,
+      "file": "blocks/0011.txt",
+      "word_paragraph_index_zero_based": 1325,
+      "heading_context": [
+        "Chapter 5 — The system prompt as a security contract",
+        "3. Implementation",
+        "3.1 System prompt defense techniques"
+      ],
+      "sha256": "573400b59908a1cb572cbf2c50d4d5ece2268ca8597ca7b03435c880942d171a",
+      "bytes": 491
+    },
+    {
+      "id": 12,
+      "file": "blocks/0012.txt",
+      "word_paragraph_index_zero_based": 1328,
+      "heading_context": [
+        "Chapter 5 — The system prompt as a security contract",
+        "3. Implementation",
+        "3.1 System prompt defense techniques"
+      ],
+      "sha256": "00b4fc76b2780584ae85587133b13cd0136c74921251499bea80aece141d0e55",
+      "bytes": 1471
+    },
+    {
+      "id": 13,
+      "file": "blocks/0013.txt",
+      "word_paragraph_index_zero_based": 1332,
+      "heading_context": [
+        "Chapter 5 — The system prompt as a security contract",
+        "3. Implementation",
+        "3.2 A defensively designed system prompt"
+      ],
+      "sha256": "e4ab946557eadf42ecf88934829172a66a95e4b2ec7927b84c63d20d507136f9",
+      "bytes": 1433
+    },
+    {
+      "id": 14,
+      "file": "blocks/0014.txt",
+      "word_paragraph_index_zero_based": 1383,
+      "heading_context": [
+        "Chapter 5 — The system prompt as a security contract",
+        "3. Implementation",
+        "3.6 An extraction attempt detector"
+      ],
+      "sha256": "e84a544e91d67e7a9c3f2e47d4f36649126baff19e049ab998ce3524a1eb0119",
+      "bytes": 1904
+    },
+    {
+      "id": 15,
+      "file": "blocks/0015.txt",
+      "word_paragraph_index_zero_based": 1388,
+      "heading_context": [
+        "Chapter 5 — The system prompt as a security contract",
+        "3. Implementation",
+        "3.7 Versioning and rollback of system prompts"
+      ],
+      "sha256": "bdc523151cb6b33c93ad596e9f642f85d902570aa9c152eae6011aacf382a172",
+      "bytes": 2275
+    },
+    {
+      "id": 16,
+      "file": "blocks/0016.txt",
+      "word_paragraph_index_zero_based": 1406,
+      "heading_context": [
+        "Chapter 5 — The system prompt as a security contract",
+        "3. Implementation",
+        "3.9 Testing framework for system prompts"
+      ],
+      "sha256": "90814a6cbb94d5e145cc468e74a2e7d8fabcb157028b82287fc4d545c5ea132b",
+      "bytes": 1301
+    },
+    {
+      "id": 17,
+      "file": "blocks/0017.txt",
+      "word_paragraph_index_zero_based": 1490,
+      "heading_context": [
+        "Chapter 6 — Guardrails: the last line of defense",
+        "3. Implementation",
+        "3.1 Layer 1: Input guardrails as code"
+      ],
+      "sha256": "c47449a3854243b408e2974ed2ccc365e22de987e01ec9c3d2ba4887b51cff1f",
+      "bytes": 2308
+    },
+    {
+      "id": 18,
+      "file": "blocks/0018.txt",
+      "word_paragraph_index_zero_based": 1495,
+      "heading_context": [
+        "Chapter 6 — Guardrails: the last line of defense",
+        "3. Implementation",
+        "3.2 Layer 2: Output guardrails as code"
+      ],
+      "sha256": "8fdc3591432cfd4fd69b3eaa55c035d1c62a4d5e600d592249ea63596af8b8ec",
+      "bytes": 1574
+    },
+    {
+      "id": 19,
+      "file": "blocks/0019.txt",
+      "word_paragraph_index_zero_based": 1500,
+      "heading_context": [
+        "Chapter 6 — Guardrails: the last line of defense",
+        "3. Implementation",
+        "3.3 Layer 3: Prompt guardrail for contextual evaluation"
+      ],
+      "sha256": "56286d6f85a6b8cd985192780c9c81525c42149851790121ea9a06c86dbed9e8",
+      "bytes": 1005
+    },
+    {
+      "id": 20,
+      "file": "blocks/0020.txt",
+      "word_paragraph_index_zero_based": 1517,
+      "heading_context": [
+        "Chapter 6 — Guardrails: the last line of defense",
+        "3. Implementation",
+        "3.6 Multi-layer defense: the complete pattern"
+      ],
+      "sha256": "961a33a881e5a949aa99a9ecca6c64f3df8e0437d96b012b6de7ddb902cf3e07",
+      "bytes": 521
+    },
+    {
+      "id": 21,
+      "file": "blocks/0021.txt",
+      "word_paragraph_index_zero_based": 1602,
+      "heading_context": [
+        "Chapter 6 — Guardrails: the last line of defense",
+        "3. Implementation",
+        "3.11 Systematic testing of guardrails"
+      ],
+      "sha256": "8342ae228d13855412da4050bb394b28852caf5ad83ac1c8fff256ef99cedbb4",
+      "bytes": 1751
+    },
+    {
+      "id": 22,
+      "file": "blocks/0022.txt",
+      "word_paragraph_index_zero_based": 1780,
+      "heading_context": [
+        "Chapter 7 — Risk and scaling policies: comparison and verifiable controls",
+        "3. Implementation",
+        "3.1 Designing your own responsible scaling framework"
+      ],
+      "sha256": "4c31ee806cc5c2597226f503b3a9a3f4cd6b15d2d99f8c56bb6d4c34cc353490",
+      "bytes": 1641
+    },
+    {
+      "id": 23,
+      "file": "blocks/0023.txt",
+      "word_paragraph_index_zero_based": 1786,
+      "heading_context": [
+        "Chapter 7 — Risk and scaling policies: comparison and verifiable controls",
+        "3. Implementation",
+        "3.2 Threshold evaluations: when the risk level rises"
+      ],
+      "sha256": "f6bde8f0a264dbabce1898f3f893761bcca15bb8615376f830f2c6b691802e91",
+      "bytes": 2438
+    },
+    {
+      "id": 24,
+      "file": "blocks/0024.txt",
+      "word_paragraph_index_zero_based": 1790,
+      "heading_context": [
+        "Chapter 7 — Risk and scaling policies: comparison and verifiable controls",
+        "3. Implementation",
+        "3.3 Compliance auditing: the missing piece"
+      ],
+      "sha256": "dd73ca4aa9fa3b763ebd75b5fac77064fa8845b9eca9630a5087e9aaa025014c",
+      "bytes": 2465
+    },
+    {
+      "id": 25,
+      "file": "blocks/0025.txt",
+      "word_paragraph_index_zero_based": 1923,
+      "heading_context": [
+        "Chapter 8 — Transparency and accountability: beyond compliance",
+        "3. Implementation",
+        "3.1 The transparency card per AI system"
+      ],
+      "sha256": "dac341c13cbd1448246d790df34d420108ae8098135127c570e96c12e5bee8c1",
+      "bytes": 2355
+    },
+    {
+      "id": 26,
+      "file": "blocks/0026.txt",
+      "word_paragraph_index_zero_based": 1929,
+      "heading_context": [
+        "Chapter 8 — Transparency and accountability: beyond compliance",
+        "3. Implementation",
+        "3.2 Automated transparency report"
+      ],
+      "sha256": "b3837dc82ee05707f0aa277665c4a3e23cec6937f1d5f1e2b94fa988325bd987",
+      "bytes": 464
+    },
+    {
+      "id": 27,
+      "file": "blocks/0027.txt",
+      "word_paragraph_index_zero_based": 1980,
+      "heading_context": [
+        "Chapter 8 — Transparency and accountability: beyond compliance",
+        "3. Implementation",
+        "3.4 The incident registry as operational transparency"
+      ],
+      "sha256": "df8e201b06e736dddef9b761df483afa35234ec06e6492e758eb9edf5d6beff4",
+      "bytes": 1020
+    },
+    {
+      "id": 28,
+      "file": "blocks/0028.txt",
+      "word_paragraph_index_zero_based": 2206,
+      "heading_context": [
+        "Chapter 9 — Applied regulation: AI Act, NIST, and the regulatory landscape",
+        "3. Implementation",
+        "3.1 The regulatory inventory: what applies to each system"
+      ],
+      "sha256": "09ddea7397c0e290bf252cbe05148e1ee7d01dab68e44f0c737181b436f368ad",
+      "bytes": 525
+    },
+    {
+      "id": 29,
+      "file": "blocks/0029.txt",
+      "word_paragraph_index_zero_based": 2212,
+      "heading_context": [
+        "Chapter 9 — Applied regulation: AI Act, NIST, and the regulatory landscape",
+        "3. Implementation",
+        "3.2 The conformity checklist for high-risk systems"
+      ],
+      "sha256": "c7807aa896326dc10f957888928e45611960d3f3b7e51186f2b7a4bfad3de3f0",
+      "bytes": 1962
+    },
+    {
+      "id": 30,
+      "file": "blocks/0030.txt",
+      "word_paragraph_index_zero_based": 2406,
+      "heading_context": [
+        "Chapter 10 — Operational governance: policies, audits, and metrics",
+        "3. Implementation",
+        "3.1 Policy as code for AI systems"
+      ],
+      "sha256": "ec1dbbb77909c2a31685366b9f1d9595369a75a4c7c113430d3ac2d990be0514",
+      "bytes": 516
+    },
+    {
+      "id": 31,
+      "file": "blocks/0031.txt",
+      "word_paragraph_index_zero_based": 2413,
+      "heading_context": [
+        "Chapter 10 — Operational governance: policies, audits, and metrics",
+        "3. Implementation",
+        "3.2 AI Safety metrics dashboard"
+      ],
+      "sha256": "b67f939832632e7db6de4b6d2f11644c08a96df41371207614769c3cbe7db56a",
+      "bytes": 1648
+    },
+    {
+      "id": 32,
+      "file": "blocks/0032.txt",
+      "word_paragraph_index_zero_based": 2415,
+      "heading_context": [
+        "Chapter 10 — Operational governance: policies, audits, and metrics",
+        "3. Implementation",
+        "3.2 AI Safety metrics dashboard"
+      ],
+      "sha256": "d58d7ec007af7e48fe3792c4228ea59b12ac03cff9431eb88043c4dbce5afe18",
+      "bytes": 2087
+    },
+    {
+      "id": 33,
+      "file": "blocks/0033.txt",
+      "word_paragraph_index_zero_based": 2456,
+      "heading_context": [
+        "Chapter 10 — Operational governance: policies, audits, and metrics",
+        "3. Implementation",
+        "3.4 Incident response playbook for AI systems"
+      ],
+      "sha256": "ad59742fea5205c05c41b556cba464c719432b3e2adcaa99b83443e6ee232b04",
+      "bytes": 1166
+    },
+    {
+      "id": 34,
+      "file": "blocks/0034.txt",
+      "word_paragraph_index_zero_based": 2581,
+      "heading_context": [
+        "Chapter 10 — Operational governance: policies, audits, and metrics",
+        "3. Implementation",
+        "3.10 AI asset inventory: every model, every API key, every MCP server"
+      ],
+      "sha256": "6636cfc61cd580d137c4048ad573dba7c9ee6d579b6e15927836503d66a5119f",
+      "bytes": 1391
+    },
+    {
+      "id": 35,
+      "file": "blocks/0035.txt",
+      "word_paragraph_index_zero_based": 2684,
+      "heading_context": [
+        "Chapter 11 — Red Teaming Language Models",
+        "3. Implementation",
+        "3.1 The AI red teamer’s tools"
+      ],
+      "sha256": "53a78697fec4e297e9d662e3c9fed4b02be1b35ad3c35e123a18f4446d19d6f5",
+      "bytes": 1830
+    },
+    {
+      "id": 36,
+      "file": "blocks/0036.txt",
+      "word_paragraph_index_zero_based": 2699,
+      "heading_context": [
+        "Chapter 11 — Red Teaming Language Models",
+        "3. Implementation",
+        "3.2 The process of a real engagement"
+      ],
+      "sha256": "0f27cc6076971bd24c10cc206f4f3971704da378a3cbd3a2c6c93aef73c74dc6",
+      "bytes": 831
+    },
+    {
+      "id": 37,
+      "file": "blocks/0037.txt",
+      "word_paragraph_index_zero_based": 2720,
+      "heading_context": [
+        "Chapter 11 — Red Teaming Language Models",
+        "3. Implementation",
+        "3.3 Reporting: communicating actionable findings"
+      ],
+      "sha256": "351685f07c42f5bd119821a19b01226bde8413dfc51a4c25d8ab3ab01b7d9e61",
+      "bytes": 1255
+    },
+    {
+      "id": 38,
+      "file": "blocks/0038.txt",
+      "word_paragraph_index_zero_based": 2732,
+      "heading_context": [
+        "Chapter 11 — Red Teaming Language Models",
+        "3. Implementation",
+        "3.5 AI red teaming engagement template"
+      ],
+      "sha256": "701bdae7b672b8fbb36d0985c79c21ba6e6638bf5342657be21f61662efddcf5",
+      "bytes": 2992
+    },
+    {
+      "id": 39,
+      "file": "blocks/0039.txt",
+      "word_paragraph_index_zero_based": 2742,
+      "heading_context": [
+        "Chapter 11 — Red Teaming Language Models",
+        "3. Implementation",
+        "3.7 Report format for AI red teaming findings"
+      ],
+      "sha256": "4ae591edd071f8d1da49627caae77ebf7c81f6eb186099df5cedc32fdf99c180",
+      "bytes": 1570
+    },
+    {
+      "id": 40,
+      "file": "blocks/0040.txt",
+      "word_paragraph_index_zero_based": 2855,
+      "heading_context": [
+        "Chapter 12 — Many-Shot Jailbreaking and Evasion Techniques",
+        "3. Implementation",
+        "3.1 Designing an evasion battery"
+      ],
+      "sha256": "3d6abce34e4b446628286b429762d09aac2ea41be81d188ed0b0187b969569e2",
+      "bytes": 1757
+    },
+    {
+      "id": 41,
+      "file": "blocks/0041.txt",
+      "word_paragraph_index_zero_based": 2866,
+      "heading_context": [
+        "Chapter 12 — Many-Shot Jailbreaking and Evasion Techniques",
+        "3. Implementation",
+        "3.2 The concept of guardrail fuzzing"
+      ],
+      "sha256": "4d9e16984799604e0b6470164dbf35ce522a55ba6f4d8d44d2cab9be3877f51d",
+      "bytes": 1600
+    },
+    {
+      "id": 42,
+      "file": "blocks/0042.txt",
+      "word_paragraph_index_zero_based": 3046,
+      "heading_context": [
+        "Chapter 13 — Prompt Injection: From Theory to RCE",
+        "3. Implementation",
+        "3.1 Available defenses and their limitations"
+      ],
+      "sha256": "ebcf0b3f00694c6d2d8a3948f7749bc9a778d528e731dd2fd0d832d2da1c091c",
+      "bytes": 1698
+    },
+    {
+      "id": 43,
+      "file": "blocks/0043.txt",
+      "word_paragraph_index_zero_based": 3053,
+      "heading_context": [
+        "Chapter 13 — Prompt Injection: From Theory to RCE",
+        "3. Implementation",
+        "3.1 Available defenses and their limitations"
+      ],
+      "sha256": "d50a842086b93606b61d5e9ac40dfd2c8548567c05654b2fa217439a685613cd",
+      "bytes": 710
+    },
+    {
+      "id": 44,
+      "file": "blocks/0044.txt",
+      "word_paragraph_index_zero_based": 3062,
+      "heading_context": [
+        "Chapter 13 — Prompt Injection: From Theory to RCE",
+        "3. Implementation",
+        "3.2 The cost of defenses: false positives and utility degradation"
+      ],
+      "sha256": "6877f1fb0df3c7de50819aad1ac9fa3bf0b95ab48ede742820f3c23ea8f93166",
+      "bytes": 1315
+    },
+    {
+      "id": 45,
+      "file": "blocks/0045.txt",
+      "word_paragraph_index_zero_based": 3095,
+      "heading_context": [
+        "Chapter 13 — Prompt Injection: From Theory to RCE",
+        "3. Implementation",
+        "3.6 Specific defense patterns for each vector"
+      ],
+      "sha256": "8c53cc79c818635712f5a21192ee5e498c38a0948d817e279585b1299cc70a38",
+      "bytes": 2916
+    },
+    {
+      "id": 46,
+      "file": "blocks/0046.txt",
+      "word_paragraph_index_zero_based": 3139,
+      "heading_context": [
+        "Chapter 13 — Prompt Injection: From Theory to RCE",
+        "3. Implementation",
+        "3.12 Prompt injection in agent chains: when agent A injects into agent B"
+      ],
+      "sha256": "584c86aa19b1d14063cd4e5ec4e828696f8e92662bc2bfc6e7a6511b38205453",
+      "bytes": 535
+    },
+    {
+      "id": 47,
+      "file": "blocks/0047.txt",
+      "word_paragraph_index_zero_based": 3220,
+      "heading_context": [
+        "Chapter 14 — Attacking the model’s infrastructure",
+        "2. The decision",
+        "2.6 MCP server security: the unaudited ecosystem"
+      ],
+      "sha256": "f3509e25c2f999c027ce4168ae0aa296f0a24274df2dc71403f15e2d824800bf",
+      "bytes": 1005
+    },
+    {
+      "id": 48,
+      "file": "blocks/0048.txt",
+      "word_paragraph_index_zero_based": 3248,
+      "heading_context": [
+        "Chapter 14 — Attacking the model’s infrastructure",
+        "3. Implementation",
+        "3.1 Anatomy of an AI infrastructure analysis"
+      ],
+      "sha256": "8529fce841c631f71ce66f39a1bcd8a8b74e1497fc6da7dd6d774edf2612c765",
+      "bytes": 1232
+    },
+    {
+      "id": 49,
+      "file": "blocks/0049.txt",
+      "word_paragraph_index_zero_based": 3252,
+      "heading_context": [
+        "Chapter 14 — Attacking the model’s infrastructure",
+        "3. Implementation",
+        "3.1 Anatomy of an AI infrastructure analysis"
+      ],
+      "sha256": "b7d1d6847371ce95a19d04208b3bf40f870cf1e69e3e8be835ebd4fae466dd08",
+      "bytes": 865
+    },
+    {
+      "id": 50,
+      "file": "blocks/0050.txt",
+      "word_paragraph_index_zero_based": 3271,
+      "heading_context": [
+        "Chapter 14 — Attacking the model’s infrastructure",
+        "3. Implementation",
+        "3.3 Case study: evaluation of a generic AI tool"
+      ],
+      "sha256": "1aebaa455a469936b1d733b4d89501658312ecde18704be07074344104af4569",
+      "bytes": 1334
+    },
+    {
+      "id": 51,
+      "file": "blocks/0051.txt",
+      "word_paragraph_index_zero_based": 3410,
+      "heading_context": [
+        "Chapter 15 — Sabotage, manipulation, and emerging risks",
+        "3. Implementation",
+        "3.1 Practical sabotage evaluations"
+      ],
+      "sha256": "5e4d5166fc5e2a133484c4723b16cf782b1c87c80ce1994e075ef4b7f9aaead5",
+      "bytes": 2196
+    },
+    {
+      "id": 52,
+      "file": "blocks/0052.txt",
+      "word_paragraph_index_zero_based": 3420,
+      "heading_context": [
+        "Chapter 15 — Sabotage, manipulation, and emerging risks",
+        "3. Implementation",
+        "3.2 Controls for autonomous agents"
+      ],
+      "sha256": "aa3580b36b423286c6c6a95cb2bd8b6b577b8b0dade795c9b76d742ac77e82b9",
+      "bytes": 1319
+    },
+    {
+      "id": 53,
+      "file": "blocks/0053.txt",
+      "word_paragraph_index_zero_based": 3428,
+      "heading_context": [
+        "Chapter 15 — Sabotage, manipulation, and emerging risks",
+        "3. Implementation",
+        "3.3 Defense against alignment faking: evaluations that deceive the model"
+      ],
+      "sha256": "10b0a3f52b1604dc1ba21efea7072c27ccd2d684ec50b27894cc08d39e13593a",
+      "bytes": 1177
+    },
+    {
+      "id": 54,
+      "file": "blocks/0054.txt",
+      "word_paragraph_index_zero_based": 3511,
+      "heading_context": [
+        "Chapter 15 — Sabotage, manipulation, and emerging risks",
+        "3. Implementation",
+        "3.11 Behavioral canaries: known-response tests embedded in production"
+      ],
+      "sha256": "fdc18a1e771f7226d2f231b0e191c8ac72485bdc54d56f7ac500a23e8774a897",
+      "bytes": 2471
+    },
+    {
+      "id": 55,
+      "file": "blocks/0055.txt",
+      "word_paragraph_index_zero_based": 3589,
+      "heading_context": [
+        "Chapter 16 — Security of autonomous agents",
+        "3. Implementation",
+        "3.1 Defensive architecture for a secure agent"
+      ],
+      "sha256": "7e2644c83785953defa7c5287f8e3c805c32c20236d1a76301b1d42ce0a63132",
+      "bytes": 438
+    },
+    {
+      "id": 56,
+      "file": "blocks/0056.txt",
+      "word_paragraph_index_zero_based": 3593,
+      "heading_context": [
+        "Chapter 16 — Security of autonomous agents",
+        "3. Implementation",
+        "3.2 Tool response sanitization"
+      ],
+      "sha256": "8f4594765b7d9b1747cda6cdb86823d63351ac64214bdfd7e813b1681c2e81e5",
+      "bytes": 1683
+    },
+    {
+      "id": 57,
+      "file": "blocks/0057.txt",
+      "word_paragraph_index_zero_based": 3597,
+      "heading_context": [
+        "Chapter 16 — Security of autonomous agents",
+        "3. Implementation",
+        "3.3 Execution sandboxing"
+      ],
+      "sha256": "387b7187dba3f177898d2146627e0b82099c6a13b13e4b899d460de5f5dc15cc",
+      "bytes": 817
+    },
+    {
+      "id": 58,
+      "file": "blocks/0058.txt",
+      "word_paragraph_index_zero_based": 3601,
+      "heading_context": [
+        "Chapter 16 — Security of autonomous agents",
+        "3. Implementation",
+        "3.4 Complete agent auditing"
+      ],
+      "sha256": "3c51898ee6a401d77a3b197aa418c1f9f481f533be964033ae823a0183f5951d",
+      "bytes": 1232
+    },
+    {
+      "id": 59,
+      "file": "blocks/0059.txt",
+      "word_paragraph_index_zero_based": 3609,
+      "heading_context": [
+        "Chapter 16 — Security of autonomous agents",
+        "3. Implementation",
+        "3.6 Adversarial tests for agents"
+      ],
+      "sha256": "b0d9ff6fe9d0f7f0f5da5cc615224c9f99979baca3a571d4872f62ba759322c8",
+      "bytes": 441
+    },
+    {
+      "id": 60,
+      "file": "blocks/0060.txt",
+      "word_paragraph_index_zero_based": 3696,
+      "heading_context": [
+        "Chapter 16 — Security of autonomous agents",
+        "3. Implementation",
+        "3.10 Defensive patterns for multi-agent systems"
+      ],
+      "sha256": "ff19d2badebc57639179f86c9bb6d3aaee970d966b48e391b1bd100fd73b2375",
+      "bytes": 544
+    },
+    {
+      "id": 61,
+      "file": "blocks/0061.txt",
+      "word_paragraph_index_zero_based": 3733,
+      "heading_context": [
+        "Chapter 16 — Security of autonomous agents",
+        "3. Implementation",
+        "3.12 Permission models for agents: tool access scopes"
+      ],
+      "sha256": "a0ebb9699d199aa6d004d27e7dbf34491784f09511989b2b651bbb8e1f6f3e74",
+      "bytes": 361
+    },
+    {
+      "id": 62,
+      "file": "blocks/0062.txt",
+      "word_paragraph_index_zero_based": 3817,
+      "heading_context": [
+        "Chapter 17 — MCP: security of the context protocol",
+        "3. Implementation",
+        "3.1 MCP server with integrated security"
+      ],
+      "sha256": "3d142029b88c53879c5eae36d216fe99f5bf259f6775f41d669caed8cd5a4b96",
+      "bytes": 483
+    },
+    {
+      "id": 63,
+      "file": "blocks/0063.txt",
+      "word_paragraph_index_zero_based": 3821,
+      "heading_context": [
+        "Chapter 17 — MCP: security of the context protocol",
+        "3. Implementation",
+        "3.2 Isolation proxy between servers"
+      ],
+      "sha256": "419d95d8e2b37efc2879583c5a534f3c652057168b020cdf80aff0d9db8ef5e1",
+      "bytes": 2247
+    },
+    {
+      "id": 64,
+      "file": "blocks/0064.txt",
+      "word_paragraph_index_zero_based": 3825,
+      "heading_context": [
+        "Chapter 17 — MCP: security of the context protocol",
+        "3. Implementation",
+        "3.3 Discovered tool validation"
+      ],
+      "sha256": "b90fe07823f585afd038c81ba293435149fb97e56ce9463446a15161eb3594e3",
+      "bytes": 2098
+    },
+    {
+      "id": 65,
+      "file": "blocks/0065.txt",
+      "word_paragraph_index_zero_based": 3829,
+      "heading_context": [
+        "Chapter 17 — MCP: security of the context protocol",
+        "3. Implementation",
+        "3.4 Auditing MCP interactions"
+      ],
+      "sha256": "c5ca79c24b4850e6c4b0fed1e550c66784373e194f8550ee91d15c0f8a6c683d",
+      "bytes": 1675
+    },
+    {
+      "id": 66,
+      "file": "blocks/0066.txt",
+      "word_paragraph_index_zero_based": 3884,
+      "heading_context": [
+        "Chapter 17 — MCP: security of the context protocol",
+        "3. Implementation",
+        "3.9 Supply chain risks of community MCP servers"
+      ],
+      "sha256": "60f5238b26099a90b3fef1189e20fd945eb6d8ee381cfb6515c272bb038352ae",
+      "bytes": 2696
+    },
+    {
+      "id": 67,
+      "file": "blocks/0067.txt",
+      "word_paragraph_index_zero_based": 3889,
+      "heading_context": [
+        "Chapter 17 — MCP: security of the context protocol",
+        "3. Implementation",
+        "3.10 MCP server hardening: checklist with implementation"
+      ],
+      "sha256": "32417990f2a78a63aed96fb55c5ae22744c5709652f9adf2bbba02240aa3d64f",
+      "bytes": 944
+    },
+    {
+      "id": 68,
+      "file": "blocks/0068.txt",
+      "word_paragraph_index_zero_based": 3892,
+      "heading_context": [
+        "Chapter 17 — MCP: security of the context protocol",
+        "3. Implementation",
+        "3.10 MCP server hardening: checklist with implementation"
+      ],
+      "sha256": "0b081f4365fc1ba64fd19006633c4c8fa3d94a65da8dacfd4db0993b07c3b244",
+      "bytes": 855
+    },
+    {
+      "id": 69,
+      "file": "blocks/0069.txt",
+      "word_paragraph_index_zero_based": 3906,
+      "heading_context": [
+        "Chapter 17 — MCP: security of the context protocol",
+        "3. Implementation",
+        "3.12 MCP server sandboxing: process, filesystem, and network isolation"
+      ],
+      "sha256": "72d6ba5ec378cedcc48c306892a1c6889216acb423105818d6ea3da4c4832b6a",
+      "bytes": 465
+    },
+    {
+      "id": 70,
+      "file": "blocks/0070.txt",
+      "word_paragraph_index_zero_based": 4011,
+      "heading_context": [
+        "Chapter 18 — Security of RAG and vector databases",
+        "3. Implementation",
+        "3.1 Secure ingestion pipeline"
+      ],
+      "sha256": "e5173fda43b196f8279576a97667a926535b5746891e8b1eee59d02ff5271643",
+      "bytes": 595
+    },
+    {
+      "id": 71,
+      "file": "blocks/0071.txt",
+      "word_paragraph_index_zero_based": 4015,
+      "heading_context": [
+        "Chapter 18 — Security of RAG and vector databases",
+        "3. Implementation",
+        "3.2 Secure query with access control"
+      ],
+      "sha256": "941dc47e6bbf4a1039ad799c9da5bbfbbff32f18f8538a2b5a3a7cf7ac201b2a",
+      "bytes": 486
+    },
+    {
+      "id": 72,
+      "file": "blocks/0072.txt",
+      "word_paragraph_index_zero_based": 4019,
+      "heading_context": [
+        "Chapter 18 — Security of RAG and vector databases",
+        "3. Implementation",
+        "3.3 Exfiltration protection in the response"
+      ],
+      "sha256": "f14879d8e27f62ef1436d8621c2b78608ee4df0dd6fce6c4cd03ffd9e62f72cd",
+      "bytes": 427
+    },
+    {
+      "id": 73,
+      "file": "blocks/0073.txt",
+      "word_paragraph_index_zero_based": 4041,
+      "heading_context": [
+        "Chapter 18 — Security of RAG and vector databases",
+        "3. Implementation",
+        "3.6 Document watermarking for leak detection"
+      ],
+      "sha256": "51b0d5e4ea9bca6eefc5a0e9954ea3fe9e710e23dc4c154bb9d778d7cc56751f",
+      "bytes": 383
+    },
+    {
+      "id": 74,
+      "file": "blocks/0074.txt",
+      "word_paragraph_index_zero_based": 4107,
+      "heading_context": [
+        "Chapter 18 — Security of RAG and vector databases",
+        "3. Implementation",
+        "3.9 Document classification before ingestion: PII, sensitivity, and access control"
+      ],
+      "sha256": "9f2b96dc2b036bc8319b2e0d9fc0bc9e9aed9f8097e446fc1dababcaa6b23f89",
+      "bytes": 509
+    },
+    {
+      "id": 75,
+      "file": "blocks/0075.txt",
+      "word_paragraph_index_zero_based": 4128,
+      "heading_context": [
+        "Chapter 18 — Security of RAG and vector databases",
+        "3. Implementation",
+        "3.13 Vector database integrity monitoring"
+      ],
+      "sha256": "d00f89b3785fcb4b411f44fef6e1f2b761fec9cd6431fa543507561263e6eebb",
+      "bytes": 661
+    },
+    {
+      "id": 76,
+      "file": "blocks/0076.txt",
+      "word_paragraph_index_zero_based": 4285,
+      "heading_context": [
+        "Chapter 19 — Security observability for AI",
+        "3. Implementation",
+        "3.1 Security metrics with Prometheus"
+      ],
+      "sha256": "4ddd4cdc9ca193f72939ea8a639e346d500466a41b677e8348f4a679012903a9",
+      "bytes": 1425
+    },
+    {
+      "id": 77,
+      "file": "blocks/0077.txt",
+      "word_paragraph_index_zero_based": 4289,
+      "heading_context": [
+        "Chapter 19 — Security observability for AI",
+        "3. Implementation",
+        "3.2 Security middleware for FastAPI"
+      ],
+      "sha256": "4ebfb8b5b80acab461ae56bfb4542c9aefa8744cbce529db3059a9183b4e3eeb",
+      "bytes": 421
+    },
+    {
+      "id": 78,
+      "file": "blocks/0078.txt",
+      "word_paragraph_index_zero_based": 4293,
+      "heading_context": [
+        "Chapter 19 — Security observability for AI",
+        "3. Implementation",
+        "3.3 Grafana dashboard for AI security"
+      ],
+      "sha256": "615fe3cd479211346c61463b63c7dc55e1e6b7aadd0575c7012b607f5a1d9bcb",
+      "bytes": 792
+    },
+    {
+      "id": 79,
+      "file": "blocks/0079.txt",
+      "word_paragraph_index_zero_based": 4297,
+      "heading_context": [
+        "Chapter 19 — Security observability for AI",
+        "3. Implementation",
+        "3.4 Automated alerts"
+      ],
+      "sha256": "3770a844b871b44b5fef5bf41a5e53d616bc6898900e7b3ee59d97b025c013ae",
+      "bytes": 1062
+    },
+    {
+      "id": 80,
+      "file": "blocks/0080.txt",
+      "word_paragraph_index_zero_based": 4324,
+      "heading_context": [
+        "Chapter 19 — Security observability for AI",
+        "3. Implementation",
+        "3.6 PromQL queries specific to AI security"
+      ],
+      "sha256": "e8725b124dd3426147e842fa76211f840bb3fdfc2d45695e8a4e6e101682b84e",
+      "bytes": 71
+    },
+    {
+      "id": 81,
+      "file": "blocks/0081.txt",
+      "word_paragraph_index_zero_based": 4327,
+      "heading_context": [
+        "Chapter 19 — Security observability for AI",
+        "3. Implementation",
+        "3.6 PromQL queries specific to AI security"
+      ],
+      "sha256": "c924d6ad3a02c50d3514f0c0a35afc0d58df756d7ceda14aaeee29baaa6cc565",
+      "bytes": 257
+    },
+    {
+      "id": 82,
+      "file": "blocks/0082.txt",
+      "word_paragraph_index_zero_based": 4330,
+      "heading_context": [
+        "Chapter 19 — Security observability for AI",
+        "3. Implementation",
+        "3.6 PromQL queries specific to AI security"
+      ],
+      "sha256": "78438e747cff4404bef07f152e6980f3b214cc3adfb1b6d6ebefce5135343769",
+      "bytes": 251
+    },
+    {
+      "id": 83,
+      "file": "blocks/0083.txt",
+      "word_paragraph_index_zero_based": 4333,
+      "heading_context": [
+        "Chapter 19 — Security observability for AI",
+        "3. Implementation",
+        "3.6 PromQL queries specific to AI security"
+      ],
+      "sha256": "f77d4b021fdeaf60fefc059bfd07ddda1bc97df1b04c811a18337090edb0c694",
+      "bytes": 258
+    },
+    {
+      "id": 84,
+      "file": "blocks/0084.txt",
+      "word_paragraph_index_zero_based": 4339,
+      "heading_context": [
+        "Chapter 19 — Security observability for AI",
+        "3. Implementation",
+        "3.7 Anomaly detection in AI traffic: statistical methods"
+      ],
+      "sha256": "a5c326cdf26e5237aed84448b9dfa0827c22ab1d6624eed5481e290be260c60d",
+      "bytes": 1367
+    },
+    {
+      "id": 85,
+      "file": "blocks/0085.txt",
+      "word_paragraph_index_zero_based": 4415,
+      "heading_context": [
+        "Chapter 19 — Security observability for AI",
+        "3. Implementation",
+        "3.12 Forensics for AI incidents: what to preserve, chain of custody and log formats"
+      ],
+      "sha256": "60c42bd0b155edadf0478077c4a99144dc0516cd0deb92c6c2130cd86d5af420",
+      "bytes": 752
+    },
+    {
+      "id": 86,
+      "file": "blocks/0086.txt",
+      "word_paragraph_index_zero_based": 4422,
+      "heading_context": [
+        "Chapter 19 — Security observability for AI",
+        "3. Implementation",
+        "3.13 Automated compliance reports from observability data"
+      ],
+      "sha256": "6aae31eb90e8ec506c758f09b130076048fb8d75a4f731be8db131a98a101fdc",
+      "bytes": 466
+    },
+    {
+      "id": 87,
+      "file": "blocks/0087.txt",
+      "word_paragraph_index_zero_based": 4524,
+      "heading_context": [
+        "Chapter 20 – Case 1: Copilot – from the system prompt to RCE",
+        "3. Implementation",
+        "3.2 The bypass: three one-line patches"
+      ],
+      "sha256": "f2d10c0800c90476bb537a2d801ad2c8d948272e8d9984397ab5424e2d4bd04c",
+      "bytes": 330
+    },
+    {
+      "id": 88,
+      "file": "blocks/0088.txt",
+      "word_paragraph_index_zero_based": 4527,
+      "heading_context": [
+        "Chapter 20 – Case 1: Copilot – from the system prompt to RCE",
+        "3. Implementation",
+        "3.2 The bypass: three one-line patches"
+      ],
+      "sha256": "d3840fcd190f599f18e80c9a7f8011b6923a0b66e1f6ecd0d265c2897dc2c012",
+      "bytes": 115
+    },
+    {
+      "id": 89,
+      "file": "blocks/0089.txt",
+      "word_paragraph_index_zero_based": 4530,
+      "heading_context": [
+        "Chapter 20 – Case 1: Copilot – from the system prompt to RCE",
+        "3. Implementation",
+        "3.2 The bypass: three one-line patches"
+      ],
+      "sha256": "9608ffa67626df3d1dc3bf621c898c45bcfde98554fecb5b8d31a2539f625bd2",
+      "bytes": 104
+    },
+    {
+      "id": 90,
+      "file": "blocks/0090.txt",
+      "word_paragraph_index_zero_based": 4689,
+      "heading_context": [
+        "Chapter 20 – Case 1: Copilot – from the system prompt to RCE",
+        "3. Implementation",
+        "3.13 The guardrail fuzzer: discovery methodology"
+      ],
+      "sha256": "9f7eaf37975fc0cc1503134b29bacc1fa935e17521183e6b56a9fb49233eb9a1",
+      "bytes": 703
+    },
+    {
+      "id": 91,
+      "file": "blocks/0091.txt",
+      "word_paragraph_index_zero_based": 4732,
+      "heading_context": [
+        "Chapter 21 — Case 2: Claude Desktop—isolation boundaries",
+        "2. The decision",
+        "2.4 The decision to escalate: DLL injection as a vector"
+      ],
+      "sha256": "e96890642e55be7b2e7e8a9bd3ca321fffd115bebbd481b0609ac6f0757b9fb3",
+      "bytes": 151
+    },
+    {
+      "id": 92,
+      "file": "blocks/0092.txt",
+      "word_paragraph_index_zero_based": 4742,
+      "heading_context": [
+        "Chapter 21 — Case 2: Claude Desktop—isolation boundaries",
+        "3. Implementation",
+        "3.1 The complete attack chain"
+      ],
+      "sha256": "f8282041001ad7632ad1fa8b605197c5c249e91eaf7b3a4719c5db76c4fc8f19",
+      "bytes": 594
+    },
+    {
+      "id": 93,
+      "file": "blocks/0093.txt",
+      "word_paragraph_index_zero_based": 4747,
+      "heading_context": [
+        "Chapter 21 — Case 2: Claude Desktop—isolation boundaries",
+        "3. Implementation",
+        "3.2 Vulnerability 1: WinTrust Authentication Bypass"
+      ],
+      "sha256": "271539cf8e6e8f979bfac8e0161f9388351a819ddb15aa5b74018b9688ad74b3",
+      "bytes": 741
+    },
+    {
+      "id": 94,
+      "file": "blocks/0094.txt",
+      "word_paragraph_index_zero_based": 4749,
+      "heading_context": [
+        "Chapter 21 — Case 2: Claude Desktop—isolation boundaries",
+        "3. Implementation",
+        "3.2 Vulnerability 1: WinTrust Authentication Bypass"
+      ],
+      "sha256": "09560ecfdb1196a20d5ad747202d4927af7a0ac9c9db0539f4e6eb30fbda09ce",
+      "bytes": 83
+    },
+    {
+      "id": 95,
+      "file": "blocks/0095.txt",
+      "word_paragraph_index_zero_based": 4752,
+      "heading_context": [
+        "Chapter 21 — Case 2: Claude Desktop—isolation boundaries",
+        "3. Implementation",
+        "3.3 Vulnerability 2: Escalation to VM creation without Hyper-V permissions"
+      ],
+      "sha256": "86811ab5002854ab25e6f98b5b2810245cdf0901ac47e28bdbc16f70da75b842",
+      "bytes": 100
+    },
+    {
+      "id": 96,
+      "file": "blocks/0096.txt",
+      "word_paragraph_index_zero_based": 4766,
+      "heading_context": [
+        "Chapter 21 — Case 2: Claude Desktop—isolation boundaries",
+        "3. Implementation",
+        "3.5 Vulnerability 4: Arbitrary host path mounting"
+      ],
+      "sha256": "8b3f3897e2ef7df5022f6c66ac8060be9cc4ebef29208225cd1baea382d7afc9",
+      "bytes": 155
+    },
+    {
+      "id": 97,
+      "file": "blocks/0097.txt",
+      "word_paragraph_index_zero_based": 5016,
+      "heading_context": [
+        "Chapter 22 — Security architecture for AI systems",
+        "3. Implementation",
+        "3.1 Reference layered architecture"
+      ],
+      "sha256": "54ba16ac34072a438b96124c721302c4e2b134c36572dd8eefdfab5b60217e61",
+      "bytes": 1622
+    },
+    {
+      "id": 98,
+      "file": "blocks/0098.txt",
+      "word_paragraph_index_zero_based": 5019,
+      "heading_context": [
+        "Chapter 22 — Security architecture for AI systems",
+        "3. Implementation",
+        "3.2 Input validation with injection detection"
+      ],
+      "sha256": "d67d742663ec31278941d3f4885eb6bbafa3ea0102408ca4f8cff7f3199f3393",
+      "bytes": 1126
+    },
+    {
+      "id": 99,
+      "file": "blocks/0099.txt",
+      "word_paragraph_index_zero_based": 5025,
+      "heading_context": [
+        "Chapter 22 — Security architecture for AI systems",
+        "3. Implementation",
+        "3.3 Separation of privileges with tool validation"
+      ],
+      "sha256": "789980603cd148d5956f29e8dcc8fbd961172c1243e4b9e9b9031a1b5cea8e24",
+      "bytes": 1587
+    },
+    {
+      "id": 100,
+      "file": "blocks/0100.txt",
+      "word_paragraph_index_zero_based": 5029,
+      "heading_context": [
+        "Chapter 22 — Security architecture for AI systems",
+        "3. Implementation",
+        "3.4 Output filtering and PII detection"
+      ],
+      "sha256": "3fd9769c1c10f957047f843cadb2ddee96d1e796d85b67ba2c36d2d4e13131cc",
+      "bytes": 356
+    },
+    {
+      "id": 101,
+      "file": "blocks/0101.txt",
+      "word_paragraph_index_zero_based": 5033,
+      "heading_context": [
+        "Chapter 22 — Security architecture for AI systems",
+        "3. Implementation",
+        "3.5 Monitoring and incident response"
+      ],
+      "sha256": "bcdb1f4c971ad3da53bd0204ca1042806e72d4012e86c4dd73b6087dd5789c4d",
+      "bytes": 769
+    },
+    {
+      "id": 102,
+      "file": "blocks/0102.txt",
+      "word_paragraph_index_zero_based": 5051,
+      "heading_context": [
+        "Chapter 22 — Security architecture for AI systems",
+        "3. Implementation",
+        "3.7 Complete reference architecture: from request to response"
+      ],
+      "sha256": "35aa4d424a71702e538c564e0ad97739f81fcf37ff694d71e1ae26300ed46f06",
+      "bytes": 484
+    },
+    {
+      "id": 103,
+      "file": "blocks/0103.txt",
+      "word_paragraph_index_zero_based": 5086,
+      "heading_context": [
+        "Chapter 22 — Security architecture for AI systems",
+        "3. Implementation",
+        "3.9 Security testing pyramid for AI"
+      ],
+      "sha256": "5f6b93ca22a7c4ffe5f052da69c6428d18102379b710b4449f81691e7f7901e8",
+      "bytes": 509
+    },
+    {
+      "id": 104,
+      "file": "blocks/0104.txt",
+      "word_paragraph_index_zero_based": 5238,
+      "heading_context": [
+        "Chapter 23 — The AI Safety programme in the organisation",
+        "3. Implementation",
+        "3.1 A 90-day plan to build a programme from scratch"
+      ],
+      "sha256": "f14d062031dd98bd2fadfdd722593723a1080115f9fb8e17205135059b206570",
+      "bytes": 673
+    },
+    {
+      "id": 105,
+      "file": "blocks/0105.txt",
+      "word_paragraph_index_zero_based": 5274,
+      "heading_context": [
+        "Chapter 23 — The AI Safety programme in the organisation",
+        "3. Implementation",
+        "3.1 A 90-day plan to build a programme from scratch"
+      ],
+      "sha256": "69a5bd4ce9ce9356ef58cc3fdeadaee0fa9e74bbf66d91180ca7912688a26353",
+      "bytes": 895
+    },
+    {
+      "id": 106,
+      "file": "blocks/0106.txt",
+      "word_paragraph_index_zero_based": 5277,
+      "heading_context": [
+        "Chapter 23 — The AI Safety programme in the organisation",
+        "3. Implementation",
+        "3.2 The security evaluation playbook"
+      ],
+      "sha256": "7b58d5641d17996f348e8e96684a20ee309bab879114ee9bf6a83d6b864a09a7",
+      "bytes": 365
+    },
+    {
+      "id": 107,
+      "file": "blocks/0107.txt",
+      "word_paragraph_index_zero_based": 5285,
+      "heading_context": [
+        "Chapter 23 — The AI Safety programme in the organisation",
+        "3. Implementation",
+        "3.3 Communication with leadership: the monthly report"
+      ],
+      "sha256": "a537dbcb0a8af43715c813ccd43377946dba65d9c6bb74dbda3f0a497ae02c97",
+      "bytes": 409
+    },
+    {
+      "id": 108,
+      "file": "blocks/0108.txt",
+      "word_paragraph_index_zero_based": 5384,
+      "heading_context": [
+        "Chapter 23 — The AI Safety programme in the organisation",
+        "3. Implementation",
+        "3.7 Measuring programme success: operational KPIs"
+      ],
+      "sha256": "91a3f21a508e53701b75b22d8a3419f74e65500b5fef7d887a5d5a2dd1299da1",
+      "bytes": 484
+    },
+    {
+      "id": 109,
+      "file": "blocks/0109.txt",
+      "word_paragraph_index_zero_based": 5577,
+      "heading_context": [
+        "Chapter 24 — Autonomous AI risks: scenarios and evaluation",
+        "3. Implementation",
+        "3.1 Catastrophic failure scenarios and prevention"
+      ],
+      "sha256": "d3cee7cf49655878b8dd8e0a7fda8b7b4c7291aa9834677c9371f69ad5426721",
+      "bytes": 369
+    },
+    {
+      "id": 110,
+      "file": "blocks/0110.txt",
+      "word_paragraph_index_zero_based": 6203,
+      "heading_context": [
+        "Appendix B – AI Safety Engineer tools",
+        "1. Red teaming and offensive security tools",
+        "Garak (NVIDIA)"
+      ],
+      "sha256": "5672295f77c164572ef7995f5179678b8debd89e8e04dfcf931b4b8bca526a3c",
+      "bytes": 207
+    },
+    {
+      "id": 111,
+      "file": "blocks/0111.txt",
+      "word_paragraph_index_zero_based": 6221,
+      "heading_context": [
+        "Appendix B – AI Safety Engineer tools",
+        "1. Red teaming and offensive security tools",
+        "Guardrail Fuzzer (custom tool)"
+      ],
+      "sha256": "bd89ddfdce72f061ae2a1b8bf580a28b0210c2c7ab0a89565187fec94dc360f1",
+      "bytes": 390
+    },
+    {
+      "id": 112,
+      "file": "blocks/0112.txt",
+      "word_paragraph_index_zero_based": 6234,
+      "heading_context": [
+        "Appendix B – AI Safety Engineer tools",
+        "2. Model evaluation frameworks",
+        "Inspect AI (UK AI Security Institute; previously AI Safety Institute)"
+      ],
+      "sha256": "00580ef9df7037fadcf96d0a37d385bf2f03b496f89d1ca54206bdbaad4c2844",
+      "bytes": 379
+    },
+    {
+      "id": 113,
+      "file": "blocks/0113.txt",
+      "word_paragraph_index_zero_based": 6241,
+      "heading_context": [
+        "Appendix B – AI Safety Engineer tools",
+        "2. Model evaluation frameworks",
+        "DeepEval"
+      ],
+      "sha256": "e5d99f361ef5c9fa743a48640f3846c168141a359a489c77fbcd3b076461e2f2",
+      "bytes": 469
+    },
+    {
+      "id": 114,
+      "file": "blocks/0114.txt",
+      "word_paragraph_index_zero_based": 6278,
+      "heading_context": [
+        "Appendix B – AI Safety Engineer tools",
+        "4. Monitoring and observability",
+        "Prometheus + Grafana"
+      ],
+      "sha256": "05af0e4c62c4d82f3474d005a5549934ee52923c2dbe424a224f679354b56265",
+      "bytes": 504
+    },
+    {
+      "id": 115,
+      "file": "blocks/0115.txt",
+      "word_paragraph_index_zero_based": 6295,
+      "heading_context": [
+        "Appendix B – AI Safety Engineer tools",
+        "5. Lab environment",
+        "AI Security Docker Lab"
+      ],
+      "sha256": "222d8fa6b8edcb34b2a355c0bb041882b3dd3c78af90d448b307e1c9d271de97",
+      "bytes": 553
+    }
+  ]
+}

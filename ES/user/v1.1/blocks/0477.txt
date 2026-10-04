@@ -1,0 +1,11 @@
+ESTADO PENDIENTE DE EVIDENCIA:
+La rotación debe confirmarse mediante el procedimiento secreto autorizado.
+La lectura de metadatos no muestra ni verifica el valor de DATABASE_PASSWORD.
+Un rollout correcto acredita su propio criterio de avance, no HTTP 200
+ni que la aplicación autentique con la nueva credencial.
+Comprueba la función afectada y registra el resultado sin secretos.
+
+Base64 es codificación, no cifrado. Kubernetes almacena Secrets sin cifrado
+en etcd por defecto, pero puede configurarse cifrado en reposo.
+Verifica esa configuración y los permisos RBAC de mínimo privilegio;
+un gestor externo tampoco sustituye el control del acceso efectivo.

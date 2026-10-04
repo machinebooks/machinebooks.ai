@@ -1,0 +1,27 @@
+Genera cuatro ficheros de datos financieros ficticios para una empresa
+mediana (200 empleados, facturación 15M anuales):
+
+1. presupuesto-2024.xlsx — Presupuesto anual por partidas (Personal,
+   Servicios externos, Suministros, Alquileres, Marketing, Viajes,
+   IT, Formación, Otros) desglosado por trimestres.
+
+2. gastos-erp-Q1.csv — Detalle de gastos del Q1 exportado de un ERP:
+   id_registro, id_factura, fecha_devengo, código interno EXP-*, proveedor,
+   concepto, importe_neto, impuestos, moneda, estado.
+   Unos 800 registros con variedad de proveedores y conceptos.
+
+3. extracto-banco-Q1.csv — Movimientos bancarios del Q1: fecha, concepto
+   bancario, debe, haber, saldo. Unos 400 movimientos incluyendo nóminas,
+   pagos a proveedores, comisiones y cobros de clientes.
+
+4. gastos-tarjetas-Q1.xlsx — Gastos de tarjetas corporativas del Q1:
+   id_operacion, id_factura_si_existe, titular ficticio, fecha, comercio,
+   importe, moneda, categoría y referencia de liquidación. Unos 150 registros.
+
+Usa los códigos educativos EXP-PERS, EXP-EXT, EXP-SUM, EXP-ALQ, EXP-MKT,
+EXP-VIA y EXP-IT; añade EXP-FORM y EXP-OTR para Formación y Otros.
+No son cuentas PGC. Incluye un manifiesto separado con la verdad esperada
+y relaciones entre fuentes, incluidos gastos de tarjeta ya presentes en ERP.
+Incluye inconsistencias realistas: 10 movimientos bancarios sin
+correspondencia en el ERP, 5 pagos duplicados en las tarjetas,
+formatos de fecha diferentes entre ficheros.

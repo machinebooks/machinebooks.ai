@@ -1,0 +1,10 @@
+EJERCICIO HISTÓRICO; conserva las facturas fiscales originales protegidas.
+Lee sólo las copias minimizadas ya revisadas de /facturas/enero-2025-copias/.
+No accedas a /facturas/enero-2025/ ni a originales no autorizados.
+Extrae identificador del ejercicio, fecha, nombre comercial del proveedor,
+concepto, moneda, base, tipo e importe de IVA y total.
+No inventes campos ilegibles ni omitas rechazos: regístralos para revisión.
+No incluyas cuentas, identificadores fiscales ni contactos excluidos de la copia.
+Guarda facturas-enero-2025.csv; comprueba duplicados y totales por moneda,
+y coteja inventario, filas, rechazos e importes antes de distribuir.
+Esta salida de análisis no sustituye registros fiscales o contables.

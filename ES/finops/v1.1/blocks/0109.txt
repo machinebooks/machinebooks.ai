@@ -1,0 +1,38 @@
+# Native EC2 read-only inventory, authorized resource IDs and bounded pagination.
+from datetime import timedelta
+
+def scan_unattached_volumes(ec2, authorized_ids, now):
+    if len(authorized_ids)>1000 or now.tzinfo is None or now.utcoffset()!=timedelta(0):
+        raise ValueError("Bounded inventory and UTC required")
+    rows, token, seen = [], None, set()
+    for _ in range(20):
+        page=ec2.describe_volumes(Filters=[{"Name":"status","Values":["available"]}],
+            MaxResults=100, **({"NextToken":token} if token else {}))
+        for volume in page.get("Volumes",[]):
+            if volume["VolumeId"] not in authorized_ids:
+                continue
+            created=volume["CreateTime"]
+            if created.tzinfo is None or created.utcoffset()!=timedelta(0) or created>now:
+                raise ValueError("Invalid creation time")
+            rows.append({"resource_id":volume["VolumeId"],"type":volume["VolumeType"],
+                "provisioned_gib":volume["Size"],"age_days":(now-created).days,
+                "monthly_cost":None,"status":"pending_dependency_review",
+                "deletion_authorized":False})
+        token=page.get("NextToken")
+        if not token:
+            return {"resources":rows,"inventory_complete":True}
+        if token in seen:
+            break
+        seen.add(token)
+    return {"resources":rows,"inventory_complete":False}
+
+def scan_unassociated_addresses(ec2, authorized_ids):
+    if len(authorized_ids)>1000:
+        raise ValueError("Inventory bound")
+    page=ec2.describe_addresses()
+    return [{"resource_id":row["AllocationId"],"monthly_cost":None,
+             "status":"pending_dependency_review","release_authorized":False}
+            for row in page.get("Addresses",[]) if row.get("AllocationId") in authorized_ids
+            and not row.get("AssociationId")]
+# Price depends on region/type/IOPS/throughput and billed hours; no universal gp2/gp3
+# rate, fixed monthly IPv4 total, unused-state or deletion safety is inferred.

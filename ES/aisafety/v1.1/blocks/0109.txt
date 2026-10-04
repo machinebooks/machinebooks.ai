@@ -1,0 +1,5 @@
+# Interface only. A rate difference does not establish alignment faking.
+# Contract: non-empty comparable samples, task/rubric/model identifiers,
+# denominators, uncertainty and documented review. Tokens are not reasoning depth.
+def detect_behavior_divergence(eval_profiles, prod_profiles):
+    raise NotImplementedError("A documented comparison protocol is required")

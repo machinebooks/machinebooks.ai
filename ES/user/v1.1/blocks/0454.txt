@@ -1,0 +1,18 @@
+Ejemplo ilustrativo de estado después de levantar:
+
+┌──────────────────┬─────────────────────┬──────────────────┐
+│ Nombre           │ Estado              │ Puertos          │
+├──────────────────┼─────────────────────┼──────────────────┤
+│ nginx            │ Up 12s (healthy)    │ 0.0.0.0:80->80   │
+│ api-backend      │ Up 12s (healthy)    │ 8080/tcp         │
+│ worker           │ Up 12s              │                  │
+│ redis            │ Up 14s (healthy)    │ 6379/tcp         │
+│ postgres         │ Up 14s (healthy)    │ 5432/tcp         │
+│ meilisearch      │ Up 14s (healthy)    │ 7700/tcp         │
+└──────────────────┴─────────────────────┴──────────────────┘
+
+En esta muestra, todos los servicios aparecen corriendo; verifica el estado real.
+✓ 5 de 6 reportan estado "healthy" (worker no tiene health check
+  configurado, pero está "Up"; su disponibilidad funcional queda pendiente).
+
+Verificación de conectividad:

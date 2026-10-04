@@ -1,0 +1,18 @@
+Genera un resumen ejecutivo de una página para cada uno de estos
+5 proyectos. Para cada uno, consulta el último informe semanal
+(carpeta informes/) y el fichero de riesgos:
+
+1. Migración de datos (proyectos/migracion/)
+2. Nuevo sitio web (proyectos/nuevo-web/)
+3. Automatización de facturación (proyectos/facturacion/)
+4. Integración con el CRM (proyectos/integracion-crm/)
+5. Formación del equipo (proyectos/formacion/)
+
+Formato para cada proyecto:
+- Estado general: 🟢 En tiempo / 🟡 En riesgo / 🔴 Retrasado
+- Avance: X% completado
+- Próximo hito y fecha
+- Riesgo principal
+- Decisión necesaria (si la hay)
+
+Todo en un solo documento, máximo una página por proyecto.

@@ -1,0 +1,13 @@
+You ask Claude for something
+        ↓
+Claude identifies that it needs an external tool
+        ↓
+Claude sends the request to the corresponding MCP server
+        ↓
+The MCP server connects to the actual tool
+        ↓
+The tool returns the data to the MCP server
+        ↓
+The MCP server returns the data to Claude
+        ↓
+Claude processes the information and responds to you

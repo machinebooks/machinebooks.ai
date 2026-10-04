@@ -1,0 +1,8 @@
+┌──────────┐     ┌──────────────┐     ┌──────────────┐
+│          │     │   MCP        │     │   EXTERNAL   │
+│  CLAUDE  │────▶│   SERVER     │────▶│   TOOL       │
+│ (host)   │◀────│ (translator) │◀────│  (Gmail,     │
+│          │     │              │     │   Slack...)  │
+└──────────┘     └──────────────┘     └──────────────┘
+  Host and client Local or remote         The actual
+  request data    server              service

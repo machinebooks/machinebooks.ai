@@ -1,0 +1,15 @@
+import React from "react";
+type UnitSnapshot = {active_users: number; avg_token_cost_per_active_user: string | null;
+  known_user_token_subtotal: string; unknown_user_cost_count: number;
+  background_cost: string | null; marginal_cost: string | null; currency: string};
+export function UnitEconomicsDashboard({data}: {data: UnitSnapshot}) {
+  return <section aria-label="Economía por unidad"><dl>
+    <dt>Usuarios activos, definición mensual declarada</dt><dd>{data.active_users}</dd>
+    <dt>Coste medio de tokens por usuario ({data.currency})</dt><dd>{data.avg_token_cost_per_active_user ?? "Desconocido"}</dd>
+    <dt>Subtotal conocido ({data.currency})</dt><dd>{data.known_user_token_subtotal}</dd>
+    <dt>Usuarios con coste desconocido</dt><dd>{data.unknown_user_cost_count}</dd>
+    <dt>Coste de tareas en segundo plano</dt><dd>{data.background_cost ?? "Desconocido"}</dd>
+    <dt>Coste marginal</dt><dd>{data.marginal_cost ?? "No estimado"}</dd>
+  </dl><p>Vista parcial; no calcula TCO completo ni clientes de break-even.</p></section>;
+}
+// The host validates/authorizes the response and handles loading/error/cancellation.

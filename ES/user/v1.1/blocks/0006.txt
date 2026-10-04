@@ -1,0 +1,9 @@
+TAREA: Consolidar las ventas del trimestre por región
+DATOS DE ENTRADA: 3 archivos Excel en la carpeta /ventas/, uno por mes
+RESULTADO ESPERADO: Un único archivo Excel con totales por región y mes,
+  más un resumen ejecutivo de una página en Word
+CRITERIOS: Usar formato europeo de números (1.234,56 €), ordenar
+  por volumen de mayor a menor
+RESTRICCIONES: No modificar los archivos originales
+CONTEXTO: Las regiones son Norte, Sur, Este, Oeste y Canarias.
+  "Canarias" a veces aparece como "Islas Canarias" en los datos.

@@ -1,0 +1,16 @@
+Ejemplo ficticio de procesamiento completado:
+- Facturas procesadas: 50
+- Campos completados: 467 de 500 (93,4%); exactitud pendiente de contraste
+- Facturas con todos los campos completos: 43
+- Facturas con algún campo "NO LEGIBLE": 7
+
+Resumen financiero:
+- Base imponible total: 87.432,15 €
+- IVA total: 17.256,89 €
+- Total facturado: 104.689,04 €
+
+Facturas que requieren revisión manual:
+1. scan_factura_suministros.pdf - NIF no legible (escaneo borroso)
+2. FACT-2024-017.pdf - Fecha ambigua (¿03/04 o 04/03?)
+3. recibo_parking_marzo.pdf - No parece una factura (es un ticket)
+...

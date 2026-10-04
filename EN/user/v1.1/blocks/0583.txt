@@ -1,0 +1,40 @@
+cd /home/usuario/reunion-seguimiento
+
+claude -p "
+Prepare the project follow-up meeting. Divide the work into three
+phases with dependencies:
+
+TASK 1 — Project status:
+- Read datos/tareas-proyecto.csv
+- Generate preparacion/estado-proyecto.md with:
+  * Overall completion percentage
+  * Tasks completed since the previous meeting
+  * Tasks in progress and their completion percentages
+  * Blocked or delayed tasks
+  * Upcoming milestones over the next two weeks
+  * Overall assessment: on schedule / at risk / delayed
+
+TASK 2 — Incident analysis:
+- Read datos/incidencias-abiertas.csv
+- Generate preparacion/analisis-incidencias.md with:
+  * Incident table ordered by severity
+  * For each critical incident: description, impact and proposed action
+  * Trend: are incidents increasing or decreasing?
+  * Summary: open incidents, critical incidents, and incidents older than seven days
+
+LATER PHASE — Agenda, after checking status and incidents:
+- Read checked outputs preparacion/estado-proyecto.md and
+  preparacion/analisis-incidencias.md, plus the previous minutes and agreements.
+- Generate preparacion/agenda-reunion.md with:
+  * Review of outstanding agreements from the previous meeting
+  * Prioritized agenda items based on status and incidents
+  * Estimated time per item, with a maximum total of one hour
+  * Decisions required at this meeting
+  * Suggested participants for each item
+
+When the three tasks finish, generate a single document at
+preparacion/dossier-reunion.md integrating the three analyses, with a
+five-line executive summary at the beginning.
+An open-incident snapshot does not establish a trend without comparable periods.
+Define progress, cutoff, and weights; do not infer progress from missing fields.
+"

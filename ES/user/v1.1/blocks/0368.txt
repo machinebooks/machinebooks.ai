@@ -1,0 +1,6 @@
+Del fichero /var/log/apache2/access.log, quiero saber:
+- Las 20 URLs con más peticiones en la fecha UTC 2026-03-17
+- De esas 20, cuántas peticiones superan 2 segundos según el campo %D
+- Para esas peticiones lentas, distribución por destino y hora UTC
+Confirma formato combined con %D final; no infieras unidad ni campo.
+No modifiques logs. Ejecuta el parser con archivo y fecha como argumentos.

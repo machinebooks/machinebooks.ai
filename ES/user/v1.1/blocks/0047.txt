@@ -1,0 +1,10 @@
+Analiza la carpeta C:\Users\miusuario\Documents\Facturas_2024.
+Quiero que:
+1. Leas cada PDF para identificar el proveedor y la fecha de factura
+2. Renombres cada archivo con el formato: YYYY-MM-DD_proveedor_factura.pdf
+3. Crees subcarpetas por mes (01-Enero, 02-Febrero, etc.)
+4. Muevas cada factura a su mes correspondiente
+5. Me generes un resumen en CSV con: archivo original, archivo nuevo, proveedor, fecha, importe si lo encuentras
+
+Antes de ejecutar nada, muéstrame el plan completo.
+Trabaja sobre una copia. Conserva el registro de rutas y hashes de las 87 entradas. Confirma duplicados por contenido. Detecta colisiones del nombre propuesto; si dos facturas comparten fecha y proveedor, añade el número de factura o un sufijo único estable sin sobrescribir. Reconcilia todas las entradas y salidas, incluidos presupuestos y excepciones, y espera aprobación del plan.

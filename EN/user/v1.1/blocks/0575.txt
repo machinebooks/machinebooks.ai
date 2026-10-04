@@ -1,0 +1,12 @@
+cd /home/usuario/propuesta-cliente
+claude -p "
+Use only facts supported by the sources; mark missing experience, satisfaction, staffing, and guarantees pending. The 10% discount, 21% VAT, 30/40/30 payment schedule, 30-day validity, and four-month timetable are illustrative parameters requiring commercial and tax review before commitments. The parallel narrative retains its placeholders; integrate only after checking the outputs. Do not send the proposal or approve its commercial terms.
+
+Read glosario.md for conventions.
+ROLE: Financial controller.
+Read datos/tarifas-2025.csv, datos/servicios-catalogo.csv and the
+'Identified need' section in datos/cliente-tech-solutions.md.
+Generate partes/estimacion-economica.md with a breakdown by phase and role,
+allocation, costs, 10% discount, subtotals, VAT (21%) and total.
+Format amounts as specified in the glossary.
+"

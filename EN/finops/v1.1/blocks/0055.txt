@@ -1,0 +1,38 @@
+from decimal import Decimal
+from datetime import datetime, timezone
+
+def calendar_month_windows(now, months):
+    if type(months) is not int or not 1 <= months <= 24 or now.tzinfo != timezone.utc:
+        raise ValueError("UTC and bounded month count required")
+    year, month = now.year, now.month
+    windows = []
+    end = now
+    for _ in range(months):
+        start = datetime(year, month, 1, tzinfo=timezone.utc)
+        windows.append((start, end))
+        end = start
+        year, month = (year-1,12) if month==1 else (year,month-1)
+    return list(reversed(windows))
+
+def get_cfo_metrics(monthly_snapshots, now):
+    if len(monthly_snapshots) > 24:
+        raise ValueError("month limit")
+    data = []
+    for snapshot in monthly_snapshots:
+        value, fx = snapshot.get("cost_usd"), snapshot.get("eur_per_usd")
+        cost = None
+        if value is not None and fx is not None and snapshot["complete"] is True:
+            value, fx = Decimal(str(value)), Decimal(str(fx))
+            if not value.is_finite() or not fx.is_finite() or value < 0 or fx <= 0:
+                raise ValueError("invalid cost/FX")
+            cost = value*fx
+        users = snapshot.get("active_users")
+        if users is not None and (type(users) is not int or users < 0):
+            raise ValueError("invalid active users")
+        data.append({"month":snapshot["month"], "cost_eur":None if cost is None else float(cost),
+                     "cost_per_user_eur":float(cost/users) if cost is not None and users else None,
+                     "complete":snapshot["complete"]})
+    return {"currency":"EUR", "current_month":now.strftime("%Y-%m"),
+            "monthly_trend":data, "projection_eur":None, "full_tco":False}
+# Host validates ordered, unique UTC calendar snapshots and dated FX per month.
+# Projection is unimplemented; no 30-day extrapolation or full TCO claim is made.

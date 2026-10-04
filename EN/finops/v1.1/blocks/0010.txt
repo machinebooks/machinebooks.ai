@@ -1,0 +1,20 @@
+# Reference snapshot checked 2026-10-04; this is not a launch/effective-date claim.
+# No DB insert is performed; operational validity must be approved independently.
+from decimal import Decimal
+
+PRICING_SEED_DATA = []
+for model_id, input_price, output_price in (
+    ("claude-opus-4-6", "5", "25"),
+    ("claude-sonnet-4-6", "3", "15"),
+    ("claude-haiku-4-5", "1", "5"),
+):
+    base = Decimal(input_price)
+    PRICING_SEED_DATA.append({"provider": "anthropic", "model_id": model_id,
+        "model_type": "chat", "currency": "USD", "tariff_scope": "standard; cache-write-5m",
+        "version": "reference-2026-10-04", "checked_date": "2026-10-04",
+        "effective_date": None, "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
+        "input_price_per_1m": base, "output_price_per_1m": Decimal(output_price),
+        "cached_input_price_per_1m": base * Decimal("0.1"),
+        "cache_write_price_per_1m": base * Decimal("1.25")})
+# Add OpenAI/Azure rows only with exact model, modality, region, currency and period.
+# A missing Azure quote or Ollama operating cost is unknown, not a universal zero.

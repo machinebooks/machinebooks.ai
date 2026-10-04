@@ -1,0 +1,7 @@
+-- Example scoped, versioned row; bind tenant and version in deployment tooling.
+INSERT INTO llm_service_config
+  (tenant_id, service_name, version, default_tier, allow_upgrade,
+   allow_downgrade, max_output_tokens, updated_at_utc)
+VALUES (:tenant_id, 'document_classifier', :version, 'fast', FALSE,
+        TRUE, 256, UTC_TIMESTAMP());
+-- Enum values are stored as fast/balanced/powerful. Provisioning is not run here.

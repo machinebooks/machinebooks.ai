@@ -1,0 +1,3 @@
+Genera dos borradores para revisar con el gestor:
+1. facturas_recibidas_Q1.csv con Fecha;NIF;Base;Tipo IVA;Cuota IVA;Total y referencia a la fuente.
+2. resumen_iva_Q1.txt con bases y cuotas extraídas, agrupadas por todos los tipos que aparezcan y su periodo. Distingue exenciones y tipo cero, y declara tipos o documentos sin clasificar. No restrinjas el lote a 4%, 10% y 21% ni identifiques la cuota soportada con la deducible.

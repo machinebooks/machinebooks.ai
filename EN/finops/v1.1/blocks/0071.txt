@@ -1,0 +1,32 @@
+CACHE_MINIMUMS = {"claude-sonnet-4-6":1024,
+                  "claude-opus-4-6":4096, "claude-haiku-4-5":4096}
+
+def prepare_cached_request(model, system, user_message, reference_docs, count_prefix_tokens, max_tokens=1024):
+    if model not in CACHE_MINIMUMS or type(max_tokens) is not int or not 1 <= max_tokens <= 8192:
+        raise ValueError("model or output cap")
+    if not isinstance(reference_docs, list) or len(reference_docs) > 20:
+        raise ValueError("document limit")
+    texts = [system,user_message,*reference_docs]
+    if any(not isinstance(t,str) for t in texts) or sum(len(t) for t in texts) > 100000:
+        raise ValueError("bounded text required")
+    system_block = {"type":"text", "text":system}
+    docs = [{"type":"text", "text":d} for d in reference_docs]
+    prefix = count_prefix_tokens(model, system, reference_docs)
+    if type(prefix) is not int or prefix < 0:
+        raise ValueError("prefix token count")
+    if prefix >= CACHE_MINIMUMS[model]:
+        target = docs[-1] if docs else system_block
+        target["cache_control"] = {"type":"ephemeral"}
+    return {"model":model, "max_tokens":max_tokens, "system":[system_block],
+            "messages":[{"role":"user", "content":docs+[{"type":"text","text":user_message}]}]}
+
+def get_cache_stats(normalized_native_usage):
+    keys = ("input_tokens", "output_tokens", "cache_read_input_tokens", "cache_creation_input_tokens")
+    values = {k:normalized_native_usage.get(k) for k in keys}
+    if any(type(v) is not int or not 0 <= v <= 2147483647 for v in values.values()):
+        return {"known":False, "usage":None}
+    return {"known":True, "usage":values,
+            "billed_normal_tokens":values["input_tokens"]}
+# One breakpoint, variable user block excluded. Host uses model token counter,
+# tracked adapter and authorized data; threshold alone does not guarantee a hit.
+# Native Anthropic input_tokens excludes cache partitions; never subtract twice.

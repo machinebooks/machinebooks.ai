@@ -1,0 +1,9 @@
+In the /opt/staging/ directory there is a docker-compose.yml with
+6 services: nginx, api-backend, worker, redis, postgres, and
+meilisearch. I need to:
+1. Stop only this project's services in the reviewed context
+2. Rebuild the api-backend and worker images (they have changed)
+3. Bring everything up
+4. Verify each service is healthy
+5. Show the last 30 seconds of logs if any fail
+6. Give me a summary of the final status

@@ -1,0 +1,6 @@
+Para las instancias EC2 del alcance autorizado:
+- Nombre, tipo, región, estado y dueño identificado.
+- Coste acumulado con fuente y criterio; marca no disponible si falta atribución por recurso.
+- CPU media y picos en siete días completos, con cobertura y métricas adicionales.
+- Moneda original y periodo; sin conversión no compares USD con un umbral EUR.
+- Marca candidatos para revisar, sin inferir que CPU baja permite apagarlos.

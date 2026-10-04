@@ -1,0 +1,21 @@
+cd /home/usuario/informe-trimestral
+
+claude -p "
+ROLE: Report writer.
+Read datos/resultados-q1.csv and datos/objetivos-q1.csv.
+Generate a complete quarterly report at borradores/informe-q1-v1.md.
+
+The report must contain:
+- Executive summary: five lines
+- Results by area: table and commentary
+- Comparison with targets: budget versus actual
+- Variance analysis: explain the reasons
+- Conclusions: three to five actionable points
+
+Requirements:
+- All figures must come from the CSV files; do not invent data
+- Professional tone, oriented toward management
+- Length: 1,500–2,000 words
+- Formatting conventions from glosario.md
+Figures do not establish causes: mark them as hypotheses without evidence.
+" > logs/redactor-v1.log 2>&1

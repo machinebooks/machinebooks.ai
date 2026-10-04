@@ -1,0 +1,13 @@
+When I ask you to generate weekly team meeting minutes,
+always use this format:
+
+1. Header: date, attendees, duration
+2. Previous week's commitment review (fulfilled / pending)
+3. Topics discussed with highlighted decisions
+4. New actions: table with responsible person, description, date
+5. 3-line executive summary
+6. Next meeting
+
+For client meetings, add a "detected risks" section and always
+generate an external version (for the client) and an internal
+one (for the team).

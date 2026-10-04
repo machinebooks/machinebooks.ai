@@ -1,0 +1,6 @@
+Maqueta ficticia: /var/log/app/ ocupa 34 GB.
+Los mayores archivos citados ya terminan en .gz: no vuelvas a comprimirlos.
+Antes de mover archivos antiguos, verifica origen, destino, espacio, archivos abiertos,
+retención y hashes; un movimiento en el mismo filesystem no libera su espacio.
+Eliminar exige una decisión autorizada y una recuperación definida.
+Revisa logrotate y las dependencias de la aplicación antes de configurarlo.

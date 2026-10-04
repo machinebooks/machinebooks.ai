@@ -1,0 +1,18 @@
+Generate a one-page executive summary for each of these 5 projects.
+For each one, consult the latest weekly report (folder reports/)
+and the risk file:
+
+1. Data migration (projects/migration/)
+2. New website (projects/new-web/)
+3. Billing automation (projects/billing/)
+4. CRM integration (projects/crm-integration/)
+5. Team training (projects/training/)
+
+Format for each project:
+- Overall status: 🟢 On time / 🟡 At risk / 🔴 Delayed
+- Progress: X% completed
+- Next milestone and date
+- Main risk
+- Decision needed (if any)
+
+All in a single document, maximum one page per project.

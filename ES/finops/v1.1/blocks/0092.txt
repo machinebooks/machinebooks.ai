@@ -1,0 +1,11 @@
+def handle_budget_exceeded(service_name, queue_receipt=None):
+    if queue_receipt is not None:
+        if queue_receipt.get("durably_accepted") is not True:
+            raise ValueError("queue acceptance required")
+        return {"status":"queued", "message":"Solicitud aceptada para revisión diferida",
+                "job_id":queue_receipt["public_job_id"], "completion_guaranteed":False}
+    return {"status":"paused", "message":"Solicitud pendiente de capacidad o revisión",
+            "completion_guaranteed":False}
+# Host chooses per-service policy and may enqueue authorized, bounded, expiring data
+# idempotently. Budget exceptions do not carry raw request_data. No fixed retry/24h SLA
+# is invented, and stopped work remains visible to its owner.

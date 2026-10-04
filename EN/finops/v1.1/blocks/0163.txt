@@ -1,0 +1,8 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Sid": "DenySelectedExpensiveInstanceFamilies",
+    "Effect": "Deny", "Action": "ec2:RunInstances", "Resource": "*",
+    "Condition": {"StringLike": {"ec2:InstanceType": ["p4d.*", "p5.*", "g5.*"]}}
+  }]
+}

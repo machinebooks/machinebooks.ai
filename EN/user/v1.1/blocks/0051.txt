@@ -1,0 +1,14 @@
+Analyze my Downloads folder (C:\Users\myuser\Downloads).
+Classify all files into these categories:
+- Documents (PDF, Word, Excel, PowerPoint)
+- Images (JPG, PNG, GIF, screenshots)
+- Installers (EXE, MSI, DMG)
+- Videos and audio
+- Compressed files (ZIP, RAR)
+- Other
+
+For each category, tell me how many files there are and how much space they take up.
+Identify duplicate candidates and verify their hashes.
+Report the recorded last-access timestamp and its reliability under the system and configuration; do not present it as proof that someone opened or used the file.
+
+Show me the result before proposing any action.

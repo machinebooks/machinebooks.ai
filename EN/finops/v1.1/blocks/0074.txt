@@ -1,0 +1,17 @@
+# Illustrative UTC cadence; host converts mappings to Celery crontab objects.
+# Beat --schedule is a state-file path, not a YAML loader. Tasks are host contracts.
+beat_schedule:
+  process-nightly-batch:
+    task: tasks.batch_processing.process_nightly_batch
+    schedule: {crontab: {hour: 2, minute: 0}}
+  poll-batch-results:
+    task: tasks.batch_processing.poll_all_pending_batches
+    schedule: {crontab: {minute: "*/30"}}
+  weekly-cost-report:
+    task: tasks.reporting.generate_weekly_cost_report
+    schedule: {crontab: {hour: 3, minute: 30, day_of_week: 1}}
+  monthly-budget-review:
+    task: tasks.reporting.generate_monthly_budget_review
+    schedule: {crontab: {hour: 5, minute: 0, day_of_month: 1}}
+# Durable intent/deduplication, bounded polling and ownership are host requirements.
+# No cost, delivery or finishing-time guarantee follows from this schedule.

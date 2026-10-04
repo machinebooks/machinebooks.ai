@@ -1,0 +1,16 @@
+    Bandeja de entrada (40 emails)
+                │
+                ▼
+    ┌───────────────────┐
+    │    CLASIFICAR     │ ──▶ Urgente / Normal / Informativo / Basura
+    └─────────┬─────────┘
+              │
+              ▼
+    ┌───────────────────┐
+    │ GENERAR BORRADOR  │ ──▶ Solo para emails que requieren respuesta
+    └─────────┬─────────┘
+              │
+              ▼
+    ┌───────────────────┐
+    │   TÚ REVISAS      │ ──▶ Ajustas tono, añades contexto, envías
+    └───────────────────┘

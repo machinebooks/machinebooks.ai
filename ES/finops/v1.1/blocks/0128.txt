@@ -1,0 +1,29 @@
+# Capacity-valued partial return. Inputs are snapshots, never request-provided prices.
+from decimal import Decimal
+
+def task_capacity_result(baseline, known_incremental_cost, accepted):
+    if type(accepted) is not bool:
+        raise ValueError("Explicit acceptance decision required")
+    cost = None if known_incremental_cost is None else Decimal(str(known_incremental_cost))
+    if cost is not None and (not cost.is_finite() or cost < 0):
+        raise ValueError("Invalid cost")
+    value = None
+    if not accepted:
+        value = Decimal(0)
+    elif baseline is not None:
+        minutes, rate, supervision, capture = [Decimal(str(baseline[k])) for k in
+            ("human_minutes", "hourly_cost", "supervision_fraction", "capture_fraction")]
+        if any(not x.is_finite() for x in (minutes,rate,supervision,capture)):
+            raise ValueError("Nonfinite baseline")
+        if minutes < 0 or rate < 0 or not 0 <= supervision <= 1 or not 0 <= capture <= 1:
+            raise ValueError("Invalid baseline")
+        value = minutes*rate/60*(1-supervision)*capture
+    net = None if value is None or cost is None else value-cost
+    ratio = None if net is None or cost == 0 else net/cost
+    return {"accepted": accepted, "known_incremental_cost": None if cost is None else str(cost),
+            "captured_capacity_value": None if value is None else str(value),
+            "partial_net_value": None if net is None else str(net),
+            "partial_net_return": None if ratio is None else str(ratio),
+            "full_roi": None, "cash_savings": None}
+# No baseline hides neither the incurred cost nor the rejection. Acceptance rate
+# belongs to the cohort; applying it again to an accepted task would double discount.

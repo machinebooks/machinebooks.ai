@@ -1,0 +1,7 @@
+# Reuse chapter-12 pipeline: SafetyGuard, router, circuit permit, atomic reserve,
+# tracked invocation and settlement execute in that order. A policy snapshot is not
+# permission to call a provider and a token estimate is not a financial upper bound.
+async def authorized_policy_call(pipeline,approved_messages,task_type,scope):
+    return await pipeline.complete(scope,task_type,{"messages":approved_messages})
+# The caller injects the actual chapter-12 pipeline interface; no separate permissive
+# middleware or client-selected tenant/model bypass is supplied by this outline.

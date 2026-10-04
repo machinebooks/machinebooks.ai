@@ -1,0 +1,64 @@
+# services/carbon_token_estimator.py
+# Illustrative energy arithmetic for LLM calls.
+# Estimates are not measurements. Formal reporting requires validated sources.
+
+from dataclasses import dataclass
+import math
+
+
+@dataclass
+class LLMEmissionFactors:
+    """Factores de emisión estimados para un model LLM."""
+    model: str
+    kwh_per_million_input_tokens: float
+    kwh_per_million_output_tokens: float
+    datacenter_pue: float  # PUE del datacenter
+
+
+class CarbonTokenEstimator:
+    """Illustrative coefficients, not provider-validated measurements."""
+
+    MODEL_COEFFICIENTS = {
+        "claude-haiku-4-5": LLMEmissionFactors("claude-haiku-4-5", 0.0005, 0.0020, 1.15),
+        "claude-sonnet-4-6": LLMEmissionFactors("claude-sonnet-4-6", 0.0025, 0.0100, 1.15),
+        "claude-opus-4-6": LLMEmissionFactors("claude-opus-4-6", 0.0120, 0.0480, 1.15),
+    }
+
+    # Illustrative regional coefficients; not a verified electricity data source.
+    REGION_COEFFICIENTS = {
+        "us-east-1": 395, "eu-west-1": 316, "eu-central-1": 401,
+        "ap-southeast-1": 493, "us-west-2": 137,
+    }
+
+    def estimate_emissions(
+        self, model: str, input_tokens: int,
+        output_tokens: int, region: str = "eu-west-1",
+    ) -> dict:
+        """Calculate illustrative call energy and emissions."""
+        for count in (input_tokens, output_tokens):
+            if type(count) is not int or not 0 <= count <= 10_000_000:
+                raise ValueError("Invalid token count")
+        if not isinstance(model, str) or not isinstance(region, str):
+            raise ValueError("Invalid model or region")
+        factors = self.MODEL_COEFFICIENTS.get(model)
+        if not factors:
+            return {"kwh": None, "gco2e": None, "available": False}
+
+        factor_region = self.REGION_COEFFICIENTS.get(region)
+        if factor_region is None:
+            return {"kwh": None, "gco2e": None, "available": False}
+        if input_tokens < 0 or output_tokens < 0:
+            raise ValueError("Token counts must be non-negative")
+        kwh_input = input_tokens * factors.kwh_per_million_input_tokens / 1_000_000
+        kwh_output = output_tokens * factors.kwh_per_million_output_tokens / 1_000_000
+        kwh_total = (kwh_input + kwh_output) * factors.datacenter_pue
+        gco2e = kwh_total * factor_region
+
+        return {
+            "kwh": round(kwh_total, 8),
+            "gco2e": round(gco2e, 4),
+            "region": region,
+            "available": True,
+            "data_kind": "illustrative_scenario_not_inventory",
+            "note": "Estimación aproximada; no usar para reporting formal",
+        }

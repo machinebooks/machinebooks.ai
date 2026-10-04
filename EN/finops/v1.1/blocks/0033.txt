@@ -1,0 +1,14 @@
+# Canonical policy; adapters map cost-center to provider label constraints.
+required_tags:
+  environment: [prod, staging, dev, sandbox]
+  team: [backend, frontend, data, platform, security]
+  service_pattern: "^[a-z][a-z0-9-]{0,62}$"
+  cost-center: [cc-plataforma, cc-datos, cc-infra, cc-seguridad]
+optional_tags:
+  expiry-date: "YYYY-MM-DD"
+enforcement:
+  missing_or_invalid: block
+  unknown_plan_value: review
+  inventory_audit: weekly
+  deploy_approval_implemented: false
+# Owner identity belongs in a protected directory, not a public tag.

@@ -1,0 +1,13 @@
+Tú le pides algo a Claude
+        ↓
+Claude identifica que necesita una herramienta externa
+        ↓
+Claude envía la solicitud al servidor MCP correspondiente
+        ↓
+El servidor MCP se conecta a la herramienta real
+        ↓
+La herramienta devuelve los datos al servidor MCP
+        ↓
+El servidor MCP devuelve los datos a Claude
+        ↓
+Claude procesa la información y te responde

@@ -1,0 +1,10 @@
+From the monthly closes from January to December 2024 (folder
+cierres/), generate an annual analysis with:
+
+1. Monthly trend for each budget line item
+2. Seasonality: which months have the most spending and in which line items?
+3. Vendors whose billing has grown more than 25% during the year
+4. Line items that have been systematically above budget
+   (more than 3 consecutive months with positive variance)
+5. Cumulative effect: actual total annual variance vs. what you projected
+   in Q1 based only on the first three months of data

@@ -1,0 +1,14 @@
+DIAGNÓSTICO DE RED ILUSTRATIVO:
+
+Se supone que ambos contenedores están en staging_default y DNS
+resuelve redis a 172.18.0.4; la conexión a redis:6379 se rechaza.
+Eso no demuestra por sí solo que bind 127.0.0.1 sea la causa.
+Comprueba proceso, puerto, configuración efectiva, red y momento
+con permisos autorizados. Un PING local no prueba acceso desde api-backend.
+
+Si se confirma que la escucha solo en loopback bloquea a un cliente
+legítimo, revisa una interfaz o red privada autorizada junto con ACL,
+autenticación, modo protegido y TLS cuando corresponda.
+No cambies a bind 0.0.0.0 como solución automática ni publiques 6379
+sin controlar la exposición. Repite las pruebas desde el cliente autorizado
+antes de dar la conectividad por resuelta.

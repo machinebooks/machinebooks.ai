@@ -1,0 +1,10 @@
+# Illustrative allocation assumptions; not vendor quotes or measured payroll.
+monthly:
+  "2025-03":
+    currency: EUR
+    source_version: fixture-v1
+    people_eur: "3200"
+    tools_eur: "400"
+    overhead_eur: "200"
+    evidence_state: illustrative_unverified
+    allocation_review_required: true

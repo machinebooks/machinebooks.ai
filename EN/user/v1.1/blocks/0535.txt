@@ -1,0 +1,9 @@
+  Phase 1: ASSISTED        Phase 2: SEMI-AUTONOMOUS   Phase 3: AUTONOMOUS
+  ┌────────────────┐     ┌────────────────┐     ┌────────────────┐
+  │ You write      │     │ Script +       │     │ Cron executes  │
+  │ the instruc-   │     │ claude -p      │     │ automatical-   │
+  │ tion each      │──▶  │ You launch     │──▶  │ ly.            │
+  │ time.          │     │ manually.      │     │ You review     │
+  │                │     │                │     │ the result.    │
+  └────────────────┘     └────────────────┘     └────────────────┘
+  Agreed criteria        Agreed criteria        Controls and review

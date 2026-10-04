@@ -1,0 +1,36 @@
+import json
+from uuid import UUID
+
+def prepare_batch_plan(approved_tasks):
+    if not isinstance(approved_tasks, list) or not 1 <= len(approved_tasks) <= 100:
+        raise ValueError("task limit")
+    requests, ids = [], set()
+    for task in approved_tasks:
+        task_id = str(UUID(task["id"]))
+        if task_id in ids:
+            raise ValueError("duplicate task")
+        ids.add(task_id)
+        cap = task["max_tokens"]
+        if type(cap) is not int or not 1 <= cap <= 8192:
+            raise ValueError("output cap")
+        requests.append({"custom_id":task_id, "params":{
+            "model":task["approved_model"], "max_tokens":cap,
+            "system":task["approved_system"],
+            "messages":[{"role":"user","content":task["approved_content"]}]}})
+    if len(json.dumps(requests).encode("utf-8")) > 1000000:
+        raise ValueError("batch payload limit")
+    return {"requests":requests, "submitted":False, "action_authorized":False}
+
+def classify_batch_result(result, expected_ids):
+    if result["custom_id"] not in expected_ids:
+        raise ValueError("unmatched task")
+    state = result["result"]["type"]
+    if state not in {"succeeded", "errored", "canceled", "expired"}:
+        raise ValueError("unknown result type")
+    return {"task_id":result["custom_id"], "provider_state":state,
+            "review_required":state != "succeeded", "auto_requeued":False}
+# Host claims tasks and records durable intent before submitting. Unknown submission
+# outcomes require provider reconciliation, not a blind retry. Poll pages/streams
+# are bounded; task/batch result keys deduplicate before usage and status commit.
+# Persist text blocks/normalized usage only after validation; do not assume content[0].
+# Scheduler, submitter, storage and recovery are contracts, not implemented Celery jobs.

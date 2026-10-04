@@ -1,0 +1,44 @@
+#!/bin/bash
+# GNU/Linux, validated simple CSV subset only; no quoted fields or file changes.
+set -euo pipefail
+export LC_ALL=C
+file=/tmp/ventas.csv
+awk -F, '
+NR==1 {
+    if ($0 != "fecha,producto,region,unidades,importe") exit 2
+    next
+}
+{
+    if (NF != 5 || $0 ~ /["\t\r]/ || $2 == "" || $3 == "" ||
+        $1 !~ /^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/ ||
+        $4 !~ /^-?[0-9]+$/ || $5 !~ /^-?[0-9]+(\.[0-9]+)?$/) exit 2
+}
+END { if (NR == 0) exit 2 }
+' "$file"
+
+printf '=== Amount by region (EUR) ===\n'
+awk -F, 'NR>1 {sum[$3]+=$5}
+END {for (r in sum) printf "%.2f\t%s\n",sum[r],r}' "$file" | sort -k1,1nr
+
+printf '=== Top product by region (units; name breaks ties) ===\n'
+awk -F, 'NR>1 {units[$3 SUBSEP $2]+=$4}
+END {
+    for (key in units) {
+        split(key,parts,SUBSEP); r=parts[1]; p=parts[2]
+        if (!(r in best) || units[key]>maximum[r] ||
+            (units[key]==maximum[r] && p<best[r])) {
+            maximum[r]=units[key]; best[r]=p
+        }
+    }
+    for (r in best) printf "%s\t%s\t%.0f\n",r,best[r],maximum[r]
+}' "$file" | sort
+
+printf '=== Mean amount per row/month (EUR) ===\n'
+awk -F, 'NR>1 {m=substr($1,1,7); sum[m]+=$5; count[m]++}
+END {for (m in sum) printf "%s\t%.2f\t%d\n",m,sum[m]/count[m],count[m]}
+' "$file" | sort
+
+printf '=== Top 5 dates by row count ===\n'
+awk -F, 'NR>1 {count[$1]++}
+END {for (d in count) printf "%d\t%s\n",count[d],d}
+' "$file" | sort -k1,1nr -k2,2 | awk 'NR<=5'

@@ -1,0 +1,1 @@
+Hipótesis: webapp pudo agotar memoria durante el batch #4872. «Cannot allocate memory» indica un fallo de asignación; SIGKILL por sí solo no identifica al OOM killer. Antes de afirmar la causa, revisa el registro del kernel, los eventos de systemd y los límites del proceso o cgroup en el periodo del incidente.

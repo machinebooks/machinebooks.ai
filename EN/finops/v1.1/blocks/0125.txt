@@ -1,0 +1,5 @@
+capacity_value = approved_minutes_released * approved_hourly_rate / 60
+captured_capacity_value = capacity_value * approved_capture_factor
+partial_net_return = (captured_capacity_value - known_incremental_cost) / known_incremental_cost
+# Undefined when the denominator is zero or unknown. This partial measure omits
+# undeclared investment/operation and does not establish cash savings or full ROI.

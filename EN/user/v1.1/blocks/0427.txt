@@ -1,0 +1,3 @@
+Show me all EC2 instances with their state, name, type,
+and the "Environment" tag if they have one. Group by environment
+(production, staging, development).

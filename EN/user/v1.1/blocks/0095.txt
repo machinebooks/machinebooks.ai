@@ -1,0 +1,6 @@
+1. Organize the files in C:\Data\Q1_raw by type (invoices, reports, other)
+2. From the invoices, extract the data into a CSV
+3. With that CSV, generate the Q1 expense report
+
+All at once. Save the intermediate results in case I need to review them.
+Work on a copy and retain inventory and hashes. Define each step's inputs, outputs, and coverage, calculation, and preservation checks. On failure, missing data, or a failed check, do not advance: record pending work and request review. Retain exit statuses and exceptions.

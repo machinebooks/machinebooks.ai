@@ -1,0 +1,23 @@
+# Policy resolution is a host contract; no permissive unknown-budget default.
+from copy import deepcopy
+from decimal import Decimal
+
+class PolicyReconciler:
+    def __init__(self,authorized_policy_reader):
+        self.read_policy=authorized_policy_reader
+
+    async def request_snapshot(self,scope,task_type,known_spend,reserved_amount):
+        policy=deepcopy(await self.read_policy(scope=scope,task_type=task_type))
+        if policy["scope"]!=scope or policy["approval_state"]!="approved":
+            raise ValueError("Approved scoped policy required")
+        if known_spend is None or reserved_amount is None or policy["budget_amount"] is None:
+            return {"state":"unknown","request_eligible":False}
+        spend,reserved,limit=[Decimal(str(x)) for x in
+                              (known_spend,reserved_amount,policy["budget_amount"])]
+        if any(not x.is_finite() or x<0 for x in (spend,reserved,limit)):
+            raise ValueError("Invalid financial snapshot")
+        return {"state":"snapshot_only","request_eligible":limit>0 and spend+reserved<limit,
+                "policy_version":policy["version"],"budget_remaining":str(max(0,limit-spend-reserved)),
+                "execution_authorized":False}
+# Host resolves exact/global/group/tenant rules deterministically, validates all
+# overrides and model/data scope, then atomically reserves an upper call bound.

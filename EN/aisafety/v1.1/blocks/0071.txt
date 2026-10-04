@@ -1,0 +1,7 @@
+# Retrieval interface; user-supplied roles do not establish authorisation.
+# Bind verified identity and tenant to source ACLs on every query and admin path.
+# Use exact typed membership and pinned-store filtering semantics; handle empty roles.
+# Do not assume 1-distance is a comparable score across collections or metrics.
+class SecureRAGQuery:
+    def query(self, question, user, top_k=5):
+        raise NotImplementedError("A tested source-ACL and vector-query adapter is required")

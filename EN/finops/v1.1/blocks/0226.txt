@@ -1,0 +1,38 @@
+# Request preparation only; the host authorizes and tracks the eventual call.
+CACHE_MINIMUM = {
+    "claude-sonnet-4-6": 1024,
+    "claude-opus-4-6": 4096,
+    "claude-haiku-4-5": 4096,
+}
+
+def prepare_cached_document_request(model, system_prompt, document, prefix_tokens, max_tokens=2048):
+    if model not in CACHE_MINIMUM:
+        raise ValueError("Use a reviewed model-specific cache contract")
+    for value, limit in ((system_prompt, 100000), (document, 2000000)):
+        if not isinstance(value, str) or not value.strip() or len(value) > limit:
+            raise ValueError("Invalid or oversized text")
+    if type(prefix_tokens) is not int or not 0 <= prefix_tokens <= 1000000:
+        raise ValueError("Known non-negative prefix count required")
+    if type(max_tokens) is not int or not 1 <= max_tokens <= 4096:
+        raise ValueError("Invalid output limit")
+    # The host obtains prefix_tokens from the exact rendered prefix tokenizer.
+    # A declared count is not usage evidence; never pad text to manufacture hits.
+    eligible = prefix_tokens >= CACHE_MINIMUM[model]
+    system_block = {"type": "text", "text": system_prompt}
+    if eligible:
+        system_block["cache_control"] = {"type": "ephemeral", "ttl": "5m"}
+    return {
+        "request": {
+            "model": model,
+            "max_tokens": max_tokens,
+            "system": [system_block],
+            "messages": [{"role": "user", "content": document}],
+        },
+        "cache_requested": eligible,
+        "prefix_tokens": prefix_tokens,
+        "minimum_prefix_tokens": CACHE_MINIMUM[model],
+    }
+
+# A 412-token prefix produces cache_requested=False for all three references.
+# Record native non-cached input, cache writes, reads and output after the call.
+# No cache hit, discount, provider availability or legal quality is guaranteed.

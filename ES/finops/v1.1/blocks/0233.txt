@@ -1,0 +1,46 @@
+from datetime import datetime, timezone
+from decimal import Decimal, InvalidOperation
+
+def prepare_review_queue(analysis):
+    # Preparation only: no cloud writes or automatic approval in this example.
+    if not isinstance(analysis, dict) or analysis.get("state") != "completed":
+        return {"state": "analysis_unavailable", "pending": None, "potential_annual_usd": None}
+    recommendations = analysis.get("recommendations")
+    if not isinstance(recommendations, list) or len(recommendations) > 200:
+        raise ValueError("Invalid recommendation list")
+    pending, identities = [], set()
+    known_total = Decimal("0")
+    unknown_count = 0
+    for item in recommendations:
+        if not isinstance(item, dict) or set(item) != {"id", "action", "resource_ref", "potential_annual_usd"}:
+            raise ValueError("Invalid recommendation shape")
+        for field in ("id", "action", "resource_ref"):
+            if not isinstance(item[field], str) or not 1 <= len(item[field]) <= 256:
+                raise ValueError("Invalid recommendation identity or action")
+        if item["id"] in identities:
+            raise ValueError("Duplicate recommendation identity")
+        identities.add(item["id"])
+        raw = item["potential_annual_usd"]
+        value = None
+        if raw is not None:
+            if isinstance(raw, bool):
+                raise ValueError("Invalid savings estimate")
+            try:
+                value = Decimal(str(raw))
+            except (ValueError, InvalidOperation):
+                raise ValueError("Invalid savings estimate") from None
+            if not value.is_finite() or value < 0:
+                raise ValueError("Invalid savings estimate")
+            known_total += value
+        else:
+            unknown_count += 1
+        pending.append({**item, "potential_annual_usd": value, "state": "pending_review"})
+    return {"state": "review_prepared", "at_utc": datetime.now(timezone.utc).isoformat(),
+            "pending": pending, "known_potential_annual_usd": known_total,
+            "unknown_estimates": unknown_count,
+            "potential_annual_usd": known_total if unknown_count == 0 else None,
+            "realized_savings_usd": None}
+
+# The host persists a versioned review with authenticated tenant/resource scope.
+# Executing an approved immutable plan requires expiry, state comparison,
+# idempotency, budget and authoritative permissions outside this pure example.

@@ -1,0 +1,8 @@
+Crea un script que genere un informe semanal de costes AWS
+en formato Markdown. Que incluya:
+- Gasto total de la semana
+- Comparativa con la semana anterior
+- Top 10 servicios por coste
+- Recursos nuevos creados esta semana
+- Alertas si algún servicio ha crecido más de un 20%
+El script se ejecutará con cron cada lunes a las 7:00.

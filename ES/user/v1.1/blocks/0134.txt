@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "google-workspace-read": {
+      "command": "uvx",
+      "args": ["workspace-mcp==2.0.0", "--transport", "stdio",
+               "--permissions", "gmail:readonly", "drive:readonly"],
+      "env": {
+        "GOOGLE_CLIENT_SECRET_PATH": "C:\\Users\\TU_USUARIO\\mcp-credentials\\client_secret.json"
+      }
+    }
+  }
+}

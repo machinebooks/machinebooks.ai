@@ -1,0 +1,1 @@
+Comprueba primero evidencias de kernel/cgroup y estado del servicio. No vacíes cachés. Presenta un plan de recuperación y espera autorización para reiniciar webapp. Tras el reinicio autorizado, verifica respuestas, memoria y logs; si falla, registra el fallo y detén la secuencia.

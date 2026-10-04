@@ -1,0 +1,37 @@
+I need a professional inventory of this project's documentation.
+Analyze all the files in this directory and its subfolders and generate
+a document called "project-inventory.md" with:
+
+## 1. Executive summary
+- Total number of documents
+- Document types found
+- Date range
+- Total size
+
+## 2. Detailed inventory
+A table with: file name, location (subfolder), type, size,
+last modified, and a brief description of the content based
+on the file name.
+
+## 3. Version control
+Identify files that appear to be different versions of the same
+document (example: report-v1.docx, report-v2.docx, report-final.docx).
+Indicate which appears to be the most recent version.
+
+## 4. Recommended cleanup
+List the files that could probably be deleted: temporary files,
+obsolete drafts, duplicates. Estimate how much space would be freed.
+
+## 5. Organization proposal
+Suggest a cleaner folder structure for this project,
+with an explanation of the logic.
+
+Format: professional Markdown with tables.
+Constraint: do not modify or delete any files. Only generate the report.
+
+Before working, confirm the authorized root and new destination.
+Do not follow links outside the root or overwrite prior reports.
+Record inventory, hashes, rejections and exceptions. Mark descriptions
+inferred from names as inferences; a modification date does not
+demonstrate the approved version. Cleanup is only a proposal and
+requires review of dependencies and retention.

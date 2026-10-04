@@ -1,0 +1,6 @@
+# Output-review interface; matching long quotations does not prevent all leakage.
+# Check source permissions, sensitive facts, paraphrases and cumulative disclosure.
+# Define bounded quote matching and approved transformations with regression tests.
+class ResponseGuard:
+    def guard_response(self, response, source_documents):
+        raise NotImplementedError("A tested, context-specific output-review adapter is required")

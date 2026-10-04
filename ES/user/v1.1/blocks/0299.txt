@@ -1,0 +1,46 @@
+## Estructura de la base de datos — db.empresa.invalid
+
+### Tablas encontradas (18)
+
+| Tabla | Registros | Descripción inferida |
+|-------|-----------|---------------------|
+| clientes | 12.450 | Datos maestros de clientes |
+| pedidos | 87.320 | Pedidos realizados |
+| lineas_pedido | 234.560 | Detalle de cada pedido (productos y cantidades) |
+| productos | 1.890 | Catálogo de productos |
+| categorias | 24 | Categorías de productos |
+| proveedores | 156 | Proveedores de productos |
+| empleados | 198 | Personal de la empresa |
+| zonas | 8 | Zonas comerciales |
+| facturas | 76.540 | Facturas emitidas |
+| pagos | 68.230 | Pagos recibidos |
+[...]
+
+### Detalle: tabla "clientes"
+| Columna | Tipo | Ejemplo |
+|---------|------|---------|
+| id_cliente | INT (PK) | 1001 |
+| nombre | VARCHAR(200) | Industrias López S.L. |
+| nif | VARCHAR(15) | <NIF_DE_PRUEBA> |
+| zona_comercial | INT (FK → zonas) | 3 |
+| fecha_alta | DATE | 2023-06-15 |
+| email | VARCHAR(100) | contacto@empresa.invalid |
+| telefono | VARCHAR(20) | <TELÉFONO_DE_PRUEBA> |
+| activo | TINYINT | 1 |
+| comercial_asignado | INT (FK → empleados) | 45 |
+
+### Relaciones principales
+clientes.zona_comercial → zonas.id_zona
+pedidos.id_cliente → clientes.id_cliente
+lineas_pedido.id_pedido → pedidos.id_pedido
+lineas_pedido.id_producto → productos.id_producto
+productos.id_categoria → categorias.id_categoria
+facturas.id_pedido → pedidos.id_pedido
+pagos.id_factura → facturas.id_factura
+
+### 5 preguntas de negocio que puedes responder
+1. ¿Cuántos clientes nuevos captamos cada mes y en qué zona?
+2. ¿Cuál es el ticket medio por pedido y cómo evoluciona?
+3. ¿Qué productos se venden más y cuáles tienen tendencia decreciente?
+4. ¿Cuántas facturas están pendientes de cobro y por qué importe?
+5. ¿Qué comerciales generan más volumen de negocio?

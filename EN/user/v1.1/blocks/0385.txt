@@ -1,0 +1,12 @@
+api-server restarted 4 times in the last hour.
+The narrated pattern is startup followed by progressive memory growth
+over about 15 minutes and process termination. Confirm an OOM event
+with kernel/cgroup evidence before attributing it to the OOM killer.
+
+A memory leak is a hypothesis. Review these possible mitigations:
+1. Temporarily increase the service memory limit if capacity permits
+2. Restart with fewer worker processes after authorization
+3. Enable a heap dump for later analysis, considering sensitive data
+
+The application needs investigation for a lasting repair.
+Mitigation does not guarantee stabilization or prove the cause.

@@ -1,0 +1,22 @@
+finanzas/
+├── 2024/
+│   ├── datos-origen/
+│   │   ├── erp/
+│   │   │   ├── gastos-erp-enero.csv
+│   │   │   ├── gastos-erp-febrero.csv
+│   │   │   └── ...
+│   │   ├── banco/
+│   │   │   ├── extracto-enero.csv
+│   │   │   └── ...
+│   │   └── tarjetas/
+│   │       ├── tarjetas-enero.xlsx
+│   │       └── ...
+│   ├── cierres/
+│   │   ├── 2024-01/
+│   │   │   ├── conciliacion-enero.xlsx
+│   │   │   ├── desviacion-enero.xlsx
+│   │   │   └── informe-enero.txt
+│   │   ├── 2024-02/
+│   │   └── ...
+│   ├── mapeo-categorias-2024.json
+│   └── presupuesto-2024.xlsx

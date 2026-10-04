@@ -1,0 +1,27 @@
+# Bounded metadata CSV, restricted fields; metadata may still be personal data.
+import csv,io
+
+AUDIT_FIELDS=("id","timestamp","model","provider","status","tariff_version",
+              "input_tokens","output_tokens","total_cost_usd")
+
+def audit_metadata_csv(authorized_rows):
+    if len(authorized_rows)>10000:
+        raise ValueError("Export bound; use controlled paged export")
+    output=io.StringIO(newline="")
+    writer=csv.DictWriter(output,fieldnames=AUDIT_FIELDS)
+    writer.writeheader()
+    for record in authorized_rows:
+        row={}
+        for field in AUDIT_FIELDS:
+            value=record.get(field)
+            text="" if value is None else str(value)
+            if len(text)>200:
+                raise ValueError("Invalid metadata field bound")
+            # Spreadsheet formula mitigation, including leading control/space characters.
+            if text.lstrip(" \t\r\n").startswith(("=","+","-","@")):
+                text="'"+text
+            row[field]=text
+        writer.writerow(row)
+    return output.getvalue()
+# Host authenticates tenant/object/field scope, source/cutoff, export purpose, retention
+# and access receipt. This mitigated CSV is not anonymized or judicially certified.

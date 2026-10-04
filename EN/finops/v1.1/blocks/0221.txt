@@ -1,0 +1,17 @@
+# Pure comparison from host-approved comparable task cohorts, no award or cash claim.
+from decimal import Decimal
+
+def team_capacity_candidate(prior_cost,prior_capacity,current_cost,current_capacity,comparable):
+    if comparable is not True or any(x is None for x in (prior_cost,prior_capacity,current_cost,current_capacity)):
+        return {"state":"not_comparable","candidate":False}
+    pc,pv,cc,cv=[Decimal(str(x)) for x in (prior_cost,prior_capacity,current_cost,current_capacity)]
+    if any(not x.is_finite() or x<0 for x in (pc,pv,cc,cv)):
+        raise ValueError("Invalid snapshot")
+    previous=None if pc==0 else pv/pc
+    current=None if cc==0 else cv/cc
+    improvement=None if previous in (None,0) or current is None else (current/previous-1)*100
+    return {"partial_bcr_change_pct":None if improvement is None else str(improvement),
+            "candidate":improvement is not None and improvement>0,"savings_realized":False,
+            "state":"pending_contextual_review"}
+# Team size/mix, coverage, rejection costs and baseline versions may change the ratio;
+# reviewer verifies fairness and evidence before publishing recognition.

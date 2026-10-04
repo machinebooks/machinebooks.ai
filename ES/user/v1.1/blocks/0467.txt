@@ -1,0 +1,20 @@
+set -euo pipefail
+: "${KUBE_CONTEXT:?Set the reviewed cluster context}"
+kubectl --context "$KUBE_CONTEXT" cluster-info
+k=(kubectl --context "$KUBE_CONTEXT" --namespace production)
+
+: "${APPROVED_IMAGE:?Set the reviewed image reference with sha256 digest}"
+[[ "$APPROVED_IMAGE" =~ @sha256:[0-9a-f]{64}$ ]] || exit 1
+# Execute only after approval. Each step is recorded; this is not atomic.
+"${k[@]}" patch deployment api-server --type merge -p '{
+  "spec": {
+    "strategy": {"type": "RollingUpdate",
+      "rollingUpdate": {"maxUnavailable": 0, "maxSurge": 1}},
+    "minReadySeconds": 10, "progressDeadlineSeconds": 120
+  }
+}'
+"${k[@]}" annotate deployment api-server \
+  kubernetes.io/change-cause="Deploy v2.5.0 - ticket OPS-1234" --overwrite
+"${k[@]}" set image deployment/api-server "api-server=$APPROVED_IMAGE"
+"${k[@]}" rollout status deployment/api-server --timeout=180s
+# Failure stops the script. A deadline does not trigger automatic rollback.

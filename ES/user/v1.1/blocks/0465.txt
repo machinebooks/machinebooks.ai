@@ -1,0 +1,12 @@
+set -euo pipefail
+: "${KUBE_CONTEXT:?Set the reviewed cluster context}"
+kubectl --context "$KUBE_CONTEXT" cluster-info
+k=(kubectl --context "$KUBE_CONTEXT" --namespace production)
+
+"${k[@]}" get deployment api-server -o wide
+"${k[@]}" rollout history deployment/api-server
+"${k[@]}" get pods -l app=api-server \
+  -o custom-columns='NAME:.metadata.name,PHASE:.status.phase,READY:.status.containerStatuses[*].ready,RESTARTS:.status.containerStatuses[*].restartCount'
+"${k[@]}" get deployment api-server \
+  -o jsonpath='{.spec.template.spec.containers[?(@.name=="api-server")].image}{"\n"}'
+# Record revision, image digest, configuration, and compatible data recovery.

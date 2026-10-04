@@ -1,0 +1,55 @@
+# System prompt versioning pattern
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from hashlib import sha256
+
+@dataclass
+class SystemPromptVersion:
+    """Illustrative mutable prompt-version record."""
+    version: str                  # Semver: "2.3.1"
+    content: str                  # The complete prompt
+    author: str                   # Who made the change
+    reason: str                   # Why it was changed
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    security_review: bool = False # Did it pass security review?
+    tests_passed: bool = False    # Did it pass the regression battery?
+    content_hash: str = ""        # Hash for integrity verification
+
+    def __post_init__(self):
+        self.content_hash = sha256(
+            self.content.encode()
+        ).hexdigest()
+
+@dataclass
+class PromptRollbackManager:
+    """Manages versions and allows rapid rollback."""
+    versions: list[SystemPromptVersion] = field(default_factory=list)
+    active_version: str = ""
+
+    def deploy(self, version: str) -> bool:
+        """Deploys a specific version as active."""
+        target = next((v for v in self.versions if v.version == version), None)
+        if not target:
+            return False
+        if not target.security_review or not target.tests_passed:
+            raise ValueError(
+                f"Version {version} not approved: "
+                f"security={target.security_review}, "
+                f"tests={target.tests_passed}"
+            )
+        self.active_version = version
+        return True
+
+    def rollback(self) -> str:
+        """Reverts to the previous approved version."""
+        active_index = next((index for index, item in enumerate(self.versions)
+                             if item.version == self.active_version), None)
+        if active_index is None:
+            raise ValueError("No active version is recorded")
+        approved = [item for item in self.versions[:active_index]
+                    if item.security_review and item.tests_passed]
+        if not approved:
+            raise ValueError("No earlier approved version")
+        previous = approved[-1]
+        self.active_version = previous.version
+        return previous.version

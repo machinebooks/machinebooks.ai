@@ -1,0 +1,35 @@
+Prepara las visualizaciones para una presentación de resultados del
+Q1 2024. A partir de kpis-2024.csv (solo datos de enero a marzo),
+genera 5 gráficos, uno por slide:
+
+SLIDE 1 — Resumen ejecutivo:
+Un panel con los 4 KPIs principales del trimestre (ingresos, beneficio,
+flujo neto de clientes, NPS ponderado). Sólo compara con Q1 2023
+si se aporta una fuente compatible; en otro caso indica no disponible.
+Grande, claro, con flechas de tendencia.
+
+SLIDE 2 — Evolución de ingresos:
+Gráfico de barras con ingresos mensuales de Q1 2024. Incluir como
+referencia ingresos Q1 2023 sólo con fuente compatible. Sin ella,
+no dibujes barras ni porcentajes interanuales inventados.
+
+SLIDE 3 — Análisis de rentabilidad:
+Gráfico que muestre ingresos, gastos y margen por mes. Usar barras
+para ingresos y gastos, y una línea para el porcentaje de margen.
+
+SLIDE 4 — Clientes y satisfacción:
+Dos gráficos lado a lado:
+- Izquierda: flujo de clientes (nuevos vs. perdidos)
+- Derecha: evolución del NPS
+
+SLIDE 5 — Perspectiva:
+Gráfico de proyección a fin de año basado en la tendencia del Q1.
+Muestra escenarios optimista/base/pesimista con supuestos explícitos.
+No son intervalos estadísticos de confianza ni resultados asegurados.
+
+Genera cada gráfico como PNG individual con fondo transparente,
+proporción 16:9, 2400×1350 píxeles a 300 DPI (8×4,5 pulgadas). Nombra los ficheros como
+slide-1-resumen.png, slide-2-ingresos.png, etc.
+
+También genera un fichero con los textos sugeridos para acompañar
+cada gráfico en la presentación.

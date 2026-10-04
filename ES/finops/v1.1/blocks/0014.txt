@@ -1,0 +1,37 @@
+# Build a declared subtotal from validated snapshots, never missing-as-zero.
+from datetime import datetime
+from decimal import Decimal
+
+def build_tco_report(llm, cloud, manual, start, end, active_users, eur_per_usd):
+    if start.tzinfo is None or end.tzinfo is None or not start < end:
+        raise ValueError("Aware increasing window required")
+    # This exercise accepts exactly one calendar month; host selects matching snapshots.
+    expected_end = start.replace(year=start.year + (start.month == 12),
+        month=1 if start.month == 12 else start.month + 1)
+    if start.day != 1 or start.time().isoformat() != "00:00:00" or end != expected_end:
+        raise ValueError("Full single-month window required")
+    if type(active_users) is not int or active_users < 0:
+        raise ValueError("Invalid user denominator")
+    fx = Decimal(str(eur_per_usd))
+    if not fx.is_finite() or fx <= 0:
+        raise ValueError("Invalid dated FX")
+    def amount(value):
+        if value is None:
+            return None
+        result = Decimal(str(value))
+        if not result.is_finite() or result < 0:
+            raise ValueError("Invalid declared amount")
+        return result
+    llm_usd = amount(llm.get("known_cost_usd"))
+    layers = {"llm_eur": None if llm_usd is None else llm_usd * fx,
+        "cloud_eur": amount(cloud.get("cost_eur")),
+        "people_eur": amount(manual.get("people_eur")),
+        "tools_eur": amount(manual.get("tools_eur")),
+        "overhead_eur": amount(manual.get("overhead_eur"))}
+    subtotal = sum(v for v in layers.values() if v is not None)
+    complete = all(v is not None for v in layers.values()) and all(
+        source.get("complete") is True for source in (llm, cloud, manual))
+    return {"layers": layers, "known_subtotal_eur": subtotal, "complete": complete,
+        "cost_per_user_eur": subtotal / active_users if complete and active_users else None,
+        "scope": "declared five layers; extra categories must be listed", "eur_per_usd": str(fx)}
+# YAML loading and coverage validation belong to the host; absent categories remain unknown.

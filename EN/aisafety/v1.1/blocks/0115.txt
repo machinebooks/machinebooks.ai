@@ -1,0 +1,7 @@
+# Laboratory configuration interface, replacing an incomplete Compose deployment.
+# Require reviewed image digests, actual adapter/configuration files, local-only
+# exposure, authentication where needed, minimised logging and read-only mounts.
+# Review users, capabilities, resources, network egress and model provisioning.
+# Offline claims require checking every component; binding localhost is not isolation.
+def build_authorised_lab_configuration():
+    raise NotImplementedError("Supply and validate a deployment-specific laboratory configuration")

@@ -1,0 +1,22 @@
+Genera un borrador mensual de marzo de 2024 con corte 2024-03-31
+sobre empresa-demo.db, sólo lectura. Valida primero el esquema.
+
+CLIENTES: activos según el campo y corte de la base sintética,
+altas del mes frente a febrero y distribución por zona. Activación:
+clientes distintos de la cohorte de marzo con al menos un pedido
+completado hasta el corte, divididos por todas las altas de marzo.
+
+VENTAS: pedidos completados de marzo y comparación interanual,
+unidades y EUR calculados con precios históricos y descuentos.
+Agrega líneas por pedido antes de cruzar facturas o clientes.
+
+COBROS: por factura, saldo = importe − importe_cobrado, con abonos
+verificados. Vencida = saldo pendiente y vencimiento anterior al corte.
+Antigüedad desde emisión: 0–29, 30–59, 60–89 y ≥90 días; sin solapes.
+No infieras pagos ni vencimientos ausentes. Muestra deudas por cliente.
+
+COMERCIALES: importes y altas por comercial con atribución definida.
+No calcules conversión presupuesto/pedido: esta base no tiene presupuestos.
+
+Incluye SQL, parámetros, fuentes, excepciones y resumen de 5–7 líneas.
+Exporta una copia nueva informe-negocio-marzo-2024.xlsx, sin sobrescribir.

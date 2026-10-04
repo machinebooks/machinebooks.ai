@@ -1,0 +1,15 @@
+Give me a status summary of my 3 active projects:
+
+1. Data migration: folder projects/migration/
+2. New website: folder projects/new-web/
+3. Billing automation: folder projects/billing/
+
+For each one:
+- Overall status (on time / at risk / delayed)
+- Next milestone and date
+- Main risk
+- Pending decision (if any)
+
+Then, tell me: are there conflicts between the three projects?
+(for example, the same person assigned to simultaneous tasks
+in two projects, or coinciding deadlines)

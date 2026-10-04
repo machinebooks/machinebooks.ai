@@ -1,0 +1,12 @@
+Create a file consultas-mensuales.sql with the following queries,
+well-commented in English:
+
+1. Monthly sales summary (total orders, amount, average ticket)
+2. Top 10 customers by amount
+3. Sales by commercial zone with comparison vs. previous month
+4. Outstanding invoices by aging
+5. New customers of the month with their first purchase
+6. Products with declining sales (3 consecutive months of decline)
+
+Each query must have a comment explaining what it does, which
+parameters need to be changed (month, year), and how to interpret the result.

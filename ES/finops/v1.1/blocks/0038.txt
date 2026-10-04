@@ -1,0 +1,11 @@
+def get_tagging_compliance(inventory):
+    total, compliant = inventory["total"], inventory["compliant"]
+    if type(total) is not int or type(compliant) is not int or not 0 <= compliant <= total <= 1000:
+        raise ValueError("invalid inventory counts")
+    complete = inventory["complete"] is True
+    return {"total": total, "compliant": compliant,
+            "non_compliant": total - compliant, "complete": complete,
+            "compliance_pct": round(compliant / total * 100, 1)
+                if total and complete else None}
+# HTTP host authenticates and authorizes scope; blocking inventory uses a worker.
+# Empty or truncated inventory is not a 100% audit result.

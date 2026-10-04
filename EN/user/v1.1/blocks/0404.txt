@@ -1,0 +1,17 @@
+=== Consolidated health report — 21/03/2026 ===
+
+              web1          web2          db1
+CPU:          23%           45%           67%
+Memory:      78%           82%           91% ⚠
+Disk /:       71%           68%           54%
+Disk /var:    89% ⚠        45%           72%
+Services:     ✓ all         ✓ all         ✓ all
+Errors 12h:  0             3 warnings    12 slow queries ⚠
+
+SUMMARY:
+  ⚠ web1: /var at 89% — needs log rotation
+  ⚠ db1: Memory at 91% and 12 slow queries — investigate
+  ✓ web2: No issues
+
+PRIORITY: Address db1 first (high memory could cause
+cascading problems if exhausted).

@@ -1,0 +1,12 @@
+Ya tengo el CSV con las 50 facturas extraídas. Ahora necesito que:
+1. Calcules el gasto total por proveedor
+2. Identifiques los 5 proveedores con mayor gasto
+3. Compares el gasto de Q1 2024 con el de Q1 2023 (archivo adjunto)
+4. Señales proveedores cuyo gasto ha crecido más del 20%
+5. Genera un resumen ejecutivo de medio folio con los hallazgos principales
+Usa sólo datos contrastados y fuentes autorizadas.
+Conserva moneda, criterio de gasto y períodos comparables.
+Documenta abonos, duplicados, impuestos y ajustes del indicador.
+Si el valor previo es cero o falta, no calcules un porcentaje indefinido.
+Cita fuente, fórmula, entradas y excepciones de cada resultado.
+Genera un borrador nuevo, sin sobrescribir ni distribuir automáticamente.

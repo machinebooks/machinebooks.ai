@@ -1,0 +1,7 @@
+Educational dashboard of subtotals and capacity
+  → normalized LLM usage with tariff/version and visible unknown consumption
+  → cloud cost for the same period, account, currency and coverage
+  → capacity valued through baseline/acceptance/review, separate from cash savings
+  → source reconciliation, dated FX and pending operational/engineering costs
+GET /finops/summary needs tenant authorization and server-side data.
+A unified chart does not turn subtotals into complete TCO or establish ROI.

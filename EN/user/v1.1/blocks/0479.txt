@@ -1,0 +1,31 @@
+set -euo pipefail
+: "${DEBUG_METHOD:?Choose docker, kubernetes, or debug}"
+# Choose one separately reviewed destination; do not execute all alternatives.
+case "$DEBUG_METHOD" in
+  docker)
+    : "${DOCKER_CONTEXT:?Set the reviewed Docker context}"
+    compose=(docker --context "$DOCKER_CONTEXT" compose
+      --project-name staging --file /opt/staging/docker-compose.yml)
+    # Requires a shell present in this reviewed container.
+    "${compose[@]}" exec api-backend /bin/sh
+    ;;
+  kubernetes|debug)
+    : "${KUBE_CONTEXT:?Set the reviewed cluster context}"
+    : "${REVIEWED_POD:?Set the reviewed Pod name}"
+    kubectl --context "$KUBE_CONTEXT" cluster-info
+    k=(kubectl --context "$KUBE_CONTEXT" --namespace production)
+    if [[ $DEBUG_METHOD == kubernetes ]]; then
+      # Requires a shell present in this reviewed application container.
+      "${k[@]}" exec -it "$REVIEWED_POD" -c api-server -- /bin/sh
+    else
+      # Mutates the Pod; requires specific approval of this debug container.
+      : "${APPROVED_DEBUG_IMAGE:?Set the reviewed debug image with required tools}"
+      [[ "$APPROVED_DEBUG_IMAGE" =~ @sha256:[0-9a-f]{64}$ ]] || exit 1
+      read -r -p "Type APPLY to authorize the reviewed debug container: " confirmation
+      [[ $confirmation == APPLY ]] || exit 1
+      "${k[@]}" debug -it "$REVIEWED_POD" \
+        --image="$APPROVED_DEBUG_IMAGE" --target=api-server
+    fi
+    ;;
+  *) echo 'DEBUG_METHOD must be docker, kubernetes, or debug.' >&2; exit 2 ;;
+esac

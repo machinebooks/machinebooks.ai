@@ -1,0 +1,21 @@
+# Rego v1: an eligibility snapshot, not an atomic reservation or provider authorization.
+package finops.budget
+import rego.v1
+
+default eligible := false
+eligible if {
+    input.authorized_scope == data.scope
+    input.currency == data.currency
+    input.coverage_complete == true
+    is_number(input.known_spend)
+    is_number(input.reserved_amount)
+    is_number(input.call_upper_bound)
+    is_number(data.budget)
+    input.known_spend >= 0
+    input.reserved_amount >= 0
+    input.call_upper_bound >= 0
+    data.budget > 0
+    input.known_spend + input.reserved_amount + input.call_upper_bound <= data.budget
+}
+# Missing/type-invalid inputs deny. Host pins data revision, model eligibility and
+# reserves in one transaction after evaluation; concurrent snapshots can still race.

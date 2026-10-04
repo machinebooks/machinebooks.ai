@@ -1,0 +1,9 @@
+  Fase 1: ASISTIDA       Fase 2: SEMI-AUTONOMA    Fase 3: AUTONOMA
+  ┌────────────────┐     ┌────────────────┐     ┌────────────────┐
+  │ Tu escribes    │     │ Script +       │     │ Cron ejecuta   │
+  │ la instruc-    │     │ claude -p      │     │ automatica-    │
+  │ cion cada      │──▶  │ Tu lanzas      │──▶  │ mente.         │
+  │ vez.           │     │ manualmente.   │     │ Tu revisas     │
+  │                │     │                │     │ el resultado.  │
+  └────────────────┘     └────────────────┘     └────────────────┘
+  Criterios acordados    Criterios acordados    Controles y revisión

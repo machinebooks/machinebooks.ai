@@ -1,0 +1,14 @@
+# Temporal comparison only; identical scope/currency/source and equal closed windows.
+from decimal import Decimal
+
+def compare_policy_windows(before,after,comparable):
+    if comparable is not True or before is None or after is None:
+        return {"state":"not_comparable","relative_change_pct":None,"cause":None}
+    prior,current=Decimal(str(before)),Decimal(str(after))
+    if any(not x.is_finite() for x in (prior,current)):
+        raise ValueError("Invalid snapshot")
+    return {"state":"observed_temporal_difference","absolute_difference":str(current-prior),
+            "relative_change_pct":None if prior==0 else str((current-prior)/abs(prior)*100),
+            "cause":None}
+# Use deployed_commit/digest, not rollback_commit; deployment timing and unequal
+# demand/mix/credits may explain differences. Correlation does not prove policy impact.

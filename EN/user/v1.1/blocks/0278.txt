@@ -1,0 +1,31 @@
+## Bank reconciliation — March 2024
+
+### Summary
+- Bank transactions: 340
+- ERP records: 285
+- Assumed confirmed pairs: 261
+- Bank with no match: 79
+- ERP with no match: 24
+
+### Assumed confirmed pairs (261)
+[The 261 matching pairs with cross-reference]
+
+### Bank with no match (79)
+| # | Bank date | Description | Amount | Possible match |
+|---|-----------|-------------|--------|----------------|
+| 1 | 03/03/2024 | MAINTENANCE FEE | -45.00 | No match (bank fee) |
+| 2 | 05/03/2024 | TRANSFER REF.4521 | -2,340.00 | ERP row 89: 2,340.00 date 08/03 |
+| 3 | 12/03/2024 | INSURANCE PAYMENT MAPFRE | -1,890.50 | Not found in ERP |
+[...]
+
+### ERP with no match (24)
+| # | ERP date | Vendor | Amount | Status | Possible cause |
+|---|----------|--------|--------|--------|----------------|
+| 1 | 28/03/2024 | Suministros Industriales | -3,450.00 | Paid | Possible April payment; statement and reference pending |
+| 2 | 15/03/2024 | Consultoría Técnica | -8,900.00 | Paid | Not found in bank |
+[...]
+
+### Statistics
+- Illustrative proportion of matched bank transactions: 261/340 = 76.8%
+- Illustrative pending amounts: -12,456.30 (bank) / -18,230.00 (ERP); not comparable without a reconciliation bridge
+- Illustrative candidate bank fees: 12 transactions for 890.45; verify evidence

@@ -1,0 +1,4 @@
+La web devuelve error 502. Necesito diagnosticar la causa.
+El servidor usa nginx como proxy inverso y la aplicación
+corre como servicio systemd llamado "webapp".
+La base de datos es PostgreSQL.

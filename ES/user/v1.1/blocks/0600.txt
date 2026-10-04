@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+: "${REVIEWED_STAGING_HOST:?Define el hostname de pruebas ya revisado}"
+actual_host=$(hostname --fqdn)
+[[ "$actual_host" == "$REVIEWED_STAGING_HOST" ]] || {
+  printf 'Destino no coincide; operación detenida.\n' >&2
+  exit 1
+}
+load_state=$(systemctl show cache-service --property=LoadState --value)
+[[ "$load_state" == loaded ]] || {
+  printf 'Unidad no cargada; operación detenida.\n' >&2
+  exit 1
+}
+# Sólo muestra una propuesta. No reinicia ningún servicio.
+printf 'PROPUESTA para %s: systemctl restart cache-service\n' "$actual_host"

@@ -1,0 +1,44 @@
+Fictional example: cutoff Thursday, Nov 21, 2024, 17:00, Europe/Madrid.
+Generate a draft weekly project status report. Check these sources:
+
+1. GITHUB: repository "my-company/migration-project"
+   - Pull requests merged by the cutoff: distinguish closure,
+     merging, deployment, and acceptance
+   - Issues opened and closed in the last 7 days
+   - Issues labeled as "blocker" or "urgent"
+
+2. EMAIL: emails from the last week containing "migration",
+   "project", or team member names (Pedro, Ana, Carlos, Laura)
+
+3. FILES:
+   - C:\Users\myuser\projects\migration\risks.md
+   - C:\Users\myuser\projects\migration\milestones.md
+
+Report format:
+
+# Status Report — Data Migration Project
+## Week of November 18-22, 2024
+
+### Executive summary
+[3 lines maximum]
+
+### Week's progress
+- Tasks with confirmed acceptance (reference and evidence)
+- Mark unconfirmed data as pending; do not invent progress
+- Milestones reached
+- Metrics: X tasks completed out of Y planned
+
+### Active blockers
+- List of blockers with responsible person and action needed
+
+### Risks
+- Updated risks from the risk file + new ones detected
+  this week
+
+### Plan for next week
+- Priority tasks
+- Expected milestones
+- Key meetings
+
+### Decisions needed
+- If anything needs management approval, list it here

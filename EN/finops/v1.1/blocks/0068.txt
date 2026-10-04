@@ -1,0 +1,16 @@
+def compute_routing_metrics(engineer_snapshot, quality_snapshot):
+    total = engineer_snapshot["total_calls"]
+    quality = quality_snapshot.get("evaluated")
+    unacceptable = quality_snapshot.get("unacceptable")
+    if quality is not None and (type(quality) is not int or not 0 <= quality <= 10000):
+        raise ValueError("quality count")
+    if unacceptable is not None and (type(unacceptable) is not int or quality is None or not 0 <= unacceptable <= quality):
+        raise ValueError("quality outcomes")
+    return {"calls":total, "priced_calls":engineer_snapshot["priced_calls"],
+            "mean_latency_ms":engineer_snapshot["mean_latency_ms"],
+            "latency_samples":engineer_snapshot["latency_samples"],
+            "evaluated":quality,
+            "unacceptable_rate":unacceptable/quality if quality and unacceptable is not None else None,
+            "causal_effect_proven":False}
+# Host joins matching authorized UTC windows and versions. Retry/edit measures need
+# an explicit evaluation schema and eligible denominators; C4 does not contain them.

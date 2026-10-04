@@ -1,0 +1,7 @@
+I need a weekly server health report. Include:
+1. Disk usage of all partitions (alert if any exceeds 85%)
+2. The 10 processes consuming the most memory right now
+3. Active network connections grouped by state
+4. Kernel errors from the last 24 hours
+5. Status of critical services: nginx, mysql, redis
+6. Generate a Markdown file with the report in /opt/informes/

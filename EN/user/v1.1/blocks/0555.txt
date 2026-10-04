@@ -1,0 +1,11 @@
+Pipeline 1: Monthly data consolidation
+    ── prepares the CSV for the month, year, and RUN_ID of the run.
+
+Pipeline 2: Financial analysis
+    ── uses exactly that CSV as input.
+    ── prepares the report from the same run.
+
+Pipeline 3: Local draft for human review
+    ── uses exactly that report.
+    ── prepares an email draft without sending or uploading it.
+    ── checks data, recipients, and authorization before subsequent sending.

@@ -1,0 +1,16 @@
+# One currency and declared cost categories; no USD/EUR addition without dated FX.
+from decimal import Decimal
+
+def pricing_scenario(variable_cost_per_tenant,fixed_cost,num_tenants,target_margin):
+    variable,fixed,margin=[Decimal(str(x)) for x in
+                           (variable_cost_per_tenant,fixed_cost,target_margin)]
+    if type(num_tenants) is not int or not 1<=num_tenants<=100000:
+        raise ValueError("Invalid tenant scenario")
+    if any(not x.is_finite() for x in (variable,fixed,margin)) or min(variable,fixed)<0 or not 0<=margin<1:
+        raise ValueError("Invalid financial assumptions")
+    total=variable*num_tenants+fixed
+    revenue=total/(1-margin)
+    return {"declared_cost":str(total),"required_revenue":str(revenue),
+            "price_per_tenant":str(revenue/num_tenants),"full_tco":False,
+            "coverage":"caller_declared_categories"}
+# Host pins currency/FX, actual seat allocation and missing investment/operation costs.

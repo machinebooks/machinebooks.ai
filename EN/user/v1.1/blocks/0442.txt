@@ -1,0 +1,17 @@
+# List instances in GCP
+gcloud compute instances list \
+  --format="table(name, zone, machineType.basename(),
+    status, networkInterfaces[0].accessConfigs[0].natIP)"
+
+# Costs (requires configured BigQuery billing export)
+bq query --use_legacy_sql=false '
+  SELECT project.id AS project_id, service.description AS service,
+         currency,
+         SUM(cost) AS gross_usage_cost,
+         SUM(IFNULL((SELECT SUM(c.amount) FROM UNNEST(credits) AS c), 0)) AS credits,
+         SUM(cost) + SUM(IFNULL((SELECT SUM(c.amount) FROM UNNEST(credits) AS c), 0)) AS net_usage_cost
+  FROM `project-id.dataset.gcp_billing_export_v1_XXXXXX`
+  WHERE usage_start_time >= TIMESTAMP("2026-03-01T00:00:00Z")
+    AND usage_start_time < TIMESTAMP("2026-03-22T00:00:00Z")
+  GROUP BY 1, 2, 3
+  ORDER BY currency, net_usage_cost DESC'

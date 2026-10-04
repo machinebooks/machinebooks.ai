@@ -1,0 +1,15 @@
+# Ajustes del sistema
+
+## 2026-03-15
+- El comando de informe semanal no incluía los proyectos nuevos → actualizado CLAUDE.md
+- El agente clasificaba emails de clientes como "informativos" → añadida regla:
+  "emails de clientes siempre son URGENTE o PENDIENTE, nunca INFORMATIVO"
+
+## 2026-03-08
+- La conciliación bancaria fallaba con extractos en formato OFX → cambiado a CSV
+- Añadido comando /project:backup-semanal para copiar datos críticos
+
+## 2026-03-01
+- Primera semana con el sistema completo
+- Tiempo de arranque del día: bajó de 45 min a 15 min
+- Emails procesados por día: subió de 30 a 47 (mismas horas de trabajo)

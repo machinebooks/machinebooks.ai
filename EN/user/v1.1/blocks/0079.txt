@@ -1,0 +1,5 @@
+I need to prepare data for Q1 2024 VAT review, not submit a tax return.
+Inputs: C:\Accounting\2024\Received_Invoices\Q1\ and C:\Accounting\2024\Issued_Invoices\Q1\.
+Retain each invoice reference and extract identifier, counterparty, date, base, rate, VAT amount, and total; separate multiple rates within a document while retaining their link.
+Generate received_invoices_Q1.csv, issued_invoices_Q1.csv, vat_summary_Q1.txt, and anomalies_list.txt. Use semicolon CSV, Spanish numeric format, and a complete list of inputs, outputs, and exceptions.
+The summary reports extracted VAT amounts for all rates present, distinguishing zero rate from exemption. Do not label all input VAT deductible or determine its period from payment or receipt without knowing the applicable regime. Leave deductibility, tax accrual, corrections, and payable or credit results pending documented rules and tax-adviser review. Record discrepancies and unreadable data; do not invent missing tax information.

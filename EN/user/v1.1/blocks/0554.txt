@@ -1,0 +1,90 @@
+claude -p "
+COMMERCIAL PROPOSAL PREPARATION PIPELINE
+Client: Tech Solutions
+Date: $(date -u +%Y-%m-%d)
+
+This is a draft exercise. Use only supported facts from the input files.
+Mark unknown experience, satisfaction scores, staffing and guarantees as pending.
+The discount, VAT rate, payment schedule and validity period below are
+illustrative parameters to review before making any commercial commitment.
+Do not send the proposal or approve its commercial terms.
+
+=== PHASE 1: COLLECT INFORMATION ===
+1. Read the client profile in datos/cliente-tech-solutions.md
+2. Read the service catalog in datos/servicios-catalogo.csv
+3. Read the previous project history in datos/proyectos-anteriores.csv
+4. Read the exercise rates in datos/tarifas-2025.csv and identify their date
+5. Identify services relevant to the client's needs
+
+=== PHASE 2: PREPARE THE NUMBERS ===
+1. Based on the client's need (an incident management system
+   with integration, design, development, deployment and training, four months):
+
+   Estimate a breakdown and state its assumptions:
+   - Consulting/design phase: duration and required team
+   - Development phase: number of sprints and professional roles
+   - Deployment phase: estimated days
+   - Training phase: required sessions
+   - Post-deployment support: recommended months
+
+2. Calculate the budget using the exercise rates in tarifas-2025.csv
+3. Apply the illustrative 10% existing-client discount
+4. Calculate the total excluding VAT, illustrative VAT (21%), and total including VAT
+
+=== PHASE 3: COMPOSE THE PROPOSAL ===
+Generate resultado/propuesta-tech-solutions.md with this structure:
+
+# Professional services proposal
+## To: Tech Solutions
+## From: [Our company]
+## Date: [today, UTC]
+## Reference: PROP-2025-[sequential number for this exercise]
+
+### 1. Executive summary
+[One paragraph: who we are, what we propose, and how it fits the client's needs]
+[Mention prior experience and satisfaction only when the input files support them]
+
+### 2. Understanding the need
+[Restate the client's need in our own words]
+[Describe the documented context and deadlines]
+
+### 3. Proposed solution
+[Describe the solution in nontechnical language]
+[Project phases with milestones and deliverables]
+[Proposed team roles, not invented assignments or names]
+
+### 4. Work plan
+[Four-month schedule with phases and overlaps]
+[Table: Month | Phase | Activities | Deliverables]
+
+### 5. Team
+[Professional roles that would participate]
+[Relevant team experience supported by the input files]
+
+### 6. Budget
+[Table broken down by phase and role]
+[Subtotal, client discount, total excluding VAT, VAT, total including VAT]
+[Illustrative payment schedule: 30% at start, 40% at an intermediate milestone, 30% on delivery]
+
+### 7. Guarantees and support
+[Proposed warranty period, subject to review]
+[Post-deployment support options]
+
+### 8. Why this proposal fits
+[Documented previous projects with this client]
+[Measured satisfaction score, or mark it unknown]
+[Supported competitive advantages]
+
+### 9. Validity and next steps
+[Illustrative proposal validity: 30 days, subject to review]
+[Suggested next step: a presentation meeting]
+
+=== PHASE 4: VERIFY ===
+1. Check all numbers (subtotals equal the sum of line items)
+2. Check that the proposed schedule fits four months
+3. Identify incomplete sections and assumptions requiring approval
+4. Generate a five-line summary in resultado/resumen-propuesta.md
+Distinguish role rates from service prices. A sprint rate is not ten times
+the daily rate by definition: verify hours, allocation, and unit.
+Do not add both alternatives or treat 2025 rates as current today.
+"

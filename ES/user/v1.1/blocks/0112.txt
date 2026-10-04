@@ -1,0 +1,8 @@
+┌──────────┐     ┌──────────────┐     ┌──────────────┐
+│          │     │   SERVIDOR   │     │  HERRAMIENTA │
+│  CLAUDE  │────▶│     MCP      │────▶│   EXTERNA    │
+│ (host)   │◀────│ (traductor)  │◀────│  (Gmail,     │
+│          │     │              │     │   Slack...)  │
+└──────────┘     └──────────────┘     └──────────────┘
+  Host y cliente  Local o remoto        El servicio
+  piden datos     segun el servidor           real

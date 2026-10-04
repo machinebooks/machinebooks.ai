@@ -1,0 +1,16 @@
+Fictional example of completed processing:
+- Invoices processed: 50
+- Fields completed: 467 out of 500 (93.4%); accuracy pending verification
+- Invoices with all fields complete: 43
+- Invoices with some "NOT READABLE" field: 7
+
+Financial summary:
+- Total taxable base: 87,432.15 €
+- Total VAT: 17,256.89 €
+- Total invoiced: 104,689.04 €
+
+Invoices requiring manual review:
+1. scan_invoice_supplies.pdf - Tax ID not readable (blurry scan)
+2. INV-2024-017.pdf - Ambiguous date (03/04 or 04/03?)
+3. parking_receipt_march.pdf - Does not appear to be an invoice (it is a receipt)
+...

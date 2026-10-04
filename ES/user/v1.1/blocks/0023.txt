@@ -1,0 +1,37 @@
+Necesito un inventario profesional de la documentación de este proyecto.
+Analiza todos los archivos de este directorio y sus subcarpetas y genera
+un documento llamado "inventario-proyecto.md" con:
+
+## 1. Resumen ejecutivo
+- Número total de documentos
+- Tipos de documentos encontrados
+- Rango de fechas
+- Tamaño total
+
+## 2. Inventario detallado
+Una tabla con: nombre del archivo, ubicación (subcarpeta), tipo, tamaño,
+última modificación, y una descripción breve del contenido basada
+en el nombre del archivo.
+
+## 3. Control de versiones
+Identifica archivos que parecen ser versiones diferentes del mismo
+documento (ejemplo: informe-v1.docx, informe-v2.docx, informe-final.docx).
+Señala cuál parece ser la versión más reciente.
+
+## 4. Limpieza recomendada
+Lista los archivos que probablemente puedan eliminarse: temporales,
+borradores obsoletos, duplicados. Estima cuánto espacio se liberaría.
+
+## 5. Propuesta de organización
+Sugiere una estructura de carpetas más limpia para este proyecto,
+con una explicación de la lógica.
+
+Formato: Markdown profesional con tablas.
+Restricción: no modifiques ni borres ningún archivo. Solo genera el informe.
+
+Antes de trabajar, confirma la raíz autorizada y el destino nuevo.
+No sigas enlaces fuera de la raíz ni sobrescribas informes previos.
+Registra inventario, hashes, rechazos y excepciones. Marca las
+descripciones inferidas del nombre como inferencias; una fecha de
+modificación no demuestra la versión aprobada. La limpieza es sólo
+una propuesta y requiere revisión de dependencias y conservación.

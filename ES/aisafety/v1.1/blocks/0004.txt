@@ -1,0 +1,27 @@
+┌─────────────────────────────────────────────────┐
+│                VENTANA DE CONTEXTO               │
+│                                                  │
+│  ┌──────────────────────────────────────────┐   │
+│  │  SYSTEM PROMPT                            │   │
+│  │  "Eres un asistente de soporte técnico.  │   │
+│  │   No respondas preguntas sobre seguridad │   │
+│  │   nacional, armas o actividades ilegales."│   │
+│  └──────────────────────────────────────────┘   │
+│                                                  │
+│  ┌──────────────────────────────────────────┐   │
+│  │  HISTORIAL DE CONVERSACIÓN                │   │
+│  │  (mensajes anteriores del usuario          │   │
+│  │   y respuestas del modelo)                 │   │
+│  └──────────────────────────────────────────┘   │
+│                                                  │
+│  ┌──────────────────────────────────────────┐   │
+│  │  DATOS EXTERNOS (RAG, herramientas)       │   │
+│  │  ← Posible punto de inyección indirecta   │   │
+│  └──────────────────────────────────────────┘   │
+│                                                  │
+│  ┌──────────────────────────────────────────┐   │
+│  │  MENSAJE ACTUAL DEL USUARIO               │   │
+│  │  ← Posible punto de inyección directa     │   │
+│  └──────────────────────────────────────────┘   │
+│                                                  │
+└─────────────────────────────────────────────────┘

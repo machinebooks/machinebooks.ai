@@ -1,0 +1,10 @@
+# Integrity-monitor interface; stored content_hash metadata is not verified content.
+# Snapshot actual content, IDs, ACLs, tenant, embedding/configuration versions and vectors
+# as required by the property under review. Protect and version the baseline independently.
+# Verification must not replace the trusted baseline; changes require separate approval.
+class RAGIntegrityMonitor:
+    def take_snapshot(self, collection_name):
+        raise NotImplementedError("A complete, reviewed snapshot adapter is required")
+
+    def verify_integrity(self, collection_name):
+        raise NotImplementedError("A trusted baseline and independent verifier are required")

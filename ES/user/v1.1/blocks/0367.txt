@@ -1,0 +1,7 @@
+Necesito un informe semanal de salud del servidor. Incluye:
+1. Uso de disco de todas las particiones (avisa si alguna supera el 85%)
+2. Los 10 procesos que más memoria consumen ahora mismo
+3. Conexiones de red activas agrupadas por estado
+4. Errores del kernel de las últimas 24 horas
+5. Estado de los servicios críticos: nginx, mysql, redis
+6. Genera un fichero Markdown con el informe en /opt/informes/

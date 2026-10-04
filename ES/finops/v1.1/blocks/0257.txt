@@ -1,0 +1,42 @@
+# Read-only recommendations. No recommendation is approval to mutate a resource.
+from decimal import Decimal
+
+request = {"Service": "AmazonEC2", "Configuration": {
+    "RecommendationTarget": "SAME_INSTANCE_FAMILY", "BenefitsConsidered": True,
+}, "PageSize": 100}
+recommendations, seen = [], set()
+complete = False
+for page_number in range(20):
+    response = ce.get_rightsizing_recommendation(**request)
+    for rec in response["RightsizingRecommendations"]:
+        instance = rec["CurrentInstance"]["ResourceId"]
+        kind = rec["RightsizingType"]
+        if kind == "Modify":
+            targets = rec["ModifyRecommendationDetail"]["TargetInstances"]
+            for target in targets:
+                amount = Decimal(target["EstimatedMonthlySavings"])
+                if not amount.is_finite() or amount < 0:
+                    raise ValueError("Invalid estimated saving")
+                recommendations.append({"resource": instance, "type": kind,
+                    "estimated_saving": str(amount), "currency": target["CurrencyCode"],
+                    "state": "pending_human_review"})
+        elif kind == "Terminate":
+            detail = rec["TerminateRecommendationDetail"]
+            amount = Decimal(detail["EstimatedMonthlySavings"])
+            if not amount.is_finite() or amount < 0:
+                raise ValueError("Invalid estimated saving")
+            recommendations.append({"resource": instance, "type": kind,
+                "estimated_saving": str(amount), "currency": rec["CurrentInstance"]["CurrencyCode"],
+                "state": "pending_human_review"})
+        else:
+            raise ValueError("Unknown recommendation type")
+    token = response.get("NextPageToken")
+    if not token:
+        complete = True
+        break
+    if token in seen:
+        raise ValueError("Repeated pagination token")
+    seen.add(token)
+    request["NextPageToken"] = token
+# Partial coverage must remain explicit if the 20-page bound is reached.
+result = {"recommendations": recommendations, "complete": complete}

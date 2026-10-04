@@ -1,0 +1,8 @@
+/var/log/ usage:
+  web1: 12 GB (67% of partition) - OK
+  web2: 45 GB (92% of partition) - URGENT
+  web3: 8 GB (34% of partition) - OK
+
+Recommendation: web2 needs immediate attention. The largest
+files are access.log.2.gz (12 GB) and error.log.1 (18 GB).
+Do you want me to compress and archive the old logs on web2?

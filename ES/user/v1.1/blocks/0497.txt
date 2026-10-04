@@ -1,0 +1,8 @@
+EJEMPLO FICTICIO DE SNAPSHOT:
+3 nodos con capacidad total supuesta de 12 CPU y 48 GB.
+52 Pods: production 23, staging 12, monitoring 8, kube-system 9.
+Deployment staging/report-worker: 1 de 2 réplicas Ready.
+Consumos supuestos: CPU 67 %, 45 %, 52 %; memoria 72 %, 58 %, 63 %.
+La condición Ready se lee por tipo y su valor True, False o Unknown.
+La versión de kubelet procede de la consulta real; este ejemplo no recomienda
+una versión concreta ni acredita salud completa o la causa de un Pod no listo.

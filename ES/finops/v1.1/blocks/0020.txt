@@ -1,0 +1,31 @@
+# Async callback outline for langchain_core; host injects a durable metadata sink.
+from langchain_core.callbacks import AsyncCallbackHandler
+import time
+
+class CostTrackingCallbackHandler(AsyncCallbackHandler):
+    def __init__(self, authorized_scope, normalize_usage, durable_sink):
+        self.scope = authorized_scope
+        self.normalize_usage = normalize_usage
+        self.sink = durable_sink
+        self.started = {}
+
+    async def on_llm_start(self, serialized, prompts, run_id, **kwargs):
+        # Do not retain prompt payloads. Bound active state in the host.
+        if len(self.started) >= 1000:
+            raise RuntimeError("Callback active-state bound exceeded")
+        self.started[str(run_id)] = time.monotonic()
+
+    async def on_llm_end(self, response, run_id, **kwargs):
+        start = self.started.pop(str(run_id), None)
+        # Provider adapter normalizes one invocation, not one copied usage per generation.
+        usage = self.normalize_usage(response)
+        await self.sink(self.scope, str(run_id), "completed", usage,
+            None if start is None else int((time.monotonic() - start) * 1000))
+
+    async def on_llm_error(self, error, run_id, **kwargs):
+        start = self.started.pop(str(run_id), None)
+        await self.sink(self.scope, str(run_id), "failed_usage_unknown", None,
+            None if start is None else int((time.monotonic() - start) * 1000))
+# Host validates adapter metadata and idempotency, uses awaitable bounded I/O,
+# and defines callback failure/cancellation handling. No raw exception is persisted.
+# This does not implement sync callbacks, streaming, or provider-independent billing.

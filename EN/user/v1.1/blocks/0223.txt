@@ -1,0 +1,25 @@
+## Agenda — Status Review: Data Migration Project
+**Date:** Wednesday, November 20, 2024 (fictional example), 10:00-11:00
+**Attendees:** Pedro Martín, Ana García, Carlos Ruiz, [your name]
+
+### 1. Status review (15 min)
+- Main database migration completed on Nov 12
+  (Pedro's email from Nov 12)
+- 3 secondary tables remain to be migrated (Ana's email from Nov 14)
+- Test environment has been operational since Nov 13
+
+### 2. Problems and blockers (20 min)
+- **Blocker 1:** Format incompatibility in the customers table
+  (reported by Ana on Nov 15). Decision pending on whether to
+  convert the data or modify the target schema.
+- **Blocker 2:** Production database access only available during
+  nighttime hours (Systems email from Nov 16). Impacts the schedule.
+
+### 3. Decisions needed (15 min)
+- Convert data or modify schema? (Blocker 1)
+- Request extended maintenance window? (Blocker 2)
+- Go-live date: do we keep December 6 or request an extension?
+
+### 4. Next steps (10 min)
+- Assign responsible persons for each decision
+- Define follow-up dates

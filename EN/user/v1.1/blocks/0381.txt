@@ -1,0 +1,7 @@
+Fictional quick diagnostic:
+nginx: active; api-server: stopped; MySQL: active.
+Current memory usage: 94%; not proof of pre-failure state.
+The application logs an allocation failure and attributes termination to the OOM killer.
+Hypothesis: memory pressure or process/cgroup limit.
+Corroborate that attribution with kernel/cgroup records and the exact period.
+Also review nginx's upstream error; do not declare a confirmed cause.

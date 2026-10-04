@@ -1,0 +1,5 @@
+cd /home/usuario/propuesta-cliente
+claude -p "
+ROLE: Controller financiero
+Prepara la estimación con datos/tarifas-2025.csv y datos/servicios-catalogo.csv. Lee solo la necesidad identificada de datos/cliente-tech-solutions.md para el alcance. Genera partes/estimacion-economica.md con fases, perfiles y dedicación, importes por línea, total sin IVA, IVA y total. Verifica tarifas y supuestos; deja pendiente alcance o tratamiento fiscal desconocidos.
+"

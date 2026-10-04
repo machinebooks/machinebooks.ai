@@ -1,0 +1,20 @@
+# Project context
+
+This directory contains [description].
+
+## Structure
+- /informes/ — Monthly status reports (format: informe-YYYY-MM.md)
+- /datos/ — Tracking spreadsheets
+- /presentaciones/ — Decks for follow-up meetings
+
+## Conventions
+- Dates: YYYY-MM-DD
+- Amounts: euros in European numeric format (1.234,56 EUR)
+- Language: English
+- New documents: Markdown unless another format is specified
+
+## Agent instructions
+- Use the template in /plantillas/ when generating reports
+- Ask before deleting any file
+- Flag inconsistent data instead of making assumptions
+- These instructions do not replace runtime permissions or access controls

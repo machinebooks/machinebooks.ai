@@ -1,0 +1,18 @@
+// Host supplies a validated, authorized response from the scoped ROI endpoint.
+import React from "react";
+type CapacitySummary = {
+  task_count: number; accepted_count: number; known_cost_subtotal: string;
+  known_capacity_subtotal: string; unknown_cost_count: number; unknown_value_count: number;
+  partial_net_return: string | null; coverage_complete: boolean;
+};
+export function ROIDashboard({summary}: {summary: CapacitySummary}) {
+  return <section aria-label="Capacity and cost">
+    <dl><dt>Tasks / accepted</dt><dd>{summary.task_count} / {summary.accepted_count}</dd>
+      <dt>Known cost, EUR</dt><dd>{summary.known_cost_subtotal}</dd>
+      <dt>Valued capacity, EUR</dt><dd>{summary.known_capacity_subtotal}</dd>
+      <dt>Partial net return</dt><dd>{summary.partial_net_return ?? "Not calculable"}</dd>
+      <dt>Unknown costs / values</dt><dd>{summary.unknown_cost_count} / {summary.unknown_value_count}</dd>
+    </dl><p>{summary.coverage_complete ? "Declared complete coverage" : "Incomplete coverage"}.
+      This view does not establish cash savings or full ROI.</p>
+  </section>;
+}

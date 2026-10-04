@@ -1,0 +1,12 @@
+set -euo pipefail
+: "${APPROVED_BASE_URL:?Set the reviewed URL on the published Docker host}"
+# A remote Docker context does not make localhost the container host.
+for path in /health /api/v1/health; do
+  code="$(curl --max-time 5 --fail --silent --show-error \
+    -o /dev/null -w "%{http_code}" "${APPROVED_BASE_URL%/}$path")"
+  [ "$code" = 200 ] || exit 1
+  printf "%s: HTTP %s\n" "$path" "$code"
+done
+# HTTP 200 alone does not establish application readiness.
+# Meilisearch is internal-only; use an authorized network.
+# Worker readiness needs a separate functional check.

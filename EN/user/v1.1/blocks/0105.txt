@@ -1,0 +1,12 @@
+1. Read the sales file C:\Data\sales_Q1_2024.csv
+2. Generate these charts as high-resolution PNG images:
+   a. Horizontal bars: sales by region
+   b. Lines: monthly trend (January, February, March)
+   c. Pie: distribution by product
+   d. Grouped bars: target vs. actual by month
+3. Use professional colors: corporate blue (#003366) as the main
+   color, gray (#666666) as secondary, red (#CC0000) for negative
+   data, green (#009900) for positive
+4. Size of each chart: 1920x1080 px (presentation format)
+5. Include a title in each chart
+6. Save to C:\Presentations\Q1\charts\

@@ -1,0 +1,5 @@
+claude mcp add --transport http --scope local slack https://mcp.slack.com/mcp
+claude mcp add --transport http --scope local github-read https://api.githubcopilot.com/mcp/readonly
+claude mcp add --transport http --scope local atlassian https://mcp.atlassian.com/v2/mcp
+# Google uses the separate pinned Workspace MCP example above.
+# Run /mcp in the client to check and complete authentication.

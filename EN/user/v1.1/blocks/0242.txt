@@ -1,0 +1,67 @@
+# Status Report — Data Migration Project
+## Week of November 18-22, 2024
+**Fictional example; cutoff:** Nov 21, 2024, 17:00, Europe/Madrid
+**Coverage:** through the cutoff; Friday 22 has not concluded
+
+### Executive summary
+The scenario assumes a count of 12/15 tasks (80%); acceptance
+criteria and evidence require checking. The target schema
+modification is in progress and expected for tomorrow (Nov 22).
+The production access blocker persists; the extended maintenance
+window was approved for this weekend.
+
+### Week's progress
+
+**Illustrative task count (12; acceptance to verify):**
+- Products table migration (PR #142, merged Nov 18; deployment/acceptance pending)
+- Orders table migration (PR #143, merged Nov 19; deployment/acceptance pending)
+- Integrity validation script (PR #145, merged Nov 20; deployment/acceptance pending)
+- Phase 2 regression tests (Issue #87, closed Nov 21)
+- [8 additional tasks detailed in appendix]
+
+**Tasks in progress (3):**
+- Target schema modification — Carlos, estimated Nov 22
+- Customer data validation — Ana, before Nov 27; scope to confirm
+- Rollback documentation — Laura, estimated Nov 25
+
+**Metrics:**
+- Assumed count: 12/15 (80%); evidence not provided
+- PRs merged: 8
+- Issues closed: 14
+- Issues open: 23 (of which 3 are blockers)
+
+### Active blockers
+
+| Blocker | Responsible | Status | Action |
+| --- | --- | --- | --- |
+| Extended production access hours | Pedro / Systems | Approved | Nov 23-24 window confirmed |
+| Old customer data format | Carlos | In progress | Schema modification planned for Friday 22 |
+| ETL tool license expires Nov 30 | Laura | Pending | Request urgent renewal |
+
+### Risks
+
+| Risk | Probability | Impact | Mitigation |
+| --- | --- | --- | --- |
+| Duplicates in customer data | High | Medium | Ana reviewing; duplicate-review deadline pending confirmation |
+| Go-live delay if weekend window fails | Medium | High | Plan B: next window Nov 30-Dec 1 |
+| ETL license not renewed | High | High | Escalate to management if not resolved in 48h |
+
+**New risk detected this week:**
+Laura's email from Nov 20: the ETL tool license expires on
+November 30. Confirm contract and renewal before expiry;
+if it is not valid at go-live (Dec 6), we won't
+be able to execute the final migration.
+
+### Plan for next week (Nov 25-29)
+- Monday: Team meeting 9:00 (commitment review)
+- Tuesday: Go/no-go for the weekend test migration
+- Ana’s validation: check delivery before Nov 27
+- Thursday: Demo for the steering committee (prepare on Wednesday)
+- Friday: Sprint closure, final sprint planning
+
+### Decisions needed
+1. **ETL license renewal** — needs budget approval (15,000 EUR).
+   Escalate to management before Monday.
+2. **Go-live Plan B** — if the weekend test migration fails,
+   do we move go-live to December 13? Needs decision from the
+   project sponsor.

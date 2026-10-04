@@ -1,0 +1,10 @@
+cd /home/usuario/propuesta-cliente
+claude -p "
+ROLE: Financial controller
+Prepare the economic estimate using datos/tarifas-2025.csv
+and datos/servicios-catalogo.csv. Read only the identified-need section
+of datos/cliente-tech-solutions.md for scope.
+Write partes/estimacion-economica.md with phases, staffing and effort,
+line amounts, total excluding VAT, VAT, and gross total.
+Verify rates and assumptions; mark unknown scope or tax treatment pending.
+"

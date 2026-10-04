@@ -1,0 +1,11 @@
+# Inline instrumentation duplicates concerns at each integration point.
+# Async function is syntactically valid; host provides client, messages and sink.
+async def inline_example(client, messages, save_usage_log, calculate_cost):
+    response = await client.messages.create(model="claude-sonnet-4-6",
+        max_tokens=2048, messages=messages)
+    usage = response.usage
+    cost = calculate_cost("claude-sonnet-4-6", usage.input_tokens, usage.output_tokens,
+        usage.cache_creation_input_tokens, usage.cache_read_input_tokens)
+    await save_usage_log(service="document_analysis", cost=cost)
+    return response
+# This outline does not cover provider errors, host scope or delivery guarantees.

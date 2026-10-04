@@ -1,0 +1,9 @@
+Genera un archivo indice.html con una tabla que liste todos los documentos
+organizados por carpeta, con el nombre del archivo como enlace relativo.
+Añade una columna con la fecha de última modificación y el tamaño.
+Incluye un campo de búsqueda en la parte superior para filtrar por nombre.
+
+Usa sólo rutas autorizadas y un destino nuevo sin sobrescribir.
+Escapa los nombres al generar HTML y codifica los enlaces relativos.
+Comprueba enlaces, archivos ausentes y funcionamiento sin red.
+No añadas recursos externos ni publiques información de la carpeta.

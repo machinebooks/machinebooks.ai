@@ -1,0 +1,37 @@
+from decimal import Decimal
+import math
+
+def get_engineer_metrics(rows, complete):
+    if not isinstance(rows, list) or len(rows) > 10000 or type(complete) is not bool:
+        raise ValueError("bounded snapshot required")
+    costs, latencies, inputs, reads, errors = [], [], 0, 0, 0
+    cache_known = True
+    for row in rows:
+        value = row.get("total_cost_usd")
+        if value is not None:
+            cost = Decimal(str(value))
+            if not cost.is_finite() or cost < 0:
+                raise ValueError("invalid cost")
+            costs.append(cost)
+        latency = row.get("latency_ms")
+        if latency is not None:
+            if isinstance(latency, bool) or not math.isfinite(latency) or latency < 0:
+                raise ValueError("invalid latency")
+            latencies.append(latency)
+        counters = [row.get(k) for k in ("input_tokens", "cache_creation_input_tokens", "cache_read_input_tokens")]
+        if any(type(v) is not int or v < 0 for v in counters):
+            cache_known = False
+        else:
+            inputs += sum(counters)
+            reads += counters[2]
+        errors += int(row.get("success") is False)
+    latencies.sort()
+    return {"total_calls":len(rows), "priced_calls":len(costs),
+            "known_cost_usd":sum(costs, Decimal(0)) if costs else None,
+            "total_cost_usd":sum(costs, Decimal(0)) if rows and complete and len(costs)==len(rows) else None,
+            "cache_read_share_pct":reads/inputs*100 if cache_known and inputs else None,
+            "mean_latency_ms":sum(latencies)/len(latencies) if latencies else None,
+            "p95_latency_ms":latencies[math.ceil(.95*len(latencies))-1] if latencies else None,
+            "latency_samples":len(latencies), "known_errors":errors, "complete":complete}
+# Host queries authorized scope/environment within UTC [start,end), bounded to 168h.
+# Cache share counts native disjoint partitions; it is not a request hit rate.

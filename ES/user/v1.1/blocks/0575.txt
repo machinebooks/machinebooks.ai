@@ -1,0 +1,12 @@
+cd /home/usuario/propuesta-cliente
+claude -p "
+Usa solo hechos respaldados por las fuentes; marca experiencia, satisfacción, equipo y garantías ausentes como pendientes. Descuento 10%, IVA 21%, pagos 30/40/30, validez de 30 días y calendario de cuatro meses son parámetros ilustrativos que requieren revisión comercial y fiscal antes de asumir compromisos. La narrativa paralela conserva los marcadores; integra solo después de cotejar las salidas. No envíes ni apruebes términos comerciales.
+
+Lee glosario.md para convenciones.
+ROLE: Controller financiero.
+Lee datos/tarifas-2025.csv, datos/servicios-catalogo.csv y la sección
+'Necesidad identificada' de datos/cliente-tech-solutions.md.
+Genera partes/estimacion-economica.md con desglose por fases, perfiles,
+dedicación, costes, descuento 10%, subtotales, IVA 21% y total.
+Formato de importes: como indica el glosario.
+"

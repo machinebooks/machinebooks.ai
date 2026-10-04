@@ -1,0 +1,6 @@
+async def get_waste_review_snapshot(repository,authorized_scope):
+    return await repository.read_scoped_waste_review(scope=authorized_scope,max_items=100)
+# HTTP GET reads a persisted authorized snapshot; costly scans/classification are
+# separate explicit jobs with metering. Model review is nested beside immutable
+# resource metadata, not merged over it. UI displays source freshness, partial
+# inventory and pending approval; it never describes "low" as safe cleanup savings.

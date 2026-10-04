@@ -1,0 +1,14 @@
+# Contexto de trabajo
+
+Gestiono 6 proyectos. Cada uno tiene su directorio en /proyectos/:
+- /proyectos/migracion-erp/ — Migración del ERP. Fase 2 de 4.
+- /proyectos/portal-clientes/ — Portal de clientes. En testing.
+- /proyectos/automatizacion-rrhh/ — Automatización de RRHH. Inicio.
+- /proyectos/consolidacion-datos/ — Consolidación de datos. Fase 3 de 3.
+- /proyectos/app-movil/ — App móvil. En diseño UX.
+- /proyectos/compliance-gdpr/ — Compliance GDPR. Auditoría en curso.
+
+Cada proyecto tiene un archivo "estado.md" con las métricas actualizadas.
+Los informes semanales se guardan en /informes/ con formato
+"informe-semanal-YYYY-MM-DD.md".
+La plantilla está en /plantillas/informe-semanal.md.

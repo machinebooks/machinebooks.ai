@@ -1,0 +1,9 @@
+Analiza /var/log/auth.log y los ficheros rotados auth.log.1, auth.log.2.gz, etc.
+Para la maqueta, filtra eventos de marzo de 2026 con zona y año
+confirmados; no deduzcas el año sólo del mtime ni mezcles rotaciones solapadas.
+Para cada IP, cuenta el número de intentos.
+Genera un CSV con columnas: IP, intentos, primer_intento, ultimo_intento
+Ordena por número de intentos de mayor a menor.
+Añade una columna candidata=true para más de 100 intentos, como
+umbral ilustrativo de revisión; no prueba ataque. Usa un nombre de
+salida nuevo en un directorio protegido, sin sobrescribir ni ejecutar bloqueos.

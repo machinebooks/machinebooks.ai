@@ -1,0 +1,35 @@
+from decimal import Decimal, InvalidOperation
+
+def review_cpu_signal(points, threshold=5):
+    # A CPU signal is not a rightsizing decision or a realized saving.
+    if isinstance(threshold, bool):
+        raise ValueError("Invalid CPU threshold")
+    try:
+        limit = Decimal(str(threshold))
+    except (ValueError, InvalidOperation):
+        raise ValueError("Invalid CPU threshold") from None
+    if not limit.is_finite() or not 0 <= limit <= 100:
+        raise ValueError("Invalid CPU threshold")
+    if not isinstance(points, list) or len(points) > 50000:
+        raise ValueError("Bounded metric points required")
+    if not points:
+        return {"state": "insufficient_data", "average_cpu_pct": None, "review_candidate": None}
+    values = []
+    for point in points:
+        if isinstance(point, bool) or point is None:
+            return {"state": "insufficient_data", "average_cpu_pct": None, "review_candidate": None}
+        try:
+            value = Decimal(str(point))
+        except (ValueError, InvalidOperation):
+            return {"state": "insufficient_data", "average_cpu_pct": None, "review_candidate": None}
+        if not value.is_finite() or not 0 <= value <= 100:
+            return {"state": "insufficient_data", "average_cpu_pct": None, "review_candidate": None}
+        values.append(value)
+    average = sum(values) / len(values)
+    return {"state": "cpu_signal_only", "average_cpu_pct": average,
+            "review_candidate": average < limit}
+
+# The host retrieves authorized paginated inventory and time-aligned metrics.
+# Missing samples are never CPU=0. Daily averages hide peaks and seasonality.
+# Memory, network, storage, coverage, workload owner and capacity constraints
+# are required before any resize plan. A SKU estimate is not invoice savings.

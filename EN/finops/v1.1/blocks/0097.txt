@@ -1,0 +1,11 @@
+import asyncio
+import time
+
+async def query_cloud_costs(question, authorized_runner):
+    if not isinstance(question,str) or not 1 <= len(question) <= 4000:
+        raise ValueError("question size")
+    started = time.monotonic()
+    result = await asyncio.wait_for(authorized_runner(question),timeout=120)
+    return {**result,"execution_time_seconds":round(time.monotonic()-started,2)}
+# Host authenticates the HTTP route, authorizes scope and maps errors to sanitized
+# responses. User-provided context cannot grant scope; tool count comes from the loop.

@@ -1,0 +1,34 @@
+## Informe de calidad — proveedores.xlsx
+
+### Resumen
+- Total registros: 800
+- Duplicados exactos: 23
+- Duplicados probables (mismo NIF, distinto nombre): 8
+- Registros sin NIF: 47
+- Registros sin email: 12
+- Formatos de teléfono inconsistentes: pendiente de una regla comprobada
+
+### Duplicados exactos (23)
+[Lista de las 23 filas duplicadas con número de fila]
+
+### Duplicados probables (8)
+- Fila 45: "Suministros García" / Fila 312: "SUMINISTROS GARCIA S.L." (mismo NIF: <NIF_DE_PRUEBA_1>)
+- Fila 128: "Consulting ABC" / Fila 567: "ABC Consulting Group" (mismo NIF: <NIF_DE_PRUEBA_2>)
+[...]
+
+### Campos vacíos
+- NIF vacío: filas 23, 89, 134, 201, ...
+- Email vacío: filas 56, 178, ...
+
+### Clasificación ilustrativa de teléfonos (categorías excluyentes)
+- Con prefijo +34 y sin guiones: 210 registros
+- Sin prefijo ni guiones: 450 registros
+- Con guiones: 80 registros
+- Formato no reconocido: 5 registros (filas 34, 67, ...)
+- Sin teléfono: 55 registros
+Total: 800. Los NIF de prueba son marcadores, no identificadores válidos.
+
+### Recomendación
+Propongo un diff con reglas confirmadas y referencias por fila.
+La coincidencia de NIF requiere comprobar entidad y procedencia antes de fusionar.
+No aplicaré cambios hasta autorización; conservaré excepciones y el original.

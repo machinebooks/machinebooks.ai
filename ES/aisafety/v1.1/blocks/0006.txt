@@ -1,0 +1,23 @@
+# Diagnostic example for a normalised, caller-supplied schema.
+# This is not a provider API response and does not infer secrets.
+import math
+
+def analyse_token_probabilities(token_records: list[dict]) -> dict:
+    records = []
+    for item in token_records:
+        log_probability = item["log_probability"]
+        if not isinstance(log_probability, (int, float)):
+            raise ValueError("A numeric log probability is required")
+        if math.isnan(log_probability) or log_probability > 0:
+            raise ValueError("Invalid log probability")
+        records.append({
+            "probability": math.exp(log_probability),
+            "alternative_count": len(item.get("alternatives", [])),
+        })
+    return {
+        "analysed_tokens": len(records),
+        "low_probability_tokens": sum(
+            item["probability"] < 0.3 for item in records
+        ),
+        "interpretation": "Diagnostic only; not evidence of a hidden secret",
+    }

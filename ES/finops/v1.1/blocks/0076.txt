@@ -1,0 +1,35 @@
+import math
+from dataclasses import dataclass
+
+@dataclass
+class RAGFragment:
+    text: str
+    score: float
+    source: str
+
+def build_context(fragments, count_tokens, budget_tokens=1500):
+    if type(budget_tokens) is not int or not 1 <= budget_tokens <= 100000:
+        raise ValueError("token budget")
+    if not isinstance(fragments,list) or len(fragments) > 100:
+        raise ValueError("fragment limit")
+    for fragment in fragments:
+        if not isinstance(fragment.text,str) or len(fragment.text)>100000 or not isinstance(fragment.source,str) or len(fragment.source)>128:
+            raise ValueError("fragment size")
+        if isinstance(fragment.score,bool) or not math.isfinite(fragment.score) or not 0 <= fragment.score <= 1:
+            raise ValueError("finite relevance score")
+    context, selected = "", 0
+    for fragment in sorted(fragments,key=lambda f:f.score,reverse=True):
+        part = f"[Fuente: {fragment.source}]\n{fragment.text}"
+        candidate = context + ("\n\n---\n\n" if context else "") + part
+        count = count_tokens(candidate)
+        if type(count) is not int or count < 0:
+            raise ValueError("tokenizer contract")
+        if count <= budget_tokens:
+            context, selected = candidate, selected+1
+    used = count_tokens(context)
+    if type(used) is not int or not 0 <= used <= budget_tokens:
+        raise ValueError("tokenizer consistency")
+    return context,{"fragments_total":len(fragments),"fragments_used":selected,
+                    "tokens_used":used,"budget_tokens":budget_tokens}
+# Host retrieves only authorized source/version fragments and counts full model
+# prompt, system/tools and output allowance separately. Relevance is not authority.

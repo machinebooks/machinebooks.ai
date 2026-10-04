@@ -1,0 +1,61 @@
+from datetime import timedelta
+from decimal import Decimal
+
+def scan_empty_load_balancers(elb,authorized_arns):
+    if not isinstance(authorized_arns,set) or len(authorized_arns)>20:
+        raise ValueError("authorized ALB limit")
+    results,marker,seen = [],None,set()
+    for _ in range(10):
+        page=elb.describe_load_balancers(PageSize=100,**({"Marker":marker} if marker else {}))
+        for lb in page.get("LoadBalancers",[]):
+            arn=lb["LoadBalancerArn"]
+            if arn not in authorized_arns or lb["Type"]!="application":
+                continue
+            group_marker,group_seen,has_targets,groups_complete=None,set(),False,False
+            for _ in range(10):
+                groups=elb.describe_target_groups(LoadBalancerArn=arn,PageSize=100,
+                    **({"Marker":group_marker} if group_marker else {}))
+                for group in groups.get("TargetGroups",[]):
+                    health=elb.describe_target_health(TargetGroupArn=group["TargetGroupArn"])
+                    has_targets |= bool(health.get("TargetHealthDescriptions"))
+                group_marker=groups.get("NextMarker")
+                if not group_marker:
+                    groups_complete=True
+                    break
+                if group_marker in group_seen:
+                    break
+                group_seen.add(group_marker)
+            if not has_targets:
+                results.append({"resource_key":arn,"status":"pending_dependency_review",
+                    "target_inventory_complete":groups_complete,"monthly_cost":None,
+                    "listener_rules_checked":False,"deletion_authorized":False})
+        marker=page.get("NextMarker")
+        if not marker:
+            return {"resources":results,"inventory_complete":True}
+        if marker in seen:
+            break
+        seen.add(marker)
+    return {"resources":results,"inventory_complete":False}
+# No targets is a review signal: fixed-response/redirect listener rules can be valid.
+# Listener/rule routing, ownership, dependencies and current billing remain unknown.
+
+def last_observed_volume_activity(read_points,write_points,start,end,coverage_complete):
+    if start.tzinfo is None or end.tzinfo is None or start.utcoffset()!=timedelta(0) or end.utcoffset()!=timedelta(0) or not start<end:
+        raise ValueError("UTC window required")
+    if len(read_points)>1000 or len(write_points)>1000:
+        raise ValueError("point limit")
+    active=[]
+    for point in [*read_points,*write_points]:
+        value=Decimal(str(point["Sum"]))
+        timestamp=point["Timestamp"]
+        if not value.is_finite() or value<0 or timestamp.tzinfo is None or timestamp.utcoffset()!=timedelta(0) or not start<=timestamp<end:
+            raise ValueError("invalid activity point")
+        if value>0:
+            active.append(timestamp)
+    latest=max(active) if active else None
+    return {"last_observed_activity_utc":latest,
+            "days_since_observed":(end-latest).days if latest else None,
+            "coverage_complete":coverage_complete is True,
+            "unused_proven":False}
+# Missing data is not 90 days of inactivity. Read and write observations are distinct;
+# CloudWatch retention/granularity/collection coverage must be established by host.

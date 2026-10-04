@@ -1,0 +1,16 @@
+    Inbox (40 emails)
+                │
+                ▼
+    ┌───────────────────┐
+    │    CLASSIFY        │ ──▶ Urgent / Normal / Informational / Junk
+    └─────────┬─────────┘
+              │
+              ▼
+    ┌───────────────────┐
+    │  GENERATE DRAFT   │ ──▶ Only for emails that need a reply
+    └─────────┬─────────┘
+              │
+              ▼
+    ┌───────────────────┐
+    │   YOU REVIEW       │ ──▶ Adjust tone, add context, send
+    └───────────────────┘

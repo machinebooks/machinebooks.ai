@@ -1,0 +1,17 @@
+# Finite-horizon gross-margin value; month 1 is paid before month-1 churn.
+from decimal import Decimal
+
+def finite_horizon_ltv(monthly_revenue,gross_margin,churn_by_month):
+    revenue,margin=Decimal(str(monthly_revenue)),Decimal(str(gross_margin))
+    churns=[Decimal(str(x)) for x in churn_by_month]
+    if not 1<=len(churns)<=1200 or any(not x.is_finite() for x in [revenue,margin,*churns]):
+        raise ValueError("Invalid finite horizon")
+    if revenue<0 or not 0<=margin<=1 or any(not 0<=c<=1 for c in churns):
+        raise ValueError("Invalid financial/probability input")
+    survival,total=Decimal(1),Decimal(0)
+    for churn in churns:
+        total+=revenue*margin*survival
+        survival*=1-churn
+    return {"gross_margin_value":str(total),"horizon_months":len(churns),
+            "remaining_survival":str(survival),"tail_value":None,"discount_rate":None}
+# Do not compare this finite sum with an unqualified perpetual LTV or invent a tail.

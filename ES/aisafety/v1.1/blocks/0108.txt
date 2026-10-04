@@ -1,0 +1,7 @@
+# KPI contract; no production-incident estimate is derived from adversarial ASR.
+# Separate evaluated attempts, successful rubric outcomes, ordinary interactions,
+# confirmed incidents and control activations. Record actual period length and exposure.
+# Missing or incomparable data must remain unknown; no fixed 90-day quarter is assumed.
+class ProgramKPIs:
+    def calculate(self):
+        raise NotImplementedError("Validated period data and compatible denominators are required")

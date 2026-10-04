@@ -1,0 +1,20 @@
+Generate the weekly status presentation for the "ERP Migration" project
+for the Monday March 25 meeting.
+
+Sources:
+- Task status: C:\Projects\ERPMigration\task_tracking.xlsx
+- Weekly notes: C:\Projects\ERPMigration\week_12_notes.txt
+- Incidents: C:\Projects\ERPMigration\incidents_march.csv
+
+Structure (7 slides, 10-minute presentation):
+
+SLIDE 1: Cover with overall project traffic light
+SLIDE 2: What was completed this week (checklist)
+SLIDE 3: What is in progress (list with completion percentage)
+SLIDE 4: Blockers and delays (with responsible person and action needed)
+SLIDE 5: Open incidents (table with priority)
+SLIDE 6: Plan for next week (5 main activities)
+SLIDE 7: Decisions needed (what I need you to approve)
+
+Concise format. No embellishments. Data and actions.
+Generate in Markdown and HTML.

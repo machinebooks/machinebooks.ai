@@ -1,0 +1,18 @@
+# Read-only BigQuery job with fixed authorized table, parameters and scan bound.
+from google.cloud import bigquery
+from datetime import datetime,timezone
+
+query="""
+SELECT service.description AS service, currency,
+ SUM(cost) AS gross_cost,
+ SUM(COALESCE((SELECT SUM(c.amount) FROM UNNEST(credits) AS c),0)) AS credits,
+ SUM(cost + COALESCE((SELECT SUM(c.amount) FROM UNNEST(credits) AS c),0)) AS net_subtotal
+FROM `authorized_project.billing_dataset.authorized_export_table`
+WHERE usage_start_time >= @start AND usage_start_time < @end
+GROUP BY service,currency ORDER BY net_subtotal DESC LIMIT 20
+"""
+config=bigquery.QueryJobConfig(maximum_bytes_billed=1000000000,
+    query_parameters=[bigquery.ScalarQueryParameter("start","TIMESTAMP",datetime(2026,3,1,tzinfo=timezone.utc)),
+                      bigquery.ScalarQueryParameter("end","TIMESTAMP",datetime(2026,4,1,tzinfo=timezone.utc))])
+# Host supplies authorized BigQuery client; bq.query(query,job_config=config).result(timeout=30)
+# is a potentially billable read. Top20 and export latency/credits are not full TCO.

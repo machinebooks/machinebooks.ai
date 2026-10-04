@@ -1,0 +1,24 @@
+Generate the Q1 2024 budget variance report with:
+
+1. Summary table: for each budget line item, show budgeted,
+   actual (accrual ERP + only confirmed card expenses not already in ERP), absolute and percentage variance, traffic light
+   (absolute percentage: green <5%, yellow 5%–15% inclusive, red >15%; zero budget: not applicable)
+
+2. Monthly breakdown: January-February-March trend for each line item
+
+3. Top 5 variances: the line items with the highest variance, with detail
+   of the main expenses that compose them
+
+4. Unclassified transactions: list of expenses that could not be
+   assigned to any budget line item
+
+5. Reconciliation summary: summary of the bank reconciliation status
+
+6. Annual projection: if the Q1 trend continues, the Q1×4 scenario relative to the budget, with assumptions
+   rather than a confirmed forecast
+
+7. Executive summary: 5-7 lines for the leadership committee
+
+Generate two outputs:
+- informe-desviacion-Q1-2024.xlsx with all formatted tables
+- An on-screen summary with the main findings

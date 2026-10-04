@@ -1,0 +1,3 @@
+Generate two drafts to review with the tax adviser:
+1. invoices_received_Q1.csv with Date;TaxID;Base;VAT_Rate;VAT_Amount;Total and a source reference.
+2. vat_summary_Q1.txt with extracted bases and VAT amounts grouped by every rate present and its period. Distinguish exemption from a zero rate and declare unclassified rates or documents. Do not restrict the batch to 4%, 10%, and 21% or equate input VAT with deductible VAT.

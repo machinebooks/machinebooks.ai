@@ -1,0 +1,12 @@
+def prepare_waste_cleanup_review(resource_keys,inventory):
+    if not isinstance(resource_keys,list) or len(resource_keys)>100 or len(set(resource_keys))!=len(resource_keys):
+        raise ValueError("unique bounded resource keys required")
+    by_id={r["resource_key"]:r for r in inventory["resources"]}
+    if len(by_id)!=len(inventory["resources"]) or any(k not in by_id for k in resource_keys):
+        raise ValueError("resource outside inventory")
+    return {"plans":[{"resource_key":key,"resource_type":by_id[key]["resource_type"],
+             "status":"pending_retention_and_dependency_review"} for key in resource_keys],
+            "provider_writes":0,"deletion_authorized":False}
+# Fully qualified keys bind provider/account/region/type/ID. Host separately needs
+# immutable approved plan, owner, role, expiry, hold/retention, dependencies, recovery
+# evidence, revalidation and idempotent execution. This is not that private executor.

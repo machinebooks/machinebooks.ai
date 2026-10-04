@@ -1,0 +1,8 @@
+INTERPRETACIÓN PENDIENTE:
+Cada consulta completada devuelve t o f en el destino revisado.
+Un error de psql detiene la secuencia; no significa que el objeto falte.
+Si staging_db o app faltan, comprueba primero conexión, persistencia y migraciones.
+Preparar una base vacía o conceder permisos son cambios separados que necesitan
+un plan aprobado de propiedad, permisos mínimos y recuperación.
+GRANT sobre DATABASE no concede por sí solo acceso a esquemas o tablas.
+Prueba después la conexión real de la aplicación con el mecanismo autorizado.

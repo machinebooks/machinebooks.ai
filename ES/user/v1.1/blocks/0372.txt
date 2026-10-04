@@ -1,0 +1,8 @@
+Uso de /var/log/:
+  web1: 12 GB (67% de la partición) - OK
+  web2: 45 GB (92% de la partición) - URGENTE
+  web3: 8 GB (34% de la partición) - OK
+
+Recomendación: web2 necesita atención inmediata. Los ficheros
+más grandes son access.log.2.gz (12 GB) y error.log.1 (18 GB).
+¿Quieres que comprima y archive los logs antiguos de web2?

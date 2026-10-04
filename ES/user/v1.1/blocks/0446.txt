@@ -1,0 +1,27 @@
+Propuestas ilustrativas de right-sizing — pendientes de validación:
+
+1. dev-test (m5.large → t3.small)
+   CPU media supuesta: 3,2% | Memoria: 12% de 8 GB
+   Coste supuesto: 87,60 €/mes → 18,90 €/mes
+   Ahorro aritmético: 68,70 €/mes (78,4%)
+   Riesgo: PENDIENTE — revisar picos, créditos de CPU, memoria,
+   dependencias y capacidad de la familia de destino.
+
+2. web-frontend (Azure B2ms → B1ms)
+   CPU media supuesta: 12,1% | Memoria: 22% de 8 GB
+   Coste supuesto: 78,40 €/mes → 39,20 €/mes
+   Ahorro aritmético: 39,20 €/mes (50%)
+   Riesgo: PENDIENTE — comprobar que 2 GB cubren picos,
+   créditos de CPU, carga y dependencias.
+
+3. analytics (c5.xlarge → c5.large)
+   CPU media supuesta: 11,4% | Memoria: 35% de 8 GB
+   Coste supuesto: 124,80 €/mes → 62,40 €/mes
+   Ahorro aritmético: 62,40 €/mes (50%)
+   Riesgo: PENDIENTE — medir los lotes nocturnos completos,
+   límites de memoria, red y almacenamiento de destino.
+
+Ahorro condicional del escenario: 170,30 €/mes (2.043,60 €/año).
+Importes didácticos en EUR, no precios vigentes ni facturación real.
+Autoriza cada cambio tras validar capacidad, dependencias y rollback;
+una semana de medias no demuestra cubrir todos los picos.

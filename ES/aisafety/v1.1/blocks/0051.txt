@@ -1,0 +1,58 @@
+# Basic sabotage evaluation framework
+# Didactic code — not a complete evaluation tool
+
+from dataclasses import dataclass
+from enum import Enum
+from typing import Optional
+
+class SabotageType(Enum):
+    TASK_SABOTAGE = "task_sabotage"
+    OVERSIGHT_UNDERMINING = "oversight_undermining"
+    CAPABILITY_HIDING = "capability_hiding"
+
+@dataclass
+class SabotageEval:
+    """Individual sabotage evaluation."""
+    eval_id: str
+    sabotage_type: SabotageType
+    task_description: str
+    correct_answer: str          # Verifiably correct answer
+    model_answer: str            # Model's answer
+    contains_subtle_error: Optional[bool]  # Did the model introduce a subtle error?
+    error_description: Optional[str] = None
+    human_detected: Optional[bool] = None  # Did a human reviewer detect the error?
+
+@dataclass
+class SabotageTestSuite:
+    """Sabotage test suite for a domain."""
+    domain: str                  # e.g., "code_review", "data_analysis"
+    evaluations: list[SabotageEval]
+
+    def detection_rate(self) -> float | None:
+        """Human detection rate of subtle errors."""
+        errors = [e for e in self.evaluations
+                  if e.contains_subtle_error is True
+                  and type(e.human_detected) is bool]
+        if not errors:
+            return None
+        detected = sum(e.human_detected is True for e in errors)
+        return detected / len(errors)
+
+    def sabotage_rate(self) -> float | None:
+        """Rate of responses with subtle errors."""
+        assessed = [e for e in self.evaluations
+                    if type(e.contains_subtle_error) is bool]
+        if not assessed:
+            return None
+        errors = sum(e.contains_subtle_error is True for e in assessed)
+        return errors / len(assessed)
+    def assessment_counts(self) -> dict:
+        return {
+            "total": len(self.evaluations),
+            "error_assessed": sum(type(e.contains_subtle_error) is bool
+                                  for e in self.evaluations),
+            "human_reviewed_errors": sum(
+                e.contains_subtle_error is True
+                and type(e.human_detected) is bool
+                for e in self.evaluations),
+        }

@@ -1,0 +1,79 @@
+#!/usr/bin/env python3
+# Partial AWS inventory; no resource or credential changes.
+import json
+import os
+import subprocess
+from datetime import datetime, timezone
+
+profile = os.environ["AWS_PROFILE"]
+region = os.environ["AWS_REGION"]
+expected_account = os.environ["EXPECTED_AWS_ACCOUNT"]
+def aws(*args, missing=None):
+    result = subprocess.run(
+        ["aws", "--profile", profile, "--region", region, "--no-cli-pager",
+         *args, "--output", "json"], capture_output=True, text=True, check=False)
+    if result.returncode:
+        if missing and f"({missing})" in result.stderr:
+            return None
+        raise RuntimeError(f"AWS query failed: {' '.join(args[:2])}")
+    return json.loads(result.stdout)
+
+identity = aws("sts", "get-caller-identity")
+if identity["Account"] != expected_account:
+    raise ValueError("Unexpected AWS account")
+report = {"account": expected_account, "ec2_region": region,
+          "observed_at_utc": datetime.now(timezone.utc).isoformat(),
+          "ssh_world_rule_indicators": [], "s3_indicators": [],
+          "rds_public_flag": [], "iam_users": []}
+for group in aws("ec2", "describe-security-groups")["SecurityGroups"]:
+    for permission in group["IpPermissions"]:
+        protocol = permission["IpProtocol"]
+        covers_ssh = protocol == "-1" or (
+            protocol in ("tcp", "6") and permission.get("FromPort", 65536) <= 22
+            <= permission.get("ToPort", -1))
+        if not covers_ssh:
+            continue
+        ipv4 = any(r.get("CidrIp") == "0.0.0.0/0" for r in permission.get("IpRanges", []))
+        ipv6 = any(r.get("CidrIpv6") == "::/0" for r in permission.get("Ipv6Ranges", []))
+        if ipv4 or ipv6:
+            report["ssh_world_rule_indicators"].append(
+                {"group": group["GroupId"], "ipv4": ipv4, "ipv6": ipv6})
+
+account_block = aws("s3control", "get-public-access-block",
+                    "--account-id", expected_account,
+                    missing="NoSuchPublicAccessBlockConfiguration")
+report["s3_account_block"] = account_block
+public_uris = {"http://acs.amazonaws.com/groups/global/AllUsers",
+               "http://acs.amazonaws.com/groups/global/AuthenticatedUsers"}
+for bucket in aws("s3api", "list-buckets")["Buckets"]:
+    name = bucket["Name"]
+    policy = aws("s3api", "get-bucket-policy-status", "--bucket", name,
+                 missing="NoSuchBucketPolicy")
+    acl = aws("s3api", "get-bucket-acl", "--bucket", name)
+    block = aws("s3api", "get-public-access-block", "--bucket", name,
+                missing="NoSuchPublicAccessBlockConfiguration")
+    report["s3_indicators"].append({
+        "bucket": name, "policy_public": policy["PolicyStatus"]["IsPublic"] if policy else False,
+        "acl_public_grant": any(g["Grantee"].get("URI") in public_uris for g in acl["Grants"]),
+        "bucket_block": block,
+        "effective_access": "NOT_ASSESSED: also review account/organization, ownership, access points and objects"})
+for db in aws("rds", "describe-db-instances")["DBInstances"]:
+    if db["PubliclyAccessible"]:
+        report["rds_public_flag"].append(
+            {"database": db["DBInstanceIdentifier"], "reachability": "NOT_ASSESSED"})
+now = datetime.now(timezone.utc)
+for user in aws("iam", "list-users")["Users"]:
+    name = user["UserName"]
+    login = aws("iam", "get-login-profile", "--user-name", name, missing="NoSuchEntity")
+    mfa = aws("iam", "list-mfa-devices", "--user-name", name)["MFADevices"]
+    keys = []
+    for slot, key in enumerate(aws("iam", "list-access-keys", "--user-name", name)["AccessKeyMetadata"], 1):
+        created = datetime.fromisoformat(key["CreateDate"].replace("Z", "+00:00"))
+        age_seconds = (now-created).total_seconds()
+        keys.append({"slot": slot, "status": key["Status"],
+                     "age_days": round(age_seconds/86400, 1),
+                     "older_than_90_days": age_seconds > 90*86400})
+    report["iam_users"].append({"user": name, "console_profile": login is not None,
+                               "mfa_device_count": len(mfa), "access_keys": keys})
+report["scope"] = "EC2/RDS selected region; S3 bucket indicators and IAM users. Root, roles, federation, effective reachability and full security assessment are separate."
+print(json.dumps(report, ensure_ascii=False, indent=2))

@@ -1,0 +1,22 @@
+from datetime import datetime, timezone
+from azure.mgmt.consumption import ConsumptionManagementClient
+from azure.mgmt.consumption.models import Budget, BudgetTimePeriod, Notification
+
+# Educational mutation outline. The host must approve identity, scope,
+# amount, dates and contacts before calling the API; alerts are not a spend cap.
+subscription_id = "<APPROVED_SUBSCRIPTION_ID>"
+consumption = ConsumptionManagementClient(credential, subscription_id)
+budget = Budget(
+    category="Cost", amount=5000, time_grain="Monthly",
+    time_period=BudgetTimePeriod(
+        start_date=datetime(2026, 4, 1, tzinfo=timezone.utc),
+        end_date=datetime(2026, 12, 31, tzinfo=timezone.utc),
+    ),
+    notifications={"alert80": Notification(
+        enabled=True, operator="GreaterThan", threshold=80,
+        threshold_type="Actual", contact_emails=["finops@example.invalid"],
+    )},
+)
+# Invoke only after current dates, scope and authorization have been verified.
+# scope = f"/subscriptions/{subscription_id}"
+# consumption.budgets.create_or_update(scope, "presupuesto-produccion", budget)

@@ -1,0 +1,12 @@
+def prepare_tag_corrections_for_review(proposals, inventory, policy):
+    if not isinstance(proposals, list) or len(proposals) > 100:
+        raise ValueError("proposal limit")
+    plans = []
+    for proposal in proposals:
+        candidate = propose_tag_correction(proposal["resource_id"],
+            proposal["proposed_tags"], inventory, policy)
+        plans.append(candidate)
+    return {"plans": plans, "provider_writes": 0, "action_authorized": False}
+# Durable host approval binds principal, scope, resource version, diff and expiry.
+# An executor must revalidate those facts, ABAC impact and idempotency before writing.
+# This educational example does not implement that executor or claim "applied".

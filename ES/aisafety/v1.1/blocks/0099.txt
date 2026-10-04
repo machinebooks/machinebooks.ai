@@ -1,0 +1,36 @@
+# Conceptual validation only; the trusted executor must enforce parameterised SQL and RBAC.
+from dataclasses import dataclass, field
+@dataclass
+class ToolPermission:
+    tool_name: str
+    allowed_actions: list[str]
+    max_calls_per_session: int = 10
+    requires_user_confirmation: bool = False
+    allowed_parameters: dict = field(default_factory=dict)
+
+COST_AGENT_PERMISSIONS = [
+    ToolPermission("query_database", ["SELECT"], 20,
+        allowed_parameters={"table": ["costs", "budgets", "usage"]}),
+    ToolPermission("send_alert", ["email"], 3, True,
+        {"recipient": ["security@example.invalid"],
+         "message_template": ["cost-threshold"]}),
+    ToolPermission("modify_budget", [], 0),
+]
+
+def validate_tool_call(tool_name, action, params, permissions, session_calls):
+    perm = next((p for p in permissions if p.tool_name == tool_name), None)
+    if perm is None or action not in perm.allowed_actions:
+        return False
+    if not isinstance(params, dict) or set(params) != set(perm.allowed_parameters):
+        return False
+    for key, allowed_values in perm.allowed_parameters.items():
+        if params[key] not in allowed_values:
+            return False
+    calls = session_calls.get(tool_name, 0)
+    if calls < 0 or calls >= perm.max_calls_per_session:
+        return False
+    if perm.requires_user_confirmation:
+        return False  # Denied here; a separate trusted approval workflow is required.
+    session_calls[tool_name] = calls + 1
+    return True
+# The executor must atomically reserve quotas; this sequential example is not concurrency-safe.

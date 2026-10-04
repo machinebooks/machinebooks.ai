@@ -1,0 +1,20 @@
+Crea empresa-demo.db sólo en una carpeta nueva de prácticas, con datos
+íntegramente sintéticos y un manifiesto de resultados esperados.
+Usa claves y relaciones declaradas; verifica foreign_key_check.
+
+1. zonas(id, nombre): 8 zonas totales, incluidas 7 de España e Internacional.
+2. comerciales(id, zona_id, nombre): 30 comerciales ficticios.
+3. clientes(id, zona_id, comercial_id, nombre, fecha_alta, activo): 2.000.
+4. productos(id, categoria, nombre): 150 productos, 10 categorías.
+5. pedidos(id, cliente_id, fecha, estado): 8.000 entre 2022-04-01 y
+   2024-03-31; estados completado, pendiente y cancelado.
+6. lineas_pedido(id, pedido_id, producto_id, cantidad, precio_unitario,
+   descuento): 20.000; el precio corresponde a la operación, no al catálogo.
+7. facturas(id, pedido_id, fecha_emision, fecha_vencimiento, importe,
+   importe_cobrado): 7.000, con abonos y pagos parciales documentados.
+
+Define EUR, base de impuestos, fechas ISO y corte 2024-03-31. Las altas
+son anteriores o iguales a su primer pedido. Introduce estacionalidad
+ficticia y un 5% de facturas vencidas según el saldo y fecha de corte;
+comprueba esos supuestos con el manifiesto. No crees datos reales ni
+sobrescribas una base existente. No se incluye tabla de presupuestos.

@@ -1,0 +1,13 @@
+In the folder D:\Projects\ClientAlpha\Documentation there are 350 files
+created by different people. I need to normalize the names with these rules:
+
+1. All lowercase
+2. No spaces (use hyphens)
+3. No special characters (ñ→n, accents removed)
+4. Format: YYYY-MM-DD_type_brief-description.ext
+5. Valid types: minutes, report, proposal, contract, budget, blueprint, photo, other
+6. If there are multiple versions of the same document, retain the approved version according to the record; leave selection pending when no criterion exists
+   and move previous ones to a "previous-versions" folder
+
+First analyze and show me a table with the first 20 proposed renames
+so I can validate the criteria. Then present the full plan, check collisions and hashes, and wait for approval to apply it to a copy.

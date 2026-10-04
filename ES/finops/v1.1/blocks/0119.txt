@@ -1,0 +1,15 @@
+# Scheduler and repository are authenticated host contracts, not installed jobs.
+from datetime import datetime, timezone
+from uuid import UUID
+
+async def persist_approved_forecast(repository, scope, snapshot, approval):
+    UUID(approval["id"])
+    if approval["state"] != "approved" or approval["snapshot_id"] != snapshot["id"]:
+        raise ValueError("Approval does not bind this immutable snapshot")
+    if snapshot["scope"] != scope or snapshot["data_cutoff"].tzinfo is None:
+        raise ValueError("Invalid scope or cutoff")
+    # Host verifies reviewer role, expected version, financial bounds and UTC source
+    # finality in one transaction. Deduplication uses snapshot ID/approval ID.
+    return await repository.insert_forecast_once(
+        scope=scope, snapshot=snapshot, approval=approval,
+        recorded_at=datetime.now(timezone.utc), expected_version=snapshot["version"])

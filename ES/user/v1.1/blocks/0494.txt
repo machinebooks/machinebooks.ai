@@ -1,0 +1,6 @@
+EJEMPLO DIDÁCTICO, NO ESTADO MEDIDO:
+5 réplicas × 34 % / 70 % = 2,4286; redondeo hacia arriba: 3.
+Con mínimo 3 y máximo 10, la estimación ideal es 3 réplicas.
+La CPU se calcula respecto a los requests configurados, no a la CPU total del nodo.
+Métricas ausentes, Pods no listos, tolerancia y estabilización afectan la decisión.
+No demuestra una reducción inmediata ni que el HPA esté configurado correctamente.

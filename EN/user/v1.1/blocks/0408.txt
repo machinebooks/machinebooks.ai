@@ -1,0 +1,10 @@
+Create a quick diagnostic script I can run when I receive
+a "service not responding" alert. It should check:
+1. Whether the service is running
+2. Whether it has enough memory
+3. The last 20 lines of the log
+4. Whether there are DB locks
+5. Whether the disk is full
+
+It should accept the service name as a parameter.
+Usage: ./diagnostico-rapido.sh webapp

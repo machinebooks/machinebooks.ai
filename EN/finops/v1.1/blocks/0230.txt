@@ -1,0 +1,9 @@
+# Native clients are injected after host authorization; no default global AWS scope.
+class CloudOptimizerAgent:
+    def __init__(self,authorized_scope,read_tools,reviewer):
+        if not authorized_scope or not isinstance(read_tools,dict) or len(read_tools)>4:
+            raise ValueError("Bounded authorized tools required")
+        self.scope,self.read_tools,self.reviewer=authorized_scope,read_tools,reviewer
+# The manual tool loop bounds calls, inputs, results and time. EC2/CloudWatch clients
+# use the selected region; Cost Explorer endpoint depends on AWS partition. No write
+# or fictitious universal execute_action_dry_run tool is provided.

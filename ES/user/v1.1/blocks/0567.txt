@@ -1,0 +1,6 @@
+# Phase 3: integrate the completed, checked phase outputs.
+cd /home/usuario/propuesta-cliente
+claude -p "
+ROLE: Director de propuesta
+Lee partes/analisis-cliente.md, partes/estimacion-economica.md y partes/documento-propuesta.md. Detén si falta una parte necesaria. Integra análisis y presupuesto, coteja narrativa e importes con sus fuentes, resuelve o registra discrepancias y armoniza el tono. No inventes compromisos ausentes. Genera resultado/propuesta-tech-solutions.md para revisión humana; no envíes, apruebes ni aceptes términos comerciales.
+"

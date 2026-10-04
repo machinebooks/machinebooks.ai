@@ -1,0 +1,9 @@
+# Read-only narrative over an approved financial snapshot; no per-call cost guarantee.
+async def analyze_project_cost(snapshot,scope,reviewer):
+    if snapshot["scope"]!=scope:
+        raise ValueError("Scope mismatch")
+    text=await reviewer(snapshot=snapshot,instructions="Explain categories, coverage and questions. Do not turn capacity into savings or invent figures or causality.")
+    if not isinstance(text,str) or len(text)>3000:
+        raise ValueError("Invalid bounded narrative")
+    return {"snapshot_id":snapshot["id"],"draft":text,"state":"pending_human_review"}
+# Host pins provider/tariff, authorized aggregate egress, timeout and usage metadata.

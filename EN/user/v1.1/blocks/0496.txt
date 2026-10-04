@@ -1,0 +1,29 @@
+import collections, json, os, subprocess
+context = os.environ["KUBE_CONTEXT"]
+def query(*args):
+    result = subprocess.run(["kubectl", "--context", context, *args, "-o", "json"],
+                            check=True, capture_output=True, text=True)
+    return json.loads(result.stdout)["items"]
+
+print("NODES: capacity and allocatable are not measured consumption")
+for node in query("get", "nodes"):
+    status = node["status"]
+    ready = next((c["status"] for c in status.get("conditions", [])
+                  if c["type"] == "Ready"), "Unknown")
+    print(node["metadata"]["name"], "Ready=" + ready,
+          "capacity=" + json.dumps(status.get("capacity", {})),
+          "allocatable=" + json.dumps(status.get("allocatable", {})),
+          "kubelet=" + status.get("nodeInfo", {}).get("kubeletVersion", "Unknown"))
+pods = query("get", "pods", "--all-namespaces")
+counts = collections.Counter(p["metadata"]["namespace"] for p in pods)
+print("PODS PER NAMESPACE:", dict(sorted(counts.items())))
+print("DEPLOYMENTS WITH READY != DESIRED:")
+for deployment in query("get", "deployments", "--all-namespaces"):
+    ready = deployment.get("status", {}).get("readyReplicas", 0)
+    desired = deployment["spec"].get("replicas", 1)
+    if ready != desired:
+        print(deployment["metadata"]["namespace"], deployment["metadata"]["name"],
+              ready, "/", desired)
+print("RESOURCE CONSUMPTION: needs an available metrics API")
+subprocess.run(["kubectl", "--context", context, "top", "nodes"], check=True)
+# Query failures abort; these separate snapshots are not an atomic complete audit.

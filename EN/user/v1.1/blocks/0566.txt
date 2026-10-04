@@ -1,0 +1,12 @@
+# Phase 2: run after the analysis and estimate have been checked.
+cd /home/usuario/propuesta-cliente
+claude -p "
+ROLE: Commercial writer
+Read datos/cliente-tech-solutions.md, partes/analisis-cliente.md,
+and partes/estimacion-economica.md.
+Write partes/documento-propuesta.md with an executive summary,
+understanding of needs, proposed solution, sourced team and commitments,
+reasons for selecting us, and next steps. Do not invent a team,
+guarantees, delivery dates, or commercial commitments.
+Identify missing information for review instead of promising it.
+"

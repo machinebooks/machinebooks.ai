@@ -1,0 +1,8 @@
+# Render the chart for review; host pins an approved chart version before deployment.
+helm repo add opencost https://opencost.github.io/opencost-helm-chart
+helm repo update
+helm template opencost opencost/opencost --namespace opencost
+# Deployment and Kubernetes permissions are separate authorized host operations.
+# After authenticated local forwarding of an existing approved service:
+curl --fail --get http://127.0.0.1:9003/allocation/compute   --data-urlencode 'window=7d' --data-urlencode 'aggregate=namespace'
+# Allocation estimates require cluster/window/source coverage and shared-cost review.

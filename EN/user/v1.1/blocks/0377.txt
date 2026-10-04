@@ -1,0 +1,8 @@
+I have a practice CSV /tmp/ventas.csv with the exact header:
+fecha,producto,region,unidades,importe. Valid ISO dates, EUR amounts
+with decimal points, no quotes, commas, tabs, or line breaks in fields.
+Validate this subset before using awk; otherwise stop and request
+a compatible CSV parser without modifying the original.
+Show regional totals, top product by units (ties by name), mean per
+row/month, and the five dates with most rows (not highest revenue).
+The example uses GNU/Linux and LC_ALL=C, with no network or file changes.

@@ -1,0 +1,14 @@
+Analiza los cuatro ficheros de datos financieros en la carpeta actual:
+presupuesto-2024.xlsx, gastos-erp-Q1.csv, extracto-banco-Q1.csv y
+gastos-tarjetas-Q1.xlsx.
+
+Para cada uno, dime:
+- Número de registros
+- Columnas disponibles
+- Rango de fechas
+- Formato de fecha usado
+- Total de importes
+- Problemas detectados (duplicados, vacíos, formatos inconsistentes)
+- Resumen de las categorías o tipos de movimiento
+
+No modifiques nada todavía.

@@ -1,0 +1,30 @@
+from prometheus_client import Counter, Histogram, Info
+
+# Metric definitions only. A reviewed application adapter must instrument them.
+# Use bounded labels; never place actor IDs, prompts or personal data in labels.
+injection_attempts = Counter(
+    "ai_security_injection_attempts_total", "Detector candidates",
+    ["severity", "user_type", "detection_method"])
+guardrail_activations = Counter(
+    "ai_security_guardrail_activations_total", "Control activations",
+    ["guardrail_type", "action"])
+pii_detections = Counter(
+    "ai_security_pii_detections_total", "PII candidates requiring review",
+    ["pii_type"])
+system_prompt_hash = Info(
+    "ai_security_system_prompt", "Approved configuration metadata")
+unapproved_prompt_changes = Counter(
+    "ai_security_system_prompt_unapproved_changes_total",
+    "Changes rejected by the independent configuration check")
+generation_latency = Histogram(
+    "ai_security_generation_seconds", "Actual model generation duration",
+    ["blocked"], buckets=[0.5, 1, 2, 5, 10, 30, 60])
+response_length = Histogram(
+    "ai_security_response_length_chars", "Decoded model-output characters",
+    buckets=[100, 500, 1000, 2000, 5000, 10000])
+tool_invocations = Counter(
+    "ai_security_tool_invocations_total", "Tool calls",
+    ["tool_name", "result"])
+rag_ingestion = Counter(
+    "ai_security_rag_ingestion_total", "RAG ingestion decisions",
+    ["status", "classification"])

@@ -1,0 +1,7 @@
+from azure.identity import DefaultAzureCredential
+from azure.mgmt.costmanagement import CostManagementClient
+
+# Credential chain depends on SDK version and environment.
+# Host selects and scopes an approved production identity.
+credential = DefaultAzureCredential()
+client = CostManagementClient(credential)

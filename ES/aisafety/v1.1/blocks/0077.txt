@@ -1,0 +1,6 @@
+# Integration interface; generic HTTP middleware cannot infer model timing,
+# decoded response characters, authenticated actor type, or PII leakage.
+# Instrument authorised inputs and decoded outputs in the application path.
+# Bound request sizes before buffering and minimise retained data.
+def record_ai_security_event(event):
+    raise NotImplementedError("A schema-validated application metrics adapter is required")

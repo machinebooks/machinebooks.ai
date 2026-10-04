@@ -1,0 +1,15 @@
+Reunión migración 20nov 10:00
+
+- Pedro dice q la migración base ok pero 3 tablas pendientes
+- Ana: tabla clientes tiene formato incompatible, propone convertir
+  datos en origen
+- Carlos dice q mejor modificar esquema destino, mas limpio
+- DECISIÓN: modificar esquema destino. Carlos se encarga. Plazo viernes 22
+- Bloqueo acceso producción nocturno. Necesitamos ventana ampliada
+- DECISIÓN: Pedro pide ventana a Sistemas para el fin de semana 23-24
+- Fecha go-live: SE MANTIENE 6 diciembre
+- Ana valida datos convertidos antes del 27 nov
+- Siguiente reunión: martes 26 a las 10
+
+Nota: Carlos preocupado por la calidad de los datos de clientes
+antiguos. Puede haber duplicados. Ana revisa.

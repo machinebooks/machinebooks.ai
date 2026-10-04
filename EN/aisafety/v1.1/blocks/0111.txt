@@ -1,0 +1,5 @@
+# Evaluation interface. No mutation generator, model call, or approved result is supplied.
+# Use authorised local fixtures and an explicit rubric; reject an empty dataset.
+# Report detector outcomes separately from task success and harmful effects.
+def fuzz_guardrail(guardrail_fn, mutations, payloads):
+    raise NotImplementedError("Implement a reviewed fixture and evaluation protocol")

@@ -1,0 +1,6 @@
+# Phase 2: run after the analysis and estimate have been checked.
+cd /home/usuario/propuesta-cliente
+claude -p "
+ROLE: Redactor comercial
+Lee datos/cliente-tech-solutions.md, partes/analisis-cliente.md y partes/estimacion-economica.md. Genera partes/documento-propuesta.md con resumen, necesidad, solución, equipo y compromisos con fuentes, razones de selección y siguientes pasos. No inventes equipo, garantías, fechas ni compromisos comerciales. Identifica información ausente para revisión, sin prometerla.
+"

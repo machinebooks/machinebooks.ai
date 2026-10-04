@@ -1,0 +1,18 @@
+# Extend canonical chapter-4 ledger by reference, not a conflicting singular table.
+from sqlalchemy import Column,String,Boolean,DateTime,ForeignKey,JSON
+from database import Base
+
+class LLMAuditDecision(Base):
+    __tablename__="llm_audit_decisions"
+    id=Column(String(36),primary_key=True)
+    tenant_id=Column(String(64),nullable=False)
+    usage_id=Column(String(36),ForeignKey("llm_usage_logs.id"),nullable=False)
+    assessment_version=Column(String(100),nullable=False)
+    internal_review_priority=Column(String(20),nullable=False)
+    legal_assessment_ref=Column(String(200),nullable=True)
+    requires_human_review=Column(Boolean,nullable=False)
+    review_receipt=Column(JSON,nullable=True)
+    reviewed_at=Column(DateTime(timezone=True),nullable=True)
+    execution_receipt_ref=Column(String(200),nullable=True)
+# Priority is an internal workflow label, not AI Act classification. Host validates
+# tenant/usage ownership, approvals and timestamps; this schema does not enforce action.

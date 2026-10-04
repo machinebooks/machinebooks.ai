@@ -1,0 +1,17 @@
+# Template: Quarterly invoice extraction
+# Save as: D:\Templates\invoice_instructions.md
+
+Process all PDF invoices in the folder [PATH].
+Extract: vendor, tax ID, invoice number, date, description, base, VAT rate,
+VAT amount, total, payment method.
+CSV format with semicolon separator.
+Dates in DD/MM/YYYY. Amounts with 2 decimals, period as decimal separator.
+If a field is not readable: "NOT READABLE".
+Generate summary at the end with totals and list of invoices to review.
+Before execution, fill in [PATH], period, currency, rules and a new destination.
+Do not use filename or file date as the sole accounting criterion.
+Preserve originals and page references; inventory every input.
+Document multiple VAT rates and total components without losing their links.
+Separate missing, unreadable and ambiguous values; do not replace them with zero.
+Check critical fields, coverage, calculations and exceptions.
+Do not distribute or submit tax returns from the draft.

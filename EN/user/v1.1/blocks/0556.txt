@@ -1,0 +1,55 @@
+#!/bin/bash
+# pipeline-maestro-mensual.sh REPORT_MONTH REPORT_YEAR
+# Illustrative draft workflow; configure scope and deny outbound communication.
+set -euo pipefail
+
+REPORT_MONTH=${1:?Pass the month used in the input filenames}
+REPORT_YEAR=${2:?Pass the reporting year}
+case "$REPORT_MONTH" in
+  enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre) ;;
+  *) echo "Invalid month for this example's filenames" >&2; exit 1 ;;
+esac
+[[ $REPORT_YEAR =~ ^[0-9]{4}$ ]] || exit 1
+WORK_ROOT=${WORK_ROOT:-/home/usuario}
+[[ "$WORK_ROOT" == /* ]] || exit 1
+RUN_ID=$(date -u +%Y%m%dT%H%M%SZ)-$$
+RUN_ROOT="$WORK_ROOT/ejecuciones/$RUN_ID"
+LOG="$WORK_ROOT/logs/pipeline-maestro-$RUN_ID.log"
+mkdir -p "$WORK_ROOT/logs" "$WORK_ROOT/ejecuciones"
+exec 9>"$WORK_ROOT/logs/master-pipeline.lock"
+flock -n 9 || exit 1
+RUN_ROOT=$(mktemp -d "$WORK_ROOT/ejecuciones/run-$RUN_ID-XXXXXX")
+CONSOLIDATED="$RUN_ROOT/datos-consolidados-$REPORT_MONTH.csv"
+REPORT_FILE="$RUN_ROOT/informe-financiero-$REPORT_MONTH-$REPORT_YEAR.md"
+DRAFT_FILE="$RUN_ROOT/borrador-distribucion.md"
+
+echo "=== Master pipeline: $REPORT_MONTH $REPORT_YEAR ===" > "$LOG"
+
+# Phase 1: Consolidation under the authorized project configuration.
+cd "$WORK_ROOT/consolidacion"
+claude --permission-mode dontAsk --max-turns 20 -p "Consolidate the authorized inputs for $REPORT_MONTH $REPORT_YEAR.
+Read CLAUDE.md for the expected source files and schemas.
+Reject missing data or incompatible periods. Do not invent figures.
+Write the draft consolidated data only to $CONSOLIDATED." >> "$LOG" 2>&1
+[[ -s $CONSOLIDATED ]] || exit 1
+
+# Phase 2: Prepare a draft report from this run's output.
+cd "$WORK_ROOT/reporting-mensual"
+claude --permission-mode dontAsk --max-turns 20 -p "Read $CONSOLIDATED and the authorized budget inputs
+specified in this project's CLAUDE.md. Record their paths and reporting periods.
+Prepare the draft financial analysis for $REPORT_MONTH $REPORT_YEAR
+at $REPORT_FILE. Reject missing or contradictory inputs.
+Do not approve it or send messages." >> "$LOG" 2>&1
+[[ -s $REPORT_FILE ]] || exit 1
+
+# Phase 3: Prepare a distribution draft; no email is sent.
+claude --permission-mode dontAsk --max-turns 20 -p "Read $REPORT_FILE. Prepare $DRAFT_FILE with a proposed email:
+- To: finance@example.invalid (illustrative address)
+- Cc: management@example.invalid (illustrative address)
+Subject: Financial report $REPORT_MONTH $REPORT_YEAR
+Body: summarize the report's three main conclusions and proposed attachment.
+Do not send the email. Mark recipients, figures and attachment for human review." >> "$LOG" 2>&1
+[[ -s $DRAFT_FILE ]] || exit 1
+
+# Nonempty outputs do not establish data quality or accounting correctness.
+echo "Drafts prepared; schema checks, reconciliation and human approval remain pending." >> "$LOG"

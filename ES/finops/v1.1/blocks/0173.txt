@@ -1,0 +1,11 @@
+# Illustrative group fixture; higher entitlement still requires approved data scope.
+group_id: fixture-enterprise
+inherits: global
+approval_state: pending
+budgets:
+  monthly_total_eur: "300.00"
+  alert_threshold: "0.85"
+  action_at_limit: block
+model_routing:
+  unknown_task_action: reject
+# No catch-all model grants regulatory quality or authority to override hard limits.

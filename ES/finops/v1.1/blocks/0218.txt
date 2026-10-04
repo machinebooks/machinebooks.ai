@@ -1,0 +1,7 @@
+# Approved team aggregate comparison; no absent squad/cost_eur fields in canonical C4.
+async def team_capacity_view(principal,authorize,repository,month):
+    scope=await authorize(principal,"team_capacity.read",month=month)
+    return await repository.approved_team_comparison(scope=scope,month=month,
+        minimum_cohort_size=10,include_unknowns=True,publish_ranking=False)
+# Host supplies explicit team membership and dated currency/FX mapping, protects
+# small groups, and compares equivalent task/demand mix. BCR is not net ROI or ranking proof.

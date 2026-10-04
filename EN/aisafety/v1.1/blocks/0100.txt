@@ -1,0 +1,5 @@
+# Interface only. No PII detector or redaction implementation is supplied here.
+# Contract: find validated spans in the original text; handle overlaps;
+# redact without retaining raw values; document language coverage and uncertainty.
+def filter_output(model_response):
+    raise NotImplementedError("A tested, locally configured PII adapter is required")

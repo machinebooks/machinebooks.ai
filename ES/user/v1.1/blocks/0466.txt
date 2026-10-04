@@ -1,0 +1,10 @@
+EJEMPLO ILUSTRATIVO DE ESTADO PREVIO:
+  Deployment: api-server (3 réplicas, 3 disponibles)
+  Imagen: registry.empresa.invalid/api-server:2.4.3
+  Pods supuestos:
+    api-server-7d8f9c6b5-abc12  Running  Ready  0 reinicios  5 días
+    api-server-7d8f9c6b5-def34  Running  Ready  0 reinicios  5 días
+    api-server-7d8f9c6b5-ghi56  Running  Ready  0 reinicios  5 días
+
+Estos datos no proceden de una ejecución acreditada.
+Comprueba el estado real y la recuperación; espera autorización.

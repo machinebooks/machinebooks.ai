@@ -1,0 +1,7 @@
+import boto3
+from botocore.config import Config
+# Historical commercial AWS partition example. Host selects approved account/role;
+# temporary credentials come from the SDK chain, never source code or printed logs.
+ce=boto3.client("ce",region_name="us-east-1",config=Config(
+    connect_timeout=5,read_timeout=20,retries={"mode":"standard","total_max_attempts":2}))
+# Partition endpoints/permissions/data coverage must be verified by the host.

@@ -1,0 +1,72 @@
+import json
+from time import monotonic
+
+def prepare_optimization_review(tracked_model, read_only_tools, validate_recommendations,
+                                model, max_rounds=8, max_tool_calls=15, deadline_seconds=900):
+    # Adapters normalize the selected SDK response to this explicit dictionary.
+    # The host supplies authenticated scope, budget reservations and timeouts.
+    if not callable(tracked_model) or not callable(validate_recommendations):
+        raise ValueError("Tracked model and schema validator required")
+    if not isinstance(read_only_tools, dict) or not read_only_tools or any(
+        not isinstance(name, str) or not name or not callable(adapter)
+        for name, adapter in read_only_tools.items()
+    ):
+        raise ValueError("Reviewed read-only tool adapters required")
+    if not isinstance(model, tuple) or len(model) != 2 or any(
+        not isinstance(value, str) or not value.strip() for value in model
+    ):
+        raise ValueError("Provider and model identity required")
+    for value, upper in ((max_rounds, 20), (max_tool_calls, 50), (deadline_seconds, 900)):
+        if type(value) is not int or not 1 <= value <= upper:
+            raise ValueError("Invalid execution bound")
+    deadline = monotonic() + deadline_seconds
+    history = [{"role": "user", "content": "Prepare scoped cost recommendations; do not execute writes."}]
+    calls = 0
+    try:
+        for _ in range(max_rounds):
+            remaining = deadline - monotonic()
+            if remaining <= 0:
+                return {"state": "deadline", "recommendations": None, "tool_calls": calls}
+            response = tracked_model(model=model, history=history,
+                                     allowed_tools=tuple(read_only_tools), timeout_seconds=remaining)
+            if not isinstance(response, dict):
+                raise ValueError("Invalid normalized response")
+            stop = response.get("stop_reason")
+            if stop == "end_turn":
+                recommendations = validate_recommendations(response.get("recommendations"))
+                if not isinstance(recommendations, list) or len(recommendations) > 200:
+                    raise ValueError("Invalid reviewed recommendation list")
+                return {"state": "completed", "recommendations": recommendations, "tool_calls": calls}
+            blocks = response.get("tool_calls")
+            if stop != "tool_use" or not isinstance(blocks, list) or not blocks:
+                raise ValueError("Unsupported stop reason or empty tool request")
+            if calls + len(blocks) > max_tool_calls:
+                return {"state": "tool_limit", "recommendations": None, "tool_calls": calls}
+            results = []
+            for block in blocks:
+                if not isinstance(block, dict) or set(block) != {"id", "name", "input"}:
+                    raise ValueError("Invalid tool request shape")
+                if not isinstance(block["id"], str) or not 1 <= len(block["id"]) <= 256:
+                    raise ValueError("Invalid tool request identity")
+                if block["name"] not in read_only_tools or not isinstance(block["input"], dict):
+                    raise ValueError("Unknown tool or invalid arguments")
+                if len(json.dumps(block["input"], allow_nan=False)) > 16000:
+                    raise ValueError("Oversized tool arguments")
+                remaining = deadline - monotonic()
+                if remaining <= 0:
+                    return {"state": "deadline", "recommendations": None, "tool_calls": calls}
+                # Each adapter validates arguments and enforces its fixed read capability.
+                output = read_only_tools[block["name"]](block["input"], timeout_seconds=remaining)
+                if len(json.dumps(output, allow_nan=False)) > 100000:
+                    raise ValueError("Oversized tool result")
+                results.append({"id": block["id"], "output": output})
+                calls += 1
+            history.append({"role": "assistant", "tool_calls": blocks})
+            history.append({"role": "user", "tool_results": results})
+        return {"state": "round_limit", "recommendations": None, "tool_calls": calls}
+    except (OSError, TimeoutError, ValueError, TypeError):
+        return {"state": "failed", "recommendations": None, "tool_calls": calls}
+
+# A completed empty list means no candidates; failed/limited None means unknown.
+# This in-process deadline cannot interrupt a blocking adapter: the host must.
+# No recommendation, risk label or tool argument grants mutation authority.

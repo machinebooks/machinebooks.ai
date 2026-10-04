@@ -1,0 +1,12 @@
+# Native Azure query body; the host resolves columns and bounded continuation.
+from datetime import datetime,timezone
+from azure.mgmt.costmanagement.models import QueryDefinition,QueryTimePeriod,QueryDataset,QueryAggregation,QueryGrouping
+
+query=QueryDefinition(type="ActualCost",timeframe="Custom",
+    time_period=QueryTimePeriod(from_property=datetime(2026,3,1,tzinfo=timezone.utc),
+                               to=datetime(2026,3,31,23,59,59,tzinfo=timezone.utc)),
+    dataset=QueryDataset(granularity="Daily",aggregation={"totalCost":QueryAggregation(name="Cost",function="Sum")},
+                         grouping=[QueryGrouping(type="Dimension",name="ServiceName")]))
+# Host supplies authenticated CostManagementClient and authorized subscription scope.
+# Native API range convention differs from an internal end-exclusive window. Do not
+# unpack rows by assumed order or label returned currency as USD without reading columns.

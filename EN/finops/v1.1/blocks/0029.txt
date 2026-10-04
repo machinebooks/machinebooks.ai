@@ -1,0 +1,7 @@
+# Explicit provider adapter; chapter-4 tracker uses its actual ainvoke signature.
+async def analyze_document(approved_messages, authorized_client, scope, normalize_usage, sink):
+    tracker = LLMUsageTracker(authorized_client, scope, normalize_usage, sink)
+    response = await tracker.ainvoke(approved_messages)
+    return response
+# Authorization and serialized input/output bounds belong to the authenticated host.
+# Response content is returned to its owner, not copied into the metadata log.

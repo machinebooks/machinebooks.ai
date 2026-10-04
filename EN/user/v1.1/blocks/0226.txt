@@ -1,0 +1,65 @@
+# Meeting minutes — Proyecto Migración de Datos
+
+**Date:** Wednesday, November 20, 2024, 10:00; duration pending confirmation
+**Attendees:** Pedro Martín, Ana García, Carlos Ruiz, [your name]
+**Convened by:** pending confirmation
+
+---
+
+## Executive summary
+
+The data migration project status was reviewed. The main database
+migration is complete; three tables remain. It was decided
+to modify the target schema (instead of converting data at source)
+and to request an extended maintenance window. The go-live date of
+December 6 is maintained.
+
+---
+
+## Topics discussed
+
+### 1. Migration status
+- Pedro reports that the main migration is complete;
+  no completion date is stated.
+- Three tables remain to be migrated.
+- The notes do not confirm the test environment’s status.
+
+### 2. Format incompatibility in customers table
+- A format incompatibility was identified in the customers table
+  between the source and target systems.
+- Two options were evaluated:
+  - Option A: Convert data at source before migrating
+    (proposed by Ana).
+  - Option B: Modify the target database schema
+    (proposed by Carlos).
+- **Decision:** Option B is approved — modify the target schema.
+  Carlos describes it as cleaner; this is his assessment.
+
+### 3. Production access
+- Production database access is only available during nighttime
+  hours, the impact on testing needs confirmation.
+- **Decision:** Request an extended maintenance window from Systems
+  for the weekend of November 23-24.
+
+### 4. Go-live date
+- **Decision:** The go-live date of December 6 is maintained.
+
+### 5. Data quality
+- Carlos warned about possible duplicates in old customer data.
+  Ana will review possible duplicates; no deadline is stated.
+
+---
+
+## Actions
+
+| # | Responsible | Action | Deadline |
+| --- | --- | --- | --- |
+| 1 | Carlos Ruiz | Modify target schema to resolve incompatibility | Nov 22 |
+| 2 | Pedro Martín | Request extended maintenance window from Systems | Pending confirmation |
+| 3 | Ana García | Validate data; confirm what “converted” means | Before Nov 27 |
+| 4 | Ana García | Review old customer data quality (duplicates) | Pending confirmation |
+
+---
+
+## Next meeting
+Tuesday, November 26, 10:00

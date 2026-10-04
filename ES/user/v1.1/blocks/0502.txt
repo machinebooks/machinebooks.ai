@@ -1,0 +1,13 @@
+set -euo pipefail
+: "${DOCKER_CONTEXT:?Set the reviewed Docker context}"
+compose=(docker --context "$DOCKER_CONTEXT" compose
+  --project-name staging --file /opt/staging/docker-compose.yml)
+
+: "${REVIEWED_NETWORK:?Set the network name from the reviewed Compose configuration}"
+docker --context "$DOCKER_CONTEXT" network inspect "$REVIEWED_NETWORK" |
+  jq '.[0].Containers | to_entries[] | {name: .value.Name, ip: .value.IPv4Address}'
+# Tools must exist in the reviewed container; query/tool failure stops here.
+"${compose[@]}" exec -T api-backend nslookup redis
+"${compose[@]}" exec -T api-backend nc -zv redis 6379
+"${compose[@]}" exec -T redis redis-cli ping
+# Local Redis PING does not establish access from api-backend or authorization.

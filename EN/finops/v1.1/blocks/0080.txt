@@ -1,0 +1,8 @@
+Authorized bounded request
+  → check data classification, sovereignty and previously approved candidates
+  → select a candidate eligible for the task
+  → invoke with limits and record the attempt
+  → on failure, check whether another approved candidate accepts the same data
+  → if none exists, return pending failure; do not automatically send to an external API
+  → validate response and retain known/unknown cost for every attempt
+Local token tariffs can be zero; infrastructure and operations are not free.

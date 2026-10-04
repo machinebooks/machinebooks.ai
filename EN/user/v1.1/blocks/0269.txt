@@ -1,0 +1,8 @@
+> Analyze clientes-master.xlsx without modifying it:
+1. Flag email or name+city candidates; a match does not establish identity.
+2. Retain records and provenance; propose merges only with evidence.
+3. Check email syntax; this does not establish existence or delivery.
+4. Normalize phones only with confirmed country, type, and number; retain source.
+5. Do not infer postal codes from city alone; use an address and authorized source.
+6. Classify tenure using an enrollment date and explicit cutoff; nonoverlapping bands.
+7. Show a diff, exceptions, and checks before any change is authorized.

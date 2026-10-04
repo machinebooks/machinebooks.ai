@@ -1,0 +1,17 @@
+# Configuration sketch for a host-managed local stdio launch, not Docker Compose.
+transport: stdio
+sdk:
+  package: mcp
+  version: 2.3.0
+runner: run_authorized_stdio
+scope:
+  from_host_principal: true
+  request_selects_credentials: false
+limits:
+  model_steps: 8
+  tool_calls: 16
+  cloud_pages_per_query: 20
+  http_deadline_seconds: 120
+deployment_implemented: false
+# Host supplies a private runner, scoped workload identity, readers and adapter.
+# No fabricated Dockerfile, health route, HTTP port or unused MCP_URL is provided.

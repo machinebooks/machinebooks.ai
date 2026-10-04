@@ -1,0 +1,5 @@
+At the 2024-03-31 cutoff, which 10 customers have the highest
+net amount of completed orders since 2024-01-01? Show zone,
+distinct order count, and EUR amount with the tax criterion.
+Use quantities, transaction prices, and line discounts; do not
+multiply order or invoice amounts through each JOIN.

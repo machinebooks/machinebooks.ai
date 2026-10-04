@@ -1,0 +1,13 @@
+Revisa el estado actual del proyecto de migración y dime si hay
+señales de alerta:
+
+1. ¿Hay tickets en Jira que lleven más de 5 días sin movimiento?
+2. ¿Hay pull requests en GitHub abiertos más de 3 días sin
+   revisión?
+3. ¿Hay emails del cliente o de proveedores que mencionen
+   "retraso", "problema", "urgente" o "preocupación"?
+4. ¿Hay compromisos de las actas de reunión que hayan vencido
+   sin evidencia de cumplimiento?
+
+Dame solo los hallazgos que necesiten mi atención, no un informe
+completo.

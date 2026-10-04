@@ -1,0 +1,4 @@
+The website returns a 502 error. I need to diagnose the cause.
+The server uses nginx as a reverse proxy and the application
+runs as a systemd service called "webapp".
+The database is PostgreSQL.

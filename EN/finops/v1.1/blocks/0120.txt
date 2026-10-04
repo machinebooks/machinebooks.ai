@@ -1,0 +1,25 @@
+# Scenario tokens per user already use the selected tariff; no second price factor.
+from datetime import date
+from decimal import Decimal
+
+def forecast_token_cost(target_month, projected_users, approved_model_mix, price_version):
+    date.fromisoformat(target_month + "-01")
+    if type(projected_users) is not int or not 0 <= projected_users <= 100000000:
+        raise ValueError("Invalid user scenario")
+    if not price_version or not 1 <= len(approved_model_mix) <= 20:
+        raise ValueError("Missing versioned mix")
+    per_user = Decimal(0)
+    for row in approved_model_mix:
+        values = [Decimal(str(row[k])) for k in
+                  ("input_tokens_per_user", "output_tokens_per_user", "input_per_million",
+                   "output_per_million")]
+        if any(not v.is_finite() or v < 0 for v in values):
+            raise ValueError("Invalid volume or tariff")
+        if row["currency"] != "USD" or row["price_version"] != price_version:
+            raise ValueError("Currency/version mismatch")
+        per_user += (values[0]*values[2]+values[1]*values[3])/Decimal(1000000)
+    return {"target_month": target_month, "projected_users": projected_users,
+            "token_subtotal_usd": str(per_user*projected_users),
+            "price_version": price_version, "coverage": "declared_uncached_token_mix",
+            "full_tco": False, "interval": None}
+# Cache, retries, tools, storage, engineering and operation need separate scenarios.

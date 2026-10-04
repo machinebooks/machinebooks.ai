@@ -1,0 +1,8 @@
+set -euo pipefail
+: "${DOCKER_CONTEXT:?Set the reviewed Docker context}"
+compose=(docker --context "$DOCKER_CONTEXT" compose
+  --project-name staging --file /opt/staging/docker-compose.yml)
+
+# Retrieve source logs first; a query failure stops the script.
+"${compose[@]}" logs --since 2h --timestamps --no-color api-backend
+# Authorized subsequent review may group patterns; this command does not count them.

@@ -1,0 +1,30 @@
+# The LLM may explain approved factors; it cannot write financial numbers.
+from decimal import Decimal
+
+def approved_forecast_scenario(base_amount, approved_adjustments):
+    base = Decimal(str(base_amount))
+    if not base.is_finite() or len(approved_adjustments) > 20:
+        raise ValueError("Invalid scenario")
+    totals = {key: base for key in ("low", "expected", "high")}
+    ids = set()
+    for row in approved_adjustments:
+        if set(row) != {"id", "low", "expected", "high", "evidence_ref"}:
+            raise ValueError("Invalid approved factor")
+        if not row["id"] or row["id"] in ids or not row["evidence_ref"]:
+            raise ValueError("Missing or duplicate evidence")
+        ids.add(row["id"])
+        values = [Decimal(str(row[k])) for k in ("low", "expected", "high")]
+        if any(not x.is_finite() for x in values) or not values[0] <= values[1] <= values[2]:
+            raise ValueError("Invalid factor bounds")
+        for key, value in zip(totals, values):
+            totals[key] += value
+    return {"base_amount": str(base), **{k: str(v) for k,v in totals.items()},
+            "interval_kind": "approved_scenario_range", "confidence_level": None}
+
+async def explain_forecast(scenario, approved_metadata, reviewer):
+    # Host bounds/authorizes metadata and enforces timeout, tariff and egress policy.
+    text = await reviewer(scenario=scenario, metadata=approved_metadata)
+    if not isinstance(text, str) or len(text) > 3000:
+        raise ValueError("Invalid explanation")
+    return {"scenario": scenario, "explanation": text, "state": "pending_human_review"}
+# Failure retains the base snapshot and a pending explanation; no invented +/-10%.

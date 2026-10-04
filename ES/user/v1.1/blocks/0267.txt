@@ -1,0 +1,23 @@
+## Análisis anual de gastos 2024 — escenario ficticio
+Hipótesis: se confirma excluir 3 vacíos de junio, 12 duplicados de julio
+ y 8 candidatos de septiembre tras comprobar precedencia. Sin confirmación,
+conservar candidatos y recalcular; estas filas no prueban operaciones reales.
+
+| Mes | Registros | Importe EUR | Frente a media |
+|---|---|---|---|
+| Enero | 234 | 142.567,30 | -7,4% |
+| Febrero | 198 | 128.340,50 | -16,6% |
+| Marzo | 267 | 178.290,00 | 15,8% |
+| Abril | 215 | 156.780,20 | 1,8% |
+| Mayo | 189 | 134.560,80 | -12,6% |
+| Junio | 240 | 162.890,45 | 5,8% |
+| Julio | 189 | 148.930,10 | -3,3% |
+| Agosto | 156 | 98.450,30 | -36,1% |
+| Septiembre | 270 | 186.340,60 | 21,0% |
+| Octubre | 245 | 168.290,40 | 9,3% |
+| Noviembre | 220 | 155.670,80 | 1,1% |
+| Diciembre | 312 | 186.281,00 | 21,0% |
+| Total | 2735 | 1.847.392,45 | |
+| Media | 228 | 153.949,37 | |
+
+Las doce filas suman 1.847.392,45 EUR y 2.735 registros. La media mensual es 153.949,37 EUR; 228 registros es una media redondeada. Estas filas agregadas no permiten identificar proveedores, categorías, nuevos proveedores, cuotas del top 10 ni causas estacionales. Esas conclusiones requieren el conjunto de operaciones completo y quedan pendientes.

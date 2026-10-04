@@ -1,0 +1,27 @@
+#!/bin/bash
+# GNU/Linux: expiry of the first X.509 certificate in each matching file.
+set -uo pipefail
+export LC_ALL=C TZ=UTC
+now=$(date -u +%s) || exit 1
+find /etc/ssl /etc/letsencrypt \( -type f -o -type l \) \
+  \( -name '*.pem' -o -name '*.crt' \) -print0 |
+{
+failed=0
+while IFS= read -r -d '' cert; do
+  if ! expiry=$(openssl x509 -enddate -noout -in "$cert"); then
+    printf 'UNKNOWN or not X.509: %q\n' "$cert"; failed=1; continue
+  fi
+  if ! epoch=$(date -u -d "${expiry#notAfter=}" +%s); then
+    printf 'UNKNOWN expiry: %q\n' "$cert"; failed=1; continue
+  fi
+  remaining=$((epoch-now))
+  if ((remaining<=0)); then label=EXPIRED
+  elif ((remaining<30*86400)); then label=URGENT
+  else label=OBSERVED
+  fi
+  days=$(awk -v seconds="$remaining" 'BEGIN {printf "%.1f",seconds/86400}')
+  printf '%s %q: %s days; %s\n' "$label" "$cert" "$days" "$expiry"
+done
+exit "$failed"
+}
+# Readable files are observations; absence of output is not a complete TLS audit.

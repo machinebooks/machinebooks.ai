@@ -1,0 +1,4 @@
+> Split gastos-2024-consolidado.xlsx into separate files by vendor.
+  Use vendor identifiers and safe filenames inside a new folder.
+  Retain a name map; detect collisions and do not overwrite files.
+  Reconcile every source row with the outputs.

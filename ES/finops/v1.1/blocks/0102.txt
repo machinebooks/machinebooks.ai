@@ -1,0 +1,10 @@
+from datetime import timedelta
+
+async def get_current_business_context(repository,authorized_scope,now):
+    if now.tzinfo is None or now.utcoffset()!=timedelta(0):
+        raise ValueError("UTC required")
+    return await repository.authorized_context_snapshot(
+        scope=authorized_scope,start=now-timedelta(days=7),end=now,max_items=50)
+# Host contract supplies protected/redacted context with source IDs, as-of timestamps,
+# version and coverage. Dates, budgets and deployments are observed facts or labeled
+# plans; absent integrations are unknown. Context does not authorize cloud actions.

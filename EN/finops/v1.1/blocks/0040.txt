@@ -1,0 +1,14 @@
+{
+  "mode": "Indexed",
+  "policyRule": {
+    "if": {"allOf": [
+      {"field": "tags['environment']", "exists": "false"},
+      {"value": "[resourceGroup().tags['environment']]", "notEquals": ""}
+    ]},
+    "then": {"effect": "modify", "details": {
+      "roleDefinitionIds": ["/providers/Microsoft.Authorization/roleDefinitions/4a9ae827-6dc8-4573-8ac7-8239d42aa03f"],
+      "operations": [{"operation": "add", "field": "tags['environment']",
+        "value": "[resourceGroup().tags['environment']]"}]
+    }}
+  }
+}

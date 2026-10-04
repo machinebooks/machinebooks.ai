@@ -1,0 +1,46 @@
+## Database structure — db.empresa.invalid
+
+### Tables found (18)
+
+| Table | Records | Inferred description |
+|-------|---------|---------------------|
+| clientes | 12,450 | Customer master data |
+| pedidos | 87,320 | Orders placed |
+| lineas_pedido | 234,560 | Order line detail (products and quantities) |
+| productos | 1,890 | Product catalog |
+| categorias | 24 | Product categories |
+| proveedores | 156 | Product suppliers |
+| empleados | 198 | Company personnel |
+| zonas | 8 | Commercial zones |
+| facturas | 76,540 | Invoices issued |
+| pagos | 68,230 | Payments received |
+[...]
+
+### Detail: table "clientes"
+| Column | Type | Example |
+|--------|------|---------|
+| id_cliente | INT (PK) | 1001 |
+| nombre | VARCHAR(200) | Industrias López S.L. |
+| nif | VARCHAR(15) | <TEST_NIF> |
+| zona_comercial | INT (FK → zonas) | 3 |
+| fecha_alta | DATE | 2023-06-15 |
+| email | VARCHAR(100) | contacto@empresa.invalid |
+| telefono | VARCHAR(20) | <TEST_PHONE> |
+| activo | TINYINT | 1 |
+| comercial_asignado | INT (FK → empleados) | 45 |
+
+### Main relationships
+clientes.zona_comercial → zonas.id_zona
+pedidos.id_cliente → clientes.id_cliente
+lineas_pedido.id_pedido → pedidos.id_pedido
+lineas_pedido.id_producto → productos.id_producto
+productos.id_categoria → categorias.id_categoria
+facturas.id_pedido → pedidos.id_pedido
+pagos.id_factura → facturas.id_factura
+
+### 5 business questions you can answer
+1. How many new customers did we acquire each month and in which zone?
+2. What is the average order value and how is it evolving?
+3. Which products sell the most and which have a declining trend?
+4. How many invoices are outstanding and for what amount?
+5. Which salespeople generate the most business volume?

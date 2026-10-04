@@ -1,0 +1,22 @@
+User
+  |
+  v
+[Input guardrail (code)]    <- Rejects obvious attacks, flags ambiguous
+  |
+  v
+[Input guardrail (prompt)]  <- Evaluates context for flagged requests
+  |
+  v
+[Model with alignment + system prompt]  <- The model decides with its own defenses
+  |
+  v
+[Output guardrail (code)]   <- Filters PII, redacts sensitive data
+  |
+  v
+[Output guardrail (prompt)] <- Evaluates if the response violates policies
+  |
+  v
+[Monitoring]                <- Detects patterns, accumulates signals, alerts
+  |
+  v
+Response to user

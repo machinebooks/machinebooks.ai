@@ -1,0 +1,8 @@
+FICTIONAL EXAMPLE OF SUBSEQUENT GROUPING:
+- 43 Redis timeout messages between 08:15:23 and 10:02:45.
+- 7 report-generation failures between 09:30:12 and 09:58:34.
+- 2 disk warnings above 80% on /data.
+The preceding command retrieves logs; it computes neither these counts nor causes.
+Check timestamps, duplicate records, intervals, and access before grouping.
+Slow Redis, blocked reports, and occupied disk are hypotheses that may be
+independent. Correlate evidence before proposing a repair.

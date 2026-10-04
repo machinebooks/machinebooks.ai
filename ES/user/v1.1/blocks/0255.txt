@@ -1,0 +1,16 @@
+# Registro de decisiones — Proyecto Migración
+
+## DEC-001: Modificar esquema destino (20/nov)
+- **Contexto:** Incompatibilidad de formato en tabla de clientes
+- **Opciones evaluadas:** (A) Convertir datos en origen, (B) Modificar esquema destino
+- **Decisión:** Opción B
+- **Razón:** Carlos describe la opción como más limpia; confirmar
+  si esa valoración fue aceptada como razón de la decisión
+- **Responsable:** Carlos Ruiz
+- **Impacto:** Pendiente de confirmación; no consta en las notas
+
+## DEC-002: Mantener fecha go-live 6/dic (20/nov)
+- **Contexto:** Bloqueos acumulados podrían justificar retraso
+- **Decisión:** Se mantiene la fecha
+- **Condición:** No consta en las notas; el plan alternativo
+  del informe es una propuesta pendiente de aprobación

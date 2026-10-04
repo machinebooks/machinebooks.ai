@@ -1,0 +1,8 @@
+Review mock-up using fictional data:
+- Two groups show indicators of open SSH rules; review IPv4, IPv6, routes and effective controls.
+- One bucket has a public-policy indicator; assess Block Public Access, ownership, ACLs and access points before claiming exposure.
+- RDS has PubliclyAccessible=true; verify networking and authorization for connectivity tests.
+- Three users have older keys; distinguish status, use and replacement procedure without disrupting workloads.
+- One console user has no registered MFA device; review identity and policy.
+MFA on a service account does not automatically protect its API keys: prefer roles or temporary credentials.
+Do not delete buckets or revoke rules based on this mock-up. Complete scope and evidence, review dependencies and authorize each change.

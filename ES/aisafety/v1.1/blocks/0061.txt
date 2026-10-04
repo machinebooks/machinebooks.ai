@@ -1,0 +1,9 @@
+# Temporary permission interface; it grants no access.
+class AgentPermissionGrant:
+    def is_valid(self):
+        raise NotImplementedError(
+            "Bind actor, resource, scopes, aware UTC validity, revocation and atomic usage limits"
+        )
+
+    def allows(self, scope):
+        raise NotImplementedError("A tested authorization adapter is required")

@@ -1,0 +1,80 @@
+#!/bin/bash
+# Read-only GNU/Linux snapshot; incomplete checks return exit 1.
+set -uo pipefail
+export LC_ALL=C TZ=UTC
+failed=0
+printf '# Health snapshot: %s\nUTC: %s\n' "$(hostname)" "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+uptime || failed=1
+
+printf '\n## Memory (used = total - available)\n'
+if memory=$(free -b); then
+  if ! printf '%s\n' "$memory" | awk '/^Mem:/ {
+      if ($2<=0 || $7<0 || $7>$2) exit 1
+      p=100*($2-$7)/$2; seen=1
+      printf "%s %.1f%%; available %.0f bytes\n",(p>90?"ALERT":"OBSERVED"),p,$7
+    } END {if (!seen) exit 1}'; then
+    echo 'UNKNOWN: unsupported memory output'; failed=1
+  fi
+else
+  echo 'UNKNOWN: memory query failed'; failed=1
+fi
+
+printf '\n## Filesystem capacity\n'
+if disks=$(df -P -B1); then
+  if ! printf '%s\n' "$disks" | awk 'NR>1 {
+      if ($5 !~ /^[0-9]+%$/) exit 1
+      p=$5+0; seen=1
+      printf "%s %s\n",(p>85?"ALERT":"OBSERVED"),$0
+    } END {if (!seen) exit 1}'; then
+    echo 'UNKNOWN: unsupported disk output'; failed=1
+  fi
+else
+  echo 'UNKNOWN: disk query failed'; failed=1
+fi
+
+printf '\n## Service states\n'
+for svc in nginx postgresql redis-server webapp; do
+  state=$(systemctl is-active "$svc" 2>&1); status=$?
+  case "$status" in
+    0) printf 'OBSERVED %s: %s\n' "$svc" "$state" ;;
+    3) printf 'CHECK %s: %s\n' "$svc" "$state" ;;
+    *) printf 'UNKNOWN %s: %s\n' "$svc" "$state"; failed=1 ;;
+  esac
+done
+
+printf '\n## Journal errors (available scope, previous 12 hours)\n'
+if logs=$(journalctl --utc --since '12 hours ago' -p err --no-pager -q -o json 2>&1); then
+  if ! printf '%s' "$logs" | python3 -c '
+import json,sys
+lines=[line for line in sys.stdin if line.strip()]
+events=[json.loads(line) for line in lines]
+if any(not isinstance(e,dict) or "MESSAGE" not in e for e in events):
+    raise ValueError("Unsupported journal record")
+print("OBSERVED error records:",len(events))
+for event in events[-10:]:
+    print(json.dumps(event,ensure_ascii=False))
+'; then
+    echo 'UNKNOWN: journal output incomplete or invalid'; failed=1
+  fi
+else
+  echo 'UNKNOWN: journal query failed'; failed=1
+fi
+
+printf '\n## TCP remote peers (inbound and outbound, top 5)\n'
+if sockets=$(ss -Hnt state established); then
+  if ! printf '%s\n' "$sockets" | awk 'NF {
+      if (NF<4) exit 1
+      peer=$4; sub(/:[^:]*$/,"",peer); gsub(/^\[|\]$/,"",peer)
+      count[peer]++
+    } END {for (peer in count) print count[peer],peer}' |
+      sort -k1,1nr -k2,2 | awk 'NR<=5'; then
+    echo 'UNKNOWN: unsupported socket output'; failed=1
+  fi
+else
+  echo 'UNKNOWN: socket query failed'; failed=1
+fi
+
+printf '\n## Recorded logins (not proof of complete access history)\n'
+last -5 -w || failed=1
+echo 'Validate permissions, retained records and expected baselines separately.'
+exit "$failed"

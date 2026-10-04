@@ -1,0 +1,7 @@
+# Message-passport interface; no signing or verification implementation.
+# Authenticate the complete canonical envelope, including aware UTC time,
+# sender, recipient, content and configuration identifiers, and a nonce.
+# Verify key ownership, audience, freshness and replay state independently.
+# A valid signature or prompt hash does not prove the sender is uncompromised.
+def sign_message(message, source_id, target_id, system_prompt, secret_key):
+    raise NotImplementedError("A reviewed messaging and key-management adapter is required")

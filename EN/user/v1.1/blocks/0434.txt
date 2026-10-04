@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+# Partial read-only S3 check for one approved general-purpose bucket.
+import json
+import os
+import subprocess
+from datetime import datetime, timedelta, timezone
+
+profile = os.environ["AWS_PROFILE"]
+region = os.environ["AWS_REGION"]  # Must match the bucket's actual region.
+expected = os.environ["EXPECTED_AWS_ACCOUNT"]
+bucket = os.environ["BUCKET_NAME"]
+def aws(*args, missing=None):
+    result = subprocess.run(
+        ["aws", "--profile", profile, "--region", region, "--no-cli-pager",
+         *args, "--output", "json"], capture_output=True, text=True)
+    if result.returncode:
+        if missing and f"({missing})" in result.stderr:
+            return None
+        raise RuntimeError(f"AWS query failed: {' '.join(args[:2])}")
+    return json.loads(result.stdout)
+if aws("sts", "get-caller-identity")["Account"] != expected:
+    raise ValueError("Unexpected AWS account")
+now = datetime.now(timezone.utc)
+report = {"bucket": bucket, "region": region, "observed_at_utc": now.isoformat(),
+          "standard_storage": None, "object_count": None}
+for metric, storage_type, field in [
+        ("BucketSizeBytes", "StandardStorage", "standard_storage"),
+        ("NumberOfObjects", "AllStorageTypes", "object_count")]:
+    data = aws("cloudwatch", "get-metric-statistics", "--namespace", "AWS/S3",
+               "--metric-name", metric, "--dimensions",
+               f"Name=BucketName,Value={bucket}", f"Name=StorageType,Value={storage_type}",
+               "--start-time", (now-timedelta(days=2)).isoformat(),
+               "--end-time", now.isoformat(), "--period", "86400", "--statistics", "Average")
+    points = data["Datapoints"]
+    if points:
+        latest = max(points, key=lambda p: datetime.fromisoformat(
+            p["Timestamp"].replace("Z", "+00:00")))
+        report[field] = {"average": latest["Average"], "timestamp": latest["Timestamp"]}
+        if field == "standard_storage":
+            report[field]["GiB"] = latest["Average"]/1024**3
+report["lifecycle"] = aws("s3api", "get-bucket-lifecycle-configuration",
+                          "--bucket", bucket, missing="NoSuchLifecycleConfiguration")
+report["scope"] = "StandardStorage is not total storage. Daily metrics and lifecycle do not establish writes, inactivity, recoverability or savings."
+print(json.dumps(report, ensure_ascii=False, indent=2))

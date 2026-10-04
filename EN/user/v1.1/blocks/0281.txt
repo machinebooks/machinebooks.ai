@@ -1,0 +1,27 @@
+Generate four files with fictitious financial data for a mid-sized
+company (200 employees, 15M annual revenue):
+
+1. presupuesto-2024.xlsx — Annual budget by line items (Personnel,
+   External services, Supplies, Rent, Marketing, Travel,
+   IT, Training, Other) broken down by quarter.
+
+2. gastos-erp-Q1.csv — Q1 expense detail exported from an ERP:
+   record_id, invoice_id, accrual_date, internal EXP-* code, vendor,
+   description, net_amount, taxes, currency, status.
+   About 800 records with a variety of vendors and descriptions.
+
+3. extracto-banco-Q1.csv — Q1 bank transactions: date, bank
+   description, debit, credit, balance. About 400 transactions
+   including payroll, vendor payments, fees, and customer collections.
+
+4. gastos-tarjetas-Q1.xlsx — Q1 corporate card expenses:
+   transaction_id, invoice_id_if_available, fictional cardholder, date,
+   merchant, amount, currency, category, and settlement reference. About 150 records.
+
+Use educational codes EXP-PERS, EXP-EXT, EXP-SUM, EXP-ALQ, EXP-MKT,
+EXP-VIA, and EXP-IT; add EXP-FORM and EXP-OTR for Training and Other.
+These are not Spanish PGC accounts. Include a separate manifest of expected
+truth and cross-source relationships, including card expenses already in ERP.
+Include realistic inconsistencies: 10 bank transactions with no
+match in the ERP, 5 duplicate payments on the cards,
+different date formats between files.

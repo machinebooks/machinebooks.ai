@@ -1,0 +1,9 @@
+Fictional check—findings requiring validation:
+- deploy allows SSH passwords: corroborate policy, MFA and effective configuration.
+- Redis listens on 6379: external exposure depends on routes and firewalls.
+- /etc/shadow appears readable by others: confirm owner, group and distribution policy.
+- 847 SSH failures from 23 IPs in the period do not by themselves identify successful attacks.
+- Claims about root login, firewall and updates require their own checks.
+Before changing SSH or firewall, review recovery access and dependencies.
+Some distributions use 640 root:shadow permissions;
+do not apply chmod 600 or ufw rules universally.

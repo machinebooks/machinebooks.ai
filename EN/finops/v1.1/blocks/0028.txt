@@ -1,0 +1,18 @@
+# Read-only endpoint core; authenticated host injects authorization and repository.
+from datetime import datetime, timedelta, timezone
+
+async def get_usage_summary(repository, authorized_scope, days=30, service_name=None):
+    if not authorized_scope or type(days) is not int or not 1 <= days <= 90:
+        raise ValueError("Invalid authorized scope or days")
+    if service_name is not None and (not isinstance(service_name, str) or len(service_name) > 128):
+        raise ValueError("Invalid service filter")
+    end = datetime.now(timezone.utc)
+    start = end - timedelta(days=days)
+    data = await repository.read_scoped_usage(authorized_scope, start, end,
+        service_name=service_name, limit=10000)
+    return {"start_utc": start.isoformat(), "end_utc_exclusive": end.isoformat(),
+        "by_service": data["rows"], "complete": data.get("complete") is True,
+        "unpriced_calls": data["unpriced_calls"], "currency": "USD"}
+# Repository enforces immutable tenant scope, bound SQL values, [start,end),
+# row limits and Decimal serialization. No caller-selected user grants cross-user access.
+# Authentication, authorization and actual repository implementation are not shown.

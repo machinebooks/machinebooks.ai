@@ -1,0 +1,5 @@
+# Inspect requires an actual, reviewed task file; security_benchmark.py is not supplied.
+# Pin Inspect and its provider adapter; review dataset, judge, contract and data transfer.
+# Configure only an authorised model and credentials through approved local settings.
+# Template, not an executed command:
+# inspect eval YOUR_REVIEWED_TASK.py --model YOUR_AUTHORISED_PROVIDER/MODEL

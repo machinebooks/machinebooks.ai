@@ -1,0 +1,5 @@
+Necesito preparar datos para revisión del IVA de Q1 2024, no presentar una autoliquidación.
+Entradas: C:\Contabilidad\2024\Facturas_Recibidas\Q1\ y C:\Contabilidad\2024\Facturas_Emitidas\Q1\.
+Conserva referencias de cada factura y extrae identificador, tercero, fecha, base, tipo, cuota y total; separa varios tipos del mismo documento sin perder el vínculo.
+Genera facturas_recibidas_Q1.csv, facturas_emitidas_Q1.csv, resumen_iva_Q1.txt y listado_anomalias.txt. Usa CSV con punto y coma, formato numérico español y una lista completa de entradas, salidas y excepciones.
+El resumen presenta cuotas extraídas por todos los tipos encontrados, distinguiendo tipo cero y exención. No llama deducible a todo IVA soportado ni determina el periodo a partir del pago o cobro sin conocer el régimen aplicable. Deja deducibilidad, devengo, rectificaciones y resultado a ingresar o compensar pendientes de reglas documentadas y revisión del gestor. Registra discrepancias e ilegibles; no inventes datos fiscales ausentes.

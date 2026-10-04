@@ -1,0 +1,3287 @@
+{
+  "editorial_version": "1.1",
+  "source_word_sha256": "f25ba34d0577456a6857c1176b6a6a35a9dbc3acf2254851a9eeda4e409f6935",
+  "source_file": "El-FinOps-Engineer-y-la-Maquina.docx",
+  "language": "es",
+  "scope": "educational SourceCode blocks; private desktop and core excluded",
+  "extraction": "literal w:t, line breaks w:br/w:cr and tabs w:tab in document order; UTF-8 without added headers",
+  "block_count": 273,
+  "execution_status": "not established by extraction",
+  "blocks": [
+    {
+      "id": 1,
+      "file": "blocks/0001.txt",
+      "word_paragraph_index_zero_based": 663,
+      "heading_context": [
+        "Capítulo 1 — La factura que nadie esperaba",
+        "3. Implementación",
+        "3.1 Arquitectura de tres pilares"
+      ],
+      "sha256": "564620bee0f4a9f37086d037b1d00be6042b071a6375328a03765f6fa5ca8f2c",
+      "bytes": 523
+    },
+    {
+      "id": 2,
+      "file": "blocks/0002.txt",
+      "word_paragraph_index_zero_based": 668,
+      "heading_context": [
+        "Capítulo 1 — La factura que nadie esperaba",
+        "3. Implementación",
+        "3.2 Pilar 1 — El registro atómico de uso LLM"
+      ],
+      "sha256": "3a6db6489841421c06177df61f56d2d9fd906b9d0bfc72c600d465dda16b81f5",
+      "bytes": 1364
+    },
+    {
+      "id": 3,
+      "file": "blocks/0003.txt",
+      "word_paragraph_index_zero_based": 674,
+      "heading_context": [
+        "Capítulo 1 — La factura que nadie esperaba",
+        "3. Implementación",
+        "3.3 Pilar 1 — El catálogo de precios"
+      ],
+      "sha256": "69cf7013c009938f64c5f59f8be72edcf27dcefc6028906869a1b21e3b9eb439",
+      "bytes": 1492
+    },
+    {
+      "id": 4,
+      "file": "blocks/0004.txt",
+      "word_paragraph_index_zero_based": 697,
+      "heading_context": [
+        "Capítulo 1 — La factura que nadie esperaba",
+        "3. Implementación",
+        "3.4 Pilar 2 — Coste cloud"
+      ],
+      "sha256": "2d22b6035044cd7c496b4ad0826c0962adcb7400a67dcead7548bfa1452c44d6",
+      "bytes": 1821
+    },
+    {
+      "id": 5,
+      "file": "blocks/0005.txt",
+      "word_paragraph_index_zero_based": 702,
+      "heading_context": [
+        "Capítulo 1 — La factura que nadie esperaba",
+        "3. Implementación",
+        "3.5 Pilar 3 — El esqueleto del ROI"
+      ],
+      "sha256": "db00d2ecfce7d179eb9bba0890d39a55636213c839a77bcffddba09de36acc46",
+      "bytes": 1504
+    },
+    {
+      "id": 6,
+      "file": "blocks/0006.txt",
+      "word_paragraph_index_zero_based": 708,
+      "heading_context": [
+        "Capítulo 1 — La factura que nadie esperaba",
+        "3. Implementación",
+        "3.6 El endpoint unificado"
+      ],
+      "sha256": "9c5f1bc882b59084ff07f5d7bc4bb99007e6c020d575eb1781269a3a11a407d7",
+      "bytes": 1865
+    },
+    {
+      "id": 7,
+      "file": "blocks/0007.txt",
+      "word_paragraph_index_zero_based": 711,
+      "heading_context": [
+        "Capítulo 1 — La factura que nadie esperaba",
+        "3. Implementación",
+        "3.6 El endpoint unificado"
+      ],
+      "sha256": "51c5b8c5fba6b1f3eb43dde69defff019a6bc39f3703514c39ed2c193fd2383f",
+      "bytes": 340
+    },
+    {
+      "id": 8,
+      "file": "blocks/0008.txt",
+      "word_paragraph_index_zero_based": 837,
+      "heading_context": [
+        "Capítulo 2 — Anatomía del coste: tokens, instancias y todo lo demás",
+        "3. Implementación",
+        "El modelo LLMModelPricing"
+      ],
+      "sha256": "69cf7013c009938f64c5f59f8be72edcf27dcefc6028906869a1b21e3b9eb439",
+      "bytes": 1492
+    },
+    {
+      "id": 9,
+      "file": "blocks/0009.txt",
+      "word_paragraph_index_zero_based": 842,
+      "heading_context": [
+        "Capítulo 2 — Anatomía del coste: tokens, instancias y todo lo demás",
+        "3. Implementación",
+        "El método calculate_cost"
+      ],
+      "sha256": "7e91aceffa1dd7fdc6330c719af3bb73c00495cef78d2ba2f376d13ad47e326b",
+      "bytes": 3880
+    },
+    {
+      "id": 10,
+      "file": "blocks/0010.txt",
+      "word_paragraph_index_zero_based": 847,
+      "heading_context": [
+        "Capítulo 2 — Anatomía del coste: tokens, instancias y todo lo demás",
+        "3. Implementación",
+        "Los datos de precios: tabla de referencia inicial"
+      ],
+      "sha256": "c7d5b9c089bdbb5ea644731df74f22ba8f320834cc39ad1618d5c96fa4adfcc5",
+      "bytes": 1129
+    },
+    {
+      "id": 11,
+      "file": "blocks/0011.txt",
+      "word_paragraph_index_zero_based": 851,
+      "heading_context": [
+        "Capítulo 2 — Anatomía del coste: tokens, instancias y todo lo demás",
+        "3. Implementación",
+        "Consulta de precio y manejo del tipo de cambio"
+      ],
+      "sha256": "758d477c9ee06ee3c8dfc69126eefb19624dc77dde1a353b7801448aab8a4198",
+      "bytes": 1618
+    },
+    {
+      "id": 12,
+      "file": "blocks/0012.txt",
+      "word_paragraph_index_zero_based": 1220,
+      "heading_context": [
+        "Capítulo 3 — El mapa de costes de una plataforma con IA",
+        "3. Implementación",
+        "El script de informe de costes (INFORME_COSTES)"
+      ],
+      "sha256": "930bd486872e65cefaea2f9ec1126b5d0663825e73bb7215feb100307d56438a",
+      "bytes": 640
+    },
+    {
+      "id": 13,
+      "file": "blocks/0013.txt",
+      "word_paragraph_index_zero_based": 1223,
+      "heading_context": [
+        "Capítulo 3 — El mapa de costes de una plataforma con IA",
+        "3. Implementación",
+        "El script de informe de costes (INFORME_COSTES)"
+      ],
+      "sha256": "f32497850fce8244b32b6ff1cee58d01c788414c9b41c748e6688ada6f591c49",
+      "bytes": 1613
+    },
+    {
+      "id": 14,
+      "file": "blocks/0014.txt",
+      "word_paragraph_index_zero_based": 1225,
+      "heading_context": [
+        "Capítulo 3 — El mapa de costes de una plataforma con IA",
+        "3. Implementación",
+        "El script de informe de costes (INFORME_COSTES)"
+      ],
+      "sha256": "b7d5f6e9e28556ecf2da3f63db47520c50d08dacdf15dbc5266110e04cf67a5b",
+      "bytes": 2097
+    },
+    {
+      "id": 15,
+      "file": "blocks/0015.txt",
+      "word_paragraph_index_zero_based": 1229,
+      "heading_context": [
+        "Capítulo 3 — El mapa de costes de una plataforma con IA",
+        "3. Implementación",
+        "El fichero de configuración de costes manuales"
+      ],
+      "sha256": "c4935cac07ad6f1c8d0b8b73f8f5a510d8ec657d96284e4cd7ed7358355361d4",
+      "bytes": 298
+    },
+    {
+      "id": 16,
+      "file": "blocks/0016.txt",
+      "word_paragraph_index_zero_based": 1231,
+      "heading_context": [
+        "Capítulo 3 — El mapa de costes de una plataforma con IA",
+        "3. Implementación",
+        "El fichero de configuración de costes manuales"
+      ],
+      "sha256": "d41c59bc4fcc5e8ad6090289b90ac3e17d30d1e197e494f07dde2fe4aa4f75e4",
+      "bytes": 565
+    },
+    {
+      "id": 17,
+      "file": "blocks/0017.txt",
+      "word_paragraph_index_zero_based": 1234,
+      "heading_context": [
+        "Capítulo 3 — El mapa de costes de una plataforma con IA",
+        "3. Implementación",
+        "Integración con el agente de análisis usando Claude"
+      ],
+      "sha256": "a596aad680cc7ca652e7d396ca40745416f6c6bc13c11d4afeeb90cc62738c46",
+      "bytes": 899
+    },
+    {
+      "id": 18,
+      "file": "blocks/0018.txt",
+      "word_paragraph_index_zero_based": 1239,
+      "heading_context": [
+        "Capítulo 3 — El mapa de costes de una plataforma con IA",
+        "3. Implementación",
+        "La vista de perfiles de usuario con el agente"
+      ],
+      "sha256": "eb4835ed125d8c8ec0bf364501b8c87cf8420adf57f9f028c2a4fab46b110b1f",
+      "bytes": 1317
+    },
+    {
+      "id": 19,
+      "file": "blocks/0019.txt",
+      "word_paragraph_index_zero_based": 1317,
+      "heading_context": [
+        "Capítulo 4 — Cada llamada LLM, un registro",
+        "1. Concepto",
+        "El manejo de streaming"
+      ],
+      "sha256": "3cb68cdc614be269955fa88b7dd016c10fded40728fbafd5a004d3e97ba0524c",
+      "bytes": 984
+    },
+    {
+      "id": 20,
+      "file": "blocks/0020.txt",
+      "word_paragraph_index_zero_based": 1323,
+      "heading_context": [
+        "Capítulo 4 — Cada llamada LLM, un registro",
+        "1. Concepto",
+        "El callback handler de LangChain para agentes"
+      ],
+      "sha256": "f34d014dd2c078b4acb7d842d85f15b7151cc6ab822c154622d30103dbd71abd",
+      "bytes": 1656
+    },
+    {
+      "id": 21,
+      "file": "blocks/0021.txt",
+      "word_paragraph_index_zero_based": 1325,
+      "heading_context": [
+        "Capítulo 4 — Cada llamada LLM, un registro",
+        "1. Concepto",
+        "El callback handler de LangChain para agentes"
+      ],
+      "sha256": "fdedd69936487f2308f8ed56c53fd1f0d5592ea83646f8c2f9b6ac8f15ea0747",
+      "bytes": 434
+    },
+    {
+      "id": 22,
+      "file": "blocks/0022.txt",
+      "word_paragraph_index_zero_based": 1333,
+      "heading_context": [
+        "Capítulo 4 — Cada llamada LLM, un registro",
+        "2. La decisión",
+        "Opción A — Instrumentación inline"
+      ],
+      "sha256": "2a12b79ffe9b1fb9197313a478e54b967e5273b3d9a1af35807528a75375e3af",
+      "bytes": 701
+    },
+    {
+      "id": 23,
+      "file": "blocks/0023.txt",
+      "word_paragraph_index_zero_based": 1344,
+      "heading_context": [
+        "Capítulo 4 — Cada llamada LLM, un registro",
+        "2. La decisión",
+        "Opción C — Wrapper con contrato de persistencia"
+      ],
+      "sha256": "186b8d9d3b79d41f3e0785d3e98dd330bcdf753d9adf416991e013fd1a4bfd8d",
+      "bytes": 288
+    },
+    {
+      "id": 24,
+      "file": "blocks/0024.txt",
+      "word_paragraph_index_zero_based": 1408,
+      "heading_context": [
+        "Capítulo 4 — Cada llamada LLM, un registro",
+        "3. Implementación",
+        "El modelo de datos"
+      ],
+      "sha256": "db4bd7cea8a4cbbbbfffaaa0ab14e577b24c2e6c736274e5c8c92b3a41dce3c5",
+      "bytes": 1791
+    },
+    {
+      "id": 25,
+      "file": "blocks/0025.txt",
+      "word_paragraph_index_zero_based": 1412,
+      "heading_context": [
+        "Capítulo 4 — Cada llamada LLM, un registro",
+        "3. Implementación",
+        "El LLMUsageTracker para LangChain"
+      ],
+      "sha256": "7f65feb89c33bff264785bf8ce947e6536c1b592a4a422cc5817c799a6b2ab43",
+      "bytes": 1479
+    },
+    {
+      "id": 26,
+      "file": "blocks/0026.txt",
+      "word_paragraph_index_zero_based": 1417,
+      "heading_context": [
+        "Capítulo 4 — Cada llamada LLM, un registro",
+        "3. Implementación",
+        "El NativeClientUsageTracker para el SDK de Anthropic"
+      ],
+      "sha256": "908e57191255af3b2e585beba417d03234a3e5172cf21d260a877288973fa4df",
+      "bytes": 2166
+    },
+    {
+      "id": 27,
+      "file": "blocks/0027.txt",
+      "word_paragraph_index_zero_based": 1420,
+      "heading_context": [
+        "Capítulo 4 — Cada llamada LLM, un registro",
+        "3. Implementación",
+        "La tabla de precios: calculate_cost"
+      ],
+      "sha256": "b158731e803894722108c6f0cbd2a91f49ec3567b83bfe3e8e6addb08eca0cb1",
+      "bytes": 1347
+    },
+    {
+      "id": 28,
+      "file": "blocks/0028.txt",
+      "word_paragraph_index_zero_based": 1424,
+      "heading_context": [
+        "Capítulo 4 — Cada llamada LLM, un registro",
+        "3. Implementación",
+        "El endpoint de consulta de uso"
+      ],
+      "sha256": "1acba59d9028f8c0b3af7f9088e72e1df83df42f91d2fd8c5e8b9d1bf9bf6dc4",
+      "bytes": 1192
+    },
+    {
+      "id": 29,
+      "file": "blocks/0029.txt",
+      "word_paragraph_index_zero_based": 1428,
+      "heading_context": [
+        "Capítulo 4 — Cada llamada LLM, un registro",
+        "3. Implementación",
+        "Integración en el código de negocio"
+      ],
+      "sha256": "3fb1051cef65c3d5c606ed14cfedac64edbf1c863448526542f65b56069b4e72",
+      "bytes": 497
+    },
+    {
+      "id": 30,
+      "file": "blocks/0030.txt",
+      "word_paragraph_index_zero_based": 1432,
+      "heading_context": [
+        "Capítulo 4 — Cada llamada LLM, un registro",
+        "3. Implementación",
+        "Validación en producción"
+      ],
+      "sha256": "6ba0793db59c0f8d4a974c88e212760f85f598e7963917962270718bcaeea49b",
+      "bytes": 1228
+    },
+    {
+      "id": 31,
+      "file": "blocks/0031.txt",
+      "word_paragraph_index_zero_based": 1531,
+      "heading_context": [
+        "Capítulo 5 — Cada recurso cloud, un tag",
+        "1. Concepto",
+        "Etiquetas en contenedores Docker: el paralelo con cloud"
+      ],
+      "sha256": "b52e9687b7e1b7da0f8e4e7b7473f602aa9f331b80505c33d034d87f28069bf3",
+      "bytes": 450
+    },
+    {
+      "id": 32,
+      "file": "blocks/0032.txt",
+      "word_paragraph_index_zero_based": 1604,
+      "heading_context": [
+        "Capítulo 5 — Cada recurso cloud, un tag",
+        "2. La decisión",
+        "AWS Service Control Policies: enforcement a nivel de organización"
+      ],
+      "sha256": "579c8141f57e90cc1d674a10acd30ce3cc3e488cc0eedba3131344971386c6bf",
+      "bytes": 311
+    },
+    {
+      "id": 33,
+      "file": "blocks/0033.txt",
+      "word_paragraph_index_zero_based": 1610,
+      "heading_context": [
+        "Capítulo 5 — Cada recurso cloud, un tag",
+        "2. La decisión",
+        "La política de tagging como código"
+      ],
+      "sha256": "8e4215f49ff4b188bc698822377c57320d737f90c6d87fd2ca022dc2c88b0db2",
+      "bytes": 544
+    },
+    {
+      "id": 34,
+      "file": "blocks/0034.txt",
+      "word_paragraph_index_zero_based": 1616,
+      "heading_context": [
+        "Capítulo 5 — Cada recurso cloud, un tag",
+        "3. Implementación",
+        "El agente Claude de auditoría de tags"
+      ],
+      "sha256": "91af1837ca0319945d38aa203899b423fd5c3e0428a68aaca8bc5a469abf4a78",
+      "bytes": 720
+    },
+    {
+      "id": 35,
+      "file": "blocks/0035.txt",
+      "word_paragraph_index_zero_based": 1619,
+      "heading_context": [
+        "Capítulo 5 — Cada recurso cloud, un tag",
+        "3. Implementación",
+        "El agente Claude de auditoría de tags"
+      ],
+      "sha256": "e842425965c7cdef0979ad9be380cc08ddd51b76b2baa6a2997d8aee6351a464",
+      "bytes": 2684
+    },
+    {
+      "id": 36,
+      "file": "blocks/0036.txt",
+      "word_paragraph_index_zero_based": 1621,
+      "heading_context": [
+        "Capítulo 5 — Cada recurso cloud, un tag",
+        "3. Implementación",
+        "El agente Claude de auditoría de tags"
+      ],
+      "sha256": "09ee8b0761021f486dc75bc45447ec53f30786d16a93425a55cffd7ae6205047",
+      "bytes": 2226
+    },
+    {
+      "id": 37,
+      "file": "blocks/0037.txt",
+      "word_paragraph_index_zero_based": 1624,
+      "heading_context": [
+        "Capítulo 5 — Cada recurso cloud, un tag",
+        "3. Implementación",
+        "Validación en el pipeline de Terraform"
+      ],
+      "sha256": "96d81d84f0bc7788f5c1f08f38cc1f5627778e290562058864a7443ec8fca064",
+      "bytes": 1429
+    },
+    {
+      "id": 38,
+      "file": "blocks/0038.txt",
+      "word_paragraph_index_zero_based": 1628,
+      "heading_context": [
+        "Capítulo 5 — Cada recurso cloud, un tag",
+        "3. Implementación",
+        "Endpoint de estado de cumplimiento"
+      ],
+      "sha256": "d7d65554aaaad55bb127156a800bba3b017c3ead4e27c1dc285a7a6795885a62",
+      "bytes": 679
+    },
+    {
+      "id": 39,
+      "file": "blocks/0039.txt",
+      "word_paragraph_index_zero_based": 1633,
+      "heading_context": [
+        "Capítulo 5 — Cada recurso cloud, un tag",
+        "3. Implementación",
+        "El agente ante recursos sin nombre descriptivo"
+      ],
+      "sha256": "40ed47e8d63c6078319424e19b8d101a120ec30dee914b52706ba1eee91603f5",
+      "bytes": 1622
+    },
+    {
+      "id": 40,
+      "file": "blocks/0040.txt",
+      "word_paragraph_index_zero_based": 1640,
+      "heading_context": [
+        "Capítulo 5 — Cada recurso cloud, un tag",
+        "3. Implementación",
+        "Azure: etiquetas heredadas y la propagación de recursos hijos"
+      ],
+      "sha256": "1530655f40ba36e0830fa3a0851abc7bbe7bc658f48c38b1be20167d3ba298ed",
+      "bytes": 516
+    },
+    {
+      "id": 41,
+      "file": "blocks/0041.txt",
+      "word_paragraph_index_zero_based": 1645,
+      "heading_context": [
+        "Capítulo 5 — Cada recurso cloud, un tag",
+        "3. Implementación",
+        "GCP: labels y la consulta de costes vía BigQuery"
+      ],
+      "sha256": "ec5d178d07fb5ae53f81a66da2679cbb7fa058f965315da4172eacfe79bd039a",
+      "bytes": 859
+    },
+    {
+      "id": 42,
+      "file": "blocks/0042.txt",
+      "word_paragraph_index_zero_based": 1649,
+      "heading_context": [
+        "Capítulo 5 — Cada recurso cloud, un tag",
+        "3. Implementación",
+        "El informe semanal de cumplimiento"
+      ],
+      "sha256": "832c3a4a7127c3041aee76ce47904761f744b3488c98e9c6202707ff06260886",
+      "bytes": 776
+    },
+    {
+      "id": 43,
+      "file": "blocks/0043.txt",
+      "word_paragraph_index_zero_based": 1660,
+      "heading_context": [
+        "Capítulo 5 — Cada recurso cloud, un tag",
+        "3. Implementación",
+        "El proceso de aprobación de propuestas del agente"
+      ],
+      "sha256": "711f7be45aa21d8d1289abe83d7b054f9ebf1e9a681abf2003fb23214724ba5b",
+      "bytes": 709
+    },
+    {
+      "id": 44,
+      "file": "blocks/0044.txt",
+      "word_paragraph_index_zero_based": 1724,
+      "heading_context": [
+        "Capítulo 6 — Atribución: quién consume qué",
+        "1. Concepto",
+        "El patrón BudgetConfig"
+      ],
+      "sha256": "24bfce3d62428fd2a9f232058429ad9f0481a533fd003d2b6dde6ee1e136d408",
+      "bytes": 416
+    },
+    {
+      "id": 45,
+      "file": "blocks/0045.txt",
+      "word_paragraph_index_zero_based": 1752,
+      "heading_context": [
+        "Capítulo 6 — Atribución: quién consume qué",
+        "2. La decisión",
+        "El scope de atribución en plataformas SaaS multi-cliente"
+      ],
+      "sha256": "78b6bc6a4591e4ca6142f2c842ac6a030fe51bb7ef340b4c1cfd59d55b287b82",
+      "bytes": 465
+    },
+    {
+      "id": 46,
+      "file": "blocks/0046.txt",
+      "word_paragraph_index_zero_based": 1759,
+      "heading_context": [
+        "Capítulo 6 — Atribución: quién consume qué",
+        "2. La decisión",
+        "El cálculo de coste acumulado del período: la consulta de referencia"
+      ],
+      "sha256": "7c88ddb9916ba5cf3c9d8bc02859c59c1e42b447409f8a42a0d7149ba9c8f832",
+      "bytes": 1187
+    },
+    {
+      "id": 47,
+      "file": "blocks/0047.txt",
+      "word_paragraph_index_zero_based": 1761,
+      "heading_context": [
+        "Capítulo 6 — Atribución: quién consume qué",
+        "2. La decisión",
+        "El cálculo de coste acumulado del período: la consulta de referencia"
+      ],
+      "sha256": "cde3fe43301cceb868263e6c471433fde6b8f6dfe51bb17d239ca6385c5c856a",
+      "bytes": 783
+    },
+    {
+      "id": 48,
+      "file": "blocks/0048.txt",
+      "word_paragraph_index_zero_based": 1764,
+      "heading_context": [
+        "Capítulo 6 — Atribución: quién consume qué",
+        "2. La decisión",
+        "El modelo BudgetConfig en la base de datos"
+      ],
+      "sha256": "618910fe1fb6f7e64a42e26eb686da275fb217c9785c176746201fb719d7f94b",
+      "bytes": 1537
+    },
+    {
+      "id": 49,
+      "file": "blocks/0049.txt",
+      "word_paragraph_index_zero_based": 1769,
+      "heading_context": [
+        "Capítulo 6 — Atribución: quién consume qué",
+        "3. Implementación",
+        "El middleware de verificación de presupuesto"
+      ],
+      "sha256": "37d2ceabfa1146ef285fe537fc21a8de6fd12c0543da6587a2ad592ed766e27d",
+      "bytes": 2247
+    },
+    {
+      "id": 50,
+      "file": "blocks/0050.txt",
+      "word_paragraph_index_zero_based": 1773,
+      "heading_context": [
+        "Capítulo 6 — Atribución: quién consume qué",
+        "3. Implementación",
+        "El endpoint de ranking de gasto por usuario"
+      ],
+      "sha256": "769390340c6c6175761905499447615e306bc0f4189277b4181b4f1ee302f6e1",
+      "bytes": 832
+    },
+    {
+      "id": 51,
+      "file": "blocks/0051.txt",
+      "word_paragraph_index_zero_based": 1777,
+      "heading_context": [
+        "Capítulo 6 — Atribución: quién consume qué",
+        "3. Implementación",
+        "AWS Cost Categories para atribución cloud"
+      ],
+      "sha256": "a34dc746fc853611f857b22b567ce1c86618adfc9976fd527359996a8741f3b7",
+      "bytes": 2128
+    },
+    {
+      "id": 52,
+      "file": "blocks/0052.txt",
+      "word_paragraph_index_zero_based": 1781,
+      "heading_context": [
+        "Capítulo 6 — Atribución: quién consume qué",
+        "3. Implementación",
+        "La conciliación: LLM + cloud en el mismo informe"
+      ],
+      "sha256": "636fa11211a22e6dd8c74da1d62af3c61e18410f803c2fd50bc3ec4d650a5b1a",
+      "bytes": 1062
+    },
+    {
+      "id": 53,
+      "file": "blocks/0053.txt",
+      "word_paragraph_index_zero_based": 1791,
+      "heading_context": [
+        "Capítulo 6 — Atribución: quién consume qué",
+        "3. Implementación",
+        "El endpoint de consulta de presupuesto activo"
+      ],
+      "sha256": "81fd88ab18646f40058050620df6f7334d6745a3480bcbb7a5bb7ec0a38cba10",
+      "bytes": 391
+    },
+    {
+      "id": 54,
+      "file": "blocks/0054.txt",
+      "word_paragraph_index_zero_based": 1913,
+      "heading_context": [
+        "Capítulo 7 — Dashboards: del token al CFO",
+        "3. Implementación",
+        "Los endpoints de agregación FastAPI"
+      ],
+      "sha256": "09bdfdf7decc1699e8c8aaf68f83f00108b61f47b507545ded47abc9c4cafe23",
+      "bytes": 1953
+    },
+    {
+      "id": 55,
+      "file": "blocks/0055.txt",
+      "word_paragraph_index_zero_based": 1916,
+      "heading_context": [
+        "Capítulo 7 — Dashboards: del token al CFO",
+        "3. Implementación",
+        "Los endpoints de agregación FastAPI"
+      ],
+      "sha256": "2159bbd3a67581475dbb98c01098b8fbc12a512ac3bd73efdbb20e6c6ee6b364",
+      "bytes": 1885
+    },
+    {
+      "id": 56,
+      "file": "blocks/0056.txt",
+      "word_paragraph_index_zero_based": 1920,
+      "heading_context": [
+        "Capítulo 7 — Dashboards: del token al CFO",
+        "3. Implementación",
+        "El componente React AIMetricsTab"
+      ],
+      "sha256": "e260529dba7385a118e99456b6e827b6be3498f8bf8f39260d0486b476d3c592",
+      "bytes": 544
+    },
+    {
+      "id": 57,
+      "file": "blocks/0057.txt",
+      "word_paragraph_index_zero_based": 1923,
+      "heading_context": [
+        "Capítulo 7 — Dashboards: del token al CFO",
+        "3. Implementación",
+        "El componente React AIMetricsTab"
+      ],
+      "sha256": "5057693a0a130ec89f76d8fb9fea23966075465d57bc8b4d96a62e932363c9d6",
+      "bytes": 2010
+    },
+    {
+      "id": 58,
+      "file": "blocks/0058.txt",
+      "word_paragraph_index_zero_based": 1928,
+      "heading_context": [
+        "Capítulo 7 — Dashboards: del token al CFO",
+        "3. Implementación",
+        "El dashboard de Grafana: integración con métricas cloud"
+      ],
+      "sha256": "fe0c1762ae64301eaf368d1b70443031c296881093c61d18f1d8ddba4b005147",
+      "bytes": 718
+    },
+    {
+      "id": 59,
+      "file": "blocks/0059.txt",
+      "word_paragraph_index_zero_based": 1943,
+      "heading_context": [
+        "Capítulo 7 — Dashboards: del token al CFO",
+        "3. Implementación",
+        "Reglas Prometheus de aviso presupuestario"
+      ],
+      "sha256": "90b2f7c858ed47c13bce0382ebaa00436dcc3e69e1a20f67b65715339b142b14",
+      "bytes": 829
+    },
+    {
+      "id": 60,
+      "file": "blocks/0060.txt",
+      "word_paragraph_index_zero_based": 1947,
+      "heading_context": [
+        "Capítulo 7 — Dashboards: del token al CFO",
+        "3. Implementación",
+        "El endpoint de estado de presupuesto"
+      ],
+      "sha256": "4a0bf6bf385ba3396864c88ca5dc04c1aef0b2e7537d11a7b1ccaf9465f74ae3",
+      "bytes": 604
+    },
+    {
+      "id": 61,
+      "file": "blocks/0061.txt",
+      "word_paragraph_index_zero_based": 1977,
+      "heading_context": [
+        "Capítulo 7 — Dashboards: del token al CFO",
+        "3. Implementación",
+        "Generación automática de informes con Claude"
+      ],
+      "sha256": "a16fe32492670923e2bed7e3a6ce6e84558bb7950108f267d0af2aa7fd0bd693",
+      "bytes": 822
+    },
+    {
+      "id": 62,
+      "file": "blocks/0062.txt",
+      "word_paragraph_index_zero_based": 2157,
+      "heading_context": [
+        "Capítulo 8 — Routing inteligente de modelos",
+        "3. Implementación",
+        "La tabla LLMServiceConfig"
+      ],
+      "sha256": "5945e4569c7923dba7e7e12fe2d874897c320ed4aa4d6756b6a4bcb2cd6248ef",
+      "bytes": 1029
+    },
+    {
+      "id": 63,
+      "file": "blocks/0063.txt",
+      "word_paragraph_index_zero_based": 2162,
+      "heading_context": [
+        "Capítulo 8 — Routing inteligente de modelos",
+        "3. Implementación",
+        "El clasificador heurístico"
+      ],
+      "sha256": "7e5860530bc68eebfade8efa321d0655a161efae34359b8ca3efa3ffda7785d6",
+      "bytes": 1138
+    },
+    {
+      "id": 64,
+      "file": "blocks/0064.txt",
+      "word_paragraph_index_zero_based": 2167,
+      "heading_context": [
+        "Capítulo 8 — Routing inteligente de modelos",
+        "3. Implementación",
+        "El servicio de routing"
+      ],
+      "sha256": "873bea1c1a6078b23f99d4011ff569792042655acb3e0b7b519bb2c96802c62b",
+      "bytes": 1821
+    },
+    {
+      "id": 65,
+      "file": "blocks/0065.txt",
+      "word_paragraph_index_zero_based": 2171,
+      "heading_context": [
+        "Capítulo 8 — Routing inteligente de modelos",
+        "3. Implementación",
+        "Integración con el tracker de uso"
+      ],
+      "sha256": "88ef53ec47bf1b337959effe270f93dcc4eac5743f48e23150585054973a6d3a",
+      "bytes": 521
+    },
+    {
+      "id": 66,
+      "file": "blocks/0066.txt",
+      "word_paragraph_index_zero_based": 2175,
+      "heading_context": [
+        "Capítulo 8 — Routing inteligente de modelos",
+        "3. Implementación",
+        "Configuración inicial de la tabla"
+      ],
+      "sha256": "ec7073d4cdf862f15fb1938deff3d6ac5f74fcc5c1074a602369777fb7757df0",
+      "bytes": 421
+    },
+    {
+      "id": 67,
+      "file": "blocks/0067.txt",
+      "word_paragraph_index_zero_based": 2190,
+      "heading_context": [
+        "Capítulo 8 — Routing inteligente de modelos",
+        "3. Implementación",
+        "Auditoría periódica con LLM-as-judge"
+      ],
+      "sha256": "7a54540af5deff97c2a6c1945446c90153550d3acb992f8acbb78bb574dca3ef",
+      "bytes": 1054
+    },
+    {
+      "id": 68,
+      "file": "blocks/0068.txt",
+      "word_paragraph_index_zero_based": 2194,
+      "heading_context": [
+        "Capítulo 8 — Routing inteligente de modelos",
+        "3. Implementación",
+        "Monitorización continua de calidad de routing"
+      ],
+      "sha256": "8bb9159d645ff9f5490294435bf9a73938a9462e7d7c1b8ef7840e8643d572c6",
+      "bytes": 1075
+    },
+    {
+      "id": 69,
+      "file": "blocks/0069.txt",
+      "word_paragraph_index_zero_based": 2200,
+      "heading_context": [
+        "Capítulo 8 — Routing inteligente de modelos",
+        "3. Implementación",
+        "Muestreo con re-evaluación por opus"
+      ],
+      "sha256": "0044cb6580e13ac3430541694c7d71d2a6c00897638bb2a350733e967270bdbd",
+      "bytes": 1430
+    },
+    {
+      "id": 70,
+      "file": "blocks/0070.txt",
+      "word_paragraph_index_zero_based": 2333,
+      "heading_context": [
+        "Capítulo 9 — Caché, prompt engineering y batch",
+        "1. Concepto",
+        "Caché semántica: más allá de la coincidencia exacta"
+      ],
+      "sha256": "62e756db1545bf1162cdc0f00e4fb7b61557df6676e9d2ded3f3147cba462d01",
+      "bytes": 2690
+    },
+    {
+      "id": 71,
+      "file": "blocks/0071.txt",
+      "word_paragraph_index_zero_based": 2420,
+      "heading_context": [
+        "Capítulo 9 — Caché, prompt engineering y batch",
+        "3. Implementación",
+        "Middleware de prompt caching"
+      ],
+      "sha256": "62cee72cd84297f0dcc8504ca7600dfb3bbe3a1e5740bb0b06688d137ac13c53",
+      "bytes": 1948
+    },
+    {
+      "id": 72,
+      "file": "blocks/0072.txt",
+      "word_paragraph_index_zero_based": 2424,
+      "heading_context": [
+        "Capítulo 9 — Caché, prompt engineering y batch",
+        "3. Implementación",
+        "Registro del ahorro de caché en el tracker de uso"
+      ],
+      "sha256": "a1387ee9805e61f5b3c12ed7c3acd6704736d7095f1712898e45ddec8000c0fa",
+      "bytes": 1526
+    },
+    {
+      "id": 73,
+      "file": "blocks/0073.txt",
+      "word_paragraph_index_zero_based": 2428,
+      "heading_context": [
+        "Capítulo 9 — Caché, prompt engineering y batch",
+        "3. Implementación",
+        "Tarea Celery para el Batch API"
+      ],
+      "sha256": "d99ca62411e9aa389265c04dae4f36524d252af9bb95b7214888cd55a674c9f5",
+      "bytes": 1826
+    },
+    {
+      "id": 74,
+      "file": "blocks/0074.txt",
+      "word_paragraph_index_zero_based": 2432,
+      "heading_context": [
+        "Capítulo 9 — Caché, prompt engineering y batch",
+        "3. Implementación",
+        "Tarea Celery para el Batch API"
+      ],
+      "sha256": "8e59bda051786eff5ef5754daaf199a0e38b7501cfae0b4e073d2ed6355c84b5",
+      "bytes": 871
+    },
+    {
+      "id": 75,
+      "file": "blocks/0075.txt",
+      "word_paragraph_index_zero_based": 2437,
+      "heading_context": [
+        "Capítulo 9 — Caché, prompt engineering y batch",
+        "3. Implementación",
+        "Diferencia bruta de tarifa y ahorro neto de caché"
+      ],
+      "sha256": "ce90764cad36560e7361dd79ab4196eff17c3d8df79a79874c2da5857added69",
+      "bytes": 380
+    },
+    {
+      "id": 76,
+      "file": "blocks/0076.txt",
+      "word_paragraph_index_zero_based": 2480,
+      "heading_context": [
+        "Capítulo 9 — Caché, prompt engineering y batch",
+        "3. Implementación",
+        "Context window management: truncación de contexto RAG"
+      ],
+      "sha256": "0435059d2e87f6f2cf8ddb42e43644a59810e049f61418ee22d9f6e15f88fb43",
+      "bytes": 1725
+    },
+    {
+      "id": 77,
+      "file": "blocks/0077.txt",
+      "word_paragraph_index_zero_based": 2484,
+      "heading_context": [
+        "Capítulo 9 — Caché, prompt engineering y batch",
+        "3. Implementación",
+        "Structured output: JSON mode para reducir tokens de salida"
+      ],
+      "sha256": "4a4606e912399c3d5b51fa1cb796039420bb7a045f376cf68f25f5a97a466001",
+      "bytes": 1259
+    },
+    {
+      "id": 78,
+      "file": "blocks/0078.txt",
+      "word_paragraph_index_zero_based": 2657,
+      "heading_context": [
+        "Capítulo 10 — Self-hosted vs API: cuándo cada uno",
+        "2. La decisión",
+        "Calculando el punto de cruce"
+      ],
+      "sha256": "87df1d28df7c2cdb5f84056304182ba0611571f974d25e9f41271f2b598b2837",
+      "bytes": 520
+    },
+    {
+      "id": 79,
+      "file": "blocks/0079.txt",
+      "word_paragraph_index_zero_based": 2790,
+      "heading_context": [
+        "Capítulo 10 — Self-hosted vs API: cuándo cada uno",
+        "3. Implementación",
+        "LLM Factory con cadena de fallback"
+      ],
+      "sha256": "269a5e73a183b24a03b0fa57dbc60101868a1095f4842bdf40589f0fef287b1c",
+      "bytes": 1161
+    },
+    {
+      "id": 80,
+      "file": "blocks/0080.txt",
+      "word_paragraph_index_zero_based": 2794,
+      "heading_context": [
+        "Capítulo 10 — Self-hosted vs API: cuándo cada uno",
+        "3. Implementación",
+        "Arquitectura híbrida: diagrama de flujo"
+      ],
+      "sha256": "0e653d955ea6c763977df38eb797847afb04df331fb72a26e9ac08a673951ebb",
+      "bytes": 561
+    },
+    {
+      "id": 81,
+      "file": "blocks/0081.txt",
+      "word_paragraph_index_zero_based": 2798,
+      "heading_context": [
+        "Capítulo 10 — Self-hosted vs API: cuándo cada uno",
+        "3. Implementación",
+        "La función de coste comparativa"
+      ],
+      "sha256": "4f3fc9d18a69d5ff5e8a6bdb1fc9409080f022c5d5e616f07b98873e41b9ec9d",
+      "bytes": 3827
+    },
+    {
+      "id": 82,
+      "file": "blocks/0082.txt",
+      "word_paragraph_index_zero_based": 2800,
+      "heading_context": [
+        "Capítulo 10 — Self-hosted vs API: cuándo cada uno",
+        "3. Implementación",
+        "La función de coste comparativa"
+      ],
+      "sha256": "fbf2040c27406853f883750abe5750c66142ecfa64a2e2887d179181bc01de66",
+      "bytes": 182
+    },
+    {
+      "id": 83,
+      "file": "blocks/0083.txt",
+      "word_paragraph_index_zero_based": 2808,
+      "heading_context": [
+        "Capítulo 10 — Self-hosted vs API: cuándo cada uno",
+        "3. Implementación",
+        "Embeddings locales: el caso que sí tiene sentido"
+      ],
+      "sha256": "3e7003428bb428c25430eabe598a10dc925b52a189aa37068a91bdf77aa5791f",
+      "bytes": 1313
+    },
+    {
+      "id": 84,
+      "file": "blocks/0084.txt",
+      "word_paragraph_index_zero_based": 2814,
+      "heading_context": [
+        "Capítulo 10 — Self-hosted vs API: cuándo cada uno",
+        "3. Implementación",
+        "Monitorización del proveedor usado"
+      ],
+      "sha256": "165eb0811ac917478be4d3bb59bf485d888c87a6cebb2179552bd040809f188c",
+      "bytes": 315
+    },
+    {
+      "id": 85,
+      "file": "blocks/0085.txt",
+      "word_paragraph_index_zero_based": 2889,
+      "heading_context": [
+        "Capítulo 11 — Presupuestos y circuit breakers",
+        "3. Implementación",
+        "El modelo BudgetConfig"
+      ],
+      "sha256": "8ee5c070747f6695bb8f07a4a10ec72b663dfff5c924306c63194bb07f4c23dd",
+      "bytes": 391
+    },
+    {
+      "id": 86,
+      "file": "blocks/0086.txt",
+      "word_paragraph_index_zero_based": 2893,
+      "heading_context": [
+        "Capítulo 11 — Presupuestos y circuit breakers",
+        "3. Implementación",
+        "Configuración de presupuestos por servicio"
+      ],
+      "sha256": "8873abd39d1f6f1f7fe3697cc5a1f4fd5f9a240d7cc87c9e6681b039d5a47d31",
+      "bytes": 922
+    },
+    {
+      "id": 87,
+      "file": "blocks/0087.txt",
+      "word_paragraph_index_zero_based": 2898,
+      "heading_context": [
+        "Capítulo 11 — Presupuestos y circuit breakers",
+        "3. Implementación",
+        "El middleware de enforcement"
+      ],
+      "sha256": "27b2a2c4c106bbe18e1926af0fb6614d1a04c37d198d06871c2cecde3b9f2eb1",
+      "bytes": 1615
+    },
+    {
+      "id": 88,
+      "file": "blocks/0088.txt",
+      "word_paragraph_index_zero_based": 2902,
+      "heading_context": [
+        "Capítulo 11 — Presupuestos y circuit breakers",
+        "3. Implementación",
+        "El circuit breaker financiero"
+      ],
+      "sha256": "1c1696ee3933ed3cfcf08f7fefac1d927f462136019db217f9c50a073b0abb1d",
+      "bytes": 3216
+    },
+    {
+      "id": 89,
+      "file": "blocks/0089.txt",
+      "word_paragraph_index_zero_based": 2907,
+      "heading_context": [
+        "Capítulo 11 — Presupuestos y circuit breakers",
+        "3. Implementación",
+        "Contrato educativo de integración en LLMService"
+      ],
+      "sha256": "b53d89f90a76c057ee8959581846396d95b2b842f54114b36a3e77a99ed4b42f",
+      "bytes": 2481
+    },
+    {
+      "id": 90,
+      "file": "blocks/0090.txt",
+      "word_paragraph_index_zero_based": 2910,
+      "heading_context": [
+        "Capítulo 11 — Presupuestos y circuit breakers",
+        "3. Implementación",
+        "Cierre idempotente de ventanas presupuestarias"
+      ],
+      "sha256": "598eaee71ad1091931ebc2ab7d8c6d31db723e36fbd2ad466a8477db29d96714",
+      "bytes": 608
+    },
+    {
+      "id": 91,
+      "file": "blocks/0091.txt",
+      "word_paragraph_index_zero_based": 2914,
+      "heading_context": [
+        "Capítulo 11 — Presupuestos y circuit breakers",
+        "3. Implementación",
+        "Integración con alertas del dashboard"
+      ],
+      "sha256": "7942daa6919206e43385d9a4b88672ea406f406facce95ad39a08e123dce9369",
+      "bytes": 288
+    },
+    {
+      "id": 92,
+      "file": "blocks/0092.txt",
+      "word_paragraph_index_zero_based": 2926,
+      "heading_context": [
+        "Capítulo 11 — Presupuestos y circuit breakers",
+        "3. Implementación",
+        "Degradación elegante: la cadena de fallback cuando el presupuesto se agota"
+      ],
+      "sha256": "eef1e43663d23af37951ab5bc70bcf44ac34a313ba269a661ee29cb657e55845",
+      "bytes": 762
+    },
+    {
+      "id": 93,
+      "file": "blocks/0093.txt",
+      "word_paragraph_index_zero_based": 3156,
+      "heading_context": [
+        "Capítulo 12 — El agente de coste cloud: arquitectura",
+        "3. Implementación",
+        "El servidor MCP de billing cloud"
+      ],
+      "sha256": "efbc18f8aaa7689992f374e917bb0e5a339246c2c96c529b029f7c6c0ae4c528",
+      "bytes": 1588
+    },
+    {
+      "id": 94,
+      "file": "blocks/0094.txt",
+      "word_paragraph_index_zero_based": 3159,
+      "heading_context": [
+        "Capítulo 12 — El agente de coste cloud: arquitectura",
+        "3. Implementación",
+        "Implementación de las herramientas"
+      ],
+      "sha256": "c87ee1895f2f6a6312e51c6279f5da35bb549409cc71e9d786c6d092741b0112",
+      "bytes": 4166
+    },
+    {
+      "id": 95,
+      "file": "blocks/0095.txt",
+      "word_paragraph_index_zero_based": 3163,
+      "heading_context": [
+        "Capítulo 12 — El agente de coste cloud: arquitectura",
+        "3. Implementación",
+        "Gestión de errores en el servidor MCP"
+      ],
+      "sha256": "9403f1d59ed16506e2fd767d5b7b2bc34ee347094af71d003fea29f2a96c0f82",
+      "bytes": 668
+    },
+    {
+      "id": 96,
+      "file": "blocks/0096.txt",
+      "word_paragraph_index_zero_based": 3168,
+      "heading_context": [
+        "Capítulo 12 — El agente de coste cloud: arquitectura",
+        "3. Implementación",
+        "Bucle manual acotado con un adaptador de modelo"
+      ],
+      "sha256": "68727884ddfe5caa5a40fd7ad753eaa952271173992e76de5611abb009d43fbc",
+      "bytes": 2489
+    },
+    {
+      "id": 97,
+      "file": "blocks/0097.txt",
+      "word_paragraph_index_zero_based": 3188,
+      "heading_context": [
+        "Capítulo 12 — El agente de coste cloud: arquitectura",
+        "3. Implementación",
+        "Exponer el agente como API REST"
+      ],
+      "sha256": "3a4e2b20ce9a1ee104ce73ad263fc9b59c57c76fa47d94f6ceaef9d7b52ba2e7",
+      "bytes": 558
+    },
+    {
+      "id": 98,
+      "file": "blocks/0098.txt",
+      "word_paragraph_index_zero_based": 3191,
+      "heading_context": [
+        "Capítulo 12 — El agente de coste cloud: arquitectura",
+        "3. Implementación",
+        "Configuración de lanzamiento stdio del host"
+      ],
+      "sha256": "27df818523b086e8054826f4f75f89b4662062c3a97381b78db379662eb45ebc",
+      "bytes": 530
+    },
+    {
+      "id": 99,
+      "file": "blocks/0099.txt",
+      "word_paragraph_index_zero_based": 3397,
+      "heading_context": [
+        "Capítulo 13 — Detección de anomalías con IA",
+        "3. Implementación",
+        "El modelo de datos de métricas de coste"
+      ],
+      "sha256": "4bfc1371b69736f4528971c98968d676e6e67f07efa35184910f7a921735ed71",
+      "bytes": 1591
+    },
+    {
+      "id": 100,
+      "file": "blocks/0100.txt",
+      "word_paragraph_index_zero_based": 3400,
+      "heading_context": [
+        "Capítulo 13 — Detección de anomalías con IA",
+        "3. Implementación",
+        "Filtro estadístico sobre ventanas comparables"
+      ],
+      "sha256": "c0d66e07a3bb10903e35870056962348c37c52813f2d8a038cece5b3199bf96f",
+      "bytes": 1744
+    },
+    {
+      "id": 101,
+      "file": "blocks/0101.txt",
+      "word_paragraph_index_zero_based": 3402,
+      "heading_context": [
+        "Capítulo 13 — Detección de anomalías con IA",
+        "3. Implementación",
+        "El analizador LLM de anomalías"
+      ],
+      "sha256": "f9dd972f73e9c09f72613cae68a161711e5d2c535cab092299a6926898c73e87",
+      "bytes": 1623
+    },
+    {
+      "id": 102,
+      "file": "blocks/0102.txt",
+      "word_paragraph_index_zero_based": 3404,
+      "heading_context": [
+        "Capítulo 13 — Detección de anomalías con IA",
+        "3. Implementación",
+        "El contexto de negocio: la clave de la calidad"
+      ],
+      "sha256": "90f2a4c606cea9618a5ce55181d1117447537c97246fce2065f2fc21467be3a7",
+      "bytes": 600
+    },
+    {
+      "id": 103,
+      "file": "blocks/0103.txt",
+      "word_paragraph_index_zero_based": 3408,
+      "heading_context": [
+        "Capítulo 13 — Detección de anomalías con IA",
+        "3. Implementación",
+        "Un ejemplo de alerta antes y después"
+      ],
+      "sha256": "23c391e38ae17dc3b823d72fead5badb7fca4ad5068bbf0e2e9a5cf3fff9e96f",
+      "bytes": 281
+    },
+    {
+      "id": 104,
+      "file": "blocks/0104.txt",
+      "word_paragraph_index_zero_based": 3410,
+      "heading_context": [
+        "Capítulo 13 — Detección de anomalías con IA",
+        "3. Implementación",
+        "Un ejemplo de alerta antes y después"
+      ],
+      "sha256": "8674b8eaab027ec779ab198c155937e54b7d6b4f429f6020067235c47fad1e57",
+      "bytes": 563
+    },
+    {
+      "id": 105,
+      "file": "blocks/0105.txt",
+      "word_paragraph_index_zero_based": 3564,
+      "heading_context": [
+        "Capítulo 14 — Rightsizing y recomendaciones con IA",
+        "3. Implementación",
+        "Las herramientas del agente de rightsizing"
+      ],
+      "sha256": "6c0ae083c384b7b0f57033e98bc4474aebb8da3cdcc57f42c74cecea84bed58b",
+      "bytes": 2464
+    },
+    {
+      "id": 106,
+      "file": "blocks/0106.txt",
+      "word_paragraph_index_zero_based": 3566,
+      "heading_context": [
+        "Capítulo 14 — Rightsizing y recomendaciones con IA",
+        "3. Implementación",
+        "Revisión acotada de candidatos de rightsizing"
+      ],
+      "sha256": "6a50da4ba30c0aedf51fbea96c4c67bb465bc3b3d7e614186056ac337aaa54d3",
+      "bytes": 1383
+    },
+    {
+      "id": 107,
+      "file": "blocks/0107.txt",
+      "word_paragraph_index_zero_based": 3568,
+      "heading_context": [
+        "Capítulo 14 — Rightsizing y recomendaciones con IA",
+        "3. Implementación",
+        "Contrato de registro de revisión"
+      ],
+      "sha256": "9f977ed6c6ca2687d9f250d9dbde7e1a696fddcf4550d68e1e50bfddf44172f9",
+      "bytes": 869
+    },
+    {
+      "id": 108,
+      "file": "blocks/0108.txt",
+      "word_paragraph_index_zero_based": 3570,
+      "heading_context": [
+        "Capítulo 14 — Rightsizing y recomendaciones con IA",
+        "3. Implementación",
+        "Preparar propuesta y comprobar permiso sin cambio"
+      ],
+      "sha256": "e72a9b9abb3965ecb3a9f8c3cb02d19827b232477af094e8085ecabbefba7c55",
+      "bytes": 1392
+    },
+    {
+      "id": 109,
+      "file": "blocks/0109.txt",
+      "word_paragraph_index_zero_based": 3742,
+      "heading_context": [
+        "Capítulo 15 — Recursos huérfanos y waste automático",
+        "3. Implementación",
+        "El escáner de waste cloud"
+      ],
+      "sha256": "f5362da1b2c0bc3bd9879dbb6b7146d80d9ac3849de118f43109e2c982c202f2",
+      "bytes": 2008
+    },
+    {
+      "id": 110,
+      "file": "blocks/0110.txt",
+      "word_paragraph_index_zero_based": 3745,
+      "heading_context": [
+        "Capítulo 15 — Recursos huérfanos y waste automático",
+        "3. Implementación",
+        "El escáner de waste cloud"
+      ],
+      "sha256": "d1667f215e825cdab3a03c3177a94788cac6b6b3e30ac9cb8c7f8316c041c517",
+      "bytes": 3267
+    },
+    {
+      "id": 111,
+      "file": "blocks/0111.txt",
+      "word_paragraph_index_zero_based": 3749,
+      "heading_context": [
+        "Capítulo 15 — Recursos huérfanos y waste automático",
+        "3. Implementación",
+        "El agente clasificador de riesgo"
+      ],
+      "sha256": "65efe4c55475c1925cf97f715aaa8bf39abc67e9d1df9bcf2d828f768b3df73e",
+      "bytes": 1287
+    },
+    {
+      "id": 112,
+      "file": "blocks/0112.txt",
+      "word_paragraph_index_zero_based": 3753,
+      "heading_context": [
+        "Capítulo 15 — Recursos huérfanos y waste automático",
+        "3. Implementación",
+        "Preparación de revisión sin borrado"
+      ],
+      "sha256": "33421f2cc3eb7a9154e847bb94340fb6ee2cd0aa5863d56857053b08ed973eef",
+      "bytes": 949
+    },
+    {
+      "id": 113,
+      "file": "blocks/0113.txt",
+      "word_paragraph_index_zero_based": 3755,
+      "heading_context": [
+        "Capítulo 15 — Recursos huérfanos y waste automático",
+        "3. Implementación",
+        "Preparación de revisión sin borrado"
+      ],
+      "sha256": "fd163f08830dfb47e7925e77a08f74ffd5cc949c7d300ba66731aa636de248b0",
+      "bytes": 1305
+    },
+    {
+      "id": 114,
+      "file": "blocks/0114.txt",
+      "word_paragraph_index_zero_based": 3758,
+      "heading_context": [
+        "Capítulo 15 — Recursos huérfanos y waste automático",
+        "3. Implementación",
+        "El endpoint de propuesta de cleanup"
+      ],
+      "sha256": "378b33e9890830fe5b39bb23cc32f2646cea8c5aa427a1cf939bb54150a5e8cb",
+      "bytes": 482
+    },
+    {
+      "id": 115,
+      "file": "blocks/0115.txt",
+      "word_paragraph_index_zero_based": 3763,
+      "heading_context": [
+        "Capítulo 15 — Recursos huérfanos y waste automático",
+        "3. Implementación",
+        "Snapshots: el waste más insidioso y el más difícil de limpiar"
+      ],
+      "sha256": "0d801a41a5fc761f4ca1f3ef8c64077a6921652e6ab33a4111d6f336003763d3",
+      "bytes": 1890
+    },
+    {
+      "id": 116,
+      "file": "blocks/0116.txt",
+      "word_paragraph_index_zero_based": 3918,
+      "heading_context": [
+        "Capítulo 16 — Forecasting: predecir la factura del mes que viene",
+        "3. Implementación",
+        "El modelo de datos para forecasting"
+      ],
+      "sha256": "a5445ed9e0be27a76df7394a62f8333cf7f71643115a8848075b091719d589d9",
+      "bytes": 1432
+    },
+    {
+      "id": 117,
+      "file": "blocks/0117.txt",
+      "word_paragraph_index_zero_based": 3921,
+      "heading_context": [
+        "Capítulo 16 — Forecasting: predecir la factura del mes que viene",
+        "3. Implementación",
+        "El motor estadístico de forecasting"
+      ],
+      "sha256": "9f406bef716f16347eff9a903cec284b8c37ac73c79098960ec78c43caf60f13",
+      "bytes": 1721
+    },
+    {
+      "id": 118,
+      "file": "blocks/0118.txt",
+      "word_paragraph_index_zero_based": 3925,
+      "heading_context": [
+        "Capítulo 16 — Forecasting: predecir la factura del mes que viene",
+        "3. Implementación",
+        "Escenarios aprobados y explicación asistida"
+      ],
+      "sha256": "7bf3ec9ea1e4df4d936007f30e035820aef78ace932a81ab50ee247f9cf829aa",
+      "bytes": 1691
+    },
+    {
+      "id": 119,
+      "file": "blocks/0119.txt",
+      "word_paragraph_index_zero_based": 3928,
+      "heading_context": [
+        "Capítulo 16 — Forecasting: predecir la factura del mes que viene",
+        "3. Implementación",
+        "Persistencia idempotente del forecast aprobado"
+      ],
+      "sha256": "5140c694a777c1e695059db3c1481c951d9c06c4db11300f1a0b0b9e5808f050",
+      "bytes": 893
+    },
+    {
+      "id": 120,
+      "file": "blocks/0120.txt",
+      "word_paragraph_index_zero_based": 3933,
+      "heading_context": [
+        "Capítulo 16 — Forecasting: predecir la factura del mes que viene",
+        "3. Implementación",
+        "El forecast de tokens LLM: el segundo eje"
+      ],
+      "sha256": "37124113386aeaa35c992ebedf6d1d2ec8a208bc8efa909caafd2a2f8e2e1057",
+      "bytes": 1463
+    },
+    {
+      "id": 121,
+      "file": "blocks/0121.txt",
+      "word_paragraph_index_zero_based": 3937,
+      "heading_context": [
+        "Capítulo 16 — Forecasting: predecir la factura del mes que viene",
+        "3. Implementación",
+        "El endpoint del forecast para el dashboard"
+      ],
+      "sha256": "18fa32bda5b5333f0274dd27882bafb0b2ca2e19e49e26ce74d6654a31c269a1",
+      "bytes": 1233
+    },
+    {
+      "id": 122,
+      "file": "blocks/0122.txt",
+      "word_paragraph_index_zero_based": 3940,
+      "heading_context": [
+        "Capítulo 16 — Forecasting: predecir la factura del mes que viene",
+        "3. Implementación",
+        "Ejemplo ilustrativo de forecast con contexto"
+      ],
+      "sha256": "ee2ce2ea2d3f2b1d07b28068330249c2bbe36ef899ff53ab9aa40e708a6502cb",
+      "bytes": 268
+    },
+    {
+      "id": 123,
+      "file": "blocks/0123.txt",
+      "word_paragraph_index_zero_based": 3946,
+      "heading_context": [
+        "Capítulo 16 — Forecasting: predecir la factura del mes que viene",
+        "3. Implementación",
+        "Ejemplo ilustrativo de forecast con contexto"
+      ],
+      "sha256": "e364a4b3eb0752bdb16473fdea4b64d4222a31a59cf02c5797f4044f5af385b1",
+      "bytes": 519
+    },
+    {
+      "id": 124,
+      "file": "blocks/0124.txt",
+      "word_paragraph_index_zero_based": 3950,
+      "heading_context": [
+        "Capítulo 16 — Forecasting: predecir la factura del mes que viene",
+        "3. Implementación",
+        "Medir la precisión del forecasting"
+      ],
+      "sha256": "7383d8d66bd1ac2fbd375b160e09ff2bbc3a52902790a5a8da664a8ebecda600",
+      "bytes": 1467
+    },
+    {
+      "id": 125,
+      "file": "blocks/0125.txt",
+      "word_paragraph_index_zero_based": 4073,
+      "heading_context": [
+        "Capítulo 17 — Medir el ROI: el framework HumanBaseline",
+        "1. Concepto",
+        "La lógica del framework"
+      ],
+      "sha256": "177fafa4089f6a87f4afcc595fb1f9c4949ac927b298e23186c3ee07f40d9f5a",
+      "bytes": 398
+    },
+    {
+      "id": 126,
+      "file": "blocks/0126.txt",
+      "word_paragraph_index_zero_based": 4144,
+      "heading_context": [
+        "Capítulo 17 — Medir el ROI: el framework HumanBaseline",
+        "3. Implementación",
+        "Modelo de datos: HumanBaselineConfig y TaskCompletionLog"
+      ],
+      "sha256": "63ecfe48ac0e70c0726dc33688b3e51f248fe6ce46c3668f99f7129b3a6f6b97",
+      "bytes": 1485
+    },
+    {
+      "id": 127,
+      "file": "blocks/0127.txt",
+      "word_paragraph_index_zero_based": 4146,
+      "heading_context": [
+        "Capítulo 17 — Medir el ROI: el framework HumanBaseline",
+        "3. Implementación",
+        "Modelo de datos: HumanBaselineConfig y TaskCompletionLog"
+      ],
+      "sha256": "db00d2ecfce7d179eb9bba0890d39a55636213c839a77bcffddba09de36acc46",
+      "bytes": 1504
+    },
+    {
+      "id": 128,
+      "file": "blocks/0128.txt",
+      "word_paragraph_index_zero_based": 4150,
+      "heading_context": [
+        "Capítulo 17 — Medir el ROI: el framework HumanBaseline",
+        "3. Implementación",
+        "Cálculo parcial de capacidad"
+      ],
+      "sha256": "281617c333b95fce20e293f91a3e4854ba7894f689afe2ee577a408f2cb85ed1",
+      "bytes": 1735
+    },
+    {
+      "id": 129,
+      "file": "blocks/0129.txt",
+      "word_paragraph_index_zero_based": 4154,
+      "heading_context": [
+        "Capítulo 17 — Medir el ROI: el framework HumanBaseline",
+        "3. Implementación",
+        "Resumen agregado de capacidad y coste"
+      ],
+      "sha256": "955a89911b903f74669ab300bdd1b8f9e0521fb0a5f24def1c8f74fbf4bc510d",
+      "bytes": 1647
+    },
+    {
+      "id": 130,
+      "file": "blocks/0130.txt",
+      "word_paragraph_index_zero_based": 4158,
+      "heading_context": [
+        "Capítulo 17 — Medir el ROI: el framework HumanBaseline",
+        "3. Implementación",
+        "Endpoint de resumen de ROI"
+      ],
+      "sha256": "1bd9ce1b93e73b60bf1328a259c50f3fb710dda53eab1149f55763060dae0515",
+      "bytes": 1194
+    },
+    {
+      "id": 131,
+      "file": "blocks/0131.txt",
+      "word_paragraph_index_zero_based": 4162,
+      "heading_context": [
+        "Capítulo 17 — Medir el ROI: el framework HumanBaseline",
+        "3. Implementación",
+        "Configuración inicial de referencia"
+      ],
+      "sha256": "86fa087e9261ccf1ff757d45f5169471fcad16d3c6d812f24069aa010b249d6c",
+      "bytes": 1271
+    },
+    {
+      "id": 132,
+      "file": "blocks/0132.txt",
+      "word_paragraph_index_zero_based": 4166,
+      "heading_context": [
+        "Capítulo 17 — Medir el ROI: el framework HumanBaseline",
+        "3. Implementación",
+        "Integración en el flujo de generación de ofertas"
+      ],
+      "sha256": "af8e43cae888f0d2f04bb347c9eaf6b8b6db5d412cf41474eca43f0a9ca5f870",
+      "bytes": 1216
+    },
+    {
+      "id": 133,
+      "file": "blocks/0133.txt",
+      "word_paragraph_index_zero_based": 4197,
+      "heading_context": [
+        "Capítulo 17 — Medir el ROI: el framework HumanBaseline",
+        "3. Implementación",
+        "El ciclo de revisión trimestral"
+      ],
+      "sha256": "77e9f66edd1b1f30cdf70bc04b6c86436b77cde94cb249113ac9f1ccbe05567f",
+      "bytes": 1031
+    },
+    {
+      "id": 134,
+      "file": "blocks/0134.txt",
+      "word_paragraph_index_zero_based": 4212,
+      "heading_context": [
+        "Capítulo 17 — Medir el ROI: el framework HumanBaseline",
+        "3. Implementación",
+        "La dimensión temporal: ROI acumulado vs. ROI marginal"
+      ],
+      "sha256": "e6506c70f29f255913564ef67b2b1726e0929704c485ca07780baee32ffc062e",
+      "bytes": 1037
+    },
+    {
+      "id": 135,
+      "file": "blocks/0135.txt",
+      "word_paragraph_index_zero_based": 4227,
+      "heading_context": [
+        "Capítulo 17 — Medir el ROI: el framework HumanBaseline",
+        "3. Implementación",
+        "Visualización del ROI en el dashboard"
+      ],
+      "sha256": "f8f49c86049cac1305e98ca23cd84c7dc683355a3f4dbdbba27f1d12711cec44",
+      "bytes": 1119
+    },
+    {
+      "id": 136,
+      "file": "blocks/0136.txt",
+      "word_paragraph_index_zero_based": 4231,
+      "heading_context": [
+        "Capítulo 17 — Medir el ROI: el framework HumanBaseline",
+        "3. Implementación",
+        "Análisis asistido de hipótesis de variación de valor"
+      ],
+      "sha256": "f8a031109690b4d45e58dbaab7a8ca8652994efb1916459225b79d02ba64c467",
+      "bytes": 768
+    },
+    {
+      "id": 137,
+      "file": "blocks/0137.txt",
+      "word_paragraph_index_zero_based": 4353,
+      "heading_context": [
+        "Capítulo 18 — El business case para el CFO",
+        "2. La decisión",
+        "La diapositiva única que convence"
+      ],
+      "sha256": "d7359c4768ac0d7423b7813098c9565199e832de59aa4788e709c5fe299e388d",
+      "bytes": 466
+    },
+    {
+      "id": 138,
+      "file": "blocks/0138.txt",
+      "word_paragraph_index_zero_based": 4386,
+      "heading_context": [
+        "Capítulo 18 — El business case para el CFO",
+        "3. Implementación",
+        "El generador de business case"
+      ],
+      "sha256": "456306c5d37ec012ce943df2613ea66047fc5b1358982d2ab62d39e8badd0ff7",
+      "bytes": 369
+    },
+    {
+      "id": 139,
+      "file": "blocks/0139.txt",
+      "word_paragraph_index_zero_based": 4388,
+      "heading_context": [
+        "Capítulo 18 — El business case para el CFO",
+        "3. Implementación",
+        "El generador de business case"
+      ],
+      "sha256": "c63f30bf9234959c1e2d2d31eedb87a01c4dd8e7b68ced0ee16ce850a12d3f03",
+      "bytes": 920
+    },
+    {
+      "id": 140,
+      "file": "blocks/0140.txt",
+      "word_paragraph_index_zero_based": 4390,
+      "heading_context": [
+        "Capítulo 18 — El business case para el CFO",
+        "3. Implementación",
+        "El generador de business case"
+      ],
+      "sha256": "e89a9d1e3ce4ab2b803971514f9c2d00e12ef24cb46be6941bf03b6775ccbef1",
+      "bytes": 847
+    },
+    {
+      "id": 141,
+      "file": "blocks/0141.txt",
+      "word_paragraph_index_zero_based": 4393,
+      "heading_context": [
+        "Capítulo 18 — El business case para el CFO",
+        "3. Implementación",
+        "Endpoint para el resumen ejecutivo"
+      ],
+      "sha256": "7fb192a80747361c1d2846835f1487c0faf9f47a8d2eba910ee57f333ec2009b",
+      "bytes": 630
+    },
+    {
+      "id": 142,
+      "file": "blocks/0142.txt",
+      "word_paragraph_index_zero_based": 4396,
+      "heading_context": [
+        "Capítulo 18 — El business case para el CFO",
+        "3. Implementación",
+        "La tabla del TCO a 5 años"
+      ],
+      "sha256": "ed6b54ee4e71c2a2c73cd23b82b0456e5b3e88f6ede8a0638ac7636d4b5b0e1b",
+      "bytes": 2535
+    },
+    {
+      "id": 143,
+      "file": "blocks/0143.txt",
+      "word_paragraph_index_zero_based": 4435,
+      "heading_context": [
+        "Capítulo 18 — El business case para el CFO",
+        "3. Implementación",
+        "El business case para cloud FinOps con agentes"
+      ],
+      "sha256": "00d01defcd274314e74b3ba670c9cc835bf30a3af9f8ef4509c92753095886e7",
+      "bytes": 663
+    },
+    {
+      "id": 144,
+      "file": "blocks/0144.txt",
+      "word_paragraph_index_zero_based": 4460,
+      "heading_context": [
+        "Capítulo 18 — El business case para el CFO",
+        "3. Implementación",
+        "El análisis de sensibilidad: qué variables importan más"
+      ],
+      "sha256": "258d19d7c6757eae8951a4904e28fb3c4402a7a5c7c639d554119448eb272141",
+      "bytes": 1398
+    },
+    {
+      "id": 145,
+      "file": "blocks/0145.txt",
+      "word_paragraph_index_zero_based": 4463,
+      "heading_context": [
+        "Capítulo 18 — El business case para el CFO",
+        "3. Implementación",
+        "La presentación final: estructura recomendada"
+      ],
+      "sha256": "4e24eea997b2fc1a5dc801e35fb213e652bc6c194ea0094b4b3387fe95c8080f",
+      "bytes": 541
+    },
+    {
+      "id": 146,
+      "file": "blocks/0146.txt",
+      "word_paragraph_index_zero_based": 4467,
+      "heading_context": [
+        "Capítulo 18 — El business case para el CFO",
+        "3. Implementación",
+        "Borrador narrativo con un revisor intercambiable"
+      ],
+      "sha256": "5b56367e5c63571a70c81a654c3d6057c1a4a9dcea2dbc80c13e10a34d08205a",
+      "bytes": 637
+    },
+    {
+      "id": 147,
+      "file": "blocks/0147.txt",
+      "word_paragraph_index_zero_based": 4490,
+      "heading_context": [
+        "Capítulo 18 — El business case para el CFO",
+        "3. Implementación",
+        "El lenguaje del CFO: cuatro términos que hay que dominar"
+      ],
+      "sha256": "41e54aed4f5e42f6a08226c234d8a959f57170dce6d896b9d9d3c3fc1d212f5a",
+      "bytes": 1510
+    },
+    {
+      "id": 148,
+      "file": "blocks/0148.txt",
+      "word_paragraph_index_zero_based": 4508,
+      "heading_context": [
+        "Capítulo 18 — El business case para el CFO",
+        "3. Implementación",
+        "El business case en proyectos multi-plataforma"
+      ],
+      "sha256": "69f79c1b17bdef43cc97e90ea64552cbf5c7aea6bff00c29267d2a74ab4ba3f4",
+      "bytes": 1150
+    },
+    {
+      "id": 149,
+      "file": "blocks/0149.txt",
+      "word_paragraph_index_zero_based": 4622,
+      "heading_context": [
+        "Capítulo 19 — Unit economics de plataformas con IA",
+        "3. Implementación",
+        "La calculadora de unit economics"
+      ],
+      "sha256": "e2bcd49c45aa1884cc050339de23e7770083433812d80aa9d77012dd7e7bb4fc",
+      "bytes": 484
+    },
+    {
+      "id": 150,
+      "file": "blocks/0150.txt",
+      "word_paragraph_index_zero_based": 4625,
+      "heading_context": [
+        "Capítulo 19 — Unit economics de plataformas con IA",
+        "3. Implementación",
+        "La calculadora de unit economics"
+      ],
+      "sha256": "0b33880a7fbd1d0fe3b0768f13167781581e953a8320936b08eb5182cafd06c5",
+      "bytes": 2026
+    },
+    {
+      "id": 151,
+      "file": "blocks/0151.txt",
+      "word_paragraph_index_zero_based": 4629,
+      "heading_context": [
+        "Capítulo 19 — Unit economics de plataformas con IA",
+        "3. Implementación",
+        "Endpoint de unit economics"
+      ],
+      "sha256": "f4223390a46bba78acc7da1098d929ade4614d77c1193dc5738f9f7bc7ac7797",
+      "bytes": 538
+    },
+    {
+      "id": 152,
+      "file": "blocks/0152.txt",
+      "word_paragraph_index_zero_based": 4631,
+      "heading_context": [
+        "Capítulo 19 — Unit economics de plataformas con IA",
+        "3. Implementación",
+        "Endpoint de unit economics"
+      ],
+      "sha256": "11c30ea377f274bf72542b83b8f5829707b8289920a2638a44a5c600195fe19a",
+      "bytes": 967
+    },
+    {
+      "id": 153,
+      "file": "blocks/0153.txt",
+      "word_paragraph_index_zero_based": 4635,
+      "heading_context": [
+        "Capítulo 19 — Unit economics de plataformas con IA",
+        "3. Implementación",
+        "El dashboard de unit economics en React"
+      ],
+      "sha256": "e983bb72049c5e1b32fa073cee0e0dc985ee6e63dd4effb7482a2557c7ee0a09",
+      "bytes": 1135
+    },
+    {
+      "id": 154,
+      "file": "blocks/0154.txt",
+      "word_paragraph_index_zero_based": 4639,
+      "heading_context": [
+        "Capítulo 19 — Unit economics de plataformas con IA",
+        "3. Implementación",
+        "El análisis de cohortes: cómo evoluciona el coste por usuario en el tiempo"
+      ],
+      "sha256": "17cbe91c642546163cecb5be3ff0802b610df62019b87017cb15778139c7ffe4",
+      "bytes": 783
+    },
+    {
+      "id": 155,
+      "file": "blocks/0155.txt",
+      "word_paragraph_index_zero_based": 4674,
+      "heading_context": [
+        "Capítulo 19 — Unit economics de plataformas con IA",
+        "3. Implementación",
+        "El LTV y el CAC: completando la ecuación SaaS"
+      ],
+      "sha256": "308be076e48dc0c5ba613fcd98cabb45457f81d69ed4c36fa40392c852bb7655",
+      "bytes": 261
+    },
+    {
+      "id": 156,
+      "file": "blocks/0156.txt",
+      "word_paragraph_index_zero_based": 4686,
+      "heading_context": [
+        "Capítulo 19 — Unit economics de plataformas con IA",
+        "3. Implementación",
+        "El churn y su impacto en los unit economics de la IA"
+      ],
+      "sha256": "8e006a9b5de45f2a1a546cd1bf0f76a80c162f93e2c1bb3fb45659617c1a1d42",
+      "bytes": 961
+    },
+    {
+      "id": 157,
+      "file": "blocks/0157.txt",
+      "word_paragraph_index_zero_based": 4722,
+      "heading_context": [
+        "Capítulo 19 — Unit economics de plataformas con IA",
+        "3. Implementación",
+        "El coste de los usuarios inactivos: churn silencioso"
+      ],
+      "sha256": "f7e987c209051ed6c103835aa9b11ed7f3b69ddef2406760d4bd86efe3b1e70e",
+      "bytes": 744
+    },
+    {
+      "id": 158,
+      "file": "blocks/0158.txt",
+      "word_paragraph_index_zero_based": 4728,
+      "heading_context": [
+        "Capítulo 19 — Unit economics de plataformas con IA",
+        "3. Implementación",
+        "La economía de la prueba gratuita"
+      ],
+      "sha256": "932570e8db7024e8e0f1c7641cd36f510bea236efec98d189eaee0aa3b0dfa28",
+      "bytes": 213
+    },
+    {
+      "id": 159,
+      "file": "blocks/0159.txt",
+      "word_paragraph_index_zero_based": 4731,
+      "heading_context": [
+        "Capítulo 19 — Unit economics de plataformas con IA",
+        "3. Implementación",
+        "La economía de la prueba gratuita"
+      ],
+      "sha256": "91a9bd03d11a8c4b79b53c2835a551536c5c9e392e8c8a7c40a6fa6ff54de272",
+      "bytes": 968
+    },
+    {
+      "id": 160,
+      "file": "blocks/0160.txt",
+      "word_paragraph_index_zero_based": 4740,
+      "heading_context": [
+        "Capítulo 19 — Unit economics de plataformas con IA",
+        "3. Implementación",
+        "El modelo de pricing basado en uso: tokens como unidad de facturación"
+      ],
+      "sha256": "6e9adcf9b8f0af080c13ce3f7791023bbe30e0aede74f18263621b81857b78c3",
+      "bytes": 1159
+    },
+    {
+      "id": 161,
+      "file": "blocks/0161.txt",
+      "word_paragraph_index_zero_based": 4770,
+      "heading_context": [
+        "Capítulo 19 — Unit economics de plataformas con IA",
+        "3. Implementación",
+        "El monitoreo en tiempo real de los unit economics"
+      ],
+      "sha256": "2c68fd6d804d088b977a5921c5debc355e4c4c028f6895feddcf973ae630cae0",
+      "bytes": 1074
+    },
+    {
+      "id": 162,
+      "file": "blocks/0162.txt",
+      "word_paragraph_index_zero_based": 4823,
+      "heading_context": [
+        "Capítulo 20 — Policy-as-code para FinOps",
+        "1. Concepto",
+        "El flujo GitOps para FinOps"
+      ],
+      "sha256": "72c3082d3524dd446e497364a3c8cef4f37ff702344f29d6538a05da3073518e",
+      "bytes": 660
+    },
+    {
+      "id": 163,
+      "file": "blocks/0163.txt",
+      "word_paragraph_index_zero_based": 4828,
+      "heading_context": [
+        "Capítulo 20 — Policy-as-code para FinOps",
+        "1. Concepto",
+        "Policy-as-code en cloud: SCPs y guardrails de infraestructura"
+      ],
+      "sha256": "aae9cc8965dbecd60d4c31085d9ce2e8fb692009bf2ed5ec411ccd7aab918516",
+      "bytes": 256
+    },
+    {
+      "id": 164,
+      "file": "blocks/0164.txt",
+      "word_paragraph_index_zero_based": 4844,
+      "heading_context": [
+        "Capítulo 20 — Policy-as-code para FinOps",
+        "2. La decisión",
+        "PR review para cambios de presupuesto"
+      ],
+      "sha256": "4cf430becb65b4fe1f9244ac7c42ecd6ddd58c83eefbd8c4b4ac39977cf1e1ad",
+      "bytes": 1982
+    },
+    {
+      "id": 165,
+      "file": "blocks/0165.txt",
+      "word_paragraph_index_zero_based": 4852,
+      "heading_context": [
+        "Capítulo 20 — Policy-as-code para FinOps",
+        "3. Implementación",
+        "Estructura del repositorio de políticas"
+      ],
+      "sha256": "0d6d972e989666ae878970a03419cbddf263bb511c0a9eb34a8faf499a29aa28",
+      "bytes": 396
+    },
+    {
+      "id": 166,
+      "file": "blocks/0166.txt",
+      "word_paragraph_index_zero_based": 4854,
+      "heading_context": [
+        "Capítulo 20 — Policy-as-code para FinOps",
+        "3. Implementación",
+        "Definición YAML de políticas"
+      ],
+      "sha256": "2fabe2613ce8c46a09aad21053ae3643db1c10f8e1dc4da0170e8a6e764ddf72",
+      "bytes": 839
+    },
+    {
+      "id": 167,
+      "file": "blocks/0167.txt",
+      "word_paragraph_index_zero_based": 4855,
+      "heading_context": [
+        "Capítulo 20 — Policy-as-code para FinOps",
+        "3. Implementación",
+        "Definición YAML de políticas"
+      ],
+      "sha256": "427d36950fc0709c7a50db5e89710351923d55f2a42e5ffbb1bd8dc4c7b9c964",
+      "bytes": 532
+    },
+    {
+      "id": 168,
+      "file": "blocks/0168.txt",
+      "word_paragraph_index_zero_based": 4858,
+      "heading_context": [
+        "Capítulo 20 — Policy-as-code para FinOps",
+        "3. Implementación",
+        "El servicio de reconciliación de políticas"
+      ],
+      "sha256": "3bb0a20c7becd8e970f2bf4e842f2d60b0169bd46c7473305318db48760581e9",
+      "bytes": 2580
+    },
+    {
+      "id": 169,
+      "file": "blocks/0169.txt",
+      "word_paragraph_index_zero_based": 4860,
+      "heading_context": [
+        "Capítulo 20 — Policy-as-code para FinOps",
+        "3. Implementación",
+        "El servicio de reconciliación de políticas"
+      ],
+      "sha256": "c6b6325f2a5980b1353b5202253c4e4509304bb9792a6c54dfe0eb327984cc90",
+      "bytes": 1394
+    },
+    {
+      "id": 170,
+      "file": "blocks/0170.txt",
+      "word_paragraph_index_zero_based": 4864,
+      "heading_context": [
+        "Capítulo 20 — Policy-as-code para FinOps",
+        "3. Implementación",
+        "Integración en el middleware de FastAPI"
+      ],
+      "sha256": "61809d142eb6c770d5b5b0d1bc44320c0f14605ce03601deda2ebb610f6359c1",
+      "bytes": 579
+    },
+    {
+      "id": 171,
+      "file": "blocks/0171.txt",
+      "word_paragraph_index_zero_based": 4868,
+      "heading_context": [
+        "Capítulo 20 — Policy-as-code para FinOps",
+        "3. Implementación",
+        "El pipeline de validación CI/CD"
+      ],
+      "sha256": "46e03ab018e79eb4abc1e7e1e68623560d3e54c1625c74d42bdce4cd77500a6d",
+      "bytes": 904
+    },
+    {
+      "id": 172,
+      "file": "blocks/0172.txt",
+      "word_paragraph_index_zero_based": 4890,
+      "heading_context": [
+        "Capítulo 20 — Policy-as-code para FinOps",
+        "3. Implementación",
+        "El registro de auditoría de cambios de política"
+      ],
+      "sha256": "0d3c5faa9317f2afd5633078372c505a9ff9a32fdc757187848e0da7db7b334c",
+      "bytes": 1035
+    },
+    {
+      "id": 173,
+      "file": "blocks/0173.txt",
+      "word_paragraph_index_zero_based": 4896,
+      "heading_context": [
+        "Capítulo 20 — Policy-as-code para FinOps",
+        "3. Implementación",
+        "El sistema de herencia y overrides en profundidad"
+      ],
+      "sha256": "2c4d54c3bcb0e91025782e7814e2d6756d8f39f718940e9d7db1fe2ad5b5977f",
+      "bytes": 375
+    },
+    {
+      "id": 174,
+      "file": "blocks/0174.txt",
+      "word_paragraph_index_zero_based": 4898,
+      "heading_context": [
+        "Capítulo 20 — Policy-as-code para FinOps",
+        "3. Implementación",
+        "El sistema de herencia y overrides en profundidad"
+      ],
+      "sha256": "ff97a365f61be72922bb42201b901736e4e1e0373d951114532592bb3d04d1da",
+      "bytes": 1177
+    },
+    {
+      "id": 175,
+      "file": "blocks/0175.txt",
+      "word_paragraph_index_zero_based": 4907,
+      "heading_context": [
+        "Capítulo 20 — Policy-as-code para FinOps",
+        "3. Implementación",
+        "La gestión de emergencias: cuando hay que saltarse el proceso"
+      ],
+      "sha256": "485f351a077438882fb0cb3708075526707810dab4f2bc6490f727c385e27d76",
+      "bytes": 1130
+    },
+    {
+      "id": 176,
+      "file": "blocks/0176.txt",
+      "word_paragraph_index_zero_based": 4914,
+      "heading_context": [
+        "Capítulo 20 — Policy-as-code para FinOps",
+        "3. Implementación",
+        "El rollback de políticas: deshacer un cambio en minutos"
+      ],
+      "sha256": "4e3c027296126cc8ac87909725459e78123a3e45b297ba81857bbc409de4b3b2",
+      "bytes": 495
+    },
+    {
+      "id": 177,
+      "file": "blocks/0177.txt",
+      "word_paragraph_index_zero_based": 4918,
+      "heading_context": [
+        "Capítulo 20 — Policy-as-code para FinOps",
+        "3. Implementación",
+        "Políticas de excepción: el proceso de override temporal"
+      ],
+      "sha256": "6ea34657130724a4fb999fbe5b00bc8baa7a81d4cdea9a3e27627f82501fbc71",
+      "bytes": 428
+    },
+    {
+      "id": 178,
+      "file": "blocks/0178.txt",
+      "word_paragraph_index_zero_based": 4922,
+      "heading_context": [
+        "Capítulo 20 — Policy-as-code para FinOps",
+        "3. Implementación",
+        "La observabilidad de las políticas: métricas en Prometheus"
+      ],
+      "sha256": "aff16396273bf4eb367d4fb66783e5436176f8025fbb1eca0fb25edfb36eb5d2",
+      "bytes": 636
+    },
+    {
+      "id": 179,
+      "file": "blocks/0179.txt",
+      "word_paragraph_index_zero_based": 4931,
+      "heading_context": [
+        "Capítulo 20 — Policy-as-code para FinOps",
+        "3. Implementación",
+        "Policy-as-code más allá de los presupuestos: calidad y seguridad"
+      ],
+      "sha256": "bf51bc88738660ebde4df03870cdf8a49f92bbc9da1fe72cd74ada02634182aa",
+      "bytes": 630
+    },
+    {
+      "id": 180,
+      "file": "blocks/0180.txt",
+      "word_paragraph_index_zero_based": 4935,
+      "heading_context": [
+        "Capítulo 20 — Policy-as-code para FinOps",
+        "3. Implementación",
+        "La política de alertas multi-nivel"
+      ],
+      "sha256": "24631f2079d1592c81199bb037237fc5ef7c2f1ce03e10f63a54446a4ddf53fe",
+      "bytes": 425
+    },
+    {
+      "id": 181,
+      "file": "blocks/0181.txt",
+      "word_paragraph_index_zero_based": 4937,
+      "heading_context": [
+        "Capítulo 20 — Policy-as-code para FinOps",
+        "3. Implementación",
+        "La política de alertas multi-nivel"
+      ],
+      "sha256": "7b822c83106c24d4efd6bf59bcdabca87d9eecaa199f90f8ee9c59b4187b1719",
+      "bytes": 1194
+    },
+    {
+      "id": 182,
+      "file": "blocks/0182.txt",
+      "word_paragraph_index_zero_based": 4942,
+      "heading_context": [
+        "Capítulo 20 — Policy-as-code para FinOps",
+        "3. Implementación",
+        "La evolución del sistema: de YAML a DSL específico del dominio"
+      ],
+      "sha256": "f25f332d6c5ed6e5c2b0ea4c67ec1cae42498be416b5251469ab4d74c8160ae5",
+      "bytes": 781
+    },
+    {
+      "id": 183,
+      "file": "blocks/0183.txt",
+      "word_paragraph_index_zero_based": 4951,
+      "heading_context": [
+        "Capítulo 20 — Policy-as-code para FinOps",
+        "3. Implementación",
+        "La trazabilidad cruzada: políticas, uso y auditoría"
+      ],
+      "sha256": "0935124866db401c42e9cb134f8e58bdb387c5c244a9aa464387b34ccb5f0eac",
+      "bytes": 857
+    },
+    {
+      "id": 184,
+      "file": "blocks/0184.txt",
+      "word_paragraph_index_zero_based": 4976,
+      "heading_context": [
+        "Capítulo 20 — Policy-as-code para FinOps",
+        "3. Implementación",
+        "Propuestas adaptativas con un modelo intercambiable"
+      ],
+      "sha256": "7288d9eeb3373d1d4a3773c41b74e8289fa99436220635633a9bddac6855bbda",
+      "bytes": 882
+    },
+    {
+      "id": 185,
+      "file": "blocks/0185.txt",
+      "word_paragraph_index_zero_based": 5103,
+      "heading_context": [
+        "Capítulo 21 — AI Act, auditoría y trazabilidad financiera",
+        "3. Implementación",
+        "El modelo LLMUsageLog ampliado con campos de auditoría"
+      ],
+      "sha256": "55fb54df668a4a0ba616d85e0cc2f0c0481fb42ecd90da581516f50ca05db7e9",
+      "bytes": 999
+    },
+    {
+      "id": 186,
+      "file": "blocks/0186.txt",
+      "word_paragraph_index_zero_based": 5106,
+      "heading_context": [
+        "Capítulo 21 — AI Act, auditoría y trazabilidad financiera",
+        "3. Implementación",
+        "El contenido separado con política de retención"
+      ],
+      "sha256": "4e513c9816804f7540fdc265088167ad086b673851731a1d608658e52b6caaa1",
+      "bytes": 815
+    },
+    {
+      "id": 187,
+      "file": "blocks/0187.txt",
+      "word_paragraph_index_zero_based": 5109,
+      "heading_context": [
+        "Capítulo 21 — AI Act, auditoría y trazabilidad financiera",
+        "3. Implementación",
+        "El servicio de exportación para auditoría"
+      ],
+      "sha256": "c63e6993e89d0193e7ab5aa834591a1789a797e14710fdc6c72802092b0aa5b8",
+      "bytes": 1217
+    },
+    {
+      "id": 188,
+      "file": "blocks/0188.txt",
+      "word_paragraph_index_zero_based": 5112,
+      "heading_context": [
+        "Capítulo 21 — AI Act, auditoría y trazabilidad financiera",
+        "3. Implementación",
+        "Señales de revisión del workflow"
+      ],
+      "sha256": "5035c6ea35a51786d673438240960017c302db55225f4f8dfaa4e4e2b9ed8237",
+      "bytes": 1053
+    },
+    {
+      "id": 189,
+      "file": "blocks/0189.txt",
+      "word_paragraph_index_zero_based": 5115,
+      "heading_context": [
+        "Capítulo 21 — AI Act, auditoría y trazabilidad financiera",
+        "3. Implementación",
+        "Endpoint de auditoría"
+      ],
+      "sha256": "1face2cc474ccd1ba7f5ec2abf078e98b7eff45f58057434d93a023be34f1567",
+      "bytes": 806
+    },
+    {
+      "id": 190,
+      "file": "blocks/0190.txt",
+      "word_paragraph_index_zero_based": 5118,
+      "heading_context": [
+        "Capítulo 21 — AI Act, auditoría y trazabilidad financiera",
+        "3. Implementación",
+        "La política de retención automatizada"
+      ],
+      "sha256": "bc1a727e2eea9268eeea16d99a4433e743d93affe3f8336ddf69eec32477d5bb",
+      "bytes": 1155
+    },
+    {
+      "id": 191,
+      "file": "blocks/0191.txt",
+      "word_paragraph_index_zero_based": 5121,
+      "heading_context": [
+        "Capítulo 21 — AI Act, auditoría y trazabilidad financiera",
+        "3. Implementación",
+        "Respuesta a una solicitud de auditoría: ejercicio de exportación"
+      ],
+      "sha256": "c295746021066b11f9c8072ee801769e1a7bc9fb46434d7b0675d5a2b835fa43",
+      "bytes": 465
+    },
+    {
+      "id": 192,
+      "file": "blocks/0192.txt",
+      "word_paragraph_index_zero_based": 5135,
+      "heading_context": [
+        "Capítulo 21 — AI Act, auditoría y trazabilidad financiera",
+        "3. Implementación",
+        "El registro de incidentes de IA: cuando algo va mal"
+      ],
+      "sha256": "c65293db1b4c618cb9cccd2c0d13198f8f3c784834fbf9e3eaaaa91a209d2893",
+      "bytes": 870
+    },
+    {
+      "id": 193,
+      "file": "blocks/0193.txt",
+      "word_paragraph_index_zero_based": 5144,
+      "heading_context": [
+        "Capítulo 21 — AI Act, auditoría y trazabilidad financiera",
+        "3. Implementación",
+        "La clasificación de riesgo: cómo determinar la categoría"
+      ],
+      "sha256": "0f1625bbedd44decdcef187ffb0e560ec5670b6327473eee7194729b20f8a786",
+      "bytes": 752
+    },
+    {
+      "id": 194,
+      "file": "blocks/0194.txt",
+      "word_paragraph_index_zero_based": 5151,
+      "heading_context": [
+        "Capítulo 21 — AI Act, auditoría y trazabilidad financiera",
+        "3. Implementación",
+        "La relación entre LLMQualityScore y el AI Act"
+      ],
+      "sha256": "6c01752d6b08d602400a4738e49b1898aa5e4b7a1fe95729cf4b8c1d0630065c",
+      "bytes": 2455
+    },
+    {
+      "id": 195,
+      "file": "blocks/0195.txt",
+      "word_paragraph_index_zero_based": 5163,
+      "heading_context": [
+        "Capítulo 21 — AI Act, auditoría y trazabilidad financiera",
+        "3. Implementación",
+        "La documentación técnica del sistema: el DTS del AI Act"
+      ],
+      "sha256": "b0db26b586325e7388c697c114262111fbcaf17fe23e37344211f9733e235eff",
+      "bytes": 883
+    },
+    {
+      "id": 196,
+      "file": "blocks/0196.txt",
+      "word_paragraph_index_zero_based": 5171,
+      "heading_context": [
+        "Capítulo 21 — AI Act, auditoría y trazabilidad financiera",
+        "3. Implementación",
+        "Base jurídica y minimización en los logs de IA"
+      ],
+      "sha256": "a5ff28e37fe9a48244c0d0428213218326adc750b4aba6e0b29159320b6b4976",
+      "bytes": 797
+    },
+    {
+      "id": 197,
+      "file": "blocks/0197.txt",
+      "word_paragraph_index_zero_based": 5331,
+      "heading_context": [
+        "Capítulo 22 — Multi-proveedor: negociación y vendor lock-in",
+        "3. Implementación",
+        "LLMModelPricing: instantáneas económicas versionadas"
+      ],
+      "sha256": "69cf7013c009938f64c5f59f8be72edcf27dcefc6028906869a1b21e3b9eb439",
+      "bytes": 1492
+    },
+    {
+      "id": 198,
+      "file": "blocks/0198.txt",
+      "word_paragraph_index_zero_based": 5335,
+      "heading_context": [
+        "Capítulo 22 — Multi-proveedor: negociación y vendor lock-in",
+        "3. Implementación",
+        "El servicio de health check y failover automático"
+      ],
+      "sha256": "5f8380234bca4a9002fd3d5cc3373cd73e69790f20a28ede70f0a31da7aaf7be",
+      "bytes": 689
+    },
+    {
+      "id": 199,
+      "file": "blocks/0199.txt",
+      "word_paragraph_index_zero_based": 5337,
+      "heading_context": [
+        "Capítulo 22 — Multi-proveedor: negociación y vendor lock-in",
+        "3. Implementación",
+        "El servicio de health check y failover automático"
+      ],
+      "sha256": "794017ba2cbb2ffa9b3c15ba4f36969bbeedb0ce2d4bf1dcd8ae706d88cdd36f",
+      "bytes": 946
+    },
+    {
+      "id": 200,
+      "file": "blocks/0200.txt",
+      "word_paragraph_index_zero_based": 5341,
+      "heading_context": [
+        "Capítulo 22 — Multi-proveedor: negociación y vendor lock-in",
+        "3. Implementación",
+        "El router LLM integrado con política FinOps"
+      ],
+      "sha256": "b53d89f90a76c057ee8959581846396d95b2b842f54114b36a3e77a99ed4b42f",
+      "bytes": 2481
+    },
+    {
+      "id": 201,
+      "file": "blocks/0201.txt",
+      "word_paragraph_index_zero_based": 5345,
+      "heading_context": [
+        "Capítulo 22 — Multi-proveedor: negociación y vendor lock-in",
+        "3. Implementación",
+        "El panel de gestión de proveedores"
+      ],
+      "sha256": "610433303b7270ee4c5571061dfe4d9166d0dbaefde8b99fde711af5adb9818a",
+      "bytes": 835
+    },
+    {
+      "id": 202,
+      "file": "blocks/0202.txt",
+      "word_paragraph_index_zero_based": 5388,
+      "heading_context": [
+        "Capítulo 22 — Multi-proveedor: negociación y vendor lock-in",
+        "3. Implementación",
+        "Comparación de escenarios cloud con cotizaciones equivalentes"
+      ],
+      "sha256": "cbbf491b292041f172b59985d903716cfe679d40f01ba68b4f56726308993d36",
+      "bytes": 1024
+    },
+    {
+      "id": 203,
+      "file": "blocks/0203.txt",
+      "word_paragraph_index_zero_based": 5399,
+      "heading_context": [
+        "Capítulo 22 — Multi-proveedor: negociación y vendor lock-in",
+        "3. Implementación",
+        "La estrategia de committed use: optimizar el compromiso"
+      ],
+      "sha256": "9b8d7a87f4cce783afb80c6edbe08d05a0600426bc7858da3e3e87dcb94e05ed",
+      "bytes": 2109
+    },
+    {
+      "id": 204,
+      "file": "blocks/0204.txt",
+      "word_paragraph_index_zero_based": 5430,
+      "heading_context": [
+        "Capítulo 22 — Multi-proveedor: negociación y vendor lock-in",
+        "3. Implementación",
+        "La gestión del ciclo de vida de los modelos"
+      ],
+      "sha256": "cfaf6dd8d62c80a60f3b6da136486dbc73b018e47ca636363687970c4658b04f",
+      "bytes": 2462
+    },
+    {
+      "id": 205,
+      "file": "blocks/0205.txt",
+      "word_paragraph_index_zero_based": 5480,
+      "heading_context": [
+        "Capítulo 22 — Multi-proveedor: negociación y vendor lock-in",
+        "3. Implementación",
+        "La documentación del proveedor como activo de gobernanza"
+      ],
+      "sha256": "02168704cfbf44b3f7654c76420a9bc7904c325dc5c19041dd49c87e603d4388",
+      "bytes": 832
+    },
+    {
+      "id": 206,
+      "file": "blocks/0206.txt",
+      "word_paragraph_index_zero_based": 5514,
+      "heading_context": [
+        "Capítulo 23 — El coste del equipo: PerfilCoste y dedicación",
+        "1. Concepto",
+        "El coste de las personas no es solo el salario"
+      ],
+      "sha256": "c2626087720c50e0f5fac03b49acedee9e931c1a44a1af30759709c7c78730ac",
+      "bytes": 232
+    },
+    {
+      "id": 207,
+      "file": "blocks/0207.txt",
+      "word_paragraph_index_zero_based": 5516,
+      "heading_context": [
+        "Capítulo 23 — El coste del equipo: PerfilCoste y dedicación",
+        "1. Concepto",
+        "El coste de las personas no es solo el salario"
+      ],
+      "sha256": "70f4ad4993f84fc27cbffd608a466d31ecb598f0af250e61a73c7c48ad4d7814",
+      "bytes": 226
+    },
+    {
+      "id": 208,
+      "file": "blocks/0208.txt",
+      "word_paragraph_index_zero_based": 5589,
+      "heading_context": [
+        "Capítulo 23 — El coste del equipo: PerfilCoste y dedicación",
+        "2. La decisión",
+        "El coste real de un equipo de preventa con IA"
+      ],
+      "sha256": "9db3e9972792ba93f9e77f268f8c7a6ed0570e1a7238a6d368112a683f5a3cdc",
+      "bytes": 941
+    },
+    {
+      "id": 209,
+      "file": "blocks/0209.txt",
+      "word_paragraph_index_zero_based": 5629,
+      "heading_context": [
+        "Capítulo 23 — El coste del equipo: PerfilCoste y dedicación",
+        "3. Implementación",
+        "3.1. El modelo PerfilCoste"
+      ],
+      "sha256": "73d94394c081fe285dcbd99b287c69518c5fd7991bce2a5920582a3bc12212d7",
+      "bytes": 903
+    },
+    {
+      "id": 210,
+      "file": "blocks/0210.txt",
+      "word_paragraph_index_zero_based": 5633,
+      "heading_context": [
+        "Capítulo 23 — El coste del equipo: PerfilCoste y dedicación",
+        "3. Implementación",
+        "3.2. El modelo Imputacion"
+      ],
+      "sha256": "626f937e5c4244d91ed19742298a62f2bb5b4cd2ce0c634109b84f0786f9019a",
+      "bytes": 1064
+    },
+    {
+      "id": 211,
+      "file": "blocks/0211.txt",
+      "word_paragraph_index_zero_based": 5636,
+      "heading_context": [
+        "Capítulo 23 — El coste del equipo: PerfilCoste y dedicación",
+        "3. Implementación",
+        "3.3. El servicio de cálculo de TCO"
+      ],
+      "sha256": "ccce8577023bfdf41a2144265ee794a0cd10c1444f53fb8dd5f0d3dca791c623",
+      "bytes": 1332
+    },
+    {
+      "id": 212,
+      "file": "blocks/0212.txt",
+      "word_paragraph_index_zero_based": 5639,
+      "heading_context": [
+        "Capítulo 23 — El coste del equipo: PerfilCoste y dedicación",
+        "3. Implementación",
+        "3.4. La API para consultar el TCO"
+      ],
+      "sha256": "778c65fa4d4eead2f84e81149dd312ce2181e319843f2b646ba46b219862e532",
+      "bytes": 622
+    },
+    {
+      "id": 213,
+      "file": "blocks/0213.txt",
+      "word_paragraph_index_zero_based": 5642,
+      "heading_context": [
+        "Capítulo 23 — El coste del equipo: PerfilCoste y dedicación",
+        "3. Implementación",
+        "3.5. Análisis asistido del TCO"
+      ],
+      "sha256": "200c8c837e0166a27ba5a9fbe2756aac183c8d6def340a5b84b6b19271096b16",
+      "bytes": 662
+    },
+    {
+      "id": 214,
+      "file": "blocks/0214.txt",
+      "word_paragraph_index_zero_based": 5646,
+      "heading_context": [
+        "Capítulo 23 — El coste del equipo: PerfilCoste y dedicación",
+        "3. Implementación",
+        "3.6. El componente de dashboard para visualizar el TCO"
+      ],
+      "sha256": "68151360671de252adc187d782e09ee531de08d57bc398190ae8fbb075d21834",
+      "bytes": 1056
+    },
+    {
+      "id": 215,
+      "file": "blocks/0215.txt",
+      "word_paragraph_index_zero_based": 5673,
+      "heading_context": [
+        "Capítulo 23 — El coste del equipo: PerfilCoste y dedicación",
+        "3. Implementación",
+        "3.10. Casos de uso avanzados: el coste de la rotación de equipo"
+      ],
+      "sha256": "716ee71ac8a229332960b7f0157055484f5c47a9da5c195119709637725a86ef",
+      "bytes": 1058
+    },
+    {
+      "id": 216,
+      "file": "blocks/0216.txt",
+      "word_paragraph_index_zero_based": 5690,
+      "heading_context": [
+        "Capítulo 23 — El coste del equipo: PerfilCoste y dedicación",
+        "3. Implementación",
+        "3.12. El modelo PerfilCoste como herramienta de planificación de capacidad"
+      ],
+      "sha256": "8c9149be37a6e0346488d4141af40c98f812eb9bb72f8e53dc75e42cf8fc1714",
+      "bytes": 1113
+    },
+    {
+      "id": 217,
+      "file": "blocks/0217.txt",
+      "word_paragraph_index_zero_based": 5694,
+      "heading_context": [
+        "Capítulo 23 — El coste del equipo: PerfilCoste y dedicación",
+        "3. Implementación",
+        "3.13. Recogida asistida de imputaciones"
+      ],
+      "sha256": "5138f2df0cc1da2c68dc76aadebe9ec18d3d12f9c0359be727826b4ae872f1d5",
+      "bytes": 1066
+    },
+    {
+      "id": 218,
+      "file": "blocks/0218.txt",
+      "word_paragraph_index_zero_based": 5788,
+      "heading_context": [
+        "Capítulo 24 — FinOps como cultura, no como herramienta",
+        "3. Implementación",
+        "3.1. Vista de comparación de equipos autorizada"
+      ],
+      "sha256": "25c1b732fa4e27062494be48d3af311472af5ca1fa1d7d2d79ea778805c2f41a",
+      "bytes": 554
+    },
+    {
+      "id": 219,
+      "file": "blocks/0219.txt",
+      "word_paragraph_index_zero_based": 5792,
+      "heading_context": [
+        "Capítulo 24 — FinOps como cultura, no como herramienta",
+        "3. Implementación",
+        "3.2. El servicio de notificaciones de cost awareness"
+      ],
+      "sha256": "6fbe7d964919325effb83b1f0111c2c3fce97254fc6b0d270e34374f05adfb6f",
+      "bytes": 1169
+    },
+    {
+      "id": 220,
+      "file": "blocks/0220.txt",
+      "word_paragraph_index_zero_based": 5796,
+      "heading_context": [
+        "Capítulo 24 — FinOps como cultura, no como herramienta",
+        "3. Implementación",
+        "3.3. El componente React de cost awareness en el IDE workflow"
+      ],
+      "sha256": "4bbfabe5a52b7a577f723a4c0c7a04fe6369973537acad7f212bf074fe92579c",
+      "bytes": 820
+    },
+    {
+      "id": 221,
+      "file": "blocks/0221.txt",
+      "word_paragraph_index_zero_based": 5800,
+      "heading_context": [
+        "Capítulo 24 — FinOps como cultura, no como herramienta",
+        "3. Implementación",
+        "3.4. El programa de FinOps Champion: implementación práctica"
+      ],
+      "sha256": "7ada4f4457044de1f025e6aebc6f5d79ae3675dd250e9675092a752da1b88e3e",
+      "bytes": 1153
+    },
+    {
+      "id": 222,
+      "file": "blocks/0222.txt",
+      "word_paragraph_index_zero_based": 5895,
+      "heading_context": [
+        "Capítulo 25 — Caso 1: de €480/mes a €145/mes en tokens",
+        "1. Concepto",
+        "El sistema de partida"
+      ],
+      "sha256": "dd1ea6fb4f45e3d9043186fad99fffb36f650f92f59183c09f647ad545ea2427",
+      "bytes": 140
+    },
+    {
+      "id": 223,
+      "file": "blocks/0223.txt",
+      "word_paragraph_index_zero_based": 5985,
+      "heading_context": [
+        "Capítulo 25 — Caso 1: de €480/mes a €145/mes en tokens",
+        "3. Implementación",
+        "3.1. Intervención 1: routing de modelos (semanas 1-2)"
+      ],
+      "sha256": "a20508b74d198be85b6d678392b61c7588f91251bae2a430aaf07dcd04d0f826",
+      "bytes": 333
+    },
+    {
+      "id": 224,
+      "file": "blocks/0224.txt",
+      "word_paragraph_index_zero_based": 5987,
+      "heading_context": [
+        "Capítulo 25 — Caso 1: de €480/mes a €145/mes en tokens",
+        "3. Implementación",
+        "3.1. Intervención 1: routing de modelos (semanas 1-2)"
+      ],
+      "sha256": "25d97cafd1596a8aab8767ff1f07ba27661debbbc91091a9d8a462c2452999b9",
+      "bytes": 607
+    },
+    {
+      "id": 225,
+      "file": "blocks/0225.txt",
+      "word_paragraph_index_zero_based": 6027,
+      "heading_context": [
+        "Capítulo 25 — Caso 1: de €480/mes a €145/mes en tokens",
+        "3. Implementación",
+        "3.2. Intervención 2: modelos locales para preproceso (semanas 3-4)"
+      ],
+      "sha256": "c459c880fc38c882a378167c1904b130005cd4e4739248f29f7eb1824bae9534",
+      "bytes": 2068
+    },
+    {
+      "id": 226,
+      "file": "blocks/0226.txt",
+      "word_paragraph_index_zero_based": 6033,
+      "heading_context": [
+        "Capítulo 25 — Caso 1: de €480/mes a €145/mes en tokens",
+        "3. Implementación",
+        "3.3. Intervención 3: prompt caching (semanas 5-6)"
+      ],
+      "sha256": "43d76dbf77a622c3b2fe9b2623e9e510245222936a17eb3677ad13fcd0b7272d",
+      "bytes": 1828
+    },
+    {
+      "id": 227,
+      "file": "blocks/0227.txt",
+      "word_paragraph_index_zero_based": 6040,
+      "heading_context": [
+        "Capítulo 25 — Caso 1: de €480/mes a €145/mes en tokens",
+        "3. Implementación",
+        "3.4. Intervención 4: limitar contexto con cobertura explícita"
+      ],
+      "sha256": "5b02e0537a8101fd4a159b0bea4c585038f4f36d3be6d9cdc700e3a48e4ce49d",
+      "bytes": 1267
+    },
+    {
+      "id": 228,
+      "file": "blocks/0228.txt",
+      "word_paragraph_index_zero_based": 6046,
+      "heading_context": [
+        "Capítulo 25 — Caso 1: de €480/mes a €145/mes en tokens",
+        "3. Implementación",
+        "3.5. El mecanismo de verificación de calidad"
+      ],
+      "sha256": "33aed175ce21ad2c14e4f843c2700d4266f7584bd15149ac5cd8d71b2f9af3e6",
+      "bytes": 2450
+    },
+    {
+      "id": 229,
+      "file": "blocks/0229.txt",
+      "word_paragraph_index_zero_based": 6289,
+      "heading_context": [
+        "Capítulo 26 — Caso 2: agente de IA que ahorra $47K/año en cloud",
+        "3. Implementación",
+        "3.1. La arquitectura del agente cloud"
+      ],
+      "sha256": "a91c50c2da6f42b00ac85cd91a0b9d4cd26c614d368aa2be4b52864e1c3a3b49",
+      "bytes": 499
+    },
+    {
+      "id": 230,
+      "file": "blocks/0230.txt",
+      "word_paragraph_index_zero_based": 6292,
+      "heading_context": [
+        "Capítulo 26 — Caso 2: agente de IA que ahorra $47K/año en cloud",
+        "3. Implementación",
+        "3.1. La arquitectura del agente cloud"
+      ],
+      "sha256": "342aca9d895f9efd5c3717b1d091368a2e6193d3bc2887baabde1dfea2a59e09",
+      "bytes": 652
+    },
+    {
+      "id": 231,
+      "file": "blocks/0231.txt",
+      "word_paragraph_index_zero_based": 6296,
+      "heading_context": [
+        "Capítulo 26 — Caso 2: agente de IA que ahorra $47K/año en cloud",
+        "3. Implementación",
+        "3.2. El agentic loop: scan, análisis, recomendación"
+      ],
+      "sha256": "d35802208a212ae0106d5f13c390c5f6fbb082ced757f8072826c95046a01a94",
+      "bytes": 4581
+    },
+    {
+      "id": 232,
+      "file": "blocks/0232.txt",
+      "word_paragraph_index_zero_based": 6300,
+      "heading_context": [
+        "Capítulo 26 — Caso 2: agente de IA que ahorra $47K/año en cloud",
+        "3. Implementación",
+        "3.3. Scanning de instancias EC2 con métricas de CloudWatch"
+      ],
+      "sha256": "973b3b72c18f80853b361aac6f8ac9575ded8961a8a3a36453f2b6cdc7ba7bd9",
+      "bytes": 1795
+    },
+    {
+      "id": 233,
+      "file": "blocks/0233.txt",
+      "word_paragraph_index_zero_based": 6303,
+      "heading_context": [
+        "Capítulo 26 — Caso 2: agente de IA que ahorra $47K/año en cloud",
+        "3. Implementación",
+        "3.4. El pipeline de aprobación: scan, clasificación, ejecución"
+      ],
+      "sha256": "9d6f18d0acfa67c627b9e4f7c9bff2b8ae3e1976b01e145cb7ca6e3f038d965b",
+      "bytes": 2438
+    },
+    {
+      "id": 234,
+      "file": "blocks/0234.txt",
+      "word_paragraph_index_zero_based": 6307,
+      "heading_context": [
+        "Capítulo 26 — Caso 2: agente de IA que ahorra $47K/año en cloud",
+        "3. Implementación",
+        "3.5. Los mecanismos de seguridad"
+      ],
+      "sha256": "c7d0814778958dddaf7bf5eeda867562272dc1780da69b7bb929cbb8195b59d6",
+      "bytes": 833
+    },
+    {
+      "id": 235,
+      "file": "blocks/0235.txt",
+      "word_paragraph_index_zero_based": 6474,
+      "heading_context": [
+        "Capítulo 27 — Caso 3: pricing de un SaaS con IA integrada",
+        "1. Concepto",
+        "Por qué el pricing de IA es diferente"
+      ],
+      "sha256": "f2e88d13ccd305481b3e546051e55102102a7ca89dc05a84ec5bc9d9b4a4b17e",
+      "bytes": 275
+    },
+    {
+      "id": 236,
+      "file": "blocks/0236.txt",
+      "word_paragraph_index_zero_based": 6476,
+      "heading_context": [
+        "Capítulo 27 — Caso 3: pricing de un SaaS con IA integrada",
+        "1. Concepto",
+        "Por qué el pricing de IA es diferente"
+      ],
+      "sha256": "b7b71cb197a9d5ad58b812d7b13b6bf46f925cf9627de367a6da293723d59623",
+      "bytes": 274
+    },
+    {
+      "id": 237,
+      "file": "blocks/0237.txt",
+      "word_paragraph_index_zero_based": 6478,
+      "heading_context": [
+        "Capítulo 27 — Caso 3: pricing de un SaaS con IA integrada",
+        "1. Concepto",
+        "Por qué el pricing de IA es diferente"
+      ],
+      "sha256": "60a6e0a10b5fb0918aea7c0499685bf0ac26e77da8fed999a21099ad5ab38001",
+      "bytes": 258
+    },
+    {
+      "id": 238,
+      "file": "blocks/0238.txt",
+      "word_paragraph_index_zero_based": 6531,
+      "heading_context": [
+        "Capítulo 27 — Caso 3: pricing de un SaaS con IA integrada",
+        "3. Implementación",
+        "3.1. La calculadora de pricing con análisis de márgenes"
+      ],
+      "sha256": "360f225e6e2827d831b77712f502275fadaf15f90b2f0d4c0200afec784b65ad",
+      "bytes": 2869
+    },
+    {
+      "id": 239,
+      "file": "blocks/0239.txt",
+      "word_paragraph_index_zero_based": 6535,
+      "heading_context": [
+        "Capítulo 27 — Caso 3: pricing de un SaaS con IA integrada",
+        "3. Implementación",
+        "3.2. El análisis con datos cruzados de la serie"
+      ],
+      "sha256": "fac37fc4011d8cea66e0ab801de8ae984567498dbccdc33bb733c15226971d38",
+      "bytes": 2294
+    },
+    {
+      "id": 240,
+      "file": "blocks/0240.txt",
+      "word_paragraph_index_zero_based": 6539,
+      "heading_context": [
+        "Capítulo 27 — Caso 3: pricing de un SaaS con IA integrada",
+        "3. Implementación",
+        "3.3. La gestión de heavy users: el mecanismo de fair use"
+      ],
+      "sha256": "268d232426d462ae6e088b5c6a1a3ca3ee2f4cda91acbd579d27c82111ea5732",
+      "bytes": 3052
+    },
+    {
+      "id": 241,
+      "file": "blocks/0241.txt",
+      "word_paragraph_index_zero_based": 6543,
+      "heading_context": [
+        "Capítulo 27 — Caso 3: pricing de un SaaS con IA integrada",
+        "3. Implementación",
+        "3.4. El resultado de las tres iteraciones"
+      ],
+      "sha256": "8ddcb88305271f194b6144d8b79093a75e2e62d1de2b7a104a32f44bc00c22b1",
+      "bytes": 788
+    },
+    {
+      "id": 242,
+      "file": "blocks/0242.txt",
+      "word_paragraph_index_zero_based": 6746,
+      "heading_context": [
+        "Capítulo 28 — FinOps para agentes autónomos",
+        "3. Implementación",
+        "3.1. El AgentBudgetManager: presupuesto por workflow"
+      ],
+      "sha256": "7d5a9fefd123cf06325096e346726c788b25279052e31fcf777fd60a75749d30",
+      "bytes": 4714
+    },
+    {
+      "id": 243,
+      "file": "blocks/0243.txt",
+      "word_paragraph_index_zero_based": 6749,
+      "heading_context": [
+        "Capítulo 28 — FinOps para agentes autónomos",
+        "3. Implementación",
+        "3.1. El AgentBudgetManager: presupuesto por workflow"
+      ],
+      "sha256": "89ee020d3f3716bf6f65418fc88153465a6ce919627262767e7c6f8c9205aee1",
+      "bytes": 882
+    },
+    {
+      "id": 244,
+      "file": "blocks/0244.txt",
+      "word_paragraph_index_zero_based": 6753,
+      "heading_context": [
+        "Capítulo 28 — FinOps para agentes autónomos",
+        "3. Implementación",
+        "3.2. El agente que conoce su presupuesto"
+      ],
+      "sha256": "5592a0371c3258e45f03e87aa6acbbd485a7286d2be21d83f8d57353c7c8a930",
+      "bytes": 2421
+    },
+    {
+      "id": 245,
+      "file": "blocks/0245.txt",
+      "word_paragraph_index_zero_based": 6757,
+      "heading_context": [
+        "Capítulo 28 — FinOps para agentes autónomos",
+        "3. Implementación",
+        "3.3. Agent-to-agent billing en el orquestador"
+      ],
+      "sha256": "fd554f68a3384c42734842e0d92d872a248c574086c4553da5bdf00a7789b551",
+      "bytes": 1168
+    },
+    {
+      "id": 246,
+      "file": "blocks/0246.txt",
+      "word_paragraph_index_zero_based": 6761,
+      "heading_context": [
+        "Capítulo 28 — FinOps para agentes autónomos",
+        "3. Implementación",
+        "3.4. AgentSession.total_cost_eur: el patrón mínimo viable"
+      ],
+      "sha256": "ddf2c44c96a1ff8779d52b189fbedcf0743654a64c182e996e93fc90f938947f",
+      "bytes": 1731
+    },
+    {
+      "id": 247,
+      "file": "blocks/0247.txt",
+      "word_paragraph_index_zero_based": 6765,
+      "heading_context": [
+        "Capítulo 28 — FinOps para agentes autónomos",
+        "3. Implementación",
+        "3.5. El dashboard de agentes autónomos"
+      ],
+      "sha256": "e18ea854db6b1433f94ea2def3f0a78e9fa8c6b0101231b560914d0b0aca2a59",
+      "bytes": 1019
+    },
+    {
+      "id": 248,
+      "file": "blocks/0248.txt",
+      "word_paragraph_index_zero_based": 6948,
+      "heading_context": [
+        "Capítulo 29 — La convergencia: FinOps + AIOps + GreenOps",
+        "3. Implementación",
+        "3.1. El modelo de datos unificado"
+      ],
+      "sha256": "a16bfd1b1b9d79db5202a955d9ae0bb8e6cd3a03a260536b5a42d4203be220a5",
+      "bytes": 773
+    },
+    {
+      "id": 249,
+      "file": "blocks/0249.txt",
+      "word_paragraph_index_zero_based": 6952,
+      "heading_context": [
+        "Capítulo 29 — La convergencia: FinOps + AIOps + GreenOps",
+        "3. Implementación",
+        "3.2. El estimador de huella energética para tokens LLM"
+      ],
+      "sha256": "28002cd6edd6c86d4e39fde784babe8e0da3e1ff35b3215a5cef9eb18f532277",
+      "bytes": 2621
+    },
+    {
+      "id": 250,
+      "file": "blocks/0250.txt",
+      "word_paragraph_index_zero_based": 6956,
+      "heading_context": [
+        "Capítulo 29 — La convergencia: FinOps + AIOps + GreenOps",
+        "3. Implementación",
+        "3.3. El dashboard de sostenibilidad unificado"
+      ],
+      "sha256": "23c338cbc602c3408b5bf669823d48ab92f212eb074dd44e9cd7a6e17fe33294",
+      "bytes": 942
+    },
+    {
+      "id": 251,
+      "file": "blocks/0251.txt",
+      "word_paragraph_index_zero_based": 6960,
+      "heading_context": [
+        "Capítulo 29 — La convergencia: FinOps + AIOps + GreenOps",
+        "3. Implementación",
+        "3.4. El agente de análisis convergente"
+      ],
+      "sha256": "0058629281907110d912a14f89518d534e1c968de95ca2daf297982db2e95f7d",
+      "bytes": 2682
+    },
+    {
+      "id": 252,
+      "file": "blocks/0252.txt",
+      "word_paragraph_index_zero_based": 6964,
+      "heading_context": [
+        "Capítulo 29 — La convergencia: FinOps + AIOps + GreenOps",
+        "3. Implementación",
+        "3.5. Gestionar la paradoja de Jevons en la práctica"
+      ],
+      "sha256": "33bcdc02723d3009b94ede9ab7b0965fb67f2a2816abd558115ccbe7b50f0fdd",
+      "bytes": 2014
+    },
+    {
+      "id": 253,
+      "file": "blocks/0253.txt",
+      "word_paragraph_index_zero_based": 7344,
+      "heading_context": [
+        "Apéndice B — APIs de coste cloud: referencia rápida",
+        "1. AWS Cost Explorer API",
+        "Autenticación"
+      ],
+      "sha256": "a213fb8c6ea0657b3eb091849e3e585213ae71cc2272a81d5d0ea1c272753f24",
+      "bytes": 444
+    },
+    {
+      "id": 254,
+      "file": "blocks/0254.txt",
+      "word_paragraph_index_zero_based": 7347,
+      "heading_context": [
+        "Apéndice B — APIs de coste cloud: referencia rápida",
+        "1. AWS Cost Explorer API",
+        "Permisos IAM necesarios"
+      ],
+      "sha256": "8c451ac36b012b6534fe144ee702768ff56999a7c3caa9afa64e170b4a098672",
+      "bytes": 268
+    },
+    {
+      "id": 255,
+      "file": "blocks/0255.txt",
+      "word_paragraph_index_zero_based": 7349,
+      "heading_context": [
+        "Apéndice B — APIs de coste cloud: referencia rápida",
+        "1. AWS Cost Explorer API",
+        "Consulta básica: coste por servicio"
+      ],
+      "sha256": "3c8d9faddaadde2c97487c0f5aaad3852e87a512f2811a4b354efe692ab3bd36",
+      "bytes": 1817
+    },
+    {
+      "id": 256,
+      "file": "blocks/0256.txt",
+      "word_paragraph_index_zero_based": 7351,
+      "heading_context": [
+        "Apéndice B — APIs de coste cloud: referencia rápida",
+        "1. AWS Cost Explorer API",
+        "Consulta de forecast"
+      ],
+      "sha256": "2defd437350418e5edc525c12e0f178f4aef829df064be54ec9fbaccd5bd4359",
+      "bytes": 879
+    },
+    {
+      "id": 257,
+      "file": "blocks/0257.txt",
+      "word_paragraph_index_zero_based": 7353,
+      "heading_context": [
+        "Apéndice B — APIs de coste cloud: referencia rápida",
+        "1. AWS Cost Explorer API",
+        "Recomendaciones de rightsizing"
+      ],
+      "sha256": "e9df9878618157234f1bf91bd5da1e82a7acabb10bf79ac09538b709f3795c0f",
+      "bytes": 2041
+    },
+    {
+      "id": 258,
+      "file": "blocks/0258.txt",
+      "word_paragraph_index_zero_based": 7376,
+      "heading_context": [
+        "Apéndice B — APIs de coste cloud: referencia rápida",
+        "2. AWS Cost and Usage Report (CUR)",
+        "Configuración"
+      ],
+      "sha256": "649a3b31ed48ad61ba4d868c8bd7af51855f89f16a66851d9d670d2956cf6995",
+      "bytes": 653
+    },
+    {
+      "id": 259,
+      "file": "blocks/0259.txt",
+      "word_paragraph_index_zero_based": 7379,
+      "heading_context": [
+        "Apéndice B — APIs de coste cloud: referencia rápida",
+        "2. AWS Cost and Usage Report (CUR)",
+        "Consulta con Athena"
+      ],
+      "sha256": "f923c868e6ee7dec77180a88d00a4c3c71cd65dafb5de9f276e45c97e0f2773b",
+      "bytes": 613
+    },
+    {
+      "id": 260,
+      "file": "blocks/0260.txt",
+      "word_paragraph_index_zero_based": 7388,
+      "heading_context": [
+        "Apéndice B — APIs de coste cloud: referencia rápida",
+        "3. AWS Savings Plans y Reserved Instances",
+        "Consulta de utilización de Savings Plans"
+      ],
+      "sha256": "eb5256577d6ca50f56b5bbae1d3682730b0950af7e0e484b65bad0d253016487",
+      "bytes": 955
+    },
+    {
+      "id": 261,
+      "file": "blocks/0261.txt",
+      "word_paragraph_index_zero_based": 7390,
+      "heading_context": [
+        "Apéndice B — APIs de coste cloud: referencia rápida",
+        "3. AWS Savings Plans y Reserved Instances",
+        "Consulta de cobertura de Reserved Instances"
+      ],
+      "sha256": "9c5d761262f0e338077e042cf70f4da11a26156e4056c0f808b77cb6ab82c5a2",
+      "bytes": 793
+    },
+    {
+      "id": 262,
+      "file": "blocks/0262.txt",
+      "word_paragraph_index_zero_based": 7396,
+      "heading_context": [
+        "Apéndice B — APIs de coste cloud: referencia rápida",
+        "4. Azure Cost Management API",
+        "Autenticación"
+      ],
+      "sha256": "714022393ad1b29ea2b60f75f60a75cfbfa6e2f5fb3c5920716fdb9d2ba06548",
+      "bytes": 307
+    },
+    {
+      "id": 263,
+      "file": "blocks/0263.txt",
+      "word_paragraph_index_zero_based": 7401,
+      "heading_context": [
+        "Apéndice B — APIs de coste cloud: referencia rápida",
+        "4. Azure Cost Management API",
+        "Consulta de costes por servicio"
+      ],
+      "sha256": "c678b9fba2e36b91921cf6be70359826c88f430b18a6cd427dd34f21540971e1",
+      "bytes": 937
+    },
+    {
+      "id": 264,
+      "file": "blocks/0264.txt",
+      "word_paragraph_index_zero_based": 7403,
+      "heading_context": [
+        "Apéndice B — APIs de coste cloud: referencia rápida",
+        "4. Azure Cost Management API",
+        "Presupuestos y alertas"
+      ],
+      "sha256": "4e6b086200ba82750263b1f40284227eb9da6cd47d71f50c7b3cd3504cf468dd",
+      "bytes": 1088
+    },
+    {
+      "id": 265,
+      "file": "blocks/0265.txt",
+      "word_paragraph_index_zero_based": 7405,
+      "heading_context": [
+        "Apéndice B — APIs de coste cloud: referencia rápida",
+        "4. Azure Cost Management API",
+        "Azure Advisor: recomendaciones de coste"
+      ],
+      "sha256": "83ee472a792e88bd868d888c5ca516dc29e1931e35cd46e4d170bbad7f7ce9fd",
+      "bytes": 1024
+    },
+    {
+      "id": 266,
+      "file": "blocks/0266.txt",
+      "word_paragraph_index_zero_based": 7427,
+      "heading_context": [
+        "Apéndice B — APIs de coste cloud: referencia rápida",
+        "5. GCP Cloud Billing API",
+        "Autenticación"
+      ],
+      "sha256": "9794d8ead1ca51167efa73fc518cc27bc7b50329d609ce29999599fb9c290595",
+      "bytes": 215
+    },
+    {
+      "id": 267,
+      "file": "blocks/0267.txt",
+      "word_paragraph_index_zero_based": 7433,
+      "heading_context": [
+        "Apéndice B — APIs de coste cloud: referencia rápida",
+        "5. GCP Cloud Billing API",
+        "Listar cuentas de billing"
+      ],
+      "sha256": "35cdf53c6974cd9fce69e53844935a5245c0d7b4499f79bbf8f4b0178177cbf9",
+      "bytes": 610
+    },
+    {
+      "id": 268,
+      "file": "blocks/0268.txt",
+      "word_paragraph_index_zero_based": 7435,
+      "heading_context": [
+        "Apéndice B — APIs de coste cloud: referencia rápida",
+        "5. GCP Cloud Billing API",
+        "Presupuestos con la Budgets API"
+      ],
+      "sha256": "97365a31e7e1d1f85d93229bedbfe11764edbd7cc19cf399512b4be703ab1c9c",
+      "bytes": 886
+    },
+    {
+      "id": 269,
+      "file": "blocks/0269.txt",
+      "word_paragraph_index_zero_based": 7438,
+      "heading_context": [
+        "Apéndice B — APIs de coste cloud: referencia rápida",
+        "5. GCP Cloud Billing API",
+        "Consulta de costes via BigQuery export"
+      ],
+      "sha256": "09896d84e498a855c56b0a168057e8bdb9736834dcdc7dfe54bcd6d9bfa56cac",
+      "bytes": 1073
+    },
+    {
+      "id": 270,
+      "file": "blocks/0270.txt",
+      "word_paragraph_index_zero_based": 7513,
+      "heading_context": [
+        "Apéndice B — APIs de coste cloud: referencia rápida",
+        "7. Herramientas complementarias",
+        "Infracost"
+      ],
+      "sha256": "8bc75db6fc8aecb117854b7a6f34ebf7aa49d9d7de8a383ae0f3d2e2684d98d7",
+      "bytes": 373
+    },
+    {
+      "id": 271,
+      "file": "blocks/0271.txt",
+      "word_paragraph_index_zero_based": 7517,
+      "heading_context": [
+        "Apéndice B — APIs de coste cloud: referencia rápida",
+        "7. Herramientas complementarias",
+        "OpenCost"
+      ],
+      "sha256": "3b8ca4a8ea32061128bfeadfb721fd376193c0f3c4237aa4a99031dfdc98c74f",
+      "bytes": 603
+    },
+    {
+      "id": 272,
+      "file": "blocks/0272.txt",
+      "word_paragraph_index_zero_based": 7521,
+      "heading_context": [
+        "Apéndice B — APIs de coste cloud: referencia rápida",
+        "7. Herramientas complementarias",
+        "Kubecost"
+      ],
+      "sha256": "73d28efd5fc098beae47d7630b6144da1e76485cedb8084e09f0d75c08a12abf",
+      "bytes": 314
+    },
+    {
+      "id": 273,
+      "file": "blocks/0273.txt",
+      "word_paragraph_index_zero_based": 7530,
+      "heading_context": [
+        "Apéndice B — APIs de coste cloud: referencia rápida",
+        "8. Integración de herramientas de coste con un asistente"
+      ],
+      "sha256": "325f32126c2d62820a2908e741a7bfb6abd246677db261614d8441361f979b97",
+      "bytes": 954
+    }
+  ]
+}

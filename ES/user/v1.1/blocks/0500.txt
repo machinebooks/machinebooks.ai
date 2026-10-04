@@ -1,0 +1,3 @@
+Añade health checks para el worker y límites de memoria
+para todos los servicios. El backend y el worker no deben
+usar más de 512 MB cada uno. Redis y postgres, 256 MB.

@@ -1,0 +1,22 @@
+import enum
+from sqlalchemy import Column, String, Boolean, DateTime, Enum, Integer, CheckConstraint
+from .base import Base
+
+class ModelTier(str, enum.Enum):
+    FAST = "fast"
+    BALANCED = "balanced"
+    POWERFUL = "powerful"
+
+class LLMServiceConfig(Base):
+    __tablename__ = "llm_service_config"
+    tenant_id = Column(String(36), primary_key=True)
+    service_name = Column(String(100), primary_key=True)
+    version = Column(String(64), primary_key=True)
+    default_tier = Column(Enum(ModelTier, values_callable=lambda e:[x.value for x in e]), nullable=False)
+    allow_upgrade = Column(Boolean, nullable=False)
+    allow_downgrade = Column(Boolean, nullable=False)
+    max_output_tokens = Column(Integer, nullable=False)
+    updated_at_utc = Column(DateTime, nullable=False)
+    __table_args__ = (CheckConstraint("max_output_tokens BETWEEN 1 AND 8192"),)
+# Registry maps approved tiers to versioned endpoints/capabilities/prices for scope.
+# Labels describe a routing policy; they do not establish general model quality.

@@ -1,10 +1,17 @@
 # The FinOps Engineer and the Machine -- Code Examples
 
+## Version 1.1 code
+
+The 273 educational blocks from version 1.1 are in [v1.1/blocks](v1.1/blocks). The [manifest](v1.1/manifest.json) records each chapter or section, block position, and SHA-256. Each TXT preserves the exact text, line breaks, and tabs in the final English Word manuscript; copy it to prepare tests with the dependencies and conditions stated in the book. Extraction does not establish execution or production suitability.
+
+Earlier folders remain as material from the previous edition and may contain a different selection. Use `v1.1` for this revision. The desktop application and production core are private; there is no Community edition and none is planned. This repository publishes companion examples only.
+
+
 Code examples from the book **"The FinOps Engineer and the Machine"** (*El FinOps Engineer y la Máquina*).
 
-Each file corresponds to a chapter and contains the didactic code shown in the book.
+The earlier categorized files contain a curated selection from the previous edition. The `v1.1` folder contains the exact revised blocks indexed by chapter or section in its manifest.
 
-## Structure
+## Earlier material structure
 
 | Folder | Contents | Chapters |
 |--------|----------|----------|

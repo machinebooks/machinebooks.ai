@@ -1,0 +1,29 @@
+cd /home/usuario/informe-trimestral
+
+claude -p "
+ROLE: Quality reviewer.
+Read borradores/informe-q1-v1.md, the draft report.
+Also read datos/resultados-q1.csv and datos/objetivos-q1.csv
+to check that the report's figures match the source data.
+
+Generate a review at borradores/revision-v1.md covering:
+
+1. FIGURES: Do all numbers in the report match the CSV files?
+   For each discrepancy, give the value in the report and the value
+   supported by the source data.
+
+2. CONSISTENCY: Do the data support the conclusions?
+   Are there statements without numerical evidence?
+
+3. CLARITY: Is the text clear to an executive unfamiliar with the details?
+   Are any paragraphs confusing or ambiguous?
+
+4. COMPLETENESS: Is any relevant section or data missing?
+
+5. FORMATTING: Are tables formatted correctly? Do amounts follow
+   the glossary's conventions?
+
+6. VERDICT: Approved / Approved with minor changes / Major revision required
+
+For each finding, identify the affected section and suggest a concrete correction.
+" > logs/revisor-v1.log 2>&1

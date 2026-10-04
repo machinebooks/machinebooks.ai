@@ -1,0 +1,6 @@
+DIDACTIC EXAMPLE, NOT MEASURED STATE:
+5 replicas × 34% / 70% = 2.4286; rounding upward gives 3.
+With minimum 3 and maximum 10, the ideal estimate is 3 replicas.
+CPU is calculated against configured requests, not total node CPU.
+Missing metrics, unready Pods, tolerance, and stabilization affect the decision.
+This establishes neither immediate reduction nor correct HPA configuration.

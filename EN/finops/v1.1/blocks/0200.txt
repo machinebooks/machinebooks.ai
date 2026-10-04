@@ -1,0 +1,49 @@
+import asyncio
+from decimal import Decimal
+from uuid import uuid4
+
+class LLMService:
+    def __init__(self, router, budget, breaker, safety_guard, upper_bound, invoke_tracked):
+        self.router,self.budget,self.breaker = router,budget,breaker
+        self.safety_guard,self.upper_bound,self.invoke_tracked = safety_guard,upper_bound,invoke_tracked
+
+    async def complete(self, authorized_scope, service_name, ctx):
+        selection = self.router.select_model(authorized_scope,service_name,ctx)
+        guard = await self.safety_guard(authorized_scope,selection,ctx)
+        if guard["authorized"] is not True:
+            raise PermissionError("Unauthorized request")
+        attempt_id = str(uuid4())
+        estimate = self.upper_bound(selection,ctx)
+        permit = self.breaker.allow_request()
+        if permit is None:
+            raise RuntimeError("Provider pending review")
+        try:
+            reservation = await self.budget.reserve(authorized_scope,attempt_id,
+                estimate,selection["price_version"],guard["checked_at_utc"])
+        except BaseException:
+            self.breaker.cancel_uncalled_permit(permit)
+            raise
+        observed = None
+        try:
+            result = await asyncio.wait_for(self.invoke_tracked(
+                authorized_scope,attempt_id,selection,ctx),timeout=60)
+            value = result.get("observed_cost_usd")
+            if value is not None:
+                cost = Decimal(str(value))
+                if not cost.is_finite() or cost < 0:
+                    raise ValueError("invalid observed cost")
+                observed = cost
+            if result["stop_reason"] != "end_turn":
+                raise ValueError("incomplete response")
+            return result
+        finally:
+            try:
+                await self.budget.settle(authorized_scope,attempt_id,reservation,observed)
+            finally:
+                self.breaker.record_attempt(permit,observed)
+# SafetyGuard is a required trusted host authorization/data policy contract, called
+# before reserve/invocation; it is not an LLM risk label. It must revalidate freshness.
+# Upper bound covers serialized system/tools/input, output, retries, cache and price
+# version; no words×1.5 or unknown-model fallback tariff. Tracker records every attempt.
+# Host implements transactions, durable recovery/cancellation and scoped adapters.
+# This pipeline wiring and local fixtures do not prove production security or a cap.

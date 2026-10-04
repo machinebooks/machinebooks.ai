@@ -1,0 +1,18 @@
+# Declared cost categories in one EUR window/FX version; unknown stays null.
+from decimal import Decimal
+
+def project_cost_breakdown(people,tokens,cloud,tools,overhead):
+    raw={"people":people,"tokens":tokens,"cloud":cloud,"tools":tools,"overhead":overhead}
+    values={k:None if v is None else Decimal(str(v)) for k,v in raw.items()}
+    if any(v is not None and not v.is_finite() for v in values.values()):
+        raise ValueError("Invalid amount")
+    complete=all(v is not None for v in values.values())
+    subtotal=sum((v for v in values.values() if v is not None),Decimal(0))
+    person_share=None if not complete or subtotal==0 else values["people"]/subtotal*100
+    token_ratio=None if values["people"] is None or values["tokens"] in (None,0) else values["people"]/values["tokens"]
+    return {"categories":{k:None if v is None else str(v) for k,v in values.items()},
+            "known_subtotal_eur":str(subtotal),"declared_categories_complete":complete,
+            "people_share_pct":None if person_share is None else str(person_share),
+            "people_to_token_ratio":None if token_ratio is None else str(token_ratio),"full_tco":False}
+# Host supplies scoped end-exclusive source snapshots; shared overhead already loaded
+# into role prices is excluded from the separate overhead category to avoid double count.

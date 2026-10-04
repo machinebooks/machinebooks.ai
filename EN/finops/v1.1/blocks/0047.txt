@@ -1,0 +1,15 @@
+from decimal import Decimal
+from uuid import UUID
+
+async def update_budget_counters(repository, authorized_scope, attempt_id, cost_usd, window):
+    UUID(attempt_id)
+    if cost_usd is not None:
+        cost_usd = Decimal(str(cost_usd))
+        if not cost_usd.is_finite() or cost_usd < 0:
+            raise ValueError("finite nonnegative cost required")
+    return await repository.record_attempt_and_update_counters_once(
+        authorized_scope=authorized_scope, attempt_id=attempt_id,
+        cost_usd=cost_usd, window=window)
+# Required host transaction: unique tenant/attempt insert, all scope increments,
+# unpriced count and reservation reconciliation commit together; retries deduplicate.
+# The repository is an explicit unimplemented contract, not proof of SQL atomicity.

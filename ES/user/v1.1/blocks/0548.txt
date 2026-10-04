@@ -1,0 +1,30 @@
+claude -p "
+PIPELINE DE ANÁLISIS DE SATISFACCIÓN — Q1 2025
+
+FASE 1 — OBTENER:
+Lee datos/encuestas-q1.csv. Comprueba que las puntuaciones por dimensión
+están entre 1 y 10, que las fechas pertenecen a Q1 2025 y que no faltan campos obligatorios.
+Registra filas inválidas y detén la entrega final si hay errores materiales.
+
+FASE 2 — PREPARAR:
+- Calcula medias de general, comunicación, calidad y plazos.
+- Agrupa por cliente (incluidas encuestas repetidas) y mes.
+- Identifica encuestas con puntuación general inferior a 7.
+
+FASE 3 — ANALIZAR:
+- Balance de recomendación Sí/No: porcentaje Sí menos porcentaje No sobre las 10
+  respuestas válidas, incluidas Tal vez. Fixture: 80% - 10% = 70 puntos porcentuales.
+  No es NPS; el NPS requiere una escala de recomendación de 0 a 10 respaldada por fuentes.
+- Dimensiones mayor y menor; evolución mensual con número de muestras.
+- Clientes con puntuaciones bajas y dimensiones afectadas.
+- Evalúa asociaciones con los plazos sin afirmar una correlación no respaldada.
+- Temas recurrentes en comentarios, conservando referencias a fuentes.
+
+FASE 4 — PREPARAR:
+Genera informes/satisfaccion-q1-2025.md con resumen ejecutivo de cinco líneas,
+medias y comparativas mensuales, clasificación de clientes, encuestas inferiores a 7
+y acciones propuestas, cambios mensuales, tres prioridades de mejora y citas relevantes
+con fuente. Protege datos personales y distingue observaciones de propuestas.
+Cada hallazgo debe tener una recomendación. Comprueba muestras y cálculos antes
+de la revisión humana. No envíes el informe automáticamente.
+"

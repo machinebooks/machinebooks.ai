@@ -1,0 +1,3 @@
+claude mcp add --transport http --scope local slack https://mcp.slack.com/mcp
+# Then use /mcp in the client to complete OAuth.
+# Check the approved Slack app/client ID when required.

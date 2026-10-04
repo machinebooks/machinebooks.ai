@@ -1,0 +1,15 @@
+En la carpeta D:\Legal\Contratos_Proveedores hay 15 contratos en PDF.
+
+Necesito una tabla con estos campos para cada contrato:
+- Nombre del proveedor
+- Fecha de inicio del contrato
+- Fecha de vencimiento
+- Importe anual o total del contrato
+- Plazo de preaviso para no renovación (en días)
+- ¿Tiene renovación automática? (Sí/No)
+- Cláusula de penalización por cancelación anticipada (resumen en 1 línea)
+- Página donde encontraste cada dato clave
+
+Genera un CSV y ordénalo por fecha de vencimiento (el más próximo primero).
+Si un dato no aparece explícitamente en el contrato, indica "No especificado".
+Separa datos explícitos de fechas calculadas. Si una fecha se deriva de una duración, indica que es calculada, cita la cláusula y la fecha de inicio usada, documenta la regla y deja pendientes las ambigüedades o cláusulas contradictorias para revisión jurídica.

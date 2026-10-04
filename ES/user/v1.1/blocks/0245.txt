@@ -1,0 +1,11 @@
+Revisa los compromisos de las últimas 3 reuniones de equipo
+(ficheros en actas/2024-11/*-equipo.md) y para cada acción
+asignada, verifica:
+
+1. ¿Se cerró el ticket de Jira correspondiente?
+2. ¿Hay un PR en GitHub que corresponda a la tarea?
+3. ¿Hay un email confirmando la entrega?
+
+Distingue cerrado, fusionado, desplegado y aceptado con evidencias.
+Dame estados: completado confirmado / en progreso / pendiente de
+confirmación. Marca vencimiento sólo con plazo confirmado y fecha de corte.

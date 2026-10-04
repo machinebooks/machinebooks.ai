@@ -1,0 +1,40 @@
+import time
+import copy
+
+class ModelRouter:
+    def __init__(self, load_scoped_snapshot, clock=time.monotonic):
+        self.load = load_scoped_snapshot
+        self.clock = clock
+        self.cache = {}
+
+    def select_model(self, authorized_scope, service_name, routing_ctx):
+        key = (authorized_scope, service_name)
+        now = self.clock()
+        cached = self.cache.get(key)
+        if cached is None or now-cached[0] >= 300:
+            config = self.load(authorized_scope, service_name)
+            if config is None:
+                raise ValueError("no approved routing configuration")
+            if len(self.cache) >= 1000:
+                self.cache.clear()
+            self.cache[key] = (now, copy.deepcopy(config))
+        config = self.cache[key][1]
+        tier = config["default_tier"]
+        order = {"fast":0, "balanced":1, "powerful":2}
+        estimated = estimate_complexity(routing_ctx)
+        if any(type(config[k]) is not bool for k in ("allow_upgrade", "allow_downgrade")):
+            raise ValueError("routing policy flags")
+        if ((config["allow_upgrade"] and order[estimated] > order[tier]) or
+            (config["allow_downgrade"] and order[estimated] < order[tier])):
+            tier = estimated
+        endpoint = config["approved_endpoints"][tier]
+        cap = config["max_output_tokens"]
+        if type(cap) is not int or not 1 <= cap <= 8192:
+            raise ValueError("output cap")
+        return {"endpoint":endpoint, "max_output_tokens":cap,
+                "config_version":config["version"], "price_version":config["price_version"], "tier":tier}
+
+    def invalidate(self):
+        self.cache.clear()
+# Host loads immutable, authorized snapshots and invalidates on policy/revocation.
+# Cached routing is never a substitute for fresh execution authorization.

@@ -1,0 +1,7 @@
+Review authorized MySQL environment metrics without changes:
+connections, limits, capacity, and slow queries if logs are available.
+Backup status requires backup-system records and restoration tests;
+it cannot be inferred from MySQL access alone.
+Disk or fragmentation metrics may require additional tools and owner
+review. Do not run OPTIMIZE or change configuration.
+Define traffic-light thresholds and mark unverifiable items.

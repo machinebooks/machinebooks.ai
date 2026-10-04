@@ -1,0 +1,13 @@
+# Illustrative override, no customer identity or fabricated ticket/approval.
+tenant_id: fixture-tenant
+inherits: global
+approval_state: pending
+budgets:
+  monthly_total_eur: "150.00"
+  alert_threshold: "0.75"
+  task_budgets:
+    offer_generation: {monthly_eur: "80.00"}
+    compliance_report: {monthly_eur: "50.00"}
+model_routing_overrides:
+  - {task_type: risk_analysis, model: claude-opus-4-6, max_input_tokens: 16000, max_output_tokens: 6000}
+# Host checks locked fields, task sums, currency and same-tenant approval before use.

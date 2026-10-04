@@ -1,0 +1,4 @@
+async def log_normalized_usage(durable_sink, authorized_scope, normalized_attempt):
+    return await durable_sink(authorized_scope, normalized_attempt)
+# Chapter 4 sink persists one attempt and price version; factory must await it.
+# Unknown usage/cost stays null. Local token API fees do not include hardware TCO.

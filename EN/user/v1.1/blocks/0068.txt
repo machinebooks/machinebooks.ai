@@ -1,0 +1,15 @@
+In the folder D:\Legal\Vendor_Contracts there are 15 contracts in PDF.
+
+I need a table with these fields for each contract:
+- Vendor name
+- Contract start date
+- Expiration date
+- Annual or total contract amount
+- Notice period for non-renewal (in days)
+- Does it have automatic renewal? (Yes/No)
+- Early cancellation penalty clause (1-line summary)
+- Page where you found each key data point
+
+Generate a CSV and sort it by expiration date (nearest first).
+If a data point does not appear explicitly in the contract, indicate "Not specified".
+Separate explicit data from calculated dates. If a date is derived from a duration, mark it calculated, cite the clause and starting date used, document the rule, and leave ambiguity or conflicting clauses pending legal review.

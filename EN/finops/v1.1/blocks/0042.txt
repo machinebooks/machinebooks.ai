@@ -1,0 +1,19 @@
+import logging
+logger = logging.getLogger(__name__)
+
+def weekly_tag_audit(authorized_jobs, run_review):
+    if len(authorized_jobs) > 10:
+        raise ValueError("job limit")
+    outcomes = []
+    for job in authorized_jobs:
+        try:
+            result = run_review(job)
+            outcomes.append({"status":"reviewed",
+                             "complete":result["review_complete"] is True})
+            logger.info("tag_review_completed")
+        except Exception:
+            outcomes.append({"status":"failed", "complete":False})
+            logger.error("tag_review_failed")
+    return outcomes
+# Scheduler supplies authorized jobs and bounded callback; UTC schedule is explicit.
+# No reports, raw exceptions, resource identities or notifications enter the log.

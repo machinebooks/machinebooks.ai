@@ -1,0 +1,20 @@
+Generate the weekly status report for my three teams:
+
+1. Equipo Alfa (GitHub): review merged PRs and closed/open issues
+   in empresa/proyecto-alfa during the last week
+2. Equipo Beta (Jira): review completed, in-progress, and blocked tickets
+   in project BETA for the current sprint
+3. Equipo Gamma (Linear): review completed and pending tasks for team Gamma
+
+For each team, generate:
+- Throughput: completed tickets/issues this week versus last week;
+  do not label counts as comparable velocity without a common method
+- Blockers: any item blocked for more than 3 days
+- Risks: items that may delay the sprint
+Distinguish merged, closed, deployed, and accepted states.
+
+Consolidate an executive summary (5 lines), comparison table,
+top 5 overall risks, and next-week recommendations.
+Save informes/estado-semanal-[date].md.
+Only use configured, authorized connectors and record source cutoffs;
+identify missing data rather than inventing a complete cross-service result.

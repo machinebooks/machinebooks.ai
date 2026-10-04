@@ -1,0 +1,11 @@
+# Select only host-approved immutable candidates with the same data/task capabilities.
+def best_available_candidate(candidates,approved_ids,task_type,serialized_tokens,needs_tools):
+    if len(candidates)>50 or type(serialized_tokens) is not int or serialized_tokens<0 or type(needs_tools) is not bool:
+        raise ValueError("Invalid selection inputs")
+    eligible=[c for c in candidates if c["id"] in approved_ids and c["approval_state"]=="approved"
+        and c["health_state"]=="recent_probe_responded" and task_type in c["approved_tasks"]
+        and c["context_limit"]>=serialized_tokens+c["max_output_tokens"]
+        and (not needs_tools or c["tools_approved"] is True)]
+    return min(eligible,key=lambda c:(c["priority"],c["id"])) if eligible else None
+# Host rechecks data/region/retention/tool/price policy and probe freshness immediately
+# before the pipeline call. No healthy/degraded label grants unrestricted external egress.

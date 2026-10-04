@@ -1,0 +1,10 @@
+# Pure signal from approved product-activity counts, not a churn prediction.
+def engagement_signal(eligible_users,active_users):
+    if type(eligible_users) is not int or type(active_users) is not int or not 0<=active_users<=eligible_users:
+        raise ValueError("Invalid scoped cohort counts")
+    rate=None if eligible_users==0 else active_users/eligible_users
+    return {"engagement_rate":rate,"state":"unknown" if rate is None else
+        "review_low_usage" if rate<0.20 else "review_usage" if rate<0.40 else "usage_observed",
+        "churn_probability":None}
+# Host defines active/eligible populations and complete calendar windows, excludes
+# background identities, and restricts tenant access. Thresholds are internal assumptions.

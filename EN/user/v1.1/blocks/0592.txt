@@ -1,0 +1,6 @@
+Review the plan with these boundaries:
+- Exclude PRY-012, PRY-014, and PRY-015, and verify their paths and hashes.
+- Check backup and restoration before execution.
+- Record source, destination, prior hash, result, and error per operation.
+- Technically prevent changes beyond the approved paths.
+- Execute only authorized batches and stop on discrepancies.

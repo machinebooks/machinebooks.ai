@@ -1,0 +1,15 @@
+# Internal review assumptions, not certified quality or complete sensitive-data detection.
+quality_thresholds:
+  minimum_quality_score: "0.60"
+  action_on_degradation: pending_review
+content_policies:
+  pii_detection:
+    enabled: true
+    patterns: [dni, credit_card, iban, passport]
+    action: require_review_before_sending
+    retain_raw_matches: false
+fair_use:
+  individual_user_daily_multiplier: "10.0"
+  action_on_excess: review_under_approved_policy
+# Patterns miss identifiers/context and do not anonymize data. Switching provider needs
+# separately approved sovereignty/data/quality scope; a score cannot authorize it.

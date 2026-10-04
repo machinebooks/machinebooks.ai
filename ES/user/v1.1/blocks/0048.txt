@@ -1,0 +1,16 @@
+He analizado 87 archivos PDF en la carpeta. Esto es lo que he encontrado:
+
+- 72 facturas con fecha y proveedor identificables
+- 8 archivos que parecen presupuestos, no facturas
+- 4 archivos duplicados (mismo contenido, diferente nombre)
+- 3 archivos que no he podido leer (posiblemente escaneados con baja calidad)
+
+Plan propuesto:
+- Crear 12 subcarpetas (01-Enero a 12-Diciembre)
+- Renombrar y mover las 72 facturas identificadas
+- Mover los 8 presupuestos a una carpeta aparte llamada "Presupuestos"
+- Mover los 4 duplicados a una carpeta "Duplicados_revisar"
+- Mover los 3 no legibles a una carpeta "Revisar_manualmente"
+- Generar el CSV con el inventario completo
+
+¿Procedo?

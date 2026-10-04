@@ -1,0 +1,10 @@
+Revisa empresa-demo.db sin modificarla, con herramientas y límites aprobados:
+1. Tamaño del fichero y recuentos por tabla; espacio por tabla sólo si
+   está disponible dbstat u otra herramienta compatible.
+2. Crecimiento mensual sólo si existe una medición anterior comparable;
+   sin histórico, indica que no puede medirse.
+3. Inventario de índices y candidatos para revisión del responsable.
+4. Planes de consultas representativas; no deduzcas lentitud sólo por
+   ausencia de índices ni crees índices automáticamente.
+5. Integridad referencial con foreign_key_check y comprobaciones de esquema.
+Indica fuentes, fecha de corte, límites y métricas no disponibles.

@@ -1,0 +1,8 @@
+Reference process; needs actual configuration and evidence:
+1. Propose the change on a branch with reasons and scope.
+2. Validate schema, ranges, sovereignty, eligible models and impact in comparable windows.
+3. Obtain approval bound to the exact diff and scope; invalidate it when the diff changes.
+4. Protect the branch and deploy a digest-identified immutable artifact to staging.
+5. Evaluate staging against coverage criteria; fifteen minutes does not prove production.
+6. Promote the same artifact with authorization and retain receipt, version and rollback.
+A merge or tag proves neither approval, application nor control effectiveness.

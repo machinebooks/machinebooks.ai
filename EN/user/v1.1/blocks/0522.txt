@@ -1,0 +1,4 @@
+@echo off
+REM Replace distribution and user with verified installed values.
+C:\Windows\System32\wsl.exe --distribution Ubuntu --user usuario --exec /bin/bash /home/usuario/mi-proyecto/scripts/informe-semanal.sh
+exit /b %ERRORLEVEL%

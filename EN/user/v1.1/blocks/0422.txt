@@ -1,0 +1,9 @@
+I need an AWS cost report for March 2026.
+Include:
+1. Total spending for the month to date
+2. Breakdown by service (EC2, RDS, S3, Lambda, etc.)
+3. Comparison with the same period in February
+4. The 5 most expensive individual resources
+5. EC2 instances with average CPU < 15% over the last 7 days
+6. EBS volumes not attached to any instance
+Format: readable table I can copy into a report

@@ -1,0 +1,9 @@
+TASK: Consolidate quarterly sales by region
+INPUT DATA: 3 Excel files in the /ventas/ folder, one per month
+EXPECTED OUTPUT: A single Excel file with totals by region and month,
+  plus a one-page executive summary in Word
+CRITERIA: Use European number format (1.234,56 €), sort
+  by volume from highest to lowest
+CONSTRAINTS: Do not modify the original files
+CONTEXT: The regions are Norte, Sur, Este, Oeste, and Canarias.
+  "Canarias" sometimes appears as "Islas Canarias" in the data.

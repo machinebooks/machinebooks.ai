@@ -1,0 +1,68 @@
+# Informe de estado — Proyecto Migración de Datos
+## Semana del 18 al 22 de noviembre de 2024
+**Ejemplo ficticio; corte:** 21/nov/2024, 17:00, Europe/Madrid
+**Cobertura:** hasta el corte; viernes 22 todavía no concluido
+
+### Resumen ejecutivo
+El escenario asume un recuento de 12/15 tareas (80%); los criterios
+y evidencias de aceptación requieren comprobación. La
+modificación del esquema destino está en curso y se espera para
+mañana (22/nov). Persiste el bloqueo de acceso a producción; la
+ventana de mantenimiento ampliada fue aprobada para este fin de
+semana.
+
+### Avance de la semana
+
+**Recuento ilustrativo de tareas (12; aceptación por comprobar):**
+- Migración de tabla de productos (PR #142, fusionado 18/nov; despliegue/aceptación pendientes)
+- Migración de tabla de pedidos (PR #143, fusionado 19/nov; despliegue/aceptación pendientes)
+- Script de validación de integridad (PR #145, fusionado 20/nov; despliegue/aceptación pendientes)
+- Tests de regresión fase 2 (Issue #87, cerrada 21/nov)
+- [8 tareas adicionales detalladas en anexo]
+
+**Tareas en progreso (3):**
+- Modificación esquema destino — Carlos, estimado 22/nov
+- Validación datos clientes — Ana, antes del 27/nov; alcance por confirmar
+- Documentación de rollback — Laura, estimado 25/nov
+
+**Métricas:**
+- Recuento asumido: 12/15 (80%); evidencia no aportada
+- PRs mergeados: 8
+- Issues cerradas: 14
+- Issues abiertas: 23 (de las cuales 3 son bloqueantes)
+
+### Bloqueos activos
+
+| Bloqueo | Responsable | Estado | Acción |
+| --- | --- | --- | --- |
+| Acceso producción en horario ampliado | Pedro / Sistemas | Aprobado | Ventana 23-24/nov confirmada |
+| Formato datos clientes antiguos | Carlos | En curso | Esquema se modifica viernes 22 |
+| Licencia herramienta de ETL expira 30/nov | Laura | Pendiente | Solicitar renovación urgente |
+
+### Riesgos
+
+| Riesgo | Probabilidad | Impacto | Mitigación |
+| --- | --- | --- | --- |
+| Duplicados en datos de clientes | Alta | Medio | Ana revisando; plazo de duplicados pendiente de confirmación |
+| Retraso en go-live si la ventana del finde falla | Media | Alto | Plan B: siguiente ventana 30/nov-1/dic |
+| Licencia ETL sin renovar | Alta | Alto | Escalar a dirección si no se resuelve en 48h |
+
+**Nuevo riesgo detectado esta semana:**
+Email de Laura del 20/nov: la licencia de la herramienta de ETL
+expira el 30 de noviembre. Confirmar contrato y renovación antes de su expiración;
+si no está vigente en el go-live
+(6/dic), no podremos ejecutar la migración final.
+
+### Plan semana que viene (25-29 nov)
+- Lunes: Reunión de equipo 9:00 (revisión de compromisos)
+- Martes: Go/no-go de la migración de prueba del fin de semana
+- Validación de Ana: comprobar entrega antes del 27/nov
+- Jueves: Demo al comité de dirección (preparar el miércoles)
+- Viernes: Cierre de sprint, planificación del sprint final
+
+### Decisiones necesarias
+1. **Renovación licencia ETL** — necesita aprobación de presupuesto
+   (15.000 EUR). Escalar a dirección antes del lunes.
+2. **Plan B para go-live** — si la migración de prueba del fin de
+   semana falla, ¿movemos el go-live al 13 de diciembre?
+   Necesita decisión del sponsor del proyecto.

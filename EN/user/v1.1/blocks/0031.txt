@@ -1,0 +1,1 @@
+claude --permission-mode dontAsk --tools "Read,Glob,Grep" --disallowedTools "mcp__*" --allowedTools "Read,Glob,Grep" --max-turns 10 -p "Search for the requested text in authorized copies. Cite paths and record unread files. Do not write files."

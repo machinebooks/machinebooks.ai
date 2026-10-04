@@ -1,0 +1,32 @@
+from decimal import Decimal
+from uuid import UUID
+
+class BudgetExceededException(Exception):
+    pass
+
+class BudgetEnforcementMiddleware:
+    def __init__(self, transactional_repository):
+        self.repository = transactional_repository
+
+    async def reserve(self, authorized_scope, attempt_id, upper_bound_usd, price_version, now):
+        UUID(attempt_id)
+        upper = Decimal(str(upper_bound_usd))
+        if not upper.is_finite() or upper < 0:
+            raise ValueError("finite upper bound required")
+        result = await self.repository.reserve_all_scopes_once(
+            authorized_scope, attempt_id, upper, price_version, now)
+        if result["reserved"] is not True:
+            raise BudgetExceededException("Presupuesto no disponible")
+        return result["reservation_id"]
+
+    async def settle(self, authorized_scope, attempt_id, reservation_id, observed_cost_usd):
+        if observed_cost_usd is not None:
+            observed_cost_usd = Decimal(str(observed_cost_usd))
+            if not observed_cost_usd.is_finite() or observed_cost_usd < 0:
+                raise ValueError("finite observed cost required")
+        return await self.repository.reconcile_attempt_once(
+            authorized_scope, attempt_id, reservation_id, observed_cost_usd)
+# Host transaction locks all fresh authorized caps in a fixed order, validates
+# expiring versions/windows, expands user templates and deducts existing reservations.
+# UUID retries reuse an outcome. Unknown cost remains reserved/reviewable; failures
+# may be charged. Delaying a request is not a hard cap. Repository is unimplemented.

@@ -1,0 +1,19 @@
+┌─────────────────────────────────────────────┐
+│  Capa 6: Respuesta a incidentes             │
+│  (alertas, kill switch, rollback)           │
+├─────────────────────────────────────────────┤
+│  Capa 5: Monitorización continua            │
+│  (Prometheus, Grafana, anomaly detection)   │
+├─────────────────────────────────────────────┤
+│  Capa 4: Validación de salida               │
+│  (PII filter, content classifier, format)   │
+├─────────────────────────────────────────────┤
+│  Capa 3: Separación de privilegios          │
+│  (tool permissions, sandbox, ACLs)          │
+├─────────────────────────────────────────────┤
+│  Capa 2: Model refusal + guardrails         │
+│  (system prompt, Constitutional AI, RLHF)   │
+├─────────────────────────────────────────────┤
+│  Capa 1: Validación de entrada              │
+│  (input sanitization, injection detection)  │
+└─────────────────────────────────────────────┘

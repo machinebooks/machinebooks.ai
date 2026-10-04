@@ -1,0 +1,24 @@
+=== Space analysis of /var ===
+
+Largest directories:
+  /var/log/              18.4 GB
+  /var/lib/mysql/         8.7 GB
+  /var/lib/docker/        6.2 GB
+  /var/cache/apt/         2.1 GB
+  /var/backups/           1.8 GB
+
+Illustrative files (ordered by descending size):
+  /var/log/app/app.log          8.2 GB  ⚠ (not rotated)
+  /var/lib/mysql/ibdata1        4.5 GB  (MySQL data, don't touch)
+  /var/log/syslog.1             3.4 GB
+  ...
+
+Fictional estimates pending retention policy and verification:
+  Apt cache:       2.1 GB  → sudo apt clean
+  Rotated logs:    4.8 GB  → compress and archive
+  Old journal:     1.2 GB  → journalctl --vacuum-size=500M
+
+Illustrative candidate sum: 8.1 GB; overlaps may exist.
+Without capacity, mounts, and allocated blocks, final usage cannot be calculated.
+
+Shall I start by cleaning the apt cache and rotated logs?

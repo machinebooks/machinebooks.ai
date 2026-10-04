@@ -1,0 +1,10 @@
+Review empresa-demo.db without modifying it, with approved tools and limits:
+1. File size and table counts; per-table space only if dbstat or
+   another compatible tool is available.
+2. Monthly growth only with a comparable prior measurement;
+   without history, state that it cannot be measured.
+3. Index inventory and candidates for owner review.
+4. Representative query plans; do not infer slowness solely from
+   missing indexes or create indexes automatically.
+5. Referential integrity through foreign_key_check and schema checks.
+Show sources, cutoff, limits, and unavailable metrics.

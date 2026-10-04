@@ -1,0 +1,9 @@
+Chequeo ficticio — hallazgos que requieren validación:
+- deploy admite contraseña SSH: contrasta política, MFA y configuración efectiva.
+- Redis escucha en 6379: la exposición externa depende de rutas y firewalls.
+- /etc/shadow aparece legible por otros: confirma dueño, grupo y política de la distribución.
+- 847 fallos SSH desde 23 IP en el periodo: no identifican por sí solos ataques exitosos.
+- Las afirmaciones de root login, firewall y actualizaciones requieren pruebas propias.
+Antes de modificar SSH o firewall, revisa acceso de recuperación y dependencias.
+Los permisos de shadow pueden ser 640 root:shadow en algunas distribuciones;
+no apliques chmod 600 ni reglas ufw de forma universal.

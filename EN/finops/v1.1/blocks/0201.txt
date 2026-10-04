@@ -1,0 +1,11 @@
+# Read scoped catalog; activation is a reviewed versioned host operation.
+async def list_provider_candidates(principal,authorize,repository):
+    scope=await authorize(principal,"provider_catalog.read")
+    return await repository.scoped_catalog(scope=scope,limit=50,include_secret_endpoints=False)
+
+async def propose_provider_activation(principal,authorize,repository,candidate_id,expected_version):
+    scope=await authorize(principal,"provider_activation.propose",candidate_id=candidate_id)
+    return await repository.activation_review_plan(scope=scope,candidate_id=candidate_id,
+        expected_version=expected_version,state="pending_independent_review")
+# Host validates capabilities, data/region scope, contract/tariff eligibility, tested
+# adapter and approval before activation. Catalogue presence never authorizes routing.

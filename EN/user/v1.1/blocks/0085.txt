@@ -1,0 +1,38 @@
+I need to generate the weekly status report for the "ERP Migration" project
+for the week of March 18 to 22, 2024.
+
+Data sources:
+1. Weekly notes: C:\Projects\ERPMigration\week_12_notes.txt
+2. Task tracking: C:\Projects\ERPMigration\task_tracking.xlsx
+3. Incident summary: C:\Projects\ERPMigration\incidents_march.csv
+
+Report structure:
+
+HEADER
+- Project: ERP Migration
+- Period: March 18-22, 2024
+- Overall status: apply only documented approved Green/Yellow/Red rules; if rules, thresholds, or data are missing, state PENDING
+
+EXECUTIVE SUMMARY (3-4 lines)
+
+ACTIVITIES COMPLETED THIS WEEK
+- List with responsible person and closing date
+
+ACTIVITIES IN PROGRESS
+- List with responsible person, completion percentage, and expected date
+
+DELAYED ACTIVITIES
+- List with responsible person, reason for delay, and new estimated date
+
+OPEN INCIDENTS
+- Number, description, impact, and status
+
+IDENTIFIED RISKS
+- Description, probability, impact, and proposed mitigation
+
+PLAN FOR NEXT WEEK
+- Main planned activities
+
+Direct and factual tone. No embellishments. If there are problems, make them clear.
+Generate in Markdown and HTML.
+Identify the cutoff and source for each indicator. Do not invent reasons, probabilities, or new dates; separate observations, estimates, and pending information. Retain applied rules and calculations and wait for review before sending.

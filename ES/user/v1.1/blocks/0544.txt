@@ -1,0 +1,43 @@
+cd /home/usuario/reporting-mensual
+
+claude -p "
+PIPELINE DE REPORTING FINANCIERO — ENERO 2025
+
+FASE 1 — OBTENER Y VALIDAR
+Lee datos/facturacion-enero.csv, datos/gastos-enero.csv, datos/cobros-enero.csv
+y datos/presupuesto-q1.csv. Registra filas, hashes, columnas, tipos,
+moneda, periodo y excepciones en informes/validacion-enero.md.
+Importes con Decimal y dos decimales; fechas de enero de 2025.
+Si falta una fuente crítica o hay campos inválidos, detén la entrega.
+Se permite un borrador parcial claramente identificado; no se envía.
+
+FASE 2 — PREPARAR
+Filtra estado Emitida en facturación; Borrador se informa aparte.
+Agrupa importe facturado por cliente. Separa gastos Pagado/Pendiente.
+Reconcilia cobros por identidad de factura: no sumes archivos sin
+resolver duplicados, abonos, pagos parciales y diferencias.
+Filtra presupuesto por el mes enero y documenta base de comparación.
+Conserva filas origen y el informe de excepciones.
+
+FASE 3 — ANALIZAR
+Calcula facturación emitida, cobros reconciliados, ratio cobrado/facturado
+(solo con denominador válido), gastos pagados y pendientes por categoría.
+No llames margen operativo a facturado menos gastos pagados: son bases
+de devengo y caja distintas. Solo calcula margen con ingresos y gastos
+del mismo criterio contable y evidencia suficiente.
+Compara presupuesto y real por categoría usando la misma base; presupuesto
+no es gasto real. Marca datos ausentes y denominadores cero.
+Identifica mayor facturación, desviaciones, cuentas por cobrar y pagos pendientes.
+
+FASE 4 — PREPARAR ENTREGA
+Genera informes/informe-financiero-enero-2025.md con resumen ejecutivo,
+KPIs con definiciones, ingresos por cliente y cobros, borradores excluidos,
+gastos por categoría y estado, presupuesto frente a real, recomendaciones
+fundadas y anexo de validación. Cada cifra conserva trazabilidad a la fuente.
+Comprueba totales y formato europeo 1.234,56 EUR antes de presentar.
+Espera revisión humana. No envíes correos ni publiques automáticamente.
+Ante un fallo, registra la causa y devuelve error; no declares éxito.
+Para este fixture, exige una coincidencia única de cliente y concepto entre
+facturación y cobros; documenta la ausencia de ID único y vencimientos.
+No clasifiques saldos como vencidos ni reconozcas ingresos por el estado Emitida.
+"

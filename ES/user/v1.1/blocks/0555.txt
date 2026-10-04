@@ -1,0 +1,11 @@
+Pipeline 1: Consolidación mensual de datos
+    ── prepara el CSV del mes, año y RUN_ID de la ejecución.
+
+Pipeline 2: Análisis financiero
+    ── usa exactamente ese CSV como entrada.
+    ── prepara el informe de la misma ejecución.
+
+Pipeline 3: Borrador local para revisión humana
+    ── usa exactamente ese informe.
+    ── prepara el borrador de email, sin enviarlo ni subirlo.
+    ── verifica datos, destinatarios y autorización antes del envío posterior.

@@ -1,0 +1,17 @@
+#!/bin/bash
+# limpieza-semanal.sh — Draft inventory only; no file mutations.
+# Requires enforced read access and write access limited to the output directory.
+set -euo pipefail
+umask 077
+WORK_ROOT=/home/usuario
+RUN_ID=$(date -u +%Y%m%dT%H%M%SZ)-$$
+mkdir -p "$WORK_ROOT/logs"
+exec 9>"$WORK_ROOT/logs/limpieza.lock"
+flock -n 9 || exit 1
+REPORT_FILE="$WORK_ROOT/logs/limpieza-$RUN_ID.md"
+LOG_FILE="$WORK_ROOT/logs/limpieza-$RUN_ID.log"
+cd "$WORK_ROOT"
+claude --permission-mode dontAsk --max-turns 20 -p "Prepara solo $REPORT_FILE con candidatos de Descargas/ y temporal/, edades verificadas e inventario de rutas. No muevas, elimines ni renombres archivos. En proyectos/, compara hashes para candidatos idénticos y conserva todas las versiones; un nombre repetido no prueba duplicación. Documenta errores y ausencia de fuentes. Propón un plan revisable y deja ejecución, retención y recuperación pendientes de aprobación." >> "$LOG_FILE" 2>&1
+[[ -s $REPORT_FILE ]] || exit 1
+# Nonempty output does not validate coverage, age rules, hashes or permissions.
+sha256sum "$REPORT_FILE" > "$REPORT_FILE.sha256"

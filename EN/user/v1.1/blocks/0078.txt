@@ -1,0 +1,17 @@
+I have two sources:
+1. The original PDF invoices: C:\Invoices\March_2024\
+2. The Excel that accounting prepared: C:\Invoices\march_register.xlsx
+
+Read each PDF invoice and compare the extracted data with the Excel.
+Generate a discrepancy report:
+- Invoices in the Excel that have no corresponding PDF
+- Invoices in PDF that do not appear in the Excel
+- Fields where the PDF data does not match the Excel data
+  (especially amounts, dates, and tax IDs)
+Do not alter sources; use a new destination without overwriting.
+Define invoice and vendor keys; check duplicates and versions.
+Retain the page, cell and value for every discrepancy.
+Reconcile all records and separate absence from unreadability.
+Do not declare a row correct solely because both files agree;
+check critical fields against the original document.
+Leave ambiguity and tax rules pending review.

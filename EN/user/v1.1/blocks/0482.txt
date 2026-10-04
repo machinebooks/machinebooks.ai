@@ -1,0 +1,23 @@
+set -euo pipefail
+: "${DOCKER_CONTEXT:?Set the reviewed Docker context}"
+: "${APPROVED_IMAGE_ID:?Set the exact approved dangling image ID}"
+[[ "$APPROVED_IMAGE_ID" =~ ^sha256:[0-9a-f]{64}$ ]] || exit 1
+d=(docker --context "$DOCKER_CONTEXT")
+"${d[@]}" system df
+# The recovery review approved this exact ID, not a future dynamic prune set.
+"${d[@]}" image inspect "$APPROVED_IMAGE_ID" |
+  python3 -c '
+import datetime as d,json,sys
+image=json.load(sys.stdin)[0]
+created=d.datetime.fromisoformat(image["Created"].replace("Z","+00:00"))
+if image.get("RepoTags") or created >= d.datetime.now(d.timezone.utc)-d.timedelta(hours=720):
+    raise SystemExit("Not an untagged image older than 720 hours")
+print(image["Id"], image["Created"])
+'
+refs="$("${d[@]}" ps --all --quiet --filter "ancestor=$APPROVED_IMAGE_ID")"
+[ -z "$refs" ] || { echo "Image is referenced by a container." >&2; exit 1; }
+read -r -p "Type APPLY for this reviewed image ID: " confirmation
+[ "$confirmation" = APPLY ] || exit 1
+"${d[@]}" image rm "$APPROVED_IMAGE_ID"
+# No --force or prune. Docker may refuse if references changed.
+# This removes no containers, build cache, or volumes.

@@ -1,0 +1,21 @@
+Usuario estándar (sin admin, sin Hyper-V)
+  ↓
+1. Compilar DLL de inyección (gcc, sin admin)
+  ↓
+2. Inyectar DLL en Claude.exe (CreateRemoteThread)
+  ↓
+3. Desde dentro de Claude.exe, conectar al pipe SYSTEM
+  ↓
+4. WinTrust verifica Claude.exe → firma válida → acceso concedido
+  ↓
+5. Ejecutar métodos RPC: spawn, mountPath, readFile, createVM
+  ↓
+6. Extraer sdk-daemon de la VM legítima
+  ↓
+7. Construir rootfs personalizado con sdk-daemon
+  ↓
+8. Detener VM legítima, arrancar VM del atacante
+  ↓
+9. Montar rutas del host (C:\, System32, etc.)
+  ↓
+10. Ejecutar comandos en el invitado; SYSTEM identifica al servicio Windows

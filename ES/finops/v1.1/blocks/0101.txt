@@ -1,0 +1,26 @@
+async def analyze_anomalies_with_llm(anomalies, approved_context, tracked_reviewer):
+    if not isinstance(anomalies,list) or len(anomalies)>20:
+        raise ValueError("anomaly limit")
+    ids = {a["id"] for a in anomalies}
+    if len(ids)!=len(anomalies):
+        raise ValueError("duplicate anomaly")
+    analyses = await tracked_reviewer(anomalies,approved_context,max_output_tokens=2048)
+    if not isinstance(analyses,list) or len(analyses)!=len(anomalies):
+        raise ValueError("complete analysis set required")
+    if {a.get("id") for a in analyses}!=ids:
+        raise ValueError("unmatched anomaly IDs")
+    for analysis in analyses:
+        if set(analysis)!={"id","urgency","explanation","hypotheses"}:
+            raise ValueError("analysis schema")
+        if analysis["urgency"] not in {"high","medium","low"}:
+            raise ValueError("urgency")
+        if not isinstance(analysis["explanation"],str) or len(analysis["explanation"])>1000:
+            raise ValueError("explanation size")
+        hypotheses=analysis["hypotheses"]
+        if not isinstance(hypotheses,list) or len(hypotheses)>3 or any(not isinstance(h,str) or len(h)>300 for h in hypotheses):
+            raise ValueError("hypothesis bounds")
+    return {"analyses":analyses,"status":"pending_human_review",
+            "notifications_sent":0,"provider_actions":0,"persisted":False}
+# Host meters and redacts reviewer input; invalid output leaves source anomalies
+# pending. Persist by stable IDs before a separately authorized outbox notification.
+# Urgency and hypotheses are model suggestions, not findings or permission to act.

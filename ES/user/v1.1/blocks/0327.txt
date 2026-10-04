@@ -1,0 +1,21 @@
+He analizado gastos-departamentos-2024.xlsx y he generado 4 visualizaciones:
+
+1. **Evolución mensual total** (gráfico de líneas)
+   Elegido porque los datos son una serie temporal con 12 puntos.
+   Muestra la tendencia general del gasto.
+
+2. **Composición por departamento** (barras apiladas, mes a mes)
+   Elegido porque hay múltiples categorías que suman un total.
+   Permite ver cómo cambia la proporción de cada departamento.
+
+3. **Ranking de departamentos** (barras horizontales con importe total)
+   Elegido para facilitar la comparación directa entre departamentos.
+   Ordenado de mayor a menor gasto.
+
+4. **Heatmap de gasto** (mapa de calor: departamentos × meses)
+   Elegido porque con 7 departamentos y 12 meses, un heatmap permite
+   identificar de un vistazo dónde se concentra el gasto y si hay
+   patrones estacionales por departamento.
+
+Los 4 gráficos están guardados como PNG individuales y también
+combinados en un HTML interactivo (dashboard-gastos-2024.html).

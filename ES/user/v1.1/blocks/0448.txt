@@ -1,0 +1,29 @@
+# One reviewed function and profile; no bulk update.
+# NEW_DATABASE_URL must be supplied by an approved secret/configuration route.
+set -euo pipefail
+: "${AWS_PROFILE:?Select an authorized AWS profile}"
+: "${AWS_REGION:?Select the approved region}"
+: "${EXPECTED_AWS_ACCOUNT:?Select the approved account}"
+: "${FUNCTION_NAME:?Select the reviewed function}"
+: "${NEW_DATABASE_URL:?Supply the approved value without printing it}"
+export NEW_DATABASE_URL
+account=$(aws --profile "$AWS_PROFILE" --region "$AWS_REGION" sts get-caller-identity --query Account --output text)
+[[ $account == "$EXPECTED_AWS_ACCOUNT" ]] || exit 1
+export AWS_PAGER=
+work_dir=$(mktemp -d)
+chmod 700 "$work_dir"
+trap 'rm -rf -- "$work_dir"' EXIT
+aws --profile "$AWS_PROFILE" --region "$AWS_REGION" lambda get-function-configuration --function-name "$FUNCTION_NAME" > "$work_dir/current.json"
+revision=$(jq -er '.RevisionId | select(type == "string" and length > 0)' "$work_dir/current.json")
+jq '{Variables: ((.Environment.Variables // {}) + {DATABASE_URL: env.NEW_DATABASE_URL})}' \
+  "$work_dir/current.json" > "$work_dir/environment.json"
+chmod 600 "$work_dir"/*.json
+# Review the proposed change using an approved secret-safe process before this step.
+read -r -p "Escribe APPLY para aplicar el cambio revisado: " confirmation
+[ "$confirmation" = "APPLY" ] || exit 1
+aws --profile "$AWS_PROFILE" --region "$AWS_REGION" lambda update-function-configuration --function-name "$FUNCTION_NAME" \
+  --revision-id "$revision" --environment "file://$work_dir/environment.json" \
+  --query 'FunctionName' --output text
+aws --profile "$AWS_PROFILE" --region "$AWS_REGION" lambda wait function-updated-v2 --function-name "$FUNCTION_NAME"
+# Verify configuration through the approved process; do not print variables.
+# Publishing a version and moving an alias are separate reviewed actions.

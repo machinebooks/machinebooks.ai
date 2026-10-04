@@ -1,0 +1,15 @@
+Generate a new kpis-2024.csv copy with 12 fictional months of 2024.
+Define EUR, revenue and expense criteria, dates, and decimal format.
+Columns: Month; Revenue; Expenses; New customers; Lost customers;
+Orders; Average ticket; NPS responses; Promoters; Detractors; NPS;
+Eligible visits; Conversions; Conversion rate.
+
+Revenue 200,000–400,000; expenses 150,000–300,000; orders 300–700.
+Choose compatible values and derive average ticket = revenue/orders
+(450–650), rather than generating independent metrics.
+New customers 15–60 and lost customers 3–12 are flows, not an active base.
+Promoters and detractors count 0–10 survey responses: 9–10 and 0–6.
+NPS = 100×(promoters−detractors)/responses; retain passives.
+Conversion = 100×conversions/eligible visits, with a defined criterion.
+With a zero denominator, mark not applicable. Retain counts and assumptions;
+do not add 2023, budget, or dimensions absent from this CSV.

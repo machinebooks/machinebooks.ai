@@ -1,0 +1,21 @@
+from decimal import Decimal
+
+def get_service_total_cost(llm, cloud):
+    if llm["scope"] != cloud["scope"] or llm["window"] != cloud["window"]:
+        raise ValueError("scope/window mismatch")
+    if llm["currency"] != cloud["currency"]:
+        raise ValueError("explicit FX reconciliation required")
+    complete = llm["complete"] is True and cloud["complete"] is True
+    amounts = []
+    for snapshot in (llm, cloud):
+        value = snapshot.get("amount")
+        amount = None if value is None else Decimal(str(value))
+        if amount is not None and not amount.is_finite():
+            raise ValueError("invalid cost")
+        amounts.append(amount)
+    total = sum(amounts) if complete and None not in amounts else None
+    return {"llm_cost":amounts[0], "cloud_cost":amounts[1], "total":total,
+            "currency":llm["currency"], "complete":complete,
+            "full_tco":False}
+# Repositories aggregate every authorized matching group within [start,end).
+# Missing export/category/usage is unknown, not zero; do not double-count LLM in cloud.

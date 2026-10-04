@@ -1,0 +1,4 @@
+# 502 error diagnostic — Step 1: Service status
+systemctl status nginx
+systemctl status webapp
+systemctl status postgresql

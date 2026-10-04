@@ -1,0 +1,6 @@
+Convierte una copia de extracto-norma43.txt a CSV sólo con un parser
+compatible con la versión del formato y controles del banco emisor.
+Conserva fecha de operación y valor, referencias, moneda, signo,
+importe y saldos inicial/final; comprueba número de movimientos y
+cuadre de saldos. Si faltan campos, señálalos sin inventar valores.
+No alteres el original ni aceptes la conversión sin reconciliación.

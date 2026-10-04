@@ -1,0 +1,7 @@
+The /var partition is at 92%. I need to free up space.
+Show me:
+1. The 20 largest files in /var
+2. Directories that take up more than 1 GB
+3. Log files that could be rotated or compressed
+4. Packages in the apt cache that are no longer needed
+Don't delete anything without my confirmation first.

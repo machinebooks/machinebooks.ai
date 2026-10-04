@@ -1,0 +1,7 @@
+# Model-generation duration, grouped by the adapter's bounded blocked label.
+# This is not total HTTP request time or proof of a timing side channel.
+histogram_quantile(0.95,
+  sum by (le, blocked) (
+    rate(ai_security_generation_seconds_bucket[1h])
+  )
+)

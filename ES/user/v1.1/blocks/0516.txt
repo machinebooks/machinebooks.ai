@@ -1,0 +1,56 @@
+#!/bin/bash
+# Local draft; configure scheduling and enforced client/tool permissions separately.
+set -euo pipefail
+umask 077
+# informe-semanal.sh
+# Genera el informe semanal de estado del proyecto
+# Programado para ejecutarse cada lunes a las 9:00
+
+# Configuración
+PROYECTO_DIR="/home/usuario/mi-proyecto"
+FECHA=$(date -u +%Y-%m-%d)
+cd -- "$PROYECTO_DIR"
+test -r datos/tareas.csv
+test -r datos/incidencias.csv
+test -r datos/avance.csv
+command -v claude >/dev/null
+mkdir -p informes
+exec 9>"$PWD/informes/.report.lock"
+flock -n 9 || exit 1
+RUN_DIR=$(mktemp -d "$PWD/informes/semanal-$FECHA-XXXXXX")
+LOG_FILE="$RUN_DIR/generacion.log"
+
+# Crear directorio de logs si no existe
+test -d "$RUN_DIR"
+
+# Registrar inicio
+echo "[$FECHA $(date -u +%H:%M:%SZ)] Iniciando generación de informe semanal" >> "$LOG_FILE"
+
+# Cambiar al directorio del proyecto (para que Claude Code lea CLAUDE.md)
+cd -- "$PROYECTO_DIR"
+
+# Ejecutar Claude Code en modo no interactivo
+claude --permission-mode dontAsk --max-turns 20 -p "
+Genera el informe semanal de estado del proyecto con fecha $FECHA.
+
+Pasos:
+1. Lee datos/tareas.csv y cuenta las tareas por estado
+2. Lee datos/incidencias.csv y lista las incidencias abiertas ordenadas por severidad
+3. Lee datos/avance.csv y calcula la desviación respecto al plan
+4. Genera un informe completo en $RUN_DIR/estado-semanal.md con:
+   - Resumen ejecutivo (3 líneas máximo)
+   - Tabla de avance: planificado vs. real
+   - Tareas completadas esta semana
+   - Tareas en curso y pendientes
+   - Incidencias abiertas ordenadas por severidad
+   - Valoración general y riesgos identificados
+5. El informe debe ser claro, profesional y basado únicamente en los datos reales
+" >> "$LOG_FILE" 2>&1
+
+# Verificar si se generó el informe
+if [ -s "$RUN_DIR/estado-semanal.md" ]; then
+    echo "[$FECHA $(date -u +%H:%M:%SZ)] Borrador generado; revisar datos y contenido" >> "$LOG_FILE"
+else
+    echo "[$FECHA $(date -u +%H:%M:%SZ)] ERROR: No se generó el informe" >> "$LOG_FILE"
+    exit 1
+fi

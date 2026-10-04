@@ -1,0 +1,17 @@
+# Equal closed daily windows and the same activity definition; no day/month ratio.
+from decimal import Decimal
+
+def unit_cost_review(current_daily_unit_cost,historical_daily_unit_costs,coverage_complete):
+    if coverage_complete is not True or current_daily_unit_cost is None or len(historical_daily_unit_costs)<30:
+        return {"state":"insufficient_data","notification_sent":False}
+    values=[Decimal(str(x)) for x in [current_daily_unit_cost,*historical_daily_unit_costs]]
+    if any(not x.is_finite() or x<0 for x in values):
+        raise ValueError("Invalid daily unit cost")
+    current,history=values[0],values[1:]
+    mean=sum(history)/len(history)
+    ratio=None if mean==0 else current/mean
+    return {"ratio":None if ratio is None else str(ratio),
+            "needs_review":current>0 if mean==0 else ratio>Decimal("1.5"),
+            "notification_sent":False,"cause":None}
+# Host supplies identical tenant/currency/source/cutoff/cohorts; scheduler and notices
+# require durable deduplication and authorized delivery. This function only returns a signal.

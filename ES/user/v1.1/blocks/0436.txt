@@ -1,0 +1,7 @@
+Prepara un inventario parcial de la cuenta AWS autorizada:
+1. Reglas que permiten TCP/22 o todo el tráfico a 0.0.0.0/0 y ::/0.
+2. Indicadores de política/ACL pública S3 y Block Public Access; acceso efectivo pendiente.
+3. Flag PubliclyAccessible de RDS; no equivale a conectividad externa comprobada.
+4. Todas las claves de acceso de cada usuario IAM, estado y fecha de creación.
+5. Perfil de consola y dispositivos MFA de usuarios IAM.
+No cambies recursos. Marca región y alcance; root, roles, federación y objetos S3 se revisan aparte.

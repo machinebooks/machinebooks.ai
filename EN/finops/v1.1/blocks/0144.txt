@@ -1,0 +1,25 @@
+# Relative variations in approved assumptions; bounded probabilities stay explicit.
+from decimal import Decimal
+
+def sensitivity_analysis(base_params, approved_variations, calculator):
+    base=calculator(base_params)
+    base_ratio=base["partial_net_return"]
+    results=[]
+    if len(approved_variations)>50:
+        raise ValueError("Variation limit")
+    for variable,relative_change in approved_variations:
+        if variable not in base_params:
+            raise ValueError("Unknown assumption")
+        delta=Decimal(str(relative_change))
+        if not delta.is_finite() or not -1<delta<=1:
+            raise ValueError("Invalid relative variation")
+        modified=dict(base_params)
+        modified[variable]=str(Decimal(str(modified[variable]))*(1+delta))
+        # Calculator validates probability ranges/costs and returns null for unknowns.
+        ratio=calculator(modified)["partial_net_return"]
+        difference=None if ratio is None or base_ratio is None else Decimal(ratio)-Decimal(base_ratio)
+        relative=None if difference is None or Decimal(base_ratio)==0 else difference/abs(Decimal(base_ratio))*100
+        results.append({"variable":variable,"relative_input_change":str(delta),
+            "return_difference":None if difference is None else str(difference),
+            "relative_return_change_pct":None if relative is None else str(relative)})
+    return results

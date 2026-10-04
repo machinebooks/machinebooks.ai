@@ -1,0 +1,21 @@
+# CLAUDE.md — Cierre mensual
+
+## Mi rol
+Controller financiera. Responsable del cierre mensual y reporting a dirección.
+
+## Fuentes de datos
+- ERP: exportación CSV de movimientos contables (datos/erp/)
+- Banco: extractos en formato OFX o CSV (datos/banco/)
+- Gastos: hojas de gastos de empleados en Excel (datos/gastos/)
+- Facturas: facturas de proveedores en PDF (datos/facturas/)
+
+## Formato de informes
+- Siempre en euros, dos decimales, formato europeo
+- Estructura del informe: ver plantillas/informe-cierre.md
+- Gráficos con colores corporativos: azul (#003366), gris (#666666), verde (#339966)
+
+## Reglas de seguridad
+- Los datos contienen información financiera confidencial
+- Verifica herramientas, inferencia, destinos y contratos antes de tratar datos; un prompt no impide transmisiones
+- Procesamiento local solo con cliente, modelo y rutas comprobados para ese alcance
+- Seudonimiza nombres de empleados en informes intermedios y protege la tabla de correspondencias; no afirmes anonimización si pueden reidentificarse

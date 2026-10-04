@@ -1,0 +1,16 @@
+# Compare priced equivalent workload scenarios, not model-invented Azure price quotes.
+from decimal import Decimal
+
+def compare_workload_quotes(aws_quote,azure_quote):
+    required=("workload_version","period","currency","fx_version","coverage")
+    if any(aws_quote[k]!=azure_quote[k] for k in required):
+        raise ValueError("Non-equivalent quote scope")
+    if aws_quote["coverage"]!="declared_equivalent_categories":
+        return {"state":"incomplete","relative_difference_pct":None}
+    a,b=Decimal(aws_quote["amount"]),Decimal(azure_quote["amount"])
+    if any(not x.is_finite() or x<0 for x in (a,b)):
+        raise ValueError("Invalid quote")
+    return {"absolute_difference":str(b-a),"relative_difference_pct":None if a==0 else str((b-a)/a*100),
+            "state":"priced_scenario","migration_cost":None,"savings_realized":False}
+# Host supplies dated native quotes with region/SKU/usage/commitment/egress/tax scope;
+# measured AWS spend and a hypothetical Azure workload are not automatically comparable.

@@ -1,0 +1,7 @@
+Certificate mock-up—reference instant 2026-03-21T00:00:00Z:
+/etc/letsencrypt/live/empresa.invalid/fullchain.pem: first certificate, 67 days.
+/etc/ssl/certs/api.empresa.invalid.crt: first certificate, 8 days.
+In this mock-up, the second expiry is 2026-03-29T00:00:00Z.
+These are fictional paths and data, not publicly issued certificates for .invalid.
+Check the served certificate, chain, hostname and client when assessing impact.
+Automatic renewal requires configuration review and an authorized test.

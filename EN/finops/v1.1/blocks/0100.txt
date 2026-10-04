@@ -1,0 +1,29 @@
+from decimal import Decimal
+import statistics
+
+def check_cost_anomaly(current, history, complete, threshold=2, min_history=30):
+    if type(min_history) is not int or not 2 <= min_history <= 1000 or len(history)>1000:
+        raise ValueError("history limit")
+    threshold = Decimal(str(threshold))
+    if not threshold.is_finite() or not 0 < threshold <= 10:
+        raise ValueError("threshold")
+    if complete is not True or current is None or len(history)<min_history or any(v is None for v in history):
+        return {"status":"insufficient_data","needs_review":True,"z_score":None}
+    values = [Decimal(str(v)) for v in [current,*history]]
+    if any(not v.is_finite() or abs(v)>Decimal('1000000000000') for v in values):
+        raise ValueError("finite bounded costs required")
+    current,*previous = values
+    mean = sum(previous)/len(previous)
+    std = Decimal(str(statistics.stdev(float(v) for v in previous)))
+    z = (current-mean)/std if std else None
+    deviation = (current-mean)/abs(mean)*100 if mean else None
+    review = ((not std and current!=mean) or
+              (z is not None and abs(z)>threshold) or
+              (deviation is not None and abs(deviation)>20))
+    return {"status":"screened","needs_review":review,"z_score":z,
+            "historical_mean":mean,"relative_difference_pct":deviation,
+            "sample_size":len(previous),"statistical_significance_proven":False}
+# Host supplies equal, closed, covered windows of matching scope/account/service,
+# region/currency/metric/units and seasonality cohort, excluding future/current data.
+# Two-hour totals compare with two-hour totals, not individual hourly rows.
+# Thresholds screen for review; a Z score is not automatically a significance test.

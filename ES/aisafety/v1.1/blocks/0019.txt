@@ -1,0 +1,18 @@
+# Conceptual evaluator adapter; no provider or model is mandatory.
+# Authorisation and data minimisation precede any external call.
+import json
+
+def evaluate_response_safety(evaluate, original_query, model_response,
+                             protected_topics, data_transfer_approved=False):
+    if not data_transfer_approved:
+        raise PermissionError("Evaluator data transfer has not been approved")
+    payload = {"query": original_query, "response": model_response,
+               "protected_topics": protected_topics}
+    # The adapter keeps evaluation instructions separate from untrusted data.
+    raw = evaluate(payload)
+    result = json.loads(raw) if isinstance(raw, str) else raw
+    if not isinstance(result, dict) or type(result.get("safe")) is not bool:
+        raise ValueError("Invalid evaluator schema; no safe verdict")
+    return {"safe": result["safe"],
+            "reason": str(result.get("reason", "")),
+            "scope": "Rubric judgement, not an authorisation decision"}

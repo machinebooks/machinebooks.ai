@@ -1,0 +1,11 @@
+set -euo pipefail
+: "${KUBE_CONTEXT:?Set the reviewed cluster context}"
+kubectl --context "$KUBE_CONTEXT" cluster-info
+k=(kubectl --context "$KUBE_CONTEXT" --namespace production)
+
+# Review existing autoscalers, requests, metrics API, and owning controller.
+"${k[@]}" get hpa
+# Example only for an approved new HPA; an existing HPA needs a reviewed update.
+"${k[@]}" autoscale deployment api-server --min=3 --max=10 --cpu-percent=70
+"${k[@]}" describe hpa api-server
+"${k[@]}" get pods -l app=api-server

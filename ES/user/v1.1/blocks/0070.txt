@@ -1,0 +1,6 @@
+Procesa estas facturas (hay algunas en inglés y otras en alemán).
+Los importes pueden tener diferentes formatos según el país de origen.
+Normaliza todos los importes al formato español:
+punto para miles, coma para decimales (ejemplo: 12.345,67).
+Las fechas, todas en DD/MM/YYYY.
+Para el CSV, usa punto y coma como delimitador, comillas dobles para campos que lo requieran y codificación UTF-8. Comprueba tipos, separadores y fechas contra la fuente; marca ambigüedades para revisión.

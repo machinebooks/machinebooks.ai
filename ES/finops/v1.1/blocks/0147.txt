@@ -1,0 +1,26 @@
+# Cash-flow scenario, one currency, month-end flows and effective annual rate.
+from decimal import Decimal, ROUND_HALF_UP
+
+
+def calculate_npv(monthly_net_flows, initial_investment, discount_rate_annual):
+    if not isinstance(monthly_net_flows, (list, tuple)) or not monthly_net_flows:
+        raise ValueError("A non-empty ordered monthly cash-flow vector is required")
+    if len(monthly_net_flows) > 1200:
+        raise ValueError("Horizon exceeds this example's 100-year limit")
+    inputs = [initial_investment, discount_rate_annual, *monthly_net_flows]
+    if any(v is None or isinstance(v, bool) for v in inputs):
+        raise ValueError("Unknown or boolean cash-flow inputs are invalid")
+    investment, annual_rate, *flows = [Decimal(str(v)) for v in inputs]
+    if any(not v.is_finite() for v in (investment, annual_rate, *flows)):
+        raise ValueError("Cash flows and discount rate must be finite")
+    if investment < 0 or annual_rate <= -1:
+        raise ValueError("Investment must be non-negative and rate greater than -1")
+    monthly_factor = (1 + annual_rate) ** (Decimal(1) / Decimal(12))
+    npv = -investment
+    for month, flow in enumerate(flows, start=1):
+        npv += flow / (monthly_factor ** month)
+    return float(npv.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
+
+# Illustration: EUR47,500 at time zero and EUR12,000 at each month-end
+# for twelve months, effective annual discount rate 12%.
+# This is a scenario NPV, not proof of realised cash or an IRR calculation.

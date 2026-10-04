@@ -1,0 +1,1 @@
+Prepare a DATABASE_URL change for one reviewed Lambda function in an explicit account, profile and region. The practice value would be postgresql://prod-db.empresa.invalid:5432/app_db, not a real credential. Preserve other variables and RevisionId. Review whether traffic uses $LATEST, a published version or an alias; do not apply bulk changes.
