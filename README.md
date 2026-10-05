@@ -36,9 +36,9 @@ Educational blocks from the v1.1 revisions of User, FinOps, AI Safety, and PQC a
 
 Los bloques didácticos de la revisión v1.1 de Usuario, FinOps, AI Safety y PQC están separados en `ES/<libro>/v1.1/` y `EN/<libro>/v1.1/`, con manifiestos de origen y SHA-256. El material anterior se conserva. Los demás títulos siguen en revisión; esta sincronización del código no anuncia por sí misma la publicación de los eBooks ni acredita ejecución de cada fragmento.
 
-FinOps and PQC v1.1 manifests now identify the final Word sources checked on 5 October 2026. Kindle publication remains a separate step.
+FinOps and PQC v1.1 manifests identify the current Word and EPUB sources checked on 5 October 2026. FinOps v1.1 updates in Spanish and English have been submitted to KDP and await Amazon review. PQC Kindle checks are still in progress.
 
-Los manifiestos v1.1 de FinOps y PQC identifican ahora los Word definitivos comprobados el 5 de octubre de 2026. La publicación Kindle sigue siendo un paso separado.
+Los manifiestos v1.1 de FinOps y PQC identifican los Word y EPUB actuales comprobados el 5 de octubre de 2026. Las actualizaciones v1.1 de FinOps en español e inglés se han enviado a KDP y esperan la revisión de Amazon. Las comprobaciones Kindle de PQC siguen en curso.
 
 ## How to use
 
