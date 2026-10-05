@@ -36,9 +36,9 @@ All thirteen v1.1 manuscript pairs are closed locally. Educational blocks from t
 
 Los trece pares de manuscritos v1.1 están cerrados localmente. Los bloques didácticos de los Word finales en español e inglés están organizados en ES/<libro>/v1.1/ y EN/<libro>/v1.1/. Cada idioma dispone de un manifiesto literal que identifica los Word y EPUB actuales y sus hashes SHA-256. El material anterior situado fuera de las carpetas de revisión se conserva; los snapshots v1.1 anteriores siguen disponibles en el historial Git.
 
-FinOps v1.1 updates in Spanish and English have been submitted to KDP and await Amazon review. The other twenty-four Kindle updates are prepared or being prepared for final submission. This repository does not announce those updates as live on Amazon. Source extraction establishes provenance of the fragments, not execution of every example or parity from file counts.
+All twenty-six existing Kindle v1.1 updates, covering the thirteen books in Spanish and English, have been submitted to KDP with submission confirmation on 5 October 2026. There are no remaining submissions. Amazon review and availability of the updates remain pending; this repository does not announce them as live. Source extraction establishes provenance of the fragments, not execution of every example or parity from file counts.
 
-Las actualizaciones v1.1 de FinOps en español e inglés se han enviado a KDP y esperan la revisión de Amazon. Las otras veinticuatro actualizaciones Kindle están preparadas o en preparación para el envío final. Este repositorio no anuncia esas actualizaciones como disponibles en Amazon. La extracción acredita la procedencia de los fragmentos, no la ejecución de todos los ejemplos ni la paridad a partir del número de ficheros.
+Las veintiséis actualizaciones Kindle v1.1 existentes, correspondientes a los trece libros en español e inglés, se han enviado a KDP con confirmación de envío el 5 de octubre de 2026. No queda ningún envío pendiente. La revisión de Amazon y la disponibilidad de las actualizaciones siguen pendientes; este repositorio no las anuncia como disponibles. La extracción acredita la procedencia de los fragmentos, no la ejecución de todos los ejemplos ni la paridad a partir del número de ficheros.
 
 ## How to use
 
