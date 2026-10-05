@@ -1,0 +1,25 @@
+# Didactic normalization boundary. Legacy Spanish field names are wire contracts.
+from dataclasses import dataclass, field
+from decimal import Decimal
+import hashlib
+import json
+
+
+@dataclass
+class OportunidadNormalizada:
+    id: str
+    titulo: str
+    descripcion: str
+    organismo: str
+    presupuesto_min: float | None = None
+    presupuesto_max: float | None = None
+    categoria: str = "sin_categoria"
+    tipo_contrato: str | None = None
+    fecha_publicacion: str | None = None
+    fecha_limite: str | None = None
+    cpv_codes: list = field(default_factory=list)
+    estado: str = "desconocido"
+    relevancia_score: float | None = None
+    fuente: str = ""
+    source_id: str = ""
+    currency: str | None = None

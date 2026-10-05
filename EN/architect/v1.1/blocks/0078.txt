@@ -1,0 +1,28 @@
+# Shared value contract with Chapter 5. ORM enums are normalized by .value.
+from enum import Enum
+
+class ProposalStatus(str,Enum):
+    DRAFT="draft"
+    IN_REVIEW="in_review"
+    APPROVED="approved"
+    REJECTED="rejected"
+    SENT="sent"
+    WON="won"
+    LOST="lost"
+    ARCHIVED="archived"
+
+# Partial business policy: base and premium only. Other types fail closed.
+TRANSITIONS={
+ "base":{"draft":{"sent","archived"},"sent":{"won","lost"},
+         "won":{"archived"},"lost":{"archived"}},
+ "premium":{"draft":{"in_review","archived"},
+            "in_review":{"approved","rejected","draft"},
+            "approved":{"sent","archived"},"rejected":{"draft","archived"},
+            "sent":{"won","lost"},"won":{"archived"},"lost":{"archived"}},
+}
+
+def can_transition(proposal_type,current,target):
+    values=[getattr(x,"value",x) for x in (proposal_type,current,target)]
+    if any(not isinstance(x,str) for x in values):return False
+    kind,previous,desired=values
+    return desired in TRANSITIONS.get(kind,{}).get(previous,set())

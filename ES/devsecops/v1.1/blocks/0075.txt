@@ -1,0 +1,12 @@
+# Instalar act
+brew install act         # macOS
+choco install act-cli    # Windows
+
+# Ejecutar el workflow completo
+act pull_request --secret-file .env.secrets
+
+# Ejecutar solo un job específico
+act pull_request -j sast
+
+# Listar los jobs disponibles sin ejecutar
+act pull_request --list

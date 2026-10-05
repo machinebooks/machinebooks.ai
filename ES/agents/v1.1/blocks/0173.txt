@@ -1,0 +1,31 @@
+flowchart TB
+    UI[Frontend Electron]:::ui
+    MW[sessionAuthMiddleware]:::transport
+    Loop[AgentLoop]:::loop
+    Eng[PermissionEngine]:::tool
+    Tracker[DenialTracker]:::tool
+    Cls[bashClassifier]:::tool
+    Exec[ToolExecutor]:::loop
+    Audit[AuditService]:::audit
+    Sync[AuditSyncService]:::audit
+    Disk[(~/.sylvarsec)]:::store
+
+    UI -- Authorization Bearer + Origin --> MW
+    MW -. lee token .-> Disk
+    MW -- rechaza 401/403 --> UI
+    MW -- ok --> Loop
+    Loop -- check toolName, args, mode --> Eng
+    Eng -- klass / flags --> Cls
+    Eng -- shouldForceAsk --> Tracker
+    Eng -- allow/deny/ask --> Loop
+    Loop -- si allow --> Exec
+    Exec -- evento --> Audit
+    Audit --> Sync
+    Sync --> Disk
+
+    classDef ui fill:#fef3c7,stroke:#b45309
+    classDef transport fill:#dbeafe,stroke:#1d4ed8
+    classDef tool fill:#dcfce7,stroke:#15803d
+    classDef loop fill:#e0e7ff,stroke:#4338ca
+    classDef audit fill:#fae8ff,stroke:#7e22ce
+    classDef store fill:#f1f5f9,stroke:#475569

@@ -1,0 +1,11 @@
+rules:
+  - id: devsecops-book.secrets.hardcoded-llm-api-key
+    pattern-regex: '(sk-ant-[A-Za-z0-9_-]{40,}|sk-[A-Za-z0-9_-]{40,})'
+    message: "Possible LLM credential; redact the value and validate the finding."
+    severity: ERROR
+    languages: [generic]
+    metadata:
+      category: security
+      cwe: "CWE-798: Hard-coded Credentials"
+      confidence: MEDIUM
+      chapter: 6

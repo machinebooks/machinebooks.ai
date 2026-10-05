@@ -1,0 +1,22 @@
+flowchart TB
+    subgraph spawn["spawn — new context"]
+        S1[Parent]
+        S2[Child: instructions + briefing]
+        S1 -->|launch; await or coordinate later| S2
+    end
+    subgraph fork["fork — inherited context"]
+        F1[Parent]
+        F2[Child: available history + directive]
+        F1 -->|construct context| F2
+    end
+    subgraph teammate["InProcessTeammate — same process"]
+        T1[Parent]
+        T2[Teammate: async AgentLoop]
+        T1 -->|coordinate promise and result| T2
+    end
+    subgraph handoff["private handoff — wait and return"]
+        H1[Parent waits]
+        H2[Target with filtered context]
+        H1 -->|complete authorized call| H2
+        H2 -->|correlated result| H1
+    end

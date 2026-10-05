@@ -1,0 +1,17 @@
+# Generic prompt (insufficient)
+"Document the analysis module endpoints."
+
+# Context-engineered prompt (effective)
+"Generate the API reference for the document analysis module, aimed at an
+external developer who will integrate their system with our REST API.
+
+API conventions:
+- Authentication: Bearer JWT token in Authorization header
+- Response format: JSON with structure {data: ..., meta: {page, total, per_page}}
+- Errors: standard HTTP with body {error: string, code: string, details: object}
+- Pagination: query params page and per_page, maximum 100 per page
+
+For each endpoint include: HTTP method, route, parameters (path, query, body),
+request example with curl, successful response example, endpoint-specific
+error codes. DO NOT include internal implementation details or
+server file paths."

@@ -1,0 +1,19 @@
+sequenceDiagram
+    autonumber
+    participant L as AgentLoop
+    participant R as ToolRegistry
+    participant P as Provider
+    participant M as Modelo
+    participant H as Handler
+    L->>R: getToolSchemas(['*'])
+    R-->>L: [{type:'function', function:{name, description, parameters}}, ...]
+    L->>P: messages + tools[]
+    P->>M: prompt + schemas
+    M-->>P: tool_use(name='Read', input={file_path:'/x.ts'})
+    P-->>L: tool_use completo; estado admitido
+    L->>R: get('Read')
+    R-->>L: ToolHandler
+    L->>L: validar input, alcance y autorización
+    L->>H: execute(input, ctx)
+    H-->>L: ToolResult{content, is_error}
+    L->>P: tool_result en el siguiente turn

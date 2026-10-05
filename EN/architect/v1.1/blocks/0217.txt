@@ -1,0 +1,47 @@
+# tests/test_document_analysis.py
+
+class TestDocumentAnalysis:
+
+    def test_correct_document_analysis_returns_summary(
+        self, client, auth_headers_by_role
+    ):
+        """When the LLM responds correctly, the endpoint returns the analysis."""
+        with mock_llm_correct_response():
+            response = client.post(
+                "/api/v1/documents/1/analyze",
+                headers=auth_headers_by_role["analyst"]
+            )
+        assert response.status_code == 200
+        data = response.json
+        assert "summary" in data
+        assert "go_no_go" in data
+        assert data["go_no_go"] in ["GO", "NO_GO", "REVIEW"]
+
+    def test_malformed_llm_response_does_not_cause_500(
+        self, client, auth_headers_by_role
+    ):
+        """
+        If the LLM returns text that is not valid JSON, the endpoint must
+        handle the error gracefully and return 422, not 500.
+        A 500 here would indicate that the response parsing has no error handling.
+        """
+        with mock_llm_malformed_response():
+            response = client.post(
+                "/api/v1/documents/1/analyze",
+                headers=auth_headers_by_role["analyst"]
+            )
+        assert response.status_code != 500, \
+            "The system must not crash on malformed LLM responses"
+        assert response.status_code in [422, 503]
+
+    def test_llm_timeout_returns_503_with_retry_after(
+        self, client, auth_headers_by_role
+    ):
+        """An LLM timeout must return 503 with a Retry-After header."""
+        with mock_llm_timeout():
+            response = client.post(
+                "/api/v1/documents/1/analyze",
+                headers=auth_headers_by_role["analyst"]
+            )
+        assert response.status_code == 503
+        assert "Retry-After" in response.headers

@@ -1,0 +1,19 @@
+def revoke_current_token_and_refresh_sessions(user_id, reason="manual_logout"):
+    """Revokes the current JTI and deactivates refresh sessions, not all access tokens.
+    Called on logout, password change, and account deactivation."""
+    # Add the current token's JTI to the blocklist in Redis
+    jti = get_jwt()['jti']
+    revocation_key = f"revoked_token:{jti}"
+    # TTL equal to the token's lifetime for automatic cleanup
+    redis_client.setex(revocation_key, current_app.config['JWT_ACCESS_TOKEN_EXPIRES'], "1")
+
+    # Mark all user's refresh tokens as revoked in DB
+    UserSession.query.filter_by(
+        user_id=user_id,
+        is_active=True
+    ).update({'is_active': False, 'revoked_at': datetime.now(timezone.utc),
+              'revocation_reason': reason})
+    db.session.commit()
+
+    audit_log('SESSION_INVALIDATED', user_id=user_id,
+             severity='INFO', details=f"Reason: {reason}")

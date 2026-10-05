@@ -1,0 +1,20 @@
+from copy import deepcopy
+import re
+
+class AgentLoader:
+    def __init__(self, fetch_authorized_definition):
+        if not callable(fetch_authorized_definition):
+            raise TypeError("Se requiere un loader autorizado")
+        self._fetch = fetch_authorized_definition
+
+    async def load_agent(self, slug: str, security_ctx):
+        if not isinstance(slug, str) or not re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,49}", slug):
+            raise ValueError("Slug no válido")
+        if security_ctx is None or type(security_ctx.user_id) is not int or security_ctx.user_id < 1:
+            raise PermissionError("Acceso denegado")
+        data = await self._fetch(security_ctx, slug, status="active")
+        if data is None:
+            return None
+        if not isinstance(data, dict) or data.get("slug") != slug or data.get("status") != "active":
+            raise ValueError("Definición no válida")
+        return deepcopy(data)

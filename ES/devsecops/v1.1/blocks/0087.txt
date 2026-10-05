@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+"""check_gate.py — Verifica si el PR supera el gate de seguridad."""
+import json
+import sys
+import argparse
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--report", required=True)
+    parser.add_argument("--max-immediate", type=int, default=0)
+    parser.add_argument("--fail-on-immediate", action="store_true")
+    args = parser.parse_args()
+
+    with open(args.report) as f:
+        report = json.load(f)
+
+    # A JSON status or boolean is caller-controlled. This fragment has no verifier.
+    print("REVIEW: source, SHA, scanner completion and authorized decisions require host verification")
+    sys.exit(2)
+
+if __name__ == "__main__":
+    main()

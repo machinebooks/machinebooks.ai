@@ -1,0 +1,24 @@
+# Partial probes: inputs come from server configuration, not user URLs.
+def check_selenium_grid_health(http_client,status_url,expected_nodes=3):
+    if type(expected_nodes) is not int or expected_nodes<1:raise ValueError("Positive configured node count required")
+    try:
+        response=http_client.get(status_url,timeout=5,follow_redirects=False)
+        response.raise_for_status();data=response.json();value=data.get("value",{})
+        nodes=value.get("nodes",[])
+        available=sum(1 for n in nodes if n.get("availability")=="UP")
+        ready=value.get("ready") is True
+        return {"status":"healthy" if ready and available>=expected_nodes else "degraded",
+                "total_nodes":len(nodes),"available_nodes":available,"hub_ready":ready}
+    except Exception as exc:
+        return {"status":"unknown","error_type":type(exc).__name__,"hub_ready":False}
+
+def check_automation_queue_depth(client,queue_name="automation",
+                                priority_steps=(0,3,6,9),threshold=20):
+    if not isinstance(queue_name,str) or not queue_name or type(threshold) is not int or threshold<1:
+        raise ValueError("Configured queue and threshold required")
+    # Matches Chapter 8's Redis transport separator and priority_steps.
+    keys=[queue_name if n==0 else queue_name+"\x06\x16"+str(n) for n in priority_steps]
+    depth=sum(client.llen(key) for key in keys)
+    return {"status":"healthy" if depth<threshold else "degraded",
+            "queue_depth":depth,"threshold":threshold}
+# Queue length excludes reserved/active work and is not total outstanding jobs.

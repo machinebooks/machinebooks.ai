@@ -1,0 +1,16 @@
+// Educational summary; validate owner and schema before calling.
+function summariseSnapshot(snapshot: AgentSnapshot | null, snapshotChars = 1500): string {
+  if (!snapshot) return '';
+  if (!Number.isInteger(snapshotChars) || snapshotChars < 1) {
+    throw new Error('Invalid summary limit.');
+  }
+  return JSON.stringify({
+    agentType: snapshot.agentType,
+    agentId: snapshot.agentId,
+    proposedToolCounts: snapshot.toolUsage.slice(0, 6),
+    pathsRequestedForRead: snapshot.filesRead.slice(0, 8),
+    pathsRequestedForWrite: snapshot.filesWritten.slice(0, 8),
+    previousAnswer: snapshot.finalMessage.slice(0, snapshotChars),
+  });
+}
+// The host supplies this as untrusted continuity data, not system policy.

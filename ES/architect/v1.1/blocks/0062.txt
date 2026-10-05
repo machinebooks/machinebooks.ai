@@ -1,0 +1,56 @@
+# Sliding window: admitted requests are counted; rejected requests do not extend TTL.
+from functools import wraps
+import uuid
+import redis
+from flask import g, jsonify, current_app
+
+RATE_LIMIT_SCRIPT = """
+local clock = redis.call('TIME')
+local now = clock[1] * 1000 + math.floor(clock[2] / 1000)
+local window = tonumber(ARGV[1])
+local limit = tonumber(ARGV[2])
+redis.call('ZREMRANGEBYSCORE', KEYS[1], '-inf', now-window)
+local count = redis.call('ZCARD', KEYS[1])
+if count >= limit then
+    local oldest = redis.call('ZRANGE', KEYS[1], 0, 0, 'WITHSCORES')
+    local wait = math.max(1, math.ceil((tonumber(oldest[2])+window-now)/1000))
+    return {0, wait}
+end
+redis.call('ZADD', KEYS[1], now, ARGV[3])
+redis.call('PEXPIRE', KEYS[1], window)
+return {1, 0}
+"""
+
+
+def rate_limit(max_requests, window_seconds, key_prefix="rl"):
+    if type(max_requests) is not int or max_requests < 1:
+        raise ValueError("Positive integer limit required")
+    if type(window_seconds) is not int or window_seconds < 1:
+        raise ValueError("Positive integer window required")
+    if not isinstance(key_prefix,str) or not key_prefix:
+        raise ValueError("Configured operation namespace required")
+    def decorator(function):
+        @wraps(function)
+        def decorated(*args, **kwargs):
+            actor = getattr(g, "current_user_id", None)
+            app = getattr(g, "app_code", None)
+            if type(actor) is not int or actor < 1 or not isinstance(app,str) or not app:
+                return jsonify({"error":"Authenticated context required"}),403
+            key = f"{key_prefix}:{app}:{actor}:{function.__name__}"
+            client = redis.Redis.from_url(current_app.config["REDIS_URL"],
+                                          socket_connect_timeout=2, socket_timeout=2)
+            try:
+                allowed, wait = client.eval(RATE_LIMIT_SCRIPT, 1, key,
+                                           window_seconds*1000, max_requests,
+                                           uuid.uuid4().hex)
+            except redis.RedisError:
+                return jsonify({"error":"Rate limit unavailable"}),503
+            if allowed != 1:
+                response = jsonify({"error":"Too many requests"})
+                response.headers["Retry-After"] = str(max(int(wait),1))
+                return response,429
+            return function(*args, **kwargs)
+        return decorated
+    return decorator
+# One Redis key is atomically updated. Failover/clock movement and provider budgets
+# require separate evaluation; this decorator is not durable idempotency or a token quota.

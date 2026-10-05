@@ -1,0 +1,16 @@
+# OPA configuration for downloading bundles
+services:
+  policy-server:
+    url: https://policy.example.com
+
+bundles:
+  security:
+    service: policy-server
+    resource: /bundles/security/latest
+    polling:
+      min_delay_seconds: 30
+      max_delay_seconds: 120
+
+decision_logs:
+  service: policy-server
+  resource: /logs

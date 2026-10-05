@@ -1,0 +1,31 @@
+flowchart TB
+    subgraph Repo["Repo SylvarSec"]
+      P1[packs/cloud-sysops]:::pack
+      P2[packs/dfir]:::pack
+      P3[packs/pentest-redteam]:::pack
+      P4[packs/grc · legal · finance]:::pack
+    end
+    subgraph Boot["Bootstrap"]
+      PB[PackBootstrap.run]:::svc
+      PE[PackEntitlements]:::svc
+    end
+    subgraph Runtime["Runtime"]
+      Reg[ToolRegistry]:::core
+      Loop[AgentLoop]:::core
+      Orch[ToolOrchestrator]:::core
+    end
+    UI[Frontend]:::ui
+
+    P1 & P2 & P3 & P4 -- register --> Reg
+    UI -- POST /api/packs/:slug/bootstrap --> PB
+    PB -- comprueba nombres y metadatos --> Reg
+    PB -- consulta lista --> PE
+    Loop -- getToolSchemas allowed, activePack --> Reg
+    Loop -- ejecuta tool --> Orch
+    Orch -- requirePack slug --> PE
+    Orch -- resultado según contrato efectivo --> Loop
+
+    classDef pack fill:#fff7e0,stroke:#bb8800;
+    classDef svc fill:#e0f3ff,stroke:#0066aa;
+    classDef core fill:#e8ffe0,stroke:#008833;
+    classDef ui fill:#f5f5f5,stroke:#666;

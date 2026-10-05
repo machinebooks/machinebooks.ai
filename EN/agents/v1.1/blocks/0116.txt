@@ -1,0 +1,5 @@
+flowchart TB
+    Parent[Parent AgentLoop<br/>local key = abc123]
+    Parent -->|spawn: different configuration| SpawnKey[local key = def456<br/>check shared segments]
+    Parent -->|fork: same local prefix| ForkKey[local key = abc123<br/>reuse candidate]
+    Parent -->|fork with different model| ForkOverride[local key = xyz789<br/>different model scope]

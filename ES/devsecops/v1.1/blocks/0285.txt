@@ -1,0 +1,31 @@
++------------------------------------------------------+
+| Entrada del usuario                                  |
++------------------------------------------------------+
+                       |
++------------------------------------------------------+
+| 1 Validación de entrada: analyze_input()             |
+| BLOCKED detiene; otras salidas son parciales         |
++------------------------------------------------------+
+                       |
++------------------------------------------------------+
+| 2 Campos del prompt: build_secure_prompt()           |
+| RAG requiere autorización propia del host            |
++------------------------------------------------------+
+                       |
++------------------------------------------------------+
+| Adaptador histórico del modelo                       |
+| 4 Herramientas: guardrails + host protegido          |
+| Alcance, aprobación y reserva pendientes             |
++------------------------------------------------------+
+                       |
++------------------------------------------------------+
+| 3 Validación de salida: filter_output()              |
+| Sin coincidencias no acredita seguridad              |
++------------------------------------------------------+
+                       |
++------------------------------------------------------+
+| 5 Métricas y alertas: instrumentos declarados        |
+| Eventos, persistencia y entrega pendientes           |
++------------------------------------------------------+
+                       |
+                 Borrador REVIEW

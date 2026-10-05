@@ -1,0 +1,79 @@
+from datetime import datetime,timezone,timedelta
+from dataclasses import dataclass, field
+from enum import Enum
+
+class Severity(Enum):
+    CRITICAL = "critical"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+
+@dataclass
+class SecurityAlert:
+    source: str            # falco, pipeline, waf, ids
+    timestamp: str         # ISO 8601
+    severity: Severity
+    description: str
+    container_id: str | None = None
+    service_name: str | None = None
+    cve_id: str | None = None
+    raw_data: dict = field(default_factory=dict)
+
+@dataclass
+class CorrelatedIncident:
+    incident_id: str
+    alerts: list[SecurityAlert]
+    probable_vector: str        # Attack vector hypothesis
+    affected_services: list[str]
+    timeline: list[dict]        # Events ordered chronologically
+    severity: Severity
+    recommended_actions: list[str]
+
+def correlate_alerts(
+    alerts: list[SecurityAlert],
+    time_window_minutes: int = 15
+) -> list[CorrelatedIncident]:
+    """Groups alerts by temporal proximity and affected services."""
+    if type(time_window_minutes) is not int or time_window_minutes < 1:
+        raise ValueError("INCOMPLETE: invalid correlation window")
+    for alert in alerts:
+        stamp = datetime.fromisoformat(alert.timestamp.replace("Z","+00:00"))
+        if stamp.utcoffset() != timedelta(0) or not alert.service_name or not isinstance(alert.severity,Severity):
+            raise ValueError("INCOMPLETE: UTC time, service or severity missing")
+    # Sort by timestamp
+    sorted_alerts = sorted(alerts, key=lambda a: (a.service_name,datetime.fromisoformat(a.timestamp.replace("Z","+00:00"))))
+
+    # Group by time window and service
+    clusters: list[list[SecurityAlert]] = []
+    current_cluster: list[SecurityAlert] = []
+
+    for alert in sorted_alerts:
+        if not current_cluster:
+            current_cluster.append(alert)
+            continue
+        # If alert falls within the window, add to cluster
+        time_diff = _minutes_between(current_cluster[0].timestamp, alert.timestamp)
+        if alert.service_name == current_cluster[0].service_name and 0 <= time_diff <= time_window_minutes:
+            current_cluster.append(alert)
+        else:
+            clusters.append(current_cluster)
+            current_cluster = [alert]
+
+    if current_cluster:
+        clusters.append(current_cluster)
+
+    # Convert clusters into correlated incidents
+    incidents = []
+    for i, cluster in enumerate(clusters):
+        affected = list({a.service_name for a in cluster if a.service_name})
+        max_sev = max(cluster, key=lambda a: _severity_rank(a.severity))
+        incidents.append(CorrelatedIncident(
+            incident_id=f"INC-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{i+1:03d}",
+            alerts=cluster,
+            probable_vector="pending_analysis",  # Claude will enrich this
+            affected_services=affected,
+            timeline=[{"time": a.timestamp, "event": a.description} for a in cluster],
+            severity=max_sev.severity,
+            recommended_actions=[]  # Claude will generate these
+        ))
+    return incidents

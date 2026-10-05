@@ -1,0 +1,7 @@
+# Partial commit failure path; caller must honor the operational error.
+try:
+    await db.commit()
+except Exception:
+    logger.error("llm_quota:commit_failed")
+    await db.rollback()
+    return {"allowed": False, "error": "quota_unavailable", "http_status": 503}

@@ -1,0 +1,64 @@
+def publish_findings(findings: list[dict]) -> None:
+    """Publishes findings as review comments on the PR."""
+    if not isinstance(findings,list) or any(not isinstance(f,dict) or f.get("status") not in {"REVIEW","INCOMPLETE"} for f in findings):
+        pr.create_issue_comment("INCOMPLETE: invalid retained proposal schema; no merge authorization")
+        return
+    if not findings:
+        pr.create_issue_comment('REVIEW: no findings are proposed within the partial context. Human review remains pending; this comment does not authorize merge.')
+        return
+
+    incomplete = [f for f in findings if f.get("status") == "INCOMPLETE"]
+    if incomplete:
+        pr.create_issue_comment("INCOMPLETE: partial context not analyzed; human review pending; no merge authorization")
+        return {"status": "INCOMPLETE", "coverage": "partial", "publication_verified": False}
+
+    # Get the latest commit from the PR to position comments
+    commit = repo.get_commit(pr.head.sha)
+
+    comments_body = []
+    for finding in findings:
+        severity_icon = {
+            "critical": "🔴",
+            "high": "🟠",
+            "medium": "🟡",
+        }.get(finding["severity"], "⚪")
+
+        body = (
+            "REVIEW — partial context; human decision pending.\n\n"
+            f"{severity_icon} **[{finding['category']}]** "
+            f"Severity: {finding['severity']} | "
+            f"Confidence: {finding['confidence']}\n\n"
+            f"{finding['explanation']}\n\n"
+        )
+
+        if finding.get("suggested_fix"):
+            body += (
+                f"**Suggested fix:**\n"
+                f"```python\n{finding['suggested_fix']}\n```\n\n"
+            )
+
+        body += (
+            "_Automated review. Mark with 👎 if false "
+            "positive to improve future reviews._"
+        )
+
+        try:
+            pr.create_review_comment(
+                body=body,
+                commit=commit,
+                path=finding["file"],
+                line=finding["line"],
+            )
+        except Exception:
+            # If the comment cannot be positioned (line not in the diff),
+            # publish as a general comment
+            comments_body.append(
+                f"**{finding['file']}:{finding['line']}**\n\n{body}"
+            )
+
+    if comments_body:
+        pr.create_issue_comment(
+            "🔒 **Security Review (AI)** — Findings not "
+            "positionable in the diff:\n\n"
+            + "\n---\n".join(comments_body)
+        )

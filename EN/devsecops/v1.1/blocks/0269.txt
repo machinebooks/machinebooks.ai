@@ -1,0 +1,49 @@
+import anthropic
+import json
+from pathlib import Path
+
+client = anthropic.Anthropic()
+
+# Define tools for the triage agent
+tools = [
+    {
+        "name": "get_service_context",
+        "description": "Gets a service's business context: "
+                       "internet exposure, sensitive data, criticality.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "service_name": {
+                    "type": "string",
+                    "description": "Microservice name"
+                }
+            },
+            "required": ["service_name"]
+        }
+    },
+    {
+        "name": "check_exploitability",
+        "description": "Checks if a CVE has a known public exploit.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "cve_id": {"type": "string"}
+            },
+            "required": ["cve_id"]
+        }
+    },
+    {
+        "name": "get_code_path_usage",
+        "description": "Checks if the vulnerable function is in "
+                       "the service's real execution code path.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "package_name": {"type": "string"},
+                "function_name": {"type": "string"},
+                "service_name": {"type": "string"}
+            },
+            "required": ["package_name", "service_name"]
+        }
+    }
+]

@@ -1,0 +1,51 @@
+// Subset: tool block assembly; native reasoning preservation is separate.
+const maxArgChars = 1 << 20;
+const toolCalls: Array<{ id: string; type: 'function';
+  function: { name: string; arguments: string } }> = [];
+const openTools = new Map<number, {
+  toolIndex: number; initialInput: Record<string, unknown>;
+}>();
+
+for await (const event of stream) {
+  if (event.type === 'content_block_start') {
+    const block = event.content_block;
+    if (block.type === 'tool_use') {
+      if (openTools.has(event.index)) throw new Error('Duplicate block.');
+      const toolIndex = toolCalls.length;
+      toolCalls.push({ id: block.id, type: 'function',
+        function: { name: block.name, arguments: '' } });
+      openTools.set(event.index, { toolIndex, initialInput: block.input ?? {} });
+      callbacks.onToolCall(toolIndex, block.id, block.name, '');
+    }
+  } else if (event.type === 'content_block_delta') {
+    const delta = event.delta;
+    if (delta.type === 'input_json_delta') {
+      const state = openTools.get(event.index);
+      if (!state) throw new Error('Arguments without an open tool block.');
+      const tc = toolCalls[state.toolIndex];
+      tc.function.arguments += delta.partial_json;
+      if (tc.function.arguments.length > maxArgChars) {
+        throw new Error('Argument limit.');
+      }
+      callbacks.onToolCall(state.toolIndex, tc.id, tc.function.name, delta.partial_json);
+    } else if (delta.type === 'text_delta') {
+      callbacks.onContent(delta.text);
+    } else if (delta.type === 'thinking_delta') {
+      callbacks.onThinking(delta.thinking);
+    }
+  } else if (event.type === 'content_block_stop') {
+    const state = openTools.get(event.index);
+    if (state) {
+      const tc = toolCalls[state.toolIndex];
+      tc.function.arguments ||= JSON.stringify(state.initialInput);
+      const input = JSON.parse(tc.function.arguments);
+      if (!input || typeof input !== 'object' || Array.isArray(input)) {
+        throw new Error('Tool input must be an object.');
+      }
+      openTools.delete(event.index);
+      // Completion is not schema validation or execution authorization.
+      callbacks.onToolCallDone(state.toolIndex);
+    }
+  }
+}
+if (openTools.size) throw new Error('Incomplete tool block.');

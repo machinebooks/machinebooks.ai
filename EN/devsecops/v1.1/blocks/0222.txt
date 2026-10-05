@@ -1,0 +1,49 @@
+# tests/kubernetes/container_security_test.rego
+package kubernetes.container_security_test
+
+import data.kubernetes.container_security
+
+# Test: container with runAsNonRoot passes the policy
+test_non_root_allowed if {
+    count(container_security.deny) == 0 with input as {
+        "kind": "Pod",
+        "spec": {"containers": [{
+            "name": "api",
+            "image": "ghcr.io/our-org/api:v1.2",
+            "securityContext": {
+                "runAsNonRoot": true,
+                "privileged": false
+            }
+        }]}
+    }
+    with data.approved_registries as ["ghcr.io/our-org/"]
+}
+
+# Test: container as root is denied
+test_root_denied if {
+    count(container_security.deny) > 0 with input as {
+        "kind": "Pod",
+        "spec": {"containers": [{
+            "name": "api",
+            "image": "ghcr.io/our-org/api:v1.2",
+            "securityContext": {"privileged": false}
+        }]}
+    }
+    with data.approved_registries as ["ghcr.io/our-org/"]
+}
+
+# Test: image from unapproved registry is denied
+test_unapproved_registry_denied if {
+    count(container_security.deny) > 0 with input as {
+        "kind": "Pod",
+        "spec": {"containers": [{
+            "name": "api",
+            "image": "docker.io/random/image:latest",
+            "securityContext": {
+                "runAsNonRoot": true,
+                "privileged": false
+            }
+        }]}
+    }
+    with data.approved_registries as ["ghcr.io/our-org/"]
+}

@@ -1,0 +1,21 @@
+sequenceDiagram
+    autonumber
+    participant U as Usuario
+    participant API as /api/packs/:slug/bootstrap
+    participant PB as PackBootstrap
+    participant GW as GatewayClient
+    participant FS as Manifest local
+    participant Reg as ToolRegistry
+    participant MCP as MCP servers
+    U->>API: solicitud autenticada slug=cloud-sysops
+    API->>PB: run("cloud-sysops")
+    PB->>GW: fetch /api/v1/packs/cloud-sysops/bootstrap
+    GW-->>PB: throw (stub en SylvarSec local)
+    PB->>FS: readLocalPackBundle("cloud-sysops")
+    FS-->>PB: { tools, prompt, mcps, rag, skills }
+    PB->>Reg: listTools()
+    Reg-->>PB: nombres registrados
+    PB->>MCP: HEAD a endpoint aprobado (prueba parcial)
+    MCP-->>PB: respuesta HTTP / fallo, no salud MCP
+    PB-->>API: { estado de las comprobaciones, missing[], catálogo }
+    API-->>U: JSON con gaps si los hay

@@ -1,0 +1,29 @@
+# Ejemplo didáctico: patrones/models/document.py
+# Modelo Document con versionado y enriquecimiento IA
+
+class Document(db.Model):
+    __bind_key__ = 'operations'
+    __tablename__ = 'documents'
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(500), nullable=False)
+    doc_type = db.Column(db.String(50))  # 12 tipos: documento_requisitos, propuesta_tecnica,
+                                          #           cv_profile, catalogo, acta_reunion...
+
+    # Versionado de documentos
+    parent_version_id = db.Column(db.Integer, db.ForeignKey('documents.id'))
+    is_current_version = db.Column(db.Boolean, default=True)
+    version_number = db.Column(db.Integer, default=1)
+
+    # Estado de procesamiento IA
+    processing_status = db.Column(db.String(20), default='pending')
+    # pending → processing → processed → failed
+
+    # Enriquecimiento automático por Claude
+    ai_summary = db.Column(db.Text)        # Resumen generado por claude-sonnet-4-6
+    ai_keywords = db.Column(db.JSON)       # Palabras clave extraídas
+    ai_entities = db.Column(db.JSON)       # Entidades reconocidas (empresas, tecnologías)
+
+    # Integridad
+    file_hash = db.Column(db.String(64))   # SHA-256 del contenido original
+    file_size_bytes = db.Column(db.BigInteger)

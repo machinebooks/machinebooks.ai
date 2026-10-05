@@ -1,0 +1,37 @@
+# AITask explicitly schedules backoff in retry; on_retry logging does not schedule it.
+from celery import Task
+from celery.utils.log import get_task_logger
+
+logger = get_task_logger(__name__)
+
+
+class AITask(Task):
+    abstract = True
+    max_retries = 5
+    default_retry_delay = 60
+
+    def retry(self, *args, countdown=None, eta=None, **kwargs):
+        if countdown is None and eta is None:
+            countdown = exponential_backoff_with_jitter(self.request.retries)
+        return super().retry(*args,countdown=countdown,eta=eta,**kwargs)
+
+    def on_failure(self,exc,task_id,args,kwargs,einfo):
+        logger.error("AI task failed",extra={"task_id":task_id,
+                     "task_name":self.name,"error_type":type(exc).__name__,
+                     "retries":self.request.retries})
+        # Adapter records the protected job reference, not raw args or exception text.
+        record_failed_task(task_id,self.name,type(exc).__name__)
+
+
+class AutomationTask(Task):
+    abstract = True
+    max_retries = 180  # Up to 181 executions, not a three-hour job deadline.
+    default_retry_delay = 60
+
+    def on_failure(self,exc,task_id,args,kwargs,einfo):
+        logger.error("Automation attempt failed",extra={"task_id":task_id,
+                     "task_name":self.name,"error_type":type(exc).__name__,
+                     "retries":self.request.retries})
+        record_failed_task(task_id,self.name,type(exc).__name__)
+# Import the backoff function and provide record_failed_task in the application adapter.
+# Durable failure recording and authenticated replay are outside these Task classes.

@@ -1,0 +1,87 @@
+# policies/kubernetes/container_security.rego
+package kubernetes.container_security
+
+import future.keywords.in
+import future.keywords.if
+import future.keywords.contains
+
+# External data: list of approved registries
+approved_registries := data.approved_registries
+
+# Deny pods running as root
+deny contains msg if {
+    input.kind == "Pod"
+    some container in input.spec.containers
+    not container.securityContext.runAsNonRoot
+    msg := sprintf(
+        "Container '%s' must define runAsNonRoot: true",
+        [container.name]
+    )
+}
+
+# Deny privileged containers
+deny contains msg if {
+    input.kind == "Pod"
+    some container in input.spec.containers
+    container.securityContext.privileged
+    msg := sprintf(
+        "Container '%s' cannot run in privileged mode",
+        [container.name]
+    )
+}
+
+# Deny images from unapproved registries
+deny contains msg if {
+    input.kind == "Pod"
+    some container in input.spec.containers
+    image := container.image
+    not image_from_approved_registry(image)
+    msg := sprintf(
+        "Image '%s' does not belong to an approved registry: %v",
+        [image, approved_registries]
+    )
+}
+
+# Helper: check if image uses an approved registry
+image_from_approved_registry(image) if {
+    some registry in approved_registries
+    is_string(registry)
+    registry != ""
+    endswith(registry, "/")
+    startswith(image, registry)
+}
+
+container_valid(container) if {
+    is_object(container)
+    is_string(container.name)
+    container.name != ""
+    is_string(container.image)
+    container.image != ""
+    container.securityContext.runAsNonRoot == true
+    object.get(container.securityContext, "privileged", false) == false
+}
+invalid_container if {
+    some container in input.spec.containers
+    not container_valid(container)
+}
+valid_pod if {
+    input.kind == "Pod"
+    is_array(approved_registries)
+    count(approved_registries) > 0
+    not invalid_registry
+    is_array(input.spec.containers)
+    count(input.spec.containers) > 0
+    not invalid_container
+}
+deny contains "INCOMPLETE: only nonempty Pod manifests are covered" if {
+    not valid_pod
+}
+invalid_registry if {
+    some registry in approved_registries
+    not valid_registry(registry)
+}
+valid_registry(registry) if {
+    is_string(registry)
+    registry != ""
+    endswith(registry, "/")
+}

@@ -1,0 +1,13 @@
+// Educational renderer bridge: validation and owner routing are host contracts.
+useEffect(() => {
+  const unsubscribe = window.electronAPI.onTaskStateChange((task) => {
+    const validated = validateOwnedTaskState(task, activeSessionId);
+    if (!validated) return;
+    setTasks(previous => {
+      const next = previous.filter(item => item.id !== validated.id);
+      return [...next, validated].slice(-200);
+    });
+  });
+  return () => unsubscribe();
+}, [activeSessionId]);
+// This bounded view is not the full task registry or an audit log.

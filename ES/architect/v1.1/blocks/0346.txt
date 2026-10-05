@@ -1,0 +1,7 @@
+Todas las respuestas siguen el mismo formato.
+
+Éxito:
+{"status": "success", "data": {...}, "meta": {"page": 1, "total": 42}}
+
+Error:
+{"status": "error", "message": "Descripción legible", "code": "RESOURCE_NOT_FOUND"}

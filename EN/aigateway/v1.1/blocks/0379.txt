@@ -1,0 +1,3 @@
+// admin-panel/src/pages/SecurityClassification.tsx (module tabs)
+const TABS = ['dashboard', 'incidents', 'patterns', 'eula'] as const;
+type Tab = typeof TABS[number];

@@ -1,0 +1,19 @@
+# Didactic example: patterns/tools/tool_description_patterns.py
+
+# BAD: generic description that confuses the agent
+bad_tool = {
+    "name": "search",
+    "description": "Searches for information in the system",
+    # Claude doesn't know whether to search in Qdrant, Meilisearch, or DB
+}
+
+# GOOD: prescriptive description with usage context
+good_tool = {
+    "name": "search_documents",
+    "description": (
+        "Searches documents by semantic similarity in the internal knowledge base. "
+        "Use when the user asks about previous proposals, requirements documents, "
+        "stored CVs, or any content that already exists in the system. "
+        "DO NOT use for searching public opportunities (use search_opportunities for that)."
+    ),
+}

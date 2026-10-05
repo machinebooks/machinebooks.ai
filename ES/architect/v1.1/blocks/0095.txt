@@ -1,0 +1,16 @@
+        try:
+            while time.monotonic()<deadline:
+                # Recheck actor/task/purpose/expiry and atomically consume once.
+                code=self.challenge_store.consume(self.security_context,challenge_id,
+                                                  datetime.now(timezone.utc))
+                if code is not None:
+                    if not isinstance(code,str) or not 1<=len(code)<=128:
+                        raise ValueError("Validated provider-specific OTP required")
+                    return code
+                time.sleep(self.MFA_POLL_INTERVAL)
+            return None
+        finally:
+            self.challenge_store.close(self.security_context,challenge_id)
+# Store/endpoint contracts: authenticated user, task/purpose binding, attempts,
+# protected short-lived OTP, exact expiration, one-use consumption and no OTP logs.
+# The repository and submission endpoint are dependencies, not implemented here.

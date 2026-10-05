@@ -1,0 +1,11 @@
+# Local fixture only: inject the adapter, never request flags.
+# Partial example: fixture_adapter and run_pipeline are test dependencies.
+adapter = fixture_adapter(
+    response="synthetic response",
+    tool_calls=[],
+    simulated_timeout=False,
+    simulated_delay=0.5,
+)
+assert adapter.network_client is None
+result = await run_pipeline(request, adapter=adapter)
+assert result.usage.source == "synthetic_fixture"

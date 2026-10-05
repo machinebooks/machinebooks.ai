@@ -1,0 +1,13 @@
+flowchart TB
+    A[Mensajes activos] --> B{¿Entrada estimada supera el umbral?}
+    B -- No --> C[Validar presupuesto y llamar al proveedor]
+    B -- Sí --> D[AutoCompact.compactIfNeeded]
+    D --> E[Separar instrucciones fiables y pares completos]
+    E --> F[LLM resume historial seleccionado]
+    F -- resumen válido --> G[Construir contexto de datos]
+    F -- fallo o breaker abierto --> H[Fallback determinista con pérdida]
+    H --> G
+    G --> I[Conservar procedencia y comprobar presupuesto]
+    I --> J[Limpieza de artefactos propios sin consumidores vivos]
+    J --> C
+    D -.aviso con umbral independiente.-> K[Emitir estado al renderer]

@@ -1,0 +1,4 @@
+// Explicit, stable field insertion order for this ordinary object.
+const block = { name: tool.name, description: tool.description, input_schema: tool.schema };
+const serialized = JSON.stringify(block);
+// Nested values still require their own documented normalization policy.

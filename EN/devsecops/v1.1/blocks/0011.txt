@@ -1,0 +1,54 @@
+import anthropic
+import json
+
+client = anthropic.Anthropic()
+
+def triage_sast_finding(finding: dict, service_context: dict) -> dict:
+    """
+    Analyze a SAST finding with service context.
+
+    Args:
+        finding: Semgrep finding in JSON format
+        service_context: service metadata (exposure, data, controls)
+    """
+    prompt = f"""You are an expert security analyst. Analyze this SAST finding
+and classify it according to the proposed risk to the organization.
+
+## SAST Finding
+- Rule: {finding["check_id"]}
+- Technical severity: {finding["extra"]["severity"]}
+- CWE: {finding["extra"]["metadata"].get("cwe", "N/A")}
+- File: {finding["path"]}
+- Line: {finding["start"]["line"]}
+- Affected code:
+{finding["extra"]["lines"]}
+
+## Service Context
+- Service: {service_context["name"]}
+- Internet-facing: {service_context["internet_facing"]}
+- Data type: {service_context["data_classification"]}
+- Compensating controls: {service_context.get("compensating_controls", "None")}
+- Affected users: {service_context.get("user_count", "Unknown")}
+
+## Instructions
+1. Classify the proposed risk as CRITICAL, HIGH, MEDIUM, LOW, or FALSE_POSITIVE.
+2. Explain why in 2-3 sentences, considering the service context.
+3. If the risk is MEDIUM or above, propose a concrete code fix.
+4. Estimate the remediation effort: TRIVIAL (<30 min), MODERATE (1-4h), COMPLEX (>4h).
+5. Respond in valid JSON."""
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=1024,
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    proposal = json.loads(message.content[0].text)
+    if not isinstance(proposal, dict):
+        raise ValueError("INCOMPLETE: invalid proposal schema")
+    if proposal.get("risk_level") not in {"CRITICAL","HIGH","MEDIUM","LOW","FALSE_POSITIVE"} or not isinstance(proposal.get("explanation"),str):
+        raise ValueError("INCOMPLETE: invalid risk proposal")
+    proposal["status"] = "REVIEW"
+    proposal["coverage"] = "partial"
+    proposal["origin_verified"] = False
+    return proposal

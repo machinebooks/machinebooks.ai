@@ -1,0 +1,26 @@
+# Ejemplo didáctico: patrones/models/client.py
+# Patrón base con soft delete, auditoría y multi-tenancy
+from datetime import datetime, timezone
+
+class Client(db.Model):
+    __bind_key__ = 'operations'  # Bind key que mapea al schema operations_db
+    __tablename__ = 'clients'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False, index=True)
+    sector = db.Column(db.String(100))          # Taxonomía de sectores configurable
+    segment = db.Column(db.String(50))           # Segmentación ABC (ver Cap. 23)
+    risk_level = db.Column(db.String(20))        # Riesgo de renovación
+
+    # Soft delete — nunca borrado físico en datos de negocio
+    is_active = db.Column(db.Boolean, default=True, index=True)
+    deleted_at = db.Column(db.DateTime, nullable=True)
+
+    # Auditoría automática
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, onupdate=lambda: datetime.now(timezone.utc))
+    created_by = db.Column(db.Integer, db.ForeignKey('platform_core.users.id'))
+
+    # Relaciones
+    projects = db.relationship('Project', backref='client', lazy='dynamic')
+    contacts = db.relationship('Contact', backref='client', lazy='select')

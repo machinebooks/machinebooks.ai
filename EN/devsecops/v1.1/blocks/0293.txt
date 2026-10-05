@@ -1,0 +1,43 @@
+# autonomy_classifier.py — Classifies findings by autonomy level
+from dataclasses import dataclass
+from enum import IntEnum
+import anthropic
+
+class AutonomyLevel(IntEnum):
+    AUTONOMOUS = 1      # Agent acts without approval
+    SUPERVISED = 2      # Agent proposes, human approves
+    HUMAN_ONLY = 3      # Human decides and executes
+
+@dataclass
+class Finding:
+    severity: str           # critical, high, medium, low
+    category: str           # dependency, code, secret, config, runtime
+    reversible: bool        # Can it be undone?
+    affects_production: bool
+    component_criticality: str  # core, standard, peripheral
+
+def classify_autonomy(finding: Finding) -> AutonomyLevel:
+    """Classifies a finding into autonomy level based on policies."""
+    if finding.severity not in {"critical", "high", "medium", "low"} or finding.category not in {"dependency", "code", "secret", "config", "runtime"} or finding.component_criticality not in {"core", "standard", "peripheral"} or type(finding.reversible) is not bool or type(finding.affects_production) is not bool:
+        return AutonomyLevel.HUMAN_ONLY
+    # Level 3: always human for core component findings
+    # with production impact and irreversible
+    if (finding.component_criticality == "core"
+        and finding.affects_production
+        and not finding.reversible):
+        return AutonomyLevel.HUMAN_ONLY
+
+    # Level 1: autonomous for reversible non-critical dependencies
+    if (not finding.affects_production
+        and finding.category == "dependency"
+        and finding.reversible
+        and finding.severity in ("medium", "low")
+        and finding.component_criticality != "core"):
+        return AutonomyLevel.AUTONOMOUS
+
+    # Level 1: pre-commit secrets always autonomous (block)
+    if finding.category == "secret":
+        return AutonomyLevel.SUPERVISED
+
+    # Level 2: everything else requires supervision
+    return AutonomyLevel.SUPERVISED

@@ -1,0 +1,116 @@
+def analyze_dast_results(
+    zap_results: dict,
+    api_surface: dict,
+    scan_plan: dict,
+) -> dict:
+    """Propone clasificaciones de ZAP y conserva todas las alertas para revisión."""
+    # Agrupar alertas por endpoint y severidad
+    sites = zap_results.get("site") if isinstance(zap_results,dict) else None
+    if not isinstance(sites,list) or not sites or any(not isinstance(site,dict) or not isinstance(site.get("alerts"),list) for site in sites):
+        return {"status":"INCOMPLETE", "coverage":"partial", "findings":[],
+                "original_artifact":zap_results, "errors":["invalid ZAP artifact"]}
+    alerts = [alert for site in sites for alert in site["alerts"]]
+    valid_surface = (isinstance(api_surface,dict)
+                     and type(api_surface.get("total_endpoints")) is int
+                     and api_surface["total_endpoints"] >= 0)
+    def valid_alert(alert):
+        if not isinstance(alert,dict):
+            return False
+        instances = alert.get("instances")
+        return (isinstance(instances,list) and bool(instances)
+                and all(isinstance(instance,dict) and all(
+                    isinstance(instance.get(key,""),str)
+                    for key in ("uri","param","evidence")) for instance in instances)
+                and all(isinstance(alert.get(key,""),str) for key in ("riskdesc","desc")))
+    if not valid_surface or any(not valid_alert(alert) for alert in alerts):
+        return {"status":"INCOMPLETE", "coverage":"partial",
+                "findings":[{"original":a,"status":"REVIEW"} for a in alerts],
+                "errors":["invalid alert schema or API surface"]}
+
+    alert_summary = []
+    for index, alert in enumerate(alerts):
+        alert_summary.append({
+            "alert_id": str(index),
+            "name": alert.get("name"),
+            "risk": alert.get("riskdesc", "").split(" ")[0],
+            "confidence": alert.get("confidence"),
+            "url": alert.get("instances", [{}])[0].get("uri", ""),
+            "param": alert.get("instances", [{}])[0].get("param", ""),
+            "evidence": alert.get("instances", [{}])[0].get("evidence", "")[:200],
+            "cwe_id": alert.get("cweid"),
+            "description": alert.get("desc", "")[:300],
+            "count": len(alert.get("instances", [])),
+        })
+
+    prompt = f"""Eres un analista de seguridad experto revisando resultados de DAST.
+
+Contexto de la aplicación:
+- API REST con {api_surface['total_endpoints']} endpoints
+- Autenticación: JWT Bearer token
+- Framework: FastAPI con SQLAlchemy (ORM con prepared statements)
+- Base de datos: PostgreSQL
+
+Alertas de ZAP ({len(alert_summary)} tipos de alerta):
+{json.dumps(alert_summary, indent=2)}
+
+Para cada alerta, clasifica como:
+- REAL: propuesta de hallazgo con evidencia a contrastar; no confirma explotabilidad
+- PROBABLE: requiere verificación manual pero hay indicios
+- FALSE_POSITIVE: explica por qué no aplica en este contexto
+
+Analysis rules: every classification is a proposal for REVIEW.
+ORM and JSON do not establish absence of SQLi or XSS; inspect the actual data flow.
+Retain each alert_id including uncertain candidates; do not remove any alert.
+REAL denotes a proposed label, not authorized confirmation of exploitability.
+
+Responde en JSON:
+{{
+  "findings": [
+    {{
+      "alert_id": "...",
+      "alert_name": "...",
+      "classification": "REAL|PROBABLE|FALSE_POSITIVE",
+      "confidence": 0.0-1.0,
+      "reasoning": "...",
+      "recommended_action": "...",
+      "cwe": "CWE-xxx"
+    }}
+  ],
+  "summary": {{
+    "total_alerts": N,
+    "real": N,
+    "probable": N,
+    "false_positives": N,
+    "risk_rating": "CRITICAL|HIGH|MEDIUM|LOW"
+  }}
+}}"""
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    try:
+        value = json.loads(message.content[0].text)
+        proposals = value.get("findings") if isinstance(value, dict) else None
+        if not isinstance(proposals, list) or len(proposals) != len(alerts):
+            raise ValueError("missing classifications")
+        known = {str(i) for i in range(len(alerts))}
+        seen = set()
+        for item in proposals:
+            if not isinstance(item, dict) or item.get("alert_id") not in known or item["alert_id"] in seen:
+                raise ValueError("unknown or duplicate alert")
+            seen.add(item["alert_id"])
+            score = item.get("confidence")
+            if item.get("classification") not in {"REAL","PROBABLE","FALSE_POSITIVE"} or type(score) not in (int,float) or not 0 <= score <= 1:
+                raise ValueError("invalid classification")
+        indexed = {p["alert_id"]:p for p in proposals}
+        retained = [{"alert_id":str(i), "original":alert,
+                     "proposal":indexed[str(i)], "status":"REVIEW"}
+                    for i,alert in enumerate(alerts)]
+        return {"status":"REVIEW", "coverage":"partial", "findings":retained, "errors":[]}
+    except (ValueError, TypeError, KeyError, IndexError, AttributeError):
+        return {"status":"INCOMPLETE", "coverage":"partial",
+                "findings":[{"alert_id":str(i), "original":a, "status":"REVIEW"}
+                            for i,a in enumerate(alerts)],
+                "errors":["invalid or incomplete model classifications"]}

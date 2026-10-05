@@ -1,0 +1,36 @@
+# Didactic example: patterns/ai_service/models/quality_score.py
+class LLMQualityScore(Base):
+    """
+    Quality score per completed task.
+    Combines automatic evaluation and human feedback.
+    """
+    __tablename__ = "llm_quality_score"
+
+    id = Column(Integer, primary_key=True)
+    usage_log_id = Column(Integer, ForeignKey("llm_usage_logs.id"), index=True)
+    service_type = Column(String(64), index=True)
+    model_id = Column(String(64))
+    prompt_id = Column(String(64))  # To correlate with prompt version
+
+    # 7 quality metrics (0.0-1.0 each)
+    hallucination_score = Column(Float)    # Inverse: 0=no hallucination, 1=high
+    groundedness_score = Column(Float)     # How grounded in context
+    relevance_score = Column(Float)        # Response relevance
+    coherence_score = Column(Float)        # Internal text coherence
+    bias_score = Column(Float)             # Detected bias level
+    toxicity_score = Column(Float)         # Harmful content
+    pii_leak_score = Column(Float)         # PII in output
+
+    # Composite score (weighted by service profile)
+    composite_score = Column(Float)
+
+    # Human feedback
+    user_rating = Column(Integer)          # 1-5 stars
+    user_feedback_text = Column(Text)
+    expert_review = Column(Boolean)        # Manual expert review
+
+    evaluated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    evaluation_method = Column(String(16)) # "auto", "user", "expert"
+
+# Score direction and bounds belong to the evaluation profile. These are proxy
+# signals, not objective proof of truth, absence of PII or legal conformity.

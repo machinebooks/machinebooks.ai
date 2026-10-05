@@ -1,0 +1,10 @@
+## Project controls
+
+- Never hardcode secrets or tenant identifiers.
+- Use versioned and reviewed database migrations.
+- Authenticate callers and authorize each resource and action.
+- Validate an explicit CORS origin allowlist; test CSRF separately.
+- Set token lifetime by threat model; the historical case used 8h/7d.
+- Test revocation and refresh rotation; expiration alone is insufficient.
+- Exclude secrets and personal data from diagnostic logs.
+- Review types, runtime schemas and relevant tests before integration.

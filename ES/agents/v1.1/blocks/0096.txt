@@ -1,0 +1,11 @@
+async callTool(name, args) {
+  const tool = toolMap.get(name);
+  if (!tool) {
+    return { output: `Tool not found: ${name}`, error: true };
+  }
+  try {
+    return await tool.handler(args);
+  } catch (err) {
+    return { output: `Tool '${name}' threw: ${(err as Error).message}`, error: true };
+  }
+}

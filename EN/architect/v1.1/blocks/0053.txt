@@ -1,0 +1,31 @@
+class GuardrailType:
+    """Optional per-agent guardrail extensions.
+    The runtime must enforce its mandatory security baseline separately.
+    This catalog and stored settings do not implement that enforcement."""
+    PROMPT_INJECTION = 'prompt_injection'      # Prompt-injection detection
+    PII_DETECTION = 'pii_detection'            # PII detection in input
+    PII_REDACTION = 'pii_redaction'            # PII redaction in output
+    OFF_TOPIC = 'off_topic'                    # Off-topic filtering
+    MALICIOUS_CONTENT = 'malicious_content'    # Harmful content patterns
+    OUTPUT_LENGTH = 'output_length'            # Response-length limit
+    FORBIDDEN_PATTERNS = 'forbidden_patterns'  # Configurable forbidden patterns
+    HALLUCINATION_CHECK = 'hallucination_check'  # Hallucination-check settings
+
+class AgentGuardrailConfig(db.Model):
+    """Per-agent guardrail configuration."""
+    __tablename__ = 'agent_guardrail_configs'
+
+    id = db.Column(db.Integer, primary_key=True)
+    agent_definition_id = db.Column(
+        db.Integer, db.ForeignKey('agent_definitions.id', ondelete='CASCADE'),
+        nullable=False, index=True,
+    )
+    guardrail_type = db.Column(db.String(50), nullable=False)
+    is_enabled = db.Column(db.Boolean, default=True)
+    severity = db.Column(db.String(20), default='block')  # block | warn
+    config = db.Column(db.JSON, nullable=True)  # Guardrail-specific parameters
+
+    __table_args__ = (
+        db.UniqueConstraint('agent_definition_id', 'guardrail_type',
+                            name='uq_agent_guardrail'),
+    )

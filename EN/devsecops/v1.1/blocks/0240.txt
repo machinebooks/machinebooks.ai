@@ -1,0 +1,73 @@
+from fastapi import FastAPI
+from typing import Optional
+
+app = FastAPI(title="Compliance Dashboard API")
+
+
+@app.get("/api/compliance/status")
+async def get_compliance_status(
+    framework: Optional[str] = None,
+) -> dict:
+    """Current compliance state by framework."""
+    assessments = load_latest_assessments(framework)
+
+    known = {ComplianceStatus.COMPLIANT, ComplianceStatus.NON_COMPLIANT,
+             ComplianceStatus.PARTIAL, ComplianceStatus.NOT_ASSESSED}
+    if not isinstance(assessments, list) or not assessments or any(getattr(a,"status",None) not in known for a in assessments):
+        return {"status":"INCOMPLETE", "frameworks":{}, "reason":"missing or invalid assessments"}
+    summary = {}
+    for fw in set(a.control.framework for a in assessments):
+        fw_assessments = [
+            a for a in assessments if a.control.framework == fw
+        ]
+        compliant = sum(
+            1 for a in fw_assessments
+            if a.status == ComplianceStatus.COMPLIANT
+        )
+        total = len(fw_assessments)
+        summary[fw] = {
+            "compliant": compliant,
+            "total": total,
+            "percentage": (
+                round(compliant / total * 100, 1) if total > 0 else 0
+            ),
+            "last_assessed": max(
+                a.assessed_at for a in fw_assessments
+            ).isoformat(),
+            "pending_controls": [
+                {
+                    "id": a.control.control_id,
+                    "title": a.control.title,
+                    "cause": a.justification,
+                    "proposed_status": str(a.status),
+                }
+                for a in fw_assessments
+                if a.status != ComplianceStatus.COMPLIANT
+            ],
+        }
+
+    return {
+        "status":"REVIEW",
+        "coverage":"partial",
+        "frameworks": summary,
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+
+@app.get("/api/compliance/drift")
+async def get_compliance_drift(days: int = 30) -> dict:
+    """Compliance drifts in the last N days."""
+    if type(days) is not int or not 1 <= days <= 365:
+        raise ValueError("INCOMPLETE: days outside 1..365")
+    drifts = load_recent_drifts(days)
+    if not isinstance(drifts,list) or any(not isinstance(d,dict) or d.get("severity") not in {"critical","high","medium","low","info"} for d in drifts):
+        return {"status":"INCOMPLETE","drifts":[]}
+
+    return {
+        "status": "REVIEW",
+        "coverage": "partial",
+        "period_days": days,
+        "total_drifts": len(drifts),
+        "critical": [d for d in drifts if d["severity"] == "critical"],
+        "high": [d for d in drifts if d["severity"] == "high"],
+    }

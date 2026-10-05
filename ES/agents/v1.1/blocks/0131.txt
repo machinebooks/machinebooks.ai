@@ -1,0 +1,22 @@
+// Educational warning function; the caller owns state per session.
+const SOFT_RATIO = 0.7;
+const HARD_RATIO = 0.85;
+export function evaluateCompactWarning(
+  budget: CompactBudget,
+  previousLevel: CompactWarningLevel = 'none',
+): CompactWarningState {
+  if (!Number.isFinite(budget.totalChars) || budget.totalChars < 0 ||
+      !Number.isFinite(budget.maxChars) || budget.maxChars <= 0) {
+    throw new Error('Invalid compact warning budget');
+  }
+  const utilization = budget.totalChars / budget.maxChars;
+  const level: CompactWarningLevel = utilization >= HARD_RATIO ? 'hard' :
+    utilization >= SOFT_RATIO ? 'soft' : 'none';
+  const message = level === 'none' ? undefined :
+    `Contexto estimado al ${Math.round(utilization * 100)}%. Revisar el presupuesto.`;
+  return {
+    level, utilization, message,
+    warnedThisSession: level !== 'none' && previousLevel === level,
+    charsRemaining: Math.max(0, budget.maxChars - budget.totalChars),
+  };
+}

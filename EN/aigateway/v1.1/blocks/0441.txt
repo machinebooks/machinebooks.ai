@@ -1,0 +1,15 @@
+# Partial local pytest setup; call before importing application Settings.
+# monkeypatch is the test fixture and restores changes afterward.
+def configure_test_environment(monkeypatch):
+    import os
+    assert os.environ.get("GATEWAY_ENV") in (None, "test")
+    values = {
+        "GATEWAY_SECRET_KEY": "synthetic-test-placeholder-never-a-production-secret",
+        "JWT_SECRET_KEY": "synthetic-jwt-placeholder-never-a-production-secret",
+        "DATABASE_URL": "mysql+aiomysql://fixture:fixture@127.0.0.1:3306/gateway_fixture",
+        "REDIS_URL": "redis://127.0.0.1:6379/15",
+        "GATEWAY_ENV": "test",
+    }
+    for name, value in values.items():
+        monkeypatch.setenv(name, value)
+# Replace network/storage clients with local doubles in the test.

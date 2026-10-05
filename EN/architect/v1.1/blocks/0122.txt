@@ -1,0 +1,28 @@
+def get_fallback_chain(service_type, security_context,
+                       resolve_authorized_deployments):
+    if not isinstance(service_type, str) or not service_type:
+        raise ValueError("Invalid service type")
+    # The server returns ordered, currently approved deployment records.
+    chain = resolve_authorized_deployments(security_context, service_type)
+    if not isinstance(chain, list) or not chain:
+        raise RuntimeError("No authorized fallback deployment")
+    seen = set()
+    for item in chain:
+        if (not isinstance(item, dict)
+                or not isinstance(item.get("deployment_id"), str)
+                or not item["deployment_id"]
+                or not isinstance(item.get("policy_version"), str)
+                or not item["policy_version"]
+                or type(item.get("approved_for_task")) is not bool
+                or item["approved_for_task"] is not True):
+            raise PermissionError("Fallback deployment is not approved")
+        if item["deployment_id"] in seen:
+            raise ValueError("Duplicate fallback deployment")
+        seen.add(item["deployment_id"])
+    return [dict(item) for item in chain]
+
+# Approval covers data classification, processing/residency terms, retention,
+# endpoint features and measured task quality. Provider names do not establish it.
+# A local endpoint still has network, access and quality constraints.
+# Invocation/retry orchestration is external; do not resend after uncertain side
+# effects unless the task's idempotence and policy permit it.

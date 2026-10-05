@@ -1,0 +1,114 @@
+import anthropic
+import json
+from pathlib import Path
+from datetime import datetime, timedelta, timezone
+
+# Matriz de mapeo control ENS -> artefactos requeridos
+ENS_CONTROL_MAP = {
+    "op.exp.2": {
+        "nombre": "Configuración de seguridad",
+        "artefactos_requeridos": [
+            "container-report.sarif",
+            "config-audit.json"
+        ],
+        "criterio_cumplimiento": "Señales de configuración para revisión del requisito, alcance y suficiencia"
+    },
+    "op.exp.5": {
+        "nombre": "Gestión de cambios",
+        "artefactos_requeridos": [
+            "git-approval-log.json"
+        ],
+        "criterio_cumplimiento": "Registros de aprobación como señal parcial; no acreditan gestión completa de cambios"
+    },
+    "mp.sw.1": {
+        "nombre": "Desarrollo de aplicaciones",
+        "artefactos_requeridos": [
+            "sast-report.sarif",
+            "sca-report.sarif",
+            "code-review-log.json"
+        ],
+        "criterio_cumplimiento": "Señales SAST/SCA y revisión de código; su pase o ausencia de hallazgos no acredita todo el requisito"
+    },
+    "mp.sw.2": {
+        "nombre": "Aceptación y puesta en servicio",
+        "artefactos_requeridos": [
+            "ci-gate-results.json",
+            "test-results.json"
+        ],
+        "criterio_cumplimiento": "Resultados técnicos de gate y pruebas; aceptación y puesta en servicio requieren revisión de suficiencia"
+    },
+    # ... 43 controles adicionales con estructura análoga
+}
+
+def recopilar_evidencias(bucket_path: str, periodo_dias: int = 90):
+    """Recopila artefactos del almacén de evidencias
+    para el periodo indicado."""
+    evidencias = {}
+    fecha_inicio = datetime.now(timezone.utc) - timedelta(days=periodo_dias)
+    # Listar artefactos en el bucket para el periodo
+    # (implementación con boto3 omitida por brevedad)
+    raise ValueError("INCOMPLETE: bucket collector and protected provenance verifier are omitted")
+
+def evaluar_control(control_id: str, control_def: dict,
+                    evidencias: dict, client: anthropic.Anthropic):
+    """Evalúa un control ENS contra las evidencias disponibles."""
+    if not isinstance(evidencias,dict) or not evidencias:
+        raise ValueError("INCOMPLETE: no evidence")
+    for metadata in evidencias.values():
+        if not isinstance(metadata,dict):
+            raise ValueError("INCOMPLETE: invalid evidence metadata")
+        stamp = datetime.fromisoformat(metadata["fecha"].replace("Z","+00:00"))
+        if stamp.utcoffset() != timedelta(0) or stamp > datetime.now(timezone.utc) or type(metadata.get("count")) is not int or metadata["count"] <= 0:
+            raise ValueError("INCOMPLETE: invalid evidence time or count")
+    artefactos_encontrados = []
+    artefactos_faltantes = []
+
+    for artefacto in control_def["artefactos_requeridos"]:
+        if artefacto in evidencias:
+            artefactos_encontrados.append({
+                "nombre": artefacto,
+                "fecha_mas_reciente": evidencias[artefacto]["fecha"],
+                "total_ejecuciones": evidencias[artefacto]["count"],
+                "resumen": evidencias[artefacto]["resumen"]
+            })
+        else:
+            artefactos_faltantes.append(artefacto)
+
+    if artefactos_faltantes or not artefactos_encontrados:
+        return {"status":"INCOMPLETE","coverage":"partial","estado": "parcial", "justificacion": "INCOMPLETE: missing evidence",
+                "evidencias_referenciadas": [], "acciones_pendientes": artefactos_faltantes}
+
+    # Claude analiza los artefactos y determina cumplimiento
+    prompt = f"""Evalúa el cumplimiento del control ENS {control_id}
+({control_def['nombre']}).
+
+Criterio de cumplimiento: {control_def['criterio_cumplimiento']}
+
+Artefactos encontrados:
+{json.dumps(artefactos_encontrados, indent=2, ensure_ascii=False)}
+
+Artefactos faltantes: {artefactos_faltantes}
+
+Propón un borrador para REVIEW; conserva faltantes, parciales y acciones pendientes. No emitas dictamen de conformidad. Responde en JSON con: estado (conforme/no_conforme/parcial),
+justificacion (2-3 frases), evidencias_referenciadas (lista),
+acciones_pendientes (lista, vacía si conforme)."""
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=1024,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    try:
+        proposal = json.loads(message.content[0].text)
+        if not isinstance(proposal, dict) or proposal.get("estado") not in {"conforme", "no_conforme", "parcial"}:
+            raise ValueError("invalid state")
+        if not isinstance(proposal.get("justificacion"), str) or any(not isinstance(proposal.get(k), list) for k in ("evidencias_referenciadas", "acciones_pendientes")):
+            raise ValueError("invalid proposal")
+        proposal["proposed_estado"] = proposal["estado"]
+        proposal["estado"] = "parcial"
+        proposal.update(status="REVIEW",coverage="partial",origin_verified=False)
+        proposal["acciones_pendientes"].append("REVIEW: authorized sufficiency review required")
+        return proposal
+    except (ValueError, TypeError, KeyError, IndexError, AttributeError):
+        return {"status":"INCOMPLETE","coverage":"partial","estado": "parcial", "justificacion": "INCOMPLETE: invalid model output",
+                "evidencias_referenciadas": [], "acciones_pendientes": ["human review"]}

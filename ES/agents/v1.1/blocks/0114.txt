@@ -1,0 +1,10 @@
+flowchart LR
+    subgraph Petition[Petición al proveedor]
+        direction TB
+        T[tool schemas<br/>13.000 tokens hipotéticos] --> S[system prompt<br/>5.000 tokens hipotéticos]
+        S --> MARK[Punto cacheable del ejemplo]
+        MARK --> M[messages activos<br/>variable]
+    end
+    Petition --> Anthropic{Anthropic}
+    Anthropic -->|escritura de 5 min si procede| WRITE[cache write<br/>tarifa histórica 1,25x]
+    Anthropic -->|lectura si hay hit| READ[cache read<br/>tarifa histórica 0,1x]

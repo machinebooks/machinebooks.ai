@@ -1,0 +1,6 @@
+# Inside the synchronous Messages-compatible factory branch
+client, model = _create_native_from_config(config)
+# Wrap with the scoped tracker before returning
+tracked = NativeClientUsageTracker(client, model, service_type, config['provider_type'],
+                                   audit_sink=durable_usage_sink, context=current_request_context)
+return tracked, model

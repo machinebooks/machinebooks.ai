@@ -1,0 +1,37 @@
+def generate_consolidated_report(
+    zap_analysis: dict,
+    nuclei_findings: dict,
+    logic_test_results: list[dict],
+    scan_metadata: dict,
+) -> dict:
+    """Genera informe consolidado de DAST para tres audiencias."""
+    all_findings, errors = [], []
+    for source, data in [("ZAP",zap_analysis),("Nuclei",nuclei_findings)]:
+        entries = data.get("findings") if isinstance(data, dict) else None
+        if not isinstance(entries, list):
+            errors.append(source + ": missing findings")
+            continue
+        if data.get("status") != "REVIEW" or data.get("errors"):
+            errors.append(source + ": incomplete evidence")
+        for entry in entries:
+            all_findings.append({"source":source, "original":entry,
+                                 "status":"REVIEW"})
+            if not isinstance(entry, dict):
+                errors.append(source + ": invalid entry retained")
+    if not isinstance(logic_test_results, list):
+        errors.append("Logic Test: missing results")
+    else:
+        for entry in logic_test_results:
+            all_findings.append({"source":"Logic Test", "original":entry,
+                                 "status":"REVIEW"})
+            if not isinstance(entry, dict) or type(entry.get("vulnerable")) is not bool:
+                errors.append("Logic Test: invalid observation retained")
+    if not isinstance(scan_metadata, dict) or not scan_metadata:
+        errors.append("missing scan provenance")
+    return {"status":"INCOMPLETE" if errors else "REVIEW",
+            "coverage":"partial", "metadata":scan_metadata,
+            "findings":all_findings, "errors":errors,
+            "summary":{"retained_observations":len(all_findings),
+                       "confirmed_vulnerabilities":None,
+                       "by_source":{s:sum(f["source"] == s for f in all_findings)
+                                    for s in ["ZAP","Nuclei","Logic Test"]}}}

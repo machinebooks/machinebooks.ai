@@ -1,0 +1,65 @@
+class HeatmapEngine:
+    """
+    Multidimensional scoring calculation engine.
+    Each dimension's weights are configurable from the Admin panel
+    and loaded from the HeatmapConfig table on each execution.
+    """
+
+    def __init__(self, period: str):
+        self.period = period
+        # Configurable weights — not hardcoded in the engine
+        config = HeatmapConfig.query.filter_by(active=True).first()
+        self.weights = {
+            'demand':       config.weight_demand / 100,       # default 0.30
+            'traction':     config.weight_traction / 100,     # default 0.20
+            'economic':     config.weight_economic / 100,     # default 0.25
+            'right_to_win': config.weight_right_to_win / 100  # default 0.25
+        }
+
+    def compute_for_cell(self, sector_id: int, service_line_id: int) -> dict:
+        """
+        Calculates the score for a specific cell of the matrix.
+        Returns the total score and subscores by dimension.
+        """
+        demand_data = self._get_demand_data(sector_id, service_line_id)
+        traction_data = self._get_traction_data(sector_id, service_line_id)
+        economic_data = self._get_economic_data(sector_id, service_line_id)
+        rtw_data = self._get_rtw_data(sector_id, service_line_id)
+
+        # Normalize each subscore to the 0-100 range
+        score_demand = self._normalize(demand_data['opportunity_value'],
+                                       self.demand_p10, self.demand_p90)
+        score_traction = self._normalize(traction_data['pipeline_volume'],
+                                         self.traction_p10, self.traction_p90)
+        score_economic = self._compute_economic_score(economic_data)
+        score_rtw = self._compute_rtw_score(rtw_data)
+
+        total = (
+            score_demand * self.weights['demand'] +
+            score_traction * self.weights['traction'] +
+            score_economic * self.weights['economic'] +
+            score_rtw * self.weights['right_to_win']
+        ) * 100
+
+        return {
+            'total_score': round(total, 1),
+            'score_demand': round(score_demand * 100, 1),
+            'score_traction': round(score_traction * 100, 1),
+            'score_economic': round(score_economic * 100, 1),
+            'score_right_to_win': round(score_rtw * 100, 1),
+            # Raw data for auditability
+            'opportunities_count': demand_data['count'],
+            'pipeline_volume': traction_data['pipeline_volume'],
+            'avg_margin_pct': economic_data['avg_margin'],
+            'win_rate_pct': rtw_data['win_rate']
+        }
+
+    def _normalize(self, value: float, p10: float, p90: float) -> float:
+        """
+        Robust normalization using P10-P90 percentiles for the period.
+        Prevents outliers from distorting the full range.
+        """
+        if p90 == p10:
+            return 0.5  # No variance: neutral value
+        normalized = (value - p10) / (p90 - p10)
+        return max(0.0, min(1.0, normalized))  # Clamp [0, 1]

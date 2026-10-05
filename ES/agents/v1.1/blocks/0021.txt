@@ -1,0 +1,38 @@
+flowchart TD
+    Start([Provider.call inicia stream]) --> Read{¿más eventos?}
+    Read -- "no — stream cerrado" --> Close([streamDone = true])
+    Read -- "sí" --> Type{Tipo de evento}
+
+    Type -- "text_delta" --> CT[onContent text]
+    CT --> Acc1[content acumulado += text]
+    Acc1 --> Yield1[yield text_delta al AgentLoop]
+    Yield1 --> Read
+
+    Type -- "thinking_delta" --> CTh[onThinking text]
+    CTh --> Acc2[reasoning acumulado += text]
+    Acc2 --> Yield2[yield thinking al AgentLoop]
+    Yield2 --> Read
+
+    Type -- "content_block_start tool_use" --> NewT[crear toolCallState index]
+    NewT --> Yield3[onToolCall index, id, name, ""]
+    Yield3 --> Read
+
+    Type -- "input_json_delta" --> Acc3[toolCallState idx.arguments += chunk]
+    Acc3 --> Read
+    Try -- "sí" --> StartT[StreamingToolExecutor.addTool]
+    Try -- "no" --> Read
+    StartT --> Read
+
+    Type -- "content_block_stop" --> Done[onToolCallDone idx]
+    Done --> Try{¿Argumentos completos,<br/>esquema y alcance válidos?}
+
+    Type -- "message_delta usage" --> U[onUsage prompt, completion]
+    U --> Read
+
+    Type -- "error" --> Err[onError msg]
+    Err --> Close
+
+    classDef event fill:#142038,stroke:#7dd8e8,color:#f5efe0
+    classDef action fill:#1a2d4d,stroke:#ffb347,color:#f5efe0
+    class Type,Try event
+    class CT,CTh,NewT,Acc3,StartT,Done,U,Err,Yield1,Yield2,Yield3 action

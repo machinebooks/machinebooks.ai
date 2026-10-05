@@ -1,0 +1,63 @@
+def search_opportunities(
+    query: str,
+    category: str = None,
+    budget_min: float = None,
+    budget_max: float = None,
+    deadline_days: int = 30,
+    contract_type: str = None,
+    page: int = 1,
+    per_page: int = 20,
+) -> dict:
+    """
+    Opportunity search with combined filters.
+    Target latency: < 10ms for queries without free text.
+    """
+    client = meilisearch.Client(MEILISEARCH_URL, MEILISEARCH_KEY)
+    index = client.index(OPPORTUNITIES_INDEX)
+
+    # Build dynamic filter
+    filters = ["status = 'active'"]
+
+    # Validate against whitelist before interpolating into filter
+    # to prevent filter injection in Meilisearch
+    VALID_CATEGORIES = {"technology", "consulting", "security", "infrastructure", "training"}
+    if category and category.lower() in VALID_CATEGORIES:
+        filters.append(f"category = '{category}'")
+
+    if budget_min is not None:
+        filters.append(f"budget_max >= {budget_min}")
+
+    if budget_max is not None:
+        filters.append(f"budget_min <= {budget_max}")
+
+    VALID_CONTRACT_TYPES = {"services", "supplies", "works", "mixed", "concession"}
+    if contract_type and contract_type.lower() in VALID_CONTRACT_TYPES:
+        filters.append(f"contract_type = '{contract_type}'")
+
+    # Deadline filter — only opportunities with future deadline
+    from_date = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    filters.append(f"deadline >= '{from_date}'")
+
+    final_filter = " AND ".join(filters)
+
+    result = index.search(
+        query,
+        {
+            "filter": final_filter,
+            "sort": ["relevance_score:desc", "publication_date:desc"],
+            "limit": per_page,
+            "offset": (page - 1) * per_page,
+            # Highlight matching terms in result
+            "attributesToHighlight": ["title", "description"],
+            "highlightPreTag": "<mark>",
+            "highlightPostTag": "</mark>",
+        }
+    )
+
+    return {
+        "total": result["estimatedTotalHits"],
+        "page": page,
+        "per_page": per_page,
+        "results": result["hits"],
+        "time_ms": result["processingTimeMs"],
+    }

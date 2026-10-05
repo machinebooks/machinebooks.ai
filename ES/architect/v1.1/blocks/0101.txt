@@ -1,0 +1,56 @@
+    def upload_pricing_data(self, df: pd.DataFrame) -> UploadResult:
+        """Uploads the DataFrame data to the pricing configurator in batches."""
+        # Server adapter resolves current actor/tenant/job scope and validates rows.
+        if authorize_pricing_upload(self.task_id,df) is not True:
+            raise PermissionError("Pricing upload denied")
+        result = UploadResult(total_rows=len(df))
+
+        # Split into batches
+        batches = [df[i:i+self.MAX_BATCH_SIZE] for i in range(0, len(df), self.MAX_BATCH_SIZE)]
+
+        for batch_num, batch in enumerate(batches, 1):
+            self._log(f"Processing batch {batch_num}/{len(batches)} ({len(batch)} rows)")
+
+            for _, row in batch.iterrows():
+                try:
+                    self._upload_single_row(row)
+                    result.successful += 1
+                except Exception as e:
+                    result.failed += 1
+                    result.errors.append(
+                        f"Row {row.name + 2}: {type(e).__name__}"
+                    )
+
+            # Pause between batches to avoid overloading the external system
+            if batch_num < len(batches):
+                time.sleep(2)
+
+        return result
+
+    def _upload_single_row(self, row: pd.Series):
+        """Uploads an individual row to the configurator form."""
+        # Navigate to the add form
+        add_btn = self.wait_for_element((By.CSS_SELECTOR, "button.btn-add-service"))
+        add_btn.click()
+
+        # Fill form — wait for each field to be ready
+        self.wait_for_element((By.ID, "service-code")).send_keys(row["service_code"])
+        self.driver.find_element(By.ID, "base-price").send_keys(row["base_price"])
+
+        if pd.notna(row.get("max_discount")):
+            self.driver.find_element(By.ID, "max-discount").send_keys(row["max_discount"])
+
+        self.driver.find_element(By.ID,"validity").send_keys(row["validity"])
+        # Save and verify confirmation
+        save_btn = self.driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
+        save_btn.click()
+
+        # Provider adapter confirms this exact row/version, not a stale toast.
+        if self.confirm_saved_row(dict(row)) is not True:
+            raise RuntimeError("Row effect unconfirmed; reconcile before retry")
+    # confirm_saved_row and authorization/reconciliation are mandatory adapters.
+
+    def _log(self, message: str):
+        import logging
+        logging.getLogger(__name__).info(f"[{self.task_id}] {message}")
+# authorize_pricing_upload and confirm_saved_row are mandatory server/provider adapters.

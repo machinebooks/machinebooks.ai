@@ -1,0 +1,58 @@
+# .github/workflows/ai-security-tests.yml
+name: AI Security Tests
+on:
+  pull_request:
+    paths:
+      - "src/ai/**"
+      - "src/agents/**"
+      - "src/rag/**"
+      - "prompts/**"
+
+jobs:
+  prompt-injection-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run injection test suite
+        run: |
+          python -m pytest tests/security/test_prompt_injection.py \
+            --tb=short -q
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Run output filter tests
+        run: |
+          python -m pytest tests/security/test_output_filter.py \
+            --tb=short -q
+
+  agent-guardrail-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify agent configurations
+        run: |
+          python scripts/verify_agent_guardrails.py \
+            --config config/agent-guardrails.yaml \
+            --strict
+
+      - name: Run budget exhaustion tests
+        run: |
+          python -m pytest tests/security/test_agent_budget.py \
+            --tb=short -q
+
+  rag-integrity-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify model policy
+        run: |
+          python scripts/verify_model_policy.py \
+            --policy config/model-policy.yaml
+
+      - name: Run adversarial document tests
+        run: |
+          python -m pytest tests/security/test_rag_poisoning.py \
+            --tb=short -q

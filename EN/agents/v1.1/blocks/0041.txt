@@ -1,0 +1,27 @@
+flowchart LR
+    subgraph PROD["Producer (callback → queue)"]
+        direction TB
+        OC["onContent(text)"] --> Q["event queue"]
+        OT["onThinking(text)"] --> Q
+        OTC["onToolCall(idx,id,name,args) / completeness"] --> Q
+        OU["onUsage(in,out)"] --> Q
+        OE["onError(err)"] --> Q
+    end
+
+    subgraph ADAPTER["GatewayClient.streamChatEvents()"]
+        direction TB
+        Q --> WN["while (!producerDone || queue.length)"]
+        WN --> YL["yield typed event"]
+    end
+
+    subgraph CONS["Consumer (AgentLoop)"]
+        direction TB
+        YL --> TE["{ type: 'text', text }"]
+        YL --> TH["{ type: 'thinking', text }"]
+        YL --> TD["{ type: 'tool_call_delta', delta: {...} }"]
+        YL --> US["{ type: 'usage', usage: {...} }"]
+        YL --> FI["{ type: 'finish', reason: actual normalized terminal }"]
+    end
+
+    classDef q fill:#0a1224,stroke:#ffb347,color:#f5efe0
+    class Q,WN,YL q

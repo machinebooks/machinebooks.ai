@@ -1,0 +1,13 @@
+def detect_access_control_issues(
+    results_admin: dict, results_standard: dict,
+    expected_admin_only: set[tuple[str, str]],
+) -> list[dict]:
+    if not isinstance(expected_admin_only, set) or not expected_admin_only:
+        raise ValueError("INCOMPLETE: authoritative access policy required")
+    observed = results_standard.get("accessible_endpoints")
+    if not isinstance(observed, list):
+        raise ValueError("INCOMPLETE: missing standard-profile results")
+    endpoints = {(a["url"], a["method"]) for a in observed}
+    return [{"type": "broken_access_control", "severity": "HIGH",
+             "endpoint": f"{method} {url}", "cwe": "CWE-284"}
+            for url, method in sorted(endpoints & expected_admin_only)]

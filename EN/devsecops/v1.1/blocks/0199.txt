@@ -1,0 +1,107 @@
+import math
+# security_report_agent.py
+import anthropic
+import requests
+from datetime import datetime, timedelta
+
+client = anthropic.Anthropic()
+PROMETHEUS_URL = "http://prometheus:9090/api/v1"
+
+
+def query_prometheus(promql: str, time_range: str = "7d") -> dict:
+    """Execute a PromQL query and return the result."""
+    response = requests.get(
+        f"{PROMETHEUS_URL}/query",
+        params={"query": promql},
+        timeout=10,
+    )
+    response.raise_for_status()
+    payload = response.json()
+    data = payload.get("data") if isinstance(payload,dict) else None
+    if not isinstance(data,dict):
+        raise ValueError("INCOMPLETE: invalid Prometheus envelope")
+    values = data.get("result")
+    if payload.get("status") != "success" or not isinstance(values,list) or not values:
+        raise ValueError("INCOMPLETE: missing metric series")
+    for value in values:
+        if not isinstance(value,dict) or not isinstance(value.get("value"),list) or len(value["value"]) != 2:
+            raise ValueError("INCOMPLETE: invalid metric series")
+        try:
+            sample = float(value["value"][1])
+        except (ValueError,TypeError):
+            raise ValueError("INCOMPLETE: invalid metric sample")
+        if not isinstance(value.get("metric"),dict):
+            raise ValueError("INCOMPLETE: invalid metric labels")
+        if not math.isfinite(sample) or sample < 0:
+            raise ValueError("INCOMPLETE: invalid metric value")
+    return values
+
+
+def collect_weekly_metrics() -> dict:
+    """Collect all security metrics from the last week."""
+    metrics = {}
+
+    # Open findings by severity
+    results = query_prometheus(
+        'sum by (severity) (devsecops_findings_open_total)'
+    )
+    metrics["open_findings"] = {
+        r["metric"]["severity"]: int(r["value"][1])
+        for r in results
+    }
+
+    # Average MTTR by severity (in hours)
+    for sev in ["critical", "high", "medium"]:
+        result = query_prometheus(
+            f'histogram_quantile(0.50, rate('
+            f'devsecops_mttr_seconds_bucket{{severity="{sev}"}}[7d]))'
+        )
+        if result:
+            hours = float(result[0]["value"][1]) / 3600
+            metrics.setdefault("closed_mttr_median_hours", {})[sev] = round(
+                hours, 1
+            )
+
+    # Fix rate semanal
+    remediated = query_prometheus(
+        'sum(increase(devsecops_findings_remediated_total[7d]))'
+    )
+    detected = query_prometheus(
+        'sum(increase(devsecops_findings_detected_total[7d]))'
+    )
+    if remediated and detected:
+        rem_val = float(remediated[0]["value"][1])
+        det_val = float(detected[0]["value"][1])
+        if det_val <= 0:
+            raise ValueError("INCOMPLETE: fix-rate denominator missing")
+        metrics["fix_rate"] = round(
+            (rem_val / det_val * 100) if det_val > 0 else 0, 1
+        )
+
+    # Scan coverage
+    coverage = query_prometheus(
+        'avg(devsecops_scan_coverage_ratio)'
+    )
+    if coverage:
+        metrics["scan_coverage"] = round(
+            float(coverage[0]["value"][1]) * 100, 1
+        )
+
+    # False positive rate
+    fp = query_prometheus(
+        'sum(increase(devsecops_false_positives_total[7d]))'
+    )
+    total = query_prometheus(
+        'sum(increase(devsecops_findings_adjudicated_total[7d]))'
+    )
+    if fp and total:
+        fp_val = float(fp[0]["value"][1])
+        tot_val = float(total[0]["value"][1])
+        if tot_val <= 0 or fp_val > tot_val:
+            raise ValueError("INCOMPLETE: adjudicated false-positive denominator")
+        metrics["false_positive_rate"] = round(
+            (fp_val / tot_val * 100) if tot_val > 0 else 0, 1
+        )
+
+    metrics.update(status="REVIEW",coverage="partial")
+    return metrics

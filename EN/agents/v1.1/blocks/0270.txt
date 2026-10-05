@@ -1,0 +1,3 @@
+// A fresh timestamp changes this content on every construction.
+const systemPrompt = `${BLOCK_1}\n${BLOCK_2}\nObserved at: ${new Date().toISOString()}`;
+// Eligible prefix reuse depends on the provider contract and breakpoint.

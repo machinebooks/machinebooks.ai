@@ -1,0 +1,9 @@
+// The host supplies trusted checksums for this exact bundle revision.
+for (const filename of ['rootfs.vhdx', 'vmlinuz', 'initrd']) {
+  const expected = expectedChecksums[filename];
+  if (!expected || !await bundle.validateFile(filename, expected)) {
+    throw new Error('Required VM artifact verification failed');
+  }
+}
+// Preserve persistent data; do not delete the bundle on a failed check.
+await bundle.ensureSessionDisk();

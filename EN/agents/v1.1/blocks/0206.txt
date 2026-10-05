@@ -1,0 +1,15 @@
+stateDiagram-v2
+    [*] --> PresenceCheck
+    PresenceCheck --> Verification: required files present
+    PresenceCheck --> Failed: missing files
+    Verification --> Starting: trusted revision verified
+    Verification --> Failed: verification failed
+    Starting --> Running: runner reports checked boot and controls
+    Starting --> Failed: start failed
+    Running --> Stopping: cancellation or close
+    Stopping --> Closed: owned resources reconciled
+    Stopping --> CleanupPending: cleanup not verified
+    Running --> CleanupPending: crash
+    CleanupPending --> Closed: reconciliation verified
+    Failed --> [*]
+    Closed --> [*]

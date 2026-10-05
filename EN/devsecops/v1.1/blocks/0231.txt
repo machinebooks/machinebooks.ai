@@ -1,0 +1,57 @@
+# compliance-mappings/iso27001-2022.yaml
+framework: ISO27001
+version: "2022"
+mappings:
+  - control_id: "A.5.1"
+    title: "Information security policies"
+    category: organizational
+    automation_level: partial
+    evidence_sources:
+      - type: policy_check
+        description: "OPA policies versioned in Git"
+        artifact_pattern: "policies/*.rego"
+        check: "git log --since='6 months ago' -- policies/"
+    manual_evidence:
+      - "Management review minutes"
+
+  - control_id: "A.8.9"
+    title: "Configuration management"
+    category: technical
+    automation_level: partial
+    evidence_sources:
+      - type: configuration_record
+        description: "Configuration references and review records; partial support only"
+        artifact_pattern: "reports/configuration/*.json"
+        pass_criteria: "REVIEW: protected origin, implementation, monitoring and requirement sufficiency pending"
+
+  - control_id: "A.8.25"
+    title: "Secure development lifecycle"
+    category: technical
+    automation_level: partial
+    evidence_sources:
+      - type: ci_gate
+        description: "Pipeline with active security gates"
+        artifact_pattern: "reports/pipeline-runs/*.json"
+        pass_criteria: "security_gates_enabled"
+      - type: code_review
+        description: "PR with approved security review"
+        artifact_pattern: "reports/reviews/*.json"
+        pass_criteria: "security_review_approved"
+      - type: sca_scan
+        description: "SCA with no critical CVE dependencies"
+        artifact_pattern: "reports/sca/*.json"
+        pass_criteria: "no_critical_dependencies"
+
+  - control_id: "A.8.28"
+    title: "Secure coding"
+    category: technical
+    automation_level: partial
+    evidence_sources:
+      - type: sast_scan
+        description: "Semgrep with secure coding rules"
+        artifact_pattern: "reports/sast/*.json"
+        pass_criteria: "secure_coding_rules_pass"
+      - type: code_review
+        description: "Security review in PR"
+        artifact_pattern: "reports/reviews/*.json"
+        pass_criteria: "security_review_approved"

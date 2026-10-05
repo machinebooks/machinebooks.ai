@@ -1,0 +1,38 @@
+name: Partial Security Pipeline Design
+on:
+  pull_request:
+    branches: [main, develop]
+jobs:
+  sast:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo 'INCOMPLETE: scanner installation, scope and artifact producer omitted'
+          exit 2
+  sca:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo 'INCOMPLETE: SBOM and SCA artifact producers omitted'
+          exit 2
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo 'INCOMPLETE: authorized secret scanner producer omitted'
+          exit 2
+  containers:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo 'INCOMPLETE: digest-bound image scanner producer omitted'
+          exit 2
+  triage:
+    if: always()
+    needs: [sast, sca, secrets, containers]
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo 'INCOMPLETE: artifact retrieval, tool loop and typed parser omitted'
+          echo 'REVIEW: PR publishing adapter omitted; no merge authorization'
+          exit 2

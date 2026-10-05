@@ -1,0 +1,11 @@
+## Análisis del Contexto
+
+| Componente    | Tokens   | % del total |
+|---------------|----------|-------------|
+| System prompt | ~3.200   | 8%          |
+| Herramientas  | ~6.100   | 15%         |
+| Conversación  | ~30.500  | 77%         |
+| Total         | ~39.800  | 20% de 200K max |
+
+Recomendaciones:
+- Las respuestas de herramientas dominan el contexto — microcompaction ayudaría

@@ -1,0 +1,11 @@
+class LLMUsageTracker:
+    """Constructor excerpt only; no invocation or usage recording is shown."""
+
+    def __init__(self, llm, service_type, provider_type, model_name):
+        self._llm = llm
+        self._service_type = service_type       # E.g.: "document_analyzer"
+        self._provider_type = provider_type     # E.g.: "anthropic"
+        self._model_name = model_name
+        self._user_id: Optional[int] = None
+        self._entity_type: Optional[str] = None
+        self._entity_id: Optional[int] = None

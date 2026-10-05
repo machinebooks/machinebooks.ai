@@ -1,0 +1,28 @@
+// vite.config.ts for Analytics App (subpath /analytics)
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  base: '/analytics/',  // All asset references will use /analytics/ as prefix
+  build: {
+    outDir: 'dist',
+    // Generates a manifest.json useful for debugging assets in production
+    manifest: true,
+  },
+  server: {
+    // In development, the proxy redirects API calls to the local backend
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+      '/ai': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/ai/, ''),
+      },
+    },
+  },
+});

@@ -1,0 +1,15 @@
+# Illustrative few-shot examples; scores are not calibrated probabilities.
+
+FEW_SHOT_EXAMPLES = """
+EXAMPLE 1:
+Message: "How many proposals did we win last quarter?"
+Response: {"intent": "CHAT_RAG", "confidence": 0.95, "reasoning": "Informational query about historical data"}
+
+EXAMPLE 2:
+Message: "Generate a competitive proposal for the Acme client"
+Response: {"intent": "WORKFLOW", "confidence": 0.92, "reasoning": "Multi-step generation process requiring orchestration"}
+
+EXAMPLE 3:
+Message: "Evaluate this opportunity and prepare the proposal if it's viable"
+Response: {"intent": "WORKFLOW", "confidence": 0.88, "reasoning": "Multi-step process: evaluation + conditional generation"}
+"""

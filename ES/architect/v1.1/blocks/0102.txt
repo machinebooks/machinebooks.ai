@@ -1,0 +1,17 @@
+# Partial Celery adapter: server repositories resolve current job/credential scope.
+from celery import shared_task
+from celery.utils.log import get_task_logger
+logger=get_task_logger(__name__)
+
+@shared_task(name="tasks.automation.run_portal_sync",bind=True,base=AutomationTask,
+             queue="automation",max_retries=3,default_retry_delay=60,
+             acks_late=True,soft_time_limit=1800,time_limit=2100)
+def run_portal_sync(self,task_config):
+    task_id=self.request.id
+    context=resolve_authorized_sync_job(task_id,task_config)
+    if not isinstance(context,dict) or type(context.get("user_id")) is not int or context["user_id"]<1:
+        raise PermissionError("Current job scope required")
+    if operation_deadline_open(task_id) is not True:raise TimeoutError("Job deadline exceeded")
+    # Vault adapter checks tenant/user/credential purpose before decrypting.
+    credentials=load_authorized_credentials(context)
+    challenge_store=load_authorized_challenge_store(context)

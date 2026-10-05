@@ -1,0 +1,61 @@
+@startuml
+!theme plain
+skinparam backgroundColor transparent
+skinparam component {
+  BackgroundColor #142038
+  BorderColor #7dd8e8
+  FontColor #f5efe0
+}
+
+package "providers/" {
+  [streamAnthropicCall()] as AnthFunc
+  [convertMessages()] as ConvMsg
+  [convertTools()] as ConvTools
+
+  [streamOpenAICompatCall()] as OAIFunc
+  [SSE parser inline] as SSEParser
+  [think-block splitter] as ThinkSplit
+
+  [streamAzureCall()] as AzFunc
+  [isAzureReasoningModel()] as AzDetect
+}
+
+interface "StreamCallbacks" as SC
+interface "LLMResult" as LLMR
+interface "ToolDef" as TD
+interface "ChatMessage" as CM
+
+package "caller layer" {
+  [chat.ts dispatch] as ChatDisp
+  [GatewayClient] as GW
+  [ThinkingManager] as TM
+}
+
+SC <|.. AnthFunc : dispara
+SC <|.. OAIFunc : dispara
+AnthFunc --> LLMR : devuelve
+OAIFunc --> LLMR : devuelve
+AnthFunc --> ConvMsg : usa
+AnthFunc --> ConvTools : usa
+OAIFunc --> SSEParser : usa
+OAIFunc --> ThinkSplit : usa
+AzFunc --> OAIFunc : delega
+AzFunc --> AzDetect : consulta
+TM --> AzFunc : reasoning_effort
+TM --> AnthFunc : thinking budget
+ChatDisp --> AnthFunc : if anthropic
+ChatDisp --> AzFunc : if azure
+ChatDisp --> OAIFunc : else
+
+note right of ConvMsg
+  120 líneas de conversión
+  unidireccional:
+  OpenAI-canónico → Anthropic
+end note
+
+note right of AzFunc
+  Fichero corto.
+  No parsea streams.
+  Reutiliza openai-compat.
+end note
+@enduml

@@ -1,0 +1,13 @@
+{
+  name: 'mcp_demo_catalog_get_file_report',
+  description: '[MCP: demo_catalog] Look up a synthetic SHA-256 record.',
+  inputSchema: {
+    type: 'object',
+    properties: { hash: { type: 'string', pattern: '^[a-fA-F0-9]{64}$' } },
+    required: ['hash'],
+    additionalProperties: false,
+  },
+  isReadOnly: true,
+  isConcurrencySafe: false,
+  // Host execution, permission and correlation are omitted.
+}

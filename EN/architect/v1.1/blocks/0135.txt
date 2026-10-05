@@ -1,0 +1,136 @@
+import re
+import anthropic
+from enum import Enum
+from dataclasses import dataclass
+
+class IntentType(str, Enum):
+    CHAT_RAG = "CHAT_RAG"           # Analytical query → Qdrant + Claude synthesis
+    AGENT_TOOLS = "AGENT_TOOLS"     # Structured search → Meilisearch
+    WORKFLOW = "WORKFLOW"           # Automation instruction → Workflow Engine
+    OFF_TOPIC = "OFF_TOPIC"         # Outside domain → reject with guidance message
+
+@dataclass
+class IntentResult:
+    type: IntentType
+    confidence: float       # 0.0 - 1.0
+    subtype: str = ""      # Additional information for the handler
+    reasoning: str = ""    # Only when the LLM layer is used
+
+# --- LAYER 1: Deterministic pattern matching ---
+
+SEARCH_OPPORTUNITY_PATTERNS = [
+    r'\b(find|search|show|list|filter)\b.{0,50}\b(opportunit|contract|tender|bid)',
+    r'\b(opportunities?|contracts?)\b.{0,30}\b(with|in|of|for)\b.{0,50}\b(categor|budget|deadline)',
+    r'\b(what\s+)?contracts?.{0,30}\b(technolog|cybersec|consult)',
+]
+
+RAG_PATTERNS = [
+    r'\b(explain|analyze|summarize|compar|differenc|which?.{0,20}(best|most|advantage))',
+    r'\b(proposal|proposals|document|documents|cv|resum[eé])',
+    r'\b(histor|background|similar\s+case|what\s+did\s+we)',
+]
+
+WORKFLOW_PATTERNS = [
+    r'\b(generate|create|draft|prepare|write)\b.{0,50}\b(proposal|report|document)',
+    r'\b(automate|execute|launch|process)\b',
+    r'\b(workflow|flow|process)\b',
+]
+
+OFF_TOPIC_PATTERNS = [
+    r'\b(weather|sports|news|movie|song)\b',
+    r'\b(what\s+is|define|definition\s+of)\b.{0,30}\b(?!the\s+platform)',
+]
+
+LAYER1_CONFIDENCE_THRESHOLD = 0.75
+
+
+def classify_intent_layer1(query: str) -> IntentResult | None:
+    """
+    Layer 1: deterministic pattern matching.
+    Returns None if confidence does not exceed threshold.
+    """
+    query_lower = query.lower()
+
+    # Evaluate in priority order — WORKFLOW before SEARCH
+    # to prevent "generate a proposal" from ending up in search
+    checks = [
+        (OFF_TOPIC_PATTERNS, IntentType.OFF_TOPIC, ""),
+        (WORKFLOW_PATTERNS, IntentType.WORKFLOW, "generate_proposal"),
+        (SEARCH_OPPORTUNITY_PATTERNS, IntentType.AGENT_TOOLS, "search_opportunities"),
+        (RAG_PATTERNS, IntentType.CHAT_RAG, "rag_query"),
+    ]
+
+    for patterns, intent_type, subtype in checks:
+        matches = sum(
+            1 for pattern in patterns
+            if re.search(pattern, query_lower)
+        )
+        if matches >= 2:
+            # Two or more matching patterns → high confidence
+            return IntentResult(type=intent_type, confidence=0.92, subtype=subtype)
+        elif matches == 1:
+            # One matching pattern → moderate confidence
+            # Only return if it exceeds the threshold
+            confidence = 0.78
+            if confidence >= LAYER1_CONFIDENCE_THRESHOLD:
+                return IntentResult(type=intent_type, confidence=confidence, subtype=subtype)
+
+    return None  # Insufficient confidence → activate layer 2
+
+
+def classify_intent_layer2(query: str) -> IntentResult:
+    """
+    Layer 2: semantic analysis with claude-haiku-4-5.
+    Only activated when layer 1 is inconclusive.
+    Expected latency: 100-300ms.
+    """
+    client = anthropic.Anthropic()  # API key from environment variable
+
+    prompt = f"""Classify the following user query into one of these categories:
+
+- CHAT_RAG: analytical question requiring search in internal documents (proposals, CVs, history)
+- AGENT_TOOLS: search or filtering of public opportunities (public contracts, tenders, opportunities)
+- WORKFLOW: instruction to generate or automate a document or process
+- OFF_TOPIC: query outside the domain of business opportunity management
+
+Query: "{query}"
+
+Respond ONLY with this JSON (no markdown):
+{{"type": "TYPE_HERE", "confidence": 0.X, "subtype": "brief_description", "reasoning": "one sentence"}}"""
+
+    response = client.messages.create(
+        model="claude-haiku-4-5",
+        max_tokens=150,
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    import json
+    try:
+        data = json.loads(response.content[0].text.strip())
+        return IntentResult(
+            type=IntentType(data["type"]),
+            confidence=float(data["confidence"]),
+            subtype=data.get("subtype", ""),
+            reasoning=data.get("reasoning", ""),
+        )
+    except (json.JSONDecodeError, KeyError, ValueError):
+        # Safe fallback if the model does not return valid JSON
+        return IntentResult(
+            type=IntentType.CHAT_RAG,
+            confidence=0.5,
+            subtype="fallback",
+            reasoning="Classification error — using RAG by default",
+        )
+
+
+def classify_intent(query: str) -> IntentResult:
+    """
+    Main entry point for the intent classifier.
+    Runs layer 1; if inconclusive, activates layer 2.
+    """
+    layer1_result = classify_intent_layer1(query)
+    if layer1_result is not None:
+        return layer1_result
+
+    # Layer 1 inconclusive → invoke layer 2
+    return classify_intent_layer2(query)

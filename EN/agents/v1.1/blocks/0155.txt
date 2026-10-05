@@ -1,0 +1,2 @@
+// src/server/agent/taskFramework.ts:29
+export type TaskType = 'agent' | 'bash' | 'background' | 'dream' | 'swarm';

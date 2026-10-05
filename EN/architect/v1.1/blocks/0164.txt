@@ -1,0 +1,32 @@
+# Illustrative diagnostic record; two of seven iterations are shown
+{
+    "session_id": "sess_a3f2b1",
+    "agent_slug": "propuesta-tecnica",
+    "user_query": "Genera una propuesta para el proyecto ID-4821",
+    "total_iterations": 7,
+    "iteration_limit": 7,
+    "stop_reason": "max_iterations_reached",  # Failure signal
+    "iterations": [
+        {
+            "iteration": 1,
+            "tool_invoked": "get_project_status",
+            "args": {"project_id": "ID-4821"},
+            "result_status": "not_found",   # The tool did not find the project
+            "recorded_model_text": "El proyecto no existe, intentaré buscarlo con otro método"
+        },
+        {
+            "iteration": 2,
+            "tool_invoked": "search_opportunities",
+            # The model attempted an opportunity search for the project
+            "args": {"keywords": "ID-4821"},
+            "result_status": "empty",
+            "recorded_model_text": "Sin resultados, probaré búsqueda documental..."
+        }
+        # ... five further unsuccessful iterations omitted
+    ],
+    "diagnosis": (
+        "El ejemplo usa dos códigos distintos para el proyecto: ID-4821 y PRY-4821. "
+        "Se debe comprobar la referencia autorizada y el catálogo disponible antes "
+        "de concluir la causa del fallo."
+    )
+}

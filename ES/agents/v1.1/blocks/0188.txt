@@ -1,0 +1,5 @@
+// Wiring excerpt; the host supplies AgentLoop and the referenced checks.
+const agent = new AgentLoop({
+  inputGuardrails: [promptInjectionInputGuardrail],
+  outputGuardrails: [secretsOutputGuardrail, internalUrlGuardrail],
+});

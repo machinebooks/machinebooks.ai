@@ -1,0 +1,10 @@
+flowchart TD
+    A[Markdown externo] --> B[remark parsea Markdown]
+    B --> C[mdast]
+    C --> D[Transformación a hast y plugins revisados]
+    D --> E{Política de HTML crudo y elementos}
+    E --> F[URLs y componentes revisados]
+    F --> G[Creación de nodos React]
+    G --> H[DOM bajo CSP y permisos del host]
+    E -. admitir HTML amplía la superficie .-> I[Sanitización y pruebas específicas]
+    I --> F

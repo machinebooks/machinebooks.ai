@@ -1,0 +1,24 @@
+// Educational metrics over the retained buffer; not complete billing.
+export function summarizeA2AEvents(events: readonly A2AEvent[]) {
+  let latencySum = 0, knownLatencies = 0, errorCount = 0;
+  let knownTokens = 0, unknownUsageEvents = 0;
+  for (const event of events) {
+    if (Number.isFinite(event.latency_ms) && event.latency_ms >= 0) {
+      latencySum += event.latency_ms;
+      knownLatencies++;
+    }
+    if (event.status === 'error' || event.status === 'timeout') errorCount++;
+    const counts = [event.tokens_in, event.tokens_out];
+    const valid = counts.every(value =>
+      typeof value === 'number' && Number.isSafeInteger(value) && value >= 0);
+    if (valid) knownTokens += (event.tokens_in as number) + (event.tokens_out as number);
+    else unknownUsageEvents++;
+  }
+  return {
+    recorded_events: events.length,
+    avg_latency_ms: knownLatencies ? latencySum / knownLatencies : null,
+    error_rate: events.length ? errorCount / events.length : null,
+    known_tokens: knownTokens, unknown_usage_events: unknownUsageEvents,
+    total_tokens: unknownUsageEvents || events.length === 0 ? null : knownTokens,
+  };
+}

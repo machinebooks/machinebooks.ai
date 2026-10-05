@@ -1,0 +1,22 @@
+# /project:review
+
+Review modified code before committing.
+Run `git diff --staged` and analyze each modified file.
+
+## Security checklist (mandatory)
+- [ ] No hardcoded secrets (API keys, passwords, tokens, fixed IDs)
+- [ ] New endpoints have `@jwt_required()` and permission verification
+- [ ] Queries that return lists filter by the current token's `user_id`
+- [ ] User input validated before use in queries or AI prompts
+- [ ] No obvious OWASP Top 10 vulnerabilities (SQLi, XSS, IDOR[^c02-7]...)
+- [ ] PII is not sent to LLM without prior redaction (`redact_pii_for_llm()`)
+
+## Database checklist
+- [ ] New models registered in `__init__.py`
+- [ ] Migration generated with `flask db migrate -m "description"` and reviewed
+- [ ] No manual ALTER TABLE in code
+
+## Frontend checklist
+- [ ] No `console.log` in production code
+- [ ] Complete TypeScript types (no unjustified `any`)
+- [ ] API errors handled with `toast.error()` or equivalent

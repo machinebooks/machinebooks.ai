@@ -1,0 +1,4 @@
+# Escaneo de configuración del Dockerfile
+trivy config --format json --output trivy-config.json \
+  --severity HIGH,CRITICAL \
+  ./Dockerfile

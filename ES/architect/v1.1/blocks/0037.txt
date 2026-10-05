@@ -1,0 +1,16 @@
+database/
+├── init/
+│   ├── 01-create-databases.sql      # CREATE DATABASE + CHARACTER SET utf8mb4
+│   └── 02-grants.sql                # GRANT SELECT ON analytics_db.* TO 'analytics_user'@'%'
+├── alembic.ini                      # Configuración Alembic (ruta a env.py, logging)
+├── alembic/
+│   ├── env.py                       # Multi-bind config (3 schemas)
+│   ├── script.py.mako               # Plantilla para nuevas migraciones
+│   └── versions/
+│       ├── 001_initial_schema.py    # Schema inicial con todas las tablas base
+│       ├── 002_add_llm_tracking.py  # Añadir LLMUsageLog y LLMModelPricing
+│       ├── 003_add_quality_scores.py
+│       └── 004_add_soft_delete_consistency.py  # Unificar patrón soft delete
+└── seeds/
+    ├── llm_service_configs.py       # Configuraciones iniciales de servicios IA
+    └── llm_model_pricing.py         # Precios iniciales de los modelos

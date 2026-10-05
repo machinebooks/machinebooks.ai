@@ -1,0 +1,25 @@
+flowchart TB
+    subgraph UI["Renderer (React)"]
+        Panel["TaskPanel"]
+    end
+
+    subgraph Backend["Backend (Node/Electron)"]
+        Parent["Parent AgentLoop"]
+        Reg["TaskRegistry singleton"]
+        Manager["SubAgentManager"]
+        Gov["A2AGovernance"]
+        Notif["TaskNotificationManager"]
+        Child1["Child A (fork bg)"]
+        Child2["Child B (spawn bg)"]
+    end
+
+    Parent -- "spawnAgent(type, prompt)" --> Manager
+    Manager -- "register(ManagedTask)" --> Reg
+    Manager -- "runAgent()" --> Child1
+    Manager -- "runAgent()" --> Child2
+    Child1 -- "done" --> Manager
+    Child2 -- "done" --> Manager
+    Manager -- "record(A2AEvent)" --> Gov
+    Manager -- "enqueue(notification)" --> Notif
+    Reg -- "task:state-change IPC" --> Panel
+    Parent -- "flushPending() at start of turn" --> Notif

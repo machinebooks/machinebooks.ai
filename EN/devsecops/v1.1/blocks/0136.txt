@@ -1,0 +1,44 @@
+def generate_business_logic_sequences(
+    api_surface: dict,
+    domain_context: str,
+) -> list[dict]:
+    """Generates request sequences for business logic testing."""
+    prompt = f"""Given the following API context, generate request
+sequences that test business logic vulnerabilities.
+
+Available endpoints:
+{json.dumps([
+    {"path": e["path"], "method": e["method"], "summary": e["summary"]}
+    for e in api_surface["endpoints"]
+], indent=2)}
+
+Domain: {domain_context}
+
+Generate sequences that test:
+1. Step skipping in multi-step flows
+2. Repetition of actions that should only execute once
+3. State manipulation between steps (race conditions)
+4. Access to resources in inconsistent state
+
+Each sequence must include:
+- Descriptive test name
+- Ordered list of HTTP requests
+- Vulnerability condition (what response indicates the flaw)
+- Estimated severity
+
+Respond in JSON."""
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=2048,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    proposal = json.loads(message.content[0].text)
+    if not isinstance(proposal, list):
+        raise ValueError("INCOMPLETE: invalid proposal schema")
+    for item in proposal:
+        if not isinstance(item, dict):
+            raise ValueError("INCOMPLETE: invalid proposal item")
+        item["status"] = "REVIEW"
+        item["coverage"] = "partial"
+    return proposal

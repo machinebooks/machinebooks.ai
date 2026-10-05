@@ -1,0 +1,22 @@
+{
+  "matches": [
+    {
+      "vulnerability": {
+        "id": "SYN-YAML-001",
+        "severity": "High",
+        "cvss": [{"version": "3.1", "vector": "...", "metrics": {"baseScore": 8.1}}],
+        "description": "Arbitrary code execution via crafted YAML input",
+        "fix": {"versions": ["2.10.1"], "state": "fixed"}
+      },
+      "artifact": {
+        "name": "synthetic-yaml-package",
+        "version": "6.0.1",
+        "type": "python",
+        "locations": [{"path": "requirements.txt"}]
+      },
+      "relatedVulnerabilities": [
+        {"id": "SYN-ADVISORY-001", "severity": "High"}
+      ]
+    }
+  ]
+}

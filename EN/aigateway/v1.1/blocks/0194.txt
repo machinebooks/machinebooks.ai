@@ -1,0 +1,4 @@
+cost_usd              DECIMAL(10,6)  → total cost
+cost_cached_usd       DECIMAL(10,6)  → cost of cached tokens
+cost_reasoning_usd    DECIMAL(10,6)  → cost of reasoning tokens
+tool_calls_cost_usd   DECIMAL(10,6)  → cost of built-in tools

@@ -1,0 +1,31 @@
+# Collection authorization is separate from tenant/document authorization.
+RAG_COLLECTION_ACCESS = {
+    "knowledge_base": {"access": "authenticated"},
+    "help_center": {"access": "authenticated"},
+    "commercial_catalog": {"access": "restricted", "permission": "catalog.read"},
+    "historical_proposals": {"access": "restricted", "permission": "proposals.read"},
+    "client_documents": {"access": "restricted", "permission": "clients.read"},
+    "opportunities_feed": {"access": "system_only"},
+    "internal_analytics": {"access": "system_only"},
+}
+
+
+def check_rag_collection_access(ctx, collection_name, get_current_permissions):
+    if ctx is None or type(ctx.user_id) is not int or ctx.user_id < 1:
+        return False
+    config = RAG_COLLECTION_ACCESS.get(collection_name)
+    if config is None or collection_name not in ctx.registered_collections:
+        return False
+    if collection_name not in ctx.allowed_collections:
+        return False
+    if config["access"] == "system_only":
+        return ctx.is_internal is True
+    if config["access"] == "authenticated":
+        return True
+    permissions = get_current_permissions(ctx)
+    if not isinstance(permissions, dict):
+        return False
+    module, action = config["permission"].split(".", 1)
+    allowed = permissions.get(module, ())
+    return isinstance(allowed, (list, tuple)) and action in allowed
+# Every subsequent search/load must still enforce current tenant and document ACL.

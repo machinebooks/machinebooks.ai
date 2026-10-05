@@ -1,0 +1,61 @@
+import anthropic
+from datetime import datetime, timezone
+
+def generate_technical_documentation(
+    manifest: dict,
+    classification: dict,
+    pipeline_artifacts: dict,
+    compliance_checks: list[dict]
+) -> str:
+    """Generate technical documentation per Annex IV of the AI Act."""
+    client = anthropic.Anthropic()
+
+    # Build context with all available artifacts
+    context = f"""
+SISTEMA: {manifest['system']['name']} v{manifest['system']['version']}
+CLASSIFICATION: {classification['risk_level']} (confidence: {classification['confidence']})
+FECHA: {datetime.now(timezone.utc).isoformat()}
+
+AI COMPONENTS:
+{yaml.dump(manifest.get('ai_components', {}), default_flow_style=False)}
+
+AVAILABLE SECURITY ARTIFACTS:
+- SBOM: {'yes' if pipeline_artifacts.get('sbom') else 'no'}
+- SAST results: {pipeline_artifacts.get('sast_summary', 'not available')}
+- SCA results: {pipeline_artifacts.get('sca_summary', 'not available')}
+- Prompt injection tests: {pipeline_artifacts.get('prompt_injection_summary', 'not available')}
+- LLM usage logs: {'configured' if pipeline_artifacts.get('llm_usage_logs') else 'not configured'}
+
+COMPLIANCE CHECKS:
+{_format_checks(compliance_checks)}
+"""
+
+    prompt = f"""Generate the technical documentation for the following AI system
+per Annex IV of Regulation (EU) 2024/1689 (AI Act).
+
+{context}
+
+Abbreviated draft for REVIEW; it does not represent the complete Annex IV. Retain pending items and check its nine sections. Didactic sections:
+1. General description of the AI system
+2. Detailed description of components and development process
+3. Information on monitoring, operation, and control
+4. Description of the risk management system (Art. 9)
+5. Description of changes made during the lifecycle
+6. List of applicable harmonized standards
+7. Copy of the EU declaration of conformity (if available)
+8. Description of the post-market performance evaluation system
+
+For each section:
+- If data is available in the artifacts, use it with concrete references
+- If data is missing, mark the section as "[PENDING - requires manual input]"
+- Do not invent data or metrics not present in the provided context
+
+Format: Markdown with numbered sections."""
+
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    return "REVIEW: abbreviated draft; complete Annex IV and evidence review pending.\n" + response.content[0].text

@@ -1,0 +1,59 @@
+name: Intelligent SAST
+on:
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  sast-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Semgrep
+        run: pip install semgrep
+
+      - name: Run Semgrep
+        run: |
+          semgrep scan \
+            --config=auto \
+            --config=.semgrep/ \
+            --json \
+            --output=semgrep-results.json \
+            --severity=WARNING \
+            --severity=ERROR \
+            --max-target-bytes=1000000
+        continue-on-error: true
+
+      - name: Upload results as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: semgrep-results
+          path: semgrep-results.json
+
+  claude-triage:
+    needs: sast-scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Semgrep results
+        uses: actions/download-artifact@v4
+        with:
+          name: semgrep-results
+
+      - name: Install dependencies
+        run: pip install anthropic requests
+
+      - name: Run intelligent triage
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python scripts/sast_triage.py \
+            --input=semgrep-results.json \
+            --repo=${{ github.repository }} \
+            --pr=${{ github.event.pull_request.number }}

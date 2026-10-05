@@ -1,0 +1,49 @@
+# Didactic example: patterns/ai_service/models/roi_tracker.py
+class HumanBaselineConfig(Base):
+    """
+    Estimated human time per task type.
+    Configurable from Admin panel to match the organization's reality.
+    """
+    __tablename__ = "human_baseline_config"
+
+    service_type = Column(String(64), primary_key=True)
+    task_name = Column(String(128))
+    human_time_minutes = Column(Float, nullable=False)  # Average human time
+    human_hourly_cost_eur = Column(Numeric(18, 8), default=65.0) # Cost/hour for typical profile
+    complexity_factor = Column(Float, default=1.0)      # For tasks with high variance
+
+    # Real examples configured in the platform:
+    # document_analyzer: 480 min (8 hours), complexity_factor=1.5
+    # proposal_generator: 2400 min (40 hours), complexity_factor=2.0
+    # cv_analyzer: 45 min, complexity_factor=0.8
+    # opportunity_scorer: 120 min (2 hours), complexity_factor=1.0
+
+
+class TaskCompletionLog(Base):
+    """
+    Log of completed tasks with ROI calculation.
+    Created when an AI task finishes successfully.
+    """
+    __tablename__ = "task_completion_log"
+
+    id = Column(Integer, primary_key=True)
+    timestamp = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    service_type = Column(String(64), index=True)
+    user_id = Column(String(36), index=True)
+
+    # AI metrics
+    ai_duration_seconds = Column(Float)
+    llm_cost_eur = Column(Numeric(18, 8))           # From the corresponding LLMUsageLog
+
+    # Calculated ROI
+    human_time_baseline_minutes = Column(Float)
+    time_saved_minutes = Column(Float)     # baseline - ai_duration/60
+    money_saved_eur = Column(Numeric(18, 8))        # time_saved * hourly_cost / 60
+
+    # Result quality
+    quality_score = Column(Float)          # From LLMQualityScore if available
+    user_rating = Column(Integer)          # 1-5 from feedback loop
+    was_accepted = Column(Boolean)         # Did the user accept the result?
+
+# Gross savings are estimates, not observed causal ROI; include review, failures,
+# deployment and maintenance costs when estimating net savings.

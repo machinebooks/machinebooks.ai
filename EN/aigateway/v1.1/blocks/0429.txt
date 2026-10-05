@@ -1,0 +1,10 @@
+# Educational Redis transport example: priority is emulated.
+celery_app.conf.update(
+    broker_transport_options={
+        "priority_steps": list(range(10)),
+        "queue_order_strategy": "priority",
+    },
+    task_default_priority=5,
+    task_default_queue="default",
+)
+# Consumer configuration and observed ordering still require tests.

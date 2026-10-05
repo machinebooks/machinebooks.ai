@@ -1,0 +1,12 @@
+// src/server/services/SubAgentManager.ts:87-97
+createSession(workspacePath, parentMessages): CoordinatorSession {
+  const session: CoordinatorSession = {
+    id: crypto.randomUUID(),
+    agents: new Map(),
+    phase: 'research',
+    workspacePath,
+    parentMessages,
+  };
+  this.sessions.set(session.id, session);
+  return session;
+}

@@ -1,0 +1,54 @@
+import anthropic
+import json
+
+client = anthropic.Anthropic()
+
+def triage_sast_finding(finding: dict, service_context: dict) -> dict:
+    """
+    Analiza un hallazgo SAST con contexto de servicio.
+
+    Args:
+        finding: hallazgo de Semgrep en formato JSON
+        service_context: metadata del servicio (exposición, datos, controles)
+    """
+    prompt = f"""Eres un analista de seguridad experto. Analiza este hallazgo SAST
+y clasifícalo según el riesgo propuesto para la organización.
+
+## Hallazgo SAST
+- Regla: {finding["check_id"]}
+- Severidad técnica: {finding["extra"]["severity"]}
+- CWE: {finding["extra"]["metadata"].get("cwe", "N/A")}
+- Fichero: {finding["path"]}
+- Línea: {finding["start"]["line"]}
+- Código afectado:
+{finding["extra"]["lines"]}
+
+## Contexto del servicio
+- Servicio: {service_context["name"]}
+- Expuesto a internet: {service_context["internet_facing"]}
+- Tipo de datos: {service_context["data_classification"]}
+- Controles compensatorios: {service_context.get("compensating_controls", "Ninguno")}
+- Usuarios afectados: {service_context.get("user_count", "Desconocido")}
+
+## Instrucciones
+1. Clasifica el riesgo propuesto como CRITICAL, HIGH, MEDIUM, LOW o FALSE_POSITIVE.
+2. Explica por qué en 2-3 frases, considerando el contexto del servicio.
+3. Si el riesgo es MEDIUM o superior, propón un fix concreto en código.
+4. Estima el esfuerzo de remediación: TRIVIAL (<30 min), MODERATE (1-4h), COMPLEX (>4h).
+5. Responde en JSON válido."""
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=1024,
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    proposal = json.loads(message.content[0].text)
+    if not isinstance(proposal, dict):
+        raise ValueError("INCOMPLETE: invalid proposal schema")
+    if proposal.get("risk_level") not in {"CRITICAL","HIGH","MEDIUM","LOW","FALSE_POSITIVE"} or not isinstance(proposal.get("explanation"),str):
+        raise ValueError("INCOMPLETE: invalid risk proposal")
+    proposal["status"] = "REVIEW"
+    proposal["coverage"] = "partial"
+    proposal["origin_verified"] = False
+    return proposal

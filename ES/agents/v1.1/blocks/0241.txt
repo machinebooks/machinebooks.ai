@@ -1,0 +1,18 @@
+sequenceDiagram
+    autonumber
+    participant U as Usuario
+    participant C as Cliente validado
+    participant S as Host del agente
+    participant R as Renderer
+    U->>C: mensaje o transcripción revisada
+    C->>S: solicitud autenticada y autorizada
+    loop observación del run
+        S-->>C: evento según framing del canal
+        C->>C: validar schema, identidad y estado
+        C->>R: texto o estado atribuido
+        R->>R: agrupar con límites y render seguro
+        R-->>U: información accesible de progreso
+    end
+    S-->>C: estado terminal del run observado
+    C->>R: success, failed, cancelled o incomplete según evidencia
+    Note over C,S: finish_reason de modelo no demuestra cierre de todo el run

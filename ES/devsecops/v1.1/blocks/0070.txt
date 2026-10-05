@@ -1,0 +1,64 @@
+import sys
+def main():
+    parser = argparse.ArgumentParser(description="Security aggregator")
+    parser.add_argument("--results-dir", required=True)
+    parser.add_argument("--output", required=True)
+    args = parser.parse_args()
+
+    results_dir = Path(args.results_dir)
+    all_findings: list[Finding] = []
+
+    # Parsers mapeados a las rutas de artefactos
+    parsers = {
+        "sast-results/sast-results.json": parse_semgrep,
+        "sca-results/sca-results.json": parse_grype,
+        "secrets-results/secrets-results.json": parse_gitleaks,
+        "container-results/container-results.json": parse_trivy,
+    }
+
+    errors = []
+    for rel_path, parse_fn in parsers.items():
+        full_path = results_dir / rel_path
+        try:
+            if not full_path.is_file():
+                raise ValueError("missing artifact")
+            parsed = parse_fn(full_path)
+            if not isinstance(parsed, list):
+                raise ValueError("invalid findings list")
+            all_findings.extend(parsed)
+        except (OSError, ValueError, KeyError, TypeError, AttributeError) as error:
+            errors.append(rel_path + ": " + str(error))
+
+    report = apply_gate(all_findings)
+    if errors:
+        report.gate_decision = "incomplete"
+        report.block_reason = "; ".join(errors)
+    report.pr_comment = generate_pr_comment(report)
+
+    # Serializa el informe
+    output_data = {
+        "gate_decision": report.gate_decision,
+        "block_reason": report.block_reason,
+        "summary": report.summary,
+        "pr_comment": report.pr_comment,
+        "findings": [
+            {
+                "source": f.source,
+                "severity": f.severity,
+                "title": f.title,
+                "location": f.location,
+                "cve_id": f.cve_id,
+                "fixable": f.fixable,
+            }
+            for f in report.findings
+        ],
+    }
+
+    Path(args.output).write_text(json.dumps(output_data, indent=2))
+    print(f"\nGate decision: {report.gate_decision.upper()}")
+    print(f"Total findings: {report.summary['total']}")
+
+    sys.exit(1 if report.gate_decision == "block" else 2)
+
+if __name__ == "__main__":
+    main()

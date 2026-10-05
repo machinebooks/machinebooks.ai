@@ -1,0 +1,78 @@
+from datetime import datetime, timezone
+from sqlalchemy.orm import Session
+
+
+def check_exception_for_finding(
+    db: Session,
+    finding_id: str,
+    finding_source: str
+) -> dict:
+    """Queries whether a finding has a current approved exception."""
+
+    exception = (
+        db.query(SecurityException)
+        .filter(
+            SecurityException.finding_id == finding_id,
+            SecurityException.finding_source == finding_source,
+            SecurityException.status == ExceptionStatus.APPROVED,
+            SecurityException.expires_at > datetime.now(timezone.utc)
+        )
+        .first()
+    )
+
+    if exception:
+        return {
+            "has_exception": True,
+            "exception_id": exception.id,
+            "approved_by": exception.approved_by,
+            "expires_at": exception.expires_at.isoformat(),
+            "compensating_controls": exception.compensating_controls,
+            "risk_score": exception.agent_risk_score
+        }
+
+    return {"has_exception": False}
+
+
+def pipeline_security_gate(
+    db: Session,
+    findings: list[dict]
+) -> dict:
+    """Security gate that respects current exceptions."""
+
+    if not isinstance(findings, list) or not findings:
+        return {"gate_passed": False, "gate_decision": "INCOMPLETE", "reason": "missing validated coverage"}
+    blocking = []
+    warnings = []
+    excepted = []
+
+    for finding in findings:
+        if not isinstance(finding, dict) or any(not isinstance(finding.get(k), str) or not finding[k] for k in ("id", "source", "severity")) or finding["severity"] not in {"critical", "high", "medium", "low", "info"}:
+            return {"gate_passed": False, "gate_decision": "INCOMPLETE", "reason": "invalid finding"}
+        exc = check_exception_for_finding(
+            db, finding["id"], finding["source"]
+        )
+
+        if exc.get("has_exception") is True and isinstance(exc.get("approved_by"), str) and exc["approved_by"].strip():
+            # Finding with current exception: record, don't block
+            excepted.append({
+                **finding,
+                "exception_id": exc["exception_id"],
+                "expires_at": exc["expires_at"]
+            })
+        elif finding["severity"] in ("critical", "high"):
+            blocking.append(finding)
+        elif finding["severity"] == "medium":
+            warnings.append(finding)
+
+    return {
+        "gate_passed": False,
+        "gate_decision": "FAIL" if blocking else "REVIEW",
+        "blocking_findings": blocking,
+        "warnings": warnings,
+        "excepted_findings": excepted,
+        "summary": (
+            f"{len(blocking)} blocking, "
+            f"{len(warnings)} warnings, "
+            f"{len(excepted)} with current exception"
+        )
+    }

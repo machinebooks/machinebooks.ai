@@ -1,0 +1,41 @@
+@startuml
+!theme plain
+skinparam backgroundColor transparent
+skinparam componentStyle uml2
+
+package "ConversationTitler.ts" {
+  [generateTitle()] as Llm
+  [generateFallbackTitle()] as Det
+}
+
+package "Dependencias externas" {
+  [PromptFetcher] as Pf
+  [GatewayClient] as Gw
+  database "ai_prompts\n(better-sqlite3)" as Db
+  cloud "Endpoint OpenAI-compatible" as Llmsvc
+}
+
+note right of Llm
+  Registro 1 (prompt) +
+  Registro 2 (plantilla) +
+  Registro 5 (orquestador
+  de un solo paso).
+end note
+
+note right of Det
+  Registro 3 puro:
+  3 replace + trim + slice.
+  Ningún LLM. Ninguna red.
+  Sin consumo de tokens LLM.
+end note
+
+Llm --> Pf : fetchWithFallback("internal.conversation_title", FALLBACK)
+Pf --> Db : SELECT content FROM ai_prompts WHERE key = ?
+Pf ..> Llm : template (string con {{userMsg}}, {{assistantBlock}})
+Llm --> Gw : postAuth("/v1/chat/completions", { messages, max_tokens=20 })
+Gw --> Llmsvc : HTTPS, modelo router
+Llmsvc -->Gw : completion
+Gw -->Llm : { choices: [{ message: { content }}]}
+
+Det --> Det : 3 x replace + trim + slice
+@enduml

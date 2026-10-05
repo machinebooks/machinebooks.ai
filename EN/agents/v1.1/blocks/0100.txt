@@ -1,0 +1,12 @@
+async callTool(serverName, toolName, args) {
+  const authResult = MCPGovernance.authorize(serverName, toolName);
+  if (!authResult.allowed) {
+    throw new Error(`MCP governance: ${authResult.reason}`);
+  }
+  const rateResult = MCPGovernance.checkRateLimit(serverName);
+  if (!rateResult.allowed) {
+    throw new Error(`MCP governance: rate limit excedido para "${serverName}". Reintentar en ${rateResult.retryAfterMs}ms`);
+  }
+  MCPGovernance.recordCall(serverName, toolName);
+  // Argument/channel checks, coordinated quota reservation and transport are omitted.
+}

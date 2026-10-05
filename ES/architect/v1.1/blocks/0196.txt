@@ -1,0 +1,38 @@
+from dataclasses import dataclass
+import json
+
+@dataclass(frozen=True)
+class ResolvedMention:
+    type: str
+    id: str
+    summary: str
+    full_ref: str
+
+async def resolve_mentions(mentions: list[dict], security_ctx,
+                           load_authorized_summary) -> list[ResolvedMention]:
+    if security_ctx is None or type(security_ctx.user_id) is not int or security_ctx.user_id < 1 or not callable(load_authorized_summary):
+        raise PermissionError("Acceso denegado")
+    if not isinstance(mentions, list) or len(mentions) > 20:
+        raise ValueError("Menciones no válidas")
+    resolved, seen = [], set()
+    for mention in mentions:
+        if not isinstance(mention, dict):
+            raise ValueError("Mención no válida")
+        entity_type, entity_id = mention.get("type"), mention.get("id")
+        if not isinstance(entity_type, str) or entity_type not in {"proposal", "client", "opportunity", "document"}:
+            raise ValueError("Tipo no válido")
+        if not isinstance(entity_id, str) or not 1 <= len(entity_id) <= 120:
+            raise ValueError("Referencia no válida")
+        key = (entity_type, entity_id)
+        if key in seen:
+            continue
+        seen.add(key)
+        data = await load_authorized_summary(security_ctx, entity_type, entity_id)
+        if not isinstance(data, dict) or set(data) != {"summary", "label"}:
+            raise PermissionError("Referencia no disponible")
+        summary, label = data["summary"], data["label"]
+        if not isinstance(summary, str) or len(summary) > 2000 or not isinstance(label, str) or len(label) > 200:
+            raise ValueError("Resumen no válido")
+        reference = json.dumps({"type":entity_type,"id":entity_id,"label":label},ensure_ascii=False)
+        resolved.append(ResolvedMention(entity_type,entity_id,summary,reference))
+    return resolved

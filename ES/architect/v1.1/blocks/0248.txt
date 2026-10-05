@@ -1,0 +1,79 @@
+# tests/test_health_checks.py
+import pytest
+
+class TestHealthChecks:
+    """
+    Tests de health check para los servicios críticos de la plataforma.
+    Estos tests deben ejecutarse en entornos de integración y staging,
+    no en la BD de testing en memoria.
+    """
+
+    def test_health_check_rapido_retorna_ok(self, client):
+        """El health check rápido (DB + Redis) debe responder en menos de 500ms."""
+        import time
+        inicio = time.time()
+        response = client.get("/api/health/quick")
+        duracion = (time.time() - inicio) * 1000
+
+        assert response.status_code == 200
+        datos = response.json
+        assert datos["status"] in ["healthy", "degraded"]
+        assert duracion < 500, f"Health check tardó {duracion:.0f}ms, límite 500ms"
+
+    def test_health_check_completo_incluye_todos_los_servicios(self, client, auth_headers_by_role):
+        """El health check completo debe reportar estado de los 11 servicios."""
+        response = client.get(
+            "/api/health/full",
+            headers=auth_headers_by_role["admin"]
+        )
+        assert response.status_code == 200
+        datos = response.json
+
+        servicios_esperados = [
+            "database_operations",
+            "database_platform",
+            "database_analytics",
+            "redis",
+            "ai_service",
+            "meilisearch",
+            "qdrant",
+            "celery_worker_default",
+            "celery_worker_ai",
+            "celery_beat",
+        ]
+
+        servicios_reportados = [s["name"] for s in datos.get("services", [])]
+        for servicio in servicios_esperados:
+            assert servicio in servicios_reportados, \
+                f"El servicio '{servicio}' no aparece en el health check"
+
+    def test_health_check_completo_incluye_latencia(self, client, auth_headers_by_role):
+        """Cada servicio debe reportar su latencia en milisegundos."""
+        response = client.get("/api/health/full", headers=auth_headers_by_role["admin"])
+        assert response.status_code == 200
+
+        for servicio in response.json.get("services", []):
+            assert "latency_ms" in servicio, \
+                f"El servicio '{servicio.get('name')}' no reporta latencia"
+            assert isinstance(servicio["latency_ms"], (int, float))
+
+    def test_health_check_sin_auth_devuelve_401(self, client):
+        """El endpoint de health check completo requiere autenticación de admin."""
+        response = client.get("/api/health/full")
+        assert response.status_code == 401
+
+    @pytest.mark.parametrize("servicio_caido", ["redis", "ai_service", "qdrant"])
+    def test_sistema_reporta_estado_degradado_cuando_servicio_no_disponible(
+        self, client, auth_headers_by_role, mock_service_failure, servicio_caido
+    ):
+        """
+        Cuando un servicio no crítico no está disponible, el sistema debe reportar
+        estado 'degraded' en lugar de 'unhealthy', permitiendo operación parcial.
+        """
+        with mock_service_failure(servicio_caido):
+            response = client.get("/api/health/full", headers=auth_headers_by_role["admin"])
+            assert response.status_code == 200  # Sigue respondiendo
+            datos = response.json
+            # El estado global puede ser 'degraded' pero no debe ser 'unhealthy'
+            # cuando solo falla un servicio no crítico
+            assert datos["status"] in ["healthy", "degraded"]

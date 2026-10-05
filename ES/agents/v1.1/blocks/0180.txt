@@ -1,0 +1,21 @@
+classDiagram
+    class RichGuardrailResult {
+        +tripwireTriggered: boolean
+        +message?: string
+        +modified?: string
+    }
+    class GuardrailDefinition~T~ {
+        +name: string
+        +check(value: T) RichGuardrailResult
+    }
+    class InputGuardrail {
+        <<type>>
+        (messages: Message[]) => Promise~GuardrailResult~
+    }
+    class OutputGuardrail {
+        <<type>>
+        (output: string) => Promise~GuardrailResult~
+    }
+    GuardrailDefinition --> RichGuardrailResult : devuelve
+    GuardrailDefinition ..> InputGuardrail : createInputGuardrail()
+    GuardrailDefinition ..> OutputGuardrail : createOutputGuardrail()

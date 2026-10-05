@@ -1,0 +1,19 @@
+flowchart TD
+    U["user input<br/>(user message)"]
+    M["messages[]<br/>(turn memory)"]
+    L["call LLM<br/>(provider, with tools[])"]
+    Q{"tool_use<br/>in the response?"}
+    E["execute tools<br/>registry.execute(name, input)"]
+    R["final text<br/>(reply to user)"]
+
+    U --> M
+    M --> L
+    L -- reply --> Q
+    Q -- "no" --> R
+    Q -- "yes" --> E
+    E -. "tool_results<br/>append to messages" .-> M
+
+    classDef core fill:#0a1224,stroke:#7dd8e8,color:#f5efe0
+    classDef decision fill:#142038,stroke:#ffb347,color:#f5efe0
+    class U,M,L,E,R core
+    class Q decision

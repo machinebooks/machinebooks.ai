@@ -1,0 +1,26 @@
+# Educational core. Load proposal_type/status values from the Chapter 5 model.
+# Atomic adapter checks expected version and stores transition, audit and outbox
+# in the same operations transaction. Cross-bind audit delivery is asynchronous.
+def transition_proposal(proposal, target_status, security_context,
+                        authorize_proposal, persist_transition_outbox, comment=None):
+    if not isinstance(proposal,dict) or type(proposal.get("id")) is not int or proposal["id"]<1:
+        raise ValueError("Valid proposal required")
+    if security_context is None or authorize_proposal(security_context,proposal["id"],"transition") is not True:
+        raise PermissionError("Proposal transition denied")
+    target=getattr(target_status,"value",target_status)
+    current=getattr(proposal.get("status"),"value",proposal.get("status"))
+    kind=getattr(proposal.get("proposal_type"),"value",proposal.get("proposal_type"))
+    if not can_transition(kind,current,target):raise ValueError("Transition not allowed")
+    if comment is not None and (not isinstance(comment,str) or len(comment)>2000):
+        raise ValueError("Bounded comment required")
+    if type(proposal.get("version")) is not int or proposal["version"]<1:
+        raise ValueError("Expected proposal version required")
+    result=persist_transition_outbox(security_context,proposal["id"],
+             expected_version=proposal["version"],expected_status=current,
+             target_status=target,comment=comment,
+             document_job_required=target=="approved")
+    if not isinstance(result,dict) or result.get("status")!=target:
+        raise RuntimeError("Atomic transition acknowledgement required")
+    return result
+# The base/premium graph is partial. Other types need reviewed business policies;
+# this extract does not claim double review, signatures or all preconditions.

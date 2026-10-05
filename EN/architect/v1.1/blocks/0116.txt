@@ -1,0 +1,11 @@
+# llm is a separately authorized, budgeted and audited asynchronous adapter.
+async with EVALUATION_SEMAPHORE:
+    async with LLM_SEMAPHORE:
+        try:
+            response = await asyncio.wait_for(llm.ainvoke(prompt), timeout=120.0)
+        except asyncio.TimeoutError:
+            logger.warning("llm_timeout", extra={"service": "evaluation"})
+            raise
+
+# wait_for cancels the coroutine and waits for cancellation handling; an adapter
+# that suppresses cancellation or leaves remote work running needs its own cleanup.

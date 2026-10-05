@@ -1,0 +1,53 @@
+        # --- App Analytics (/analytics) ---
+        location /analytics {
+            alias /var/www/app-analytics;
+            try_files $uri $uri/ /analytics/index.html;
+        }
+
+        location /analytics/ {
+            alias /var/www/app-analytics/;
+            try_files $uri $uri/ /analytics/index.html;
+        }
+
+        # --- App Admin (/admin) ---
+        location /admin {
+            alias /var/www/app-admin;
+            try_files $uri $uri/ /admin/index.html;
+        }
+
+        location /admin/ {
+            alias /var/www/app-admin/;
+            try_files $uri $uri/ /admin/index.html;
+        }
+
+        # --- Backend API ---
+        location /api/ {
+            proxy_pass http://backend:5000/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+            # Cabeceras para SSE: desactivar buffering y timeout extendido
+            proxy_read_timeout 300s;
+            proxy_send_timeout 300s;
+            proxy_cache_bypass $http_upgrade;
+        }
+
+        # --- Servicio IA (SSE y agentes) ---
+        location /ai/ {
+            proxy_pass http://ai_service:8000/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+
+            # SSE requiere que Nginx no almacene la respuesta en buffer
+            proxy_buffering off;
+            proxy_cache off;
+            # Timeout generoso para análisis IA de larga duración
+            proxy_read_timeout 300s;
+
+            # Cabeceras para SSE
+            proxy_set_header Cache-Control no-cache;
+            proxy_set_header X-Accel-Buffering no;
+        }
+    }
+}

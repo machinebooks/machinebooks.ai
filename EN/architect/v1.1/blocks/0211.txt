@@ -1,0 +1,68 @@
+# tests/test_rbac_clients.py
+import pytest
+
+class TestClientsRBAC:
+    """
+    Verifies that the client management module correctly applies
+    each role's permissions. A failure here indicates a regression
+    in the access control system.
+    """
+
+    ENDPOINT_LIST = "/api/v1/clients"
+    ENDPOINT_DETAIL = "/api/v1/clients/1"
+    ENDPOINT_CREATE = "/api/v1/clients"
+    ENDPOINT_DELETE = "/api/v1/clients/1"
+
+    # --- Roles with read access ---
+
+    @pytest.mark.parametrize("role", ["admin", "manager", "analyst", "viewer", "editor", "readonly"])
+    def test_list_clients_accessible_all_roles(self, client, auth_headers_by_role, role):
+        """All roles with 'read' permission on 'clients' must access the list."""
+        response = client.get(self.ENDPOINT_LIST, headers=auth_headers_by_role[role])
+        assert response.status_code == 200, \
+            f"Role '{role}' should be able to list clients but received {response.status_code}"
+
+    def test_list_clients_without_authentication_returns_401(self, client):
+        """Without a token, the endpoint must reject the request with 401."""
+        response = client.get(self.ENDPOINT_LIST)
+        assert response.status_code == 401
+
+    # --- Roles with write permission ---
+
+    @pytest.mark.parametrize("authorized_role", ["admin", "manager", "editor"])
+    def test_create_client_roles_with_write_permission(self, client, auth_headers_by_role, authorized_role):
+        """Only roles with 'write' permission on 'clients' can create clients."""
+        payload = {"name": "Test Client", "tax_id": "B12345678", "sector": "technology"}
+        response = client.post(
+            self.ENDPOINT_CREATE,
+            json=payload,
+            headers=auth_headers_by_role[authorized_role]
+        )
+        assert response.status_code in [200, 201], \
+            f"Role '{authorized_role}' should be able to create clients but received {response.status_code}"
+
+    @pytest.mark.parametrize("denied_role", ["analyst", "viewer", "readonly"])
+    def test_create_client_roles_without_write_permission_returns_403(
+        self, client, auth_headers_by_role, denied_role
+    ):
+        """Roles without 'write' permission must receive 403 when trying to create clients."""
+        payload = {"name": "Test Client", "tax_id": "B12345678", "sector": "technology"}
+        response = client.post(
+            self.ENDPOINT_CREATE,
+            json=payload,
+            headers=auth_headers_by_role[denied_role]
+        )
+        assert response.status_code == 403, \
+            f"Role '{denied_role}' should NOT be able to create clients but received {response.status_code}"
+
+    # --- Deletion: admin only ---
+
+    @pytest.mark.parametrize("non_admin_role", ["manager", "analyst", "viewer", "editor", "readonly"])
+    def test_delete_client_only_admin_allowed(self, client, auth_headers_by_role, non_admin_role):
+        """Only the 'admin' role can delete clients. Any other role receives 403."""
+        response = client.delete(
+            self.ENDPOINT_DELETE,
+            headers=auth_headers_by_role[non_admin_role]
+        )
+        assert response.status_code == 403, \
+            f"Role '{non_admin_role}' should NOT be able to delete clients"

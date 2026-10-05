@@ -1,0 +1,8 @@
+// Historical command-hook shape; the host supplies the event contract.
+export interface HookDefinition {
+  event: HookEvent;
+  command: string;
+  matcher?: string;
+  timeout?: number;
+  enabled?: boolean;
+}

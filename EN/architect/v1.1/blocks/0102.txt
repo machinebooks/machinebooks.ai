@@ -1,0 +1,48 @@
+import copy
+import time
+
+_config_cache = {}
+_config_cache_ts = {}
+_prompt_cache = {}
+_prompt_cache_timestamps = {}
+
+def get_service_config(service_type):
+    if not isinstance(service_type, str) or not service_type:
+        raise ValueError("Invalid service type")
+    now = time.monotonic()
+    if service_type in _config_cache and now - _config_cache_ts[service_type] < 60:
+        return copy.deepcopy(_config_cache[service_type])
+    data = _fetch_config_from_backend(service_type)
+    if data is None:
+        _config_cache.pop(service_type, None)
+        _config_cache_ts.pop(service_type, None)
+        return None
+    if not isinstance(data, dict):
+        raise TypeError("Configuration must be a mapping")
+    _config_cache[service_type] = copy.deepcopy(data)
+    _config_cache_ts[service_type] = time.monotonic()
+    return copy.deepcopy(data)
+
+def get_prompt(prompt_key, default=""):
+    if not isinstance(prompt_key, str) or not prompt_key:
+        raise ValueError("Invalid prompt key")
+    if not isinstance(default, str):
+        raise TypeError("Default prompt must be text")
+    ttl = 30 if prompt_key.startswith("agent.") else 300
+    if (prompt_key in _prompt_cache
+            and time.monotonic() - _prompt_cache_timestamps[prompt_key] < ttl):
+        return _prompt_cache[prompt_key]
+    prompt_text = _fetch_prompt_from_backend(prompt_key)
+    if prompt_text is None:
+        _prompt_cache.pop(prompt_key, None)
+        _prompt_cache_timestamps.pop(prompt_key, None)
+        return default
+    if not isinstance(prompt_text, str):
+        raise TypeError("Prompt must be text")
+    _prompt_cache[prompt_key] = prompt_text
+    _prompt_cache_timestamps[prompt_key] = time.monotonic()
+    return prompt_text
+
+# Backend callbacks supply shared, non-secret configuration for this process.
+# Tenant-specific configuration requires a server-validated tenant key.
+# TTL is not revocation. Authorization is rechecked before each model call.

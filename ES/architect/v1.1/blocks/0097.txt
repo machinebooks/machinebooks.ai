@@ -1,0 +1,45 @@
+    def login(self) -> bool:
+        """Performs the complete login process, including MFA if necessary."""
+        if self.challenge_store.authorize_portal(self.security_context,self.user_id,self.PORTAL_URL) is not True:
+            raise PermissionError("Portal access denied")
+        self.driver.get(self.PORTAL_URL)
+
+        # Credentials page
+        username_field = self.wait_for_element((By.ID, "username"))
+        username_field.send_keys(self.credentials["username"])
+
+        password_field = self.driver.find_element(By.ID, "password")
+        password_field.send_keys(self.credentials["password"])
+        password_field.submit()
+
+        # Determine if the MFA screen appears or goes straight to dashboard
+        time.sleep(2)  # Small pause for the redirect to resolve
+
+        if "mfa" in self.driver.current_url or self._is_mfa_screen():
+            mfa_code = self.request_mfa_code(
+                task_id=self.task_id,
+                system_name="Corporate Portal",
+                user_id=self.user_id
+            )
+            if mfa_code is None:
+                raise RuntimeError("Timeout waiting for user MFA code")
+
+            mfa_field = self.wait_for_element((By.ID, "otp-input"))
+            mfa_field.send_keys(mfa_code)
+            mfa_field.submit()
+
+        # Verify successful login by checking for dashboard element
+        try:
+            self.wait_for_element((By.CSS_SELECTOR, ".dashboard-header"), timeout=10)
+            return True
+        except TimeoutException:
+            return False
+
+    def _is_mfa_screen(self) -> bool:
+        """Detects if we are on the MFA screen by DOM elements."""
+        try:
+            self.driver.find_element(By.ID, "otp-input")
+            return True
+        except NoSuchElementException:
+            return False
+

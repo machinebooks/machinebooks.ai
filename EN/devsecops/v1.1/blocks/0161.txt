@@ -1,0 +1,76 @@
+import os
+from pathlib import Path
+
+class ArgumentValidator:
+    """Validates tool arguments against policies."""
+
+    def __init__(self, policies: dict[str, dict]):
+        self.policies = policies
+
+    def validate(self, tool_name: str, args: dict) -> tuple[bool, str]:
+        """Returns (is_valid, reason_if_invalid)."""
+        if not isinstance(args, dict):
+            return False, "INCOMPLETE: invalid arguments"
+        policy = self.policies.get(tool_name)
+        if not policy:
+            return False, "INCOMPLETE: missing tool policy"
+
+        if set(args) != set(policy):
+            return False, "INCOMPLETE: unknown or missing arguments"
+        for arg_name, constraints in policy.items():
+            if arg_name not in args:
+                return False, "INCOMPLETE: missing required argument"
+
+            value = args[arg_name]
+
+            # Path validation: must be within the permitted directory
+            if "allowed_base_path" in constraints:
+                base = Path(constraints["allowed_base_path"]).resolve()
+                target = Path(value).resolve()
+                if not target.is_relative_to(base):
+                    return False, (
+                        f"Path '{value}' outside permitted directory "
+                        f"'{base}'"
+                    )
+
+            # Pattern validation: value must match regex
+            if "pattern" in constraints:
+                import re
+                if not re.fullmatch(constraints["pattern"], str(value)):
+                    return False, (
+                        f"Argument '{arg_name}' does not match pattern "
+                        f"'{constraints['pattern']}'"
+                    )
+
+            # Allowlist validation
+            if "allowed_values" in constraints:
+                if value not in constraints["allowed_values"]:
+                    return False, (
+                        f"Value '{value}' not permitted for '{arg_name}'. "
+                        f"Valid values: {constraints['allowed_values']}"
+                    )
+
+        return True, ""
+
+# Example policies for pipeline tools
+TOOL_POLICIES = {
+    "write_file": {
+        "file_path": {
+            "allowed_base_path": "/tmp/agent-workspace",
+        },
+    },
+    "execute_scan": {
+        "scanner": {
+            "allowed_values": ["semgrep", "trivy", "grype", "gitleaks"],
+        },
+        "target_path": {
+            "allowed_base_path": "/workspace/src",
+        },
+    },
+    "create_pull_request": {
+        "base_branch": {
+            "allowed_values": ["develop", "staging"],
+            # Creating PRs directly against main is not permitted
+        },
+    },
+}

@@ -1,0 +1,42 @@
+# ADR-042: Separation of AI service into standalone FastAPI
+
+**Status:** Accepted
+**Date:** [decision date]
+**Decision makers:** Architecture team
+
+## Context
+
+The project requires integrating AI capabilities (RAG, agents, LLMs) into an existing
+Flask platform with 22 blueprints and 190+ endpoints. Two architectural integration
+options are presented.
+
+## Options considered
+
+**Option A — Direct integration into Flask**
+Add LangChain, Qdrant client, and LLM clients directly to the Flask backend.
+- Advantage: a single service to maintain and deploy
+- Disadvantage: ML dependencies (torch, sentence-transformers) increase
+  backend startup time from 2s to 40s+
+- Disadvantage: the AI worker shares resources with synchronous REST requests
+- Disadvantage: makes it difficult to scale the AI component independently
+
+**Option B — Standalone FastAPI service (chosen)**
+Dedicated FastAPI for the entire AI layer, with internal HTTP communication.
+- Advantage: independent startup, independent scaling
+- Advantage: FastAPI native for SSE streaming (real-time Claude responses)
+- Advantage: ML dependencies isolated, no impact on the main backend
+- Disadvantage: added internal network latency (~2ms in Docker Compose)
+- Disadvantage: one more service to operate and monitor
+
+## Decision
+
+Standalone FastAPI service. The internal network latency of 2ms is irrelevant
+compared to LLM responses that take between 500ms and 30s. The separation of
+dependencies and native streaming capability justify the added operational complexity.
+
+## Consequences
+
+- `ai_service` service in Docker Compose with 4GB memory limit
+- Communication via HTTP with internal API key authentication
+- Independent health check included in the platform health check
+- Separate documentation for AI service developers

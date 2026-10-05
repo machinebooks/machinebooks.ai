@@ -1,0 +1,14 @@
+from datetime import datetime,timezone
+class ExceptionReview(Base):
+    """Record of each periodic review of an exception."""
+    __tablename__ = "exception_reviews"
+
+    id = Column(Integer, primary_key=True)
+    exception_id = Column(Integer, ForeignKey("security_exceptions.id"))
+    reviewed_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    reviewer = Column(String(128), nullable=False)  # agent or human
+    conditions_changed = Column(JSON, nullable=True)
+    recommendation = Column(String(32), nullable=False)  # renew, escalate, resolve
+    notes = Column(Text, nullable=True)
+
+    exception = relationship("SecurityException", back_populates="reviews")

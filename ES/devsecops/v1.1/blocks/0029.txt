@@ -1,0 +1,59 @@
+name: SAST Inteligente
+on:
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  sast-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar Semgrep
+        run: pip install semgrep
+
+      - name: Ejecutar Semgrep
+        run: |
+          semgrep scan \
+            --config=auto \
+            --config=.semgrep/ \
+            --json \
+            --output=semgrep-results.json \
+            --severity=WARNING \
+            --severity=ERROR \
+            --max-target-bytes=1000000
+        continue-on-error: true
+
+      - name: Subir resultados como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: semgrep-results
+          path: semgrep-results.json
+
+  triaje-claude:
+    needs: sast-scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Descargar resultados Semgrep
+        uses: actions/download-artifact@v4
+        with:
+          name: semgrep-results
+
+      - name: Instalar dependencias
+        run: pip install anthropic requests
+
+      - name: Ejecutar triaje inteligente
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python scripts/triaje_sast.py \
+            --input=semgrep-results.json \
+            --repo=${{ github.repository }} \
+            --pr=${{ github.event.pull_request.number }}

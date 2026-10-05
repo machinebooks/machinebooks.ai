@@ -1,0 +1,27 @@
+from docx.shared import Pt, RGBColor
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+
+def stamp_docx(doc) -> None:
+    generator = "la Plataforma - IA Generativa"
+    notice = "Documento generado con asistencia de IA. Revise y valide el contenido antes de su uso."
+    cp = doc.core_properties
+    if notice not in (cp.comments or ""):
+        cp.comments = ((cp.comments or "") + "\n" + notice).strip()
+    keyword = "AI-assisted, review-required"
+    if keyword not in (cp.keywords or ""):
+        cp.keywords = ((cp.keywords or "") + ", " + keyword).strip(", ")
+    seen = set()
+    for section in doc.sections:
+        for footer in (section.footer, section.first_page_footer, section.even_page_footer):
+            part_name = str(footer.part.partname)
+            if part_name in seen:
+                continue
+            seen.add(part_name)
+            if any(notice in paragraph.text for paragraph in footer.paragraphs):
+                continue
+            paragraph = footer.add_paragraph()
+            paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            run = paragraph.add_run(notice)
+            run.font.size = Pt(8)
+            run.font.color.rgb = RGBColor(0x66, 0x66, 0x66)
+            run.font.italic = True

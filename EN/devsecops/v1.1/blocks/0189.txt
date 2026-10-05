@@ -1,0 +1,112 @@
+import json
+# runtime_analyzer/falco_agent.py
+"""
+Claude agent that analyzes Falco alerts at runtime.
+Receives alerts via HTTP webhook, correlates them with the
+container inventory, and issues a prioritized verdict.
+"""
+import anthropic
+from fastapi import FastAPI, Request
+from pydantic import BaseModel
+from datetime import datetime
+from typing import Optional
+
+app = FastAPI()
+client = anthropic.Anthropic()
+
+# Container inventory and expected behavior
+CONTAINER_PROFILES = {
+    "inference-service": {
+        "expected_processes": ["python3", "gunicorn", "uvicorn"],
+        "allowed_outbound": ["api.anthropic.com:443", "qdrant:6333"],
+        "allowed_fs_write": ["/tmp", "/var/log"],
+        "description": "Inference service with Claude API"
+    },
+    "agent-worker": {
+        "expected_processes": ["python3", "celery"],
+        "allowed_outbound": ["api.anthropic.com:443", "redis:6379"],
+        "allowed_fs_write": ["/tmp"],
+        "description": "Claude agent worker with limited tools"
+    },
+    "api-gateway": {
+        "expected_processes": ["node", "nginx"],
+        "allowed_outbound": ["inference-service:8000"],
+        "allowed_fs_write": ["/var/log/nginx"],
+        "description": "API gateway, no direct LLM access"
+    }
+}
+
+
+class FalcoAlert(BaseModel):
+    """Structure of a Falco alert."""
+    output: str
+    priority: str
+    rule: str
+    time: str
+    output_fields: dict
+    tags: list[str] = []
+
+
+def build_analysis_prompt(alert: FalcoAlert) -> str:
+    """Build the analysis prompt with environment context."""
+    container = alert.output_fields.get("container.name", "unknown")
+    profile = CONTAINER_PROFILES.get(container, {})
+
+    return f"""Analyze this Falco security alert and classify it.
+
+## Alert
+- Rule: {alert.rule}
+- Priority: {alert.priority}
+- Time: {alert.time}
+- Output: {alert.output}
+- Tags: {', '.join(alert.tags)}
+
+## Container context
+- Name: {container}
+- Expected profile: {profile.get('description', 'Not documented')}
+- Allowed processes: {profile.get('expected_processes', 'Not defined')}
+- Allowed outbound connections: {profile.get('allowed_outbound', 'Not defined')}
+- Allowed writes: {profile.get('allowed_fs_write', 'Not defined')}
+
+## Instructions
+1. Classify: TRUE_POSITIVE, FALSE_POSITIVE, or NEEDS_INVESTIGATION
+2. Explain in 2-3 sentences why
+3. If TRUE_POSITIVE, indicate the real severity (CRITICAL/HIGH/MEDIUM/LOW)
+4. If TRUE_POSITIVE, suggest the immediate action
+5. If FALSE_POSITIVE, suggest the rule adjustment to prevent future alerts
+
+Respond ONLY in JSON format with the keys:
+classification, explanation, real_severity, suggested_action, rule_adjustment"""
+
+
+@app.post("/webhook/falco")
+async def receive_falco_alert(request: Request):
+    """Receive Falco alerts and analyze them with Claude."""
+    payload = await request.json()
+    alert = FalcoAlert(**payload)
+
+    if alert.priority not in {"Emergency","Alert","Critical","Error","Warning","Notice","Informational","Debug"}:
+        return {"status":"INCOMPLETE", "reason":"Unknown Falco priority"}
+    if alert.priority in {"Emergency","Alert","Critical"}:
+        # Escalation is independent of a model label and happens before model analysis.
+        await escalate_to_oncall(alert,"REVIEW: critical scanner alert; model analysis pending")
+    prompt = build_analysis_prompt(alert)
+
+    # Use claude-haiku-4-5 for fast and cost-effective analysis
+    message = client.messages.create(
+        model="claude-haiku-4-5",
+        max_tokens=512,
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    try:
+        analysis = json.loads(message.content[0].text)
+        if (not isinstance(analysis,dict) or analysis.get("classification") not in {"TRUE_POSITIVE","FALSE_POSITIVE","NEEDS_INVESTIGATION"}
+                or analysis.get("real_severity") not in {"CRITICAL","HIGH","MEDIUM","LOW"}
+                or not isinstance(analysis.get("explanation"),str)):
+            raise ValueError("invalid runtime proposal")
+        analysis.update(status="REVIEW",coverage="partial")
+        log_analysis(alert,analysis)
+        return {"status":"REVIEW", "coverage":"partial", "original_alert":payload,"proposal":analysis}
+    except (ValueError,TypeError,KeyError,IndexError,AttributeError):
+        return {"status":"INCOMPLETE", "original_alert":payload, "reason":"Invalid model output; alert retained"}

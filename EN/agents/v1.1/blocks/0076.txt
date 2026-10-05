@@ -1,0 +1,10 @@
+stateDiagram-v2
+    [*] --> Registered: register(handler)
+    Registered --> Active: appears in activeToolNames
+    Registered --> Deferred: definition.isDeferred==true
+    Deferred --> Active: ToolSearch query matches<br/>+ loadTool(name)
+    Active --> Filtered: pack/permission/allowlist filter
+    Filtered --> Active: passes filters
+    Active --> Sent: included in turn's tools[]
+    Sent --> Active: next turn (memo invalidated or not)
+    Deferred --> Sent: never without loadTool

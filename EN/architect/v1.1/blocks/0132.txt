@@ -1,0 +1,71 @@
+# Didactic normalization boundary. Legacy Spanish field names are wire contracts.
+from dataclasses import dataclass, field
+from decimal import Decimal
+import hashlib
+import json
+
+
+@dataclass
+class OportunidadNormalizada:
+    id: str
+    titulo: str
+    descripcion: str
+    organismo: str
+    presupuesto_min: float | None = None
+    presupuesto_max: float | None = None
+    categoria: str = "sin_categoria"
+    tipo_contrato: str | None = None
+    fecha_publicacion: str | None = None
+    fecha_limite: str | None = None
+    cpv_codes: list = field(default_factory=list)
+    estado: str = "desconocido"
+    relevancia_score: float | None = None
+    fuente: str = ""
+    source_id: str = ""
+    currency: str | None = None
+
+def parsear_feed_atom(url_feed, fuente_id, fetch_authorized_feed,
+                      normalize_source_entry):
+    # Registered-source adapter enforces allowlisted URLs, redirects, time/byte
+    # limits and XML safety before returning at most 10000 parsed entries.
+    entries = fetch_authorized_feed(fuente_id, url_feed)
+    if not isinstance(entries, list) or len(entries) > 10000:
+        raise ValueError("invalid_feed_result")
+    opportunities = []
+    for entry in entries:
+        # Adapter knows this source's date, decimal, currency, CPV and status schema.
+        # It returns unknown deadline/budget/status as None/unknown, never invented.
+        normalized = normalize_source_entry(fuente_id, entry)
+        source_id = normalized.pop("source_id", None)
+        if not isinstance(source_id, str) or not source_id:
+            raise ValueError("missing_source_identity")
+        identity = json.dumps([fuente_id, source_id], ensure_ascii=False)
+        normalized["id"] = hashlib.sha256(identity.encode()).hexdigest()
+        normalized["fuente"] = fuente_id
+        normalized["source_id"] = source_id
+        opportunities.append(OportunidadNormalizada(**normalized))
+    return opportunities
+
+def extraer_presupuesto(entrada, decimal_separator, group_separator):
+    # The source adapter supplies a verified number format and currency.
+    # A missing value stays unknown; no +/-20% range is synthesized.
+    raw = next((entrada.get(key) for key in
+                ("presupuesto_base", "valor_estimado", "importe_contrato")
+                if entrada.get(key) is not None), None)
+    if raw is None:
+        return None
+    if decimal_separator not in (".", ",") or group_separator == decimal_separator:
+        raise ValueError("invalid_source_number_format")
+    if group_separator not in (None, ".", ",", " "):
+        raise ValueError("invalid_source_group_separator")
+    text = str(raw).strip()
+    if group_separator:
+        text = text.replace(group_separator, "")
+    amount = Decimal(text.replace(decimal_separator, "."))
+    if not amount.is_finite() or amount < 0:
+        raise ValueError("invalid_source_budget")
+    return amount
+
+# Title cleaning, category policy, deadline extraction, CPV/currency and
+# write/index acknowledgement are source-specific adapters, not implemented here.
+# Atom updated is not a procurement deadline. Keep raw source identity/provenance.

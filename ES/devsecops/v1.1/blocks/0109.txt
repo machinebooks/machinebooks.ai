@@ -1,0 +1,24 @@
+FEW_SHOT_EXAMPLES = """
+## Ejemplo 1: IDOR detectado (PR #612)
+Diff:
++ @router.get("/reports/{report_id}")
++ async def get_report(report_id: int, db: Session = Depends(get_db)):
++     report = db.query(Report).filter(Report.id == report_id).first()
++     return report
+
+Hallazgo correcto:
+{"category": "IDOR", "severity": "high", "confidence": "high",
+ "explanation": "Acceso a Report por ID sin verificar owner_id del usuario autenticado."}
+
+## Ejemplo 2: firma no verificada (PR sintético #634)
+Diff:
++ @router.post("/webhooks/stripe")
++ async def stripe_webhook(request: Request):
++     payload = await request.body()
++     sig = request.headers.get("stripe-signature")
+
+Propuesta REVIEW: leer stripe-signature no valida la firma.
+Falta verificar criptográficamente payload, secreto, timestamp y replay
+con el contrato del proveedor. No se requiere necesariamente login de usuario,
+pero esa ausencia no autoriza el webhook ni descarta el hallazgo.
+"""

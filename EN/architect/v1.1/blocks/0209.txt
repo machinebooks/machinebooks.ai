@@ -1,0 +1,9 @@
+Analyze the `clients.py` blueprint and generate a pytest test suite that covers:
+1. Authentication: endpoints without token must return 401
+2. Authorization: `viewer` role can do GET but not POST/PUT/DELETE (403)
+3. Validation: missing required fields must return 400 with descriptive message
+4. Business logic: [specific description of expected behavior]
+5. Edge cases: [list of domain-specific edge cases]
+
+Use the existing fixtures in conftest.py for users of each role.
+Each test must have a docstring explaining what behavior it verifies.

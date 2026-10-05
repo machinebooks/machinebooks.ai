@@ -1,0 +1,43 @@
+// Pseudocode: validated request configuration and omitted host dependencies.
+// Capture a coherent configuration for each call.
+let lastObservedUsage;
+// Reconcile cumulative usage by call id as described in Chapter 29.
+const llmProvider = serverState.llmProvider;
+const llmBaseUrl = serverState.llmBaseUrl;
+const llmModel = serverState.llmModel;
+const llmApiKey = serverState.llmApiKey;
+
+if (llmProvider === 'anthropic') {
+  // Dynamic import for the selected provider.
+  const { streamAnthropicCall } = await import('../providers/anthropic.js');
+  const result = await streamAnthropicCall(
+    llmApiKey,
+    llmModel,
+    callMessages,
+    withTools ? AGENT_TOOLS : undefined,
+    {
+      onContent:    (text) => { sendSSE(res, 'content', { text }); },
+      onThinking:   (text) => { sendSSE(res, 'thinking', { text }); },
+      onToolCall:   (idx, id, name) => { sendSSE(res, 'status', { state: 'proposed', message: `Tool: ${name}` }); },
+      onToolCallDone: () => {},
+      onUsage:      (inT, outT) => { lastObservedUsage = { inputTokens: inT, outputTokens: outT }; },
+      onError:      (err) => { sendSSE(res, 'error', { message: err }); },
+    },
+    { maxTokens: 8192, thinking: true, thinkingBudget: 4096 },
+  );
+  return result;
+}
+
+// Azure delegates through the snapshot-specific adapter.
+if (llmProvider === 'azure') {
+  const { streamAzureCall } = await import('../providers/azure.js');
+  // azureArgs is the fully validated argument tuple for this adapter.
+  return await streamAzureCall(...azureArgs);
+}
+
+// Default OpenAI-compatible endpoint for this example.
+const response = await fetch(`${llmBaseUrl}/chat/completions`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${llmApiKey}` },
+  body: JSON.stringify({ model: llmModel, messages: callMessages, stream: true, ...validatedOptions }),
+});

@@ -1,0 +1,79 @@
+from datetime import datetime, timezone
+from sqlalchemy import Index
+from extensions import db
+
+class AuditLog(db.Model):
+    """Audit log for business and security actions.
+
+    Separate from technical logs — serves for compliance, security
+    audits, and incident response, not for debugging.
+    """
+    __tablename__ = 'audit_logs'
+    __bind_key__ = 'platform_core'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    # Who — can be null if action occurs before authentication
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    session_id = db.Column(db.String(100), nullable=True)
+
+    # What
+    action = db.Column(db.String(100), nullable=False)  # Predefined constant
+    resource_type = db.Column(db.String(50), nullable=True)  # 'document', 'proposal', 'user'
+    resource_id = db.Column(db.String(100), nullable=True)
+
+    # Context
+    details = db.Column(db.JSON, nullable=True)  # Additional action metadata
+    ip_address = db.Column(db.String(45), nullable=True)  # IPv4 and IPv6
+    user_agent = db.Column(db.String(500), nullable=True)
+
+    # Classification
+    severity = db.Column(db.String(20), default='INFO')  # INFO, WARNING, CRITICAL
+
+    # When
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    # Composite indexes for the most frequent queries in the audit panel
+    __table_args__ = (
+        Index('idx_audit_user_action', 'user_id', 'action'),
+        Index('idx_audit_timestamp_severity', 'created_at', 'severity'),
+        Index('idx_audit_resource', 'resource_type', 'resource_id'),
+    )
+
+
+class AuditActions:
+    """Predefined auditable action constants.
+
+    Always use these constants instead of free strings —
+    this guarantees consistency and facilitates analysis queries.
+    """
+    # Authentication
+    LOGIN_SUCCESS          = "LOGIN_SUCCESS"
+    LOGIN_FAILED           = "LOGIN_FAILED"
+    LOGOUT                 = "LOGOUT"
+    MFA_ENABLED            = "MFA_ENABLED"
+    MFA_DISABLED           = "MFA_DISABLED"
+    MFA_VERIFIED           = "MFA_VERIFIED"
+    PASSWORD_CHANGED       = "PASSWORD_CHANGED"
+    TOKEN_REFRESHED        = "TOKEN_REFRESHED"
+
+    # Access control
+    ACCESS_DENIED          = "ACCESS_DENIED"
+    PERMISSION_ESCALATION  = "PERMISSION_ESCALATION"
+
+    # Sensitive data
+    SENSITIVE_DATA_ACCESS  = "SENSITIVE_DATA_ACCESS"
+    DOCUMENT_DOWNLOADED    = "DOCUMENT_DOWNLOADED"
+    BULK_EXPORT            = "BULK_EXPORT"
+
+    # AI configuration (critical operations)
+    AI_CONFIG_CHANGED      = "AI_CONFIG_CHANGED"
+    PROMPT_MODIFIED        = "PROMPT_MODIFIED"
+    MODEL_SWITCHED         = "MODEL_SWITCHED"
+    BUDGET_LIMIT_CHANGED   = "BUDGET_LIMIT_CHANGED"
+
+    # Administration
+    USER_CREATED           = "USER_CREATED"
+    USER_DEACTIVATED       = "USER_DEACTIVATED"
+    ROLE_ASSIGNED          = "ROLE_ASSIGNED"
+    CREDENTIAL_VAULT_ACCESS = "CREDENTIAL_VAULT_ACCESS"

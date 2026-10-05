@@ -1,0 +1,31 @@
+def generate_remediation_pr(finding: dict, repo: str) -> str:
+    """Generates a remediation PR for a security finding."""
+    # Get the affected code
+    source_code = get_file_content(repo, finding["file"], finding["line_range"])
+
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        system=(
+            "You are a security remediation agent. Generate a minimal "
+            "and secure fix for the described vulnerability. The fix must: "
+            "1) resolve the vulnerability, 2) not break existing "
+            "functionality, 3) include an explanatory comment, 4) follow "
+            "existing code conventions."
+        ),
+        messages=[{
+            "role": "user",
+            "content": (
+                f"Vulnerability: {finding['rule_id']}\n"
+                f"Severity: {finding['severity']}\n"
+                f"Description: {finding['message']}\n"
+                f"File: {finding['file']}\n"
+                f"Affected code:\n```\n{source_code}\n```\n\n"
+                f"Generate the corrected code."
+            )
+        }]
+    )
+
+    fixed_code = extract_code_from_response(response)
+    # Create branch, apply fix, open PR (omitted for brevity)
+    return {"status":"REVIEW", "coverage":"partial", "finding":finding, "candidate":fixed_code, "reason":"Authorization, diff, tests and PR adapter omitted"}

@@ -1,0 +1,20 @@
+sequenceDiagram
+    autonumber
+    participant L as AgentLoop
+    participant C as MCPClient
+    participant S1 as stdio server
+    participant S2 as HTTP server
+    participant S3 as in-process
+
+    L->>C: callTool(name, args)
+    alt stdio
+        C->>S1: stdin: {jsonrpc:2.0, id, "tools/call", ...}\n
+        S1-->>C: stdout: {jsonrpc:2.0, id, result:{content:[...]}}\n
+    else HTTP
+        C->>S2: POST url<br/>body: {jsonrpc:2.0, id, "tools/call", ...}
+        S2-->>C: 200<br/>body: {jsonrpc:2.0, id, result:{content:[...]}}
+    else in-process
+        C->>S3: handler(args) in same process
+        S3-->>C: {output, error}
+    end
+    C-->>L: ToolResult

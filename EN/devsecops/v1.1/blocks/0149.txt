@@ -1,0 +1,51 @@
+import hashlib
+import json
+import re
+from pathlib import Path
+from huggingface_hub import hf_hub_download, model_info
+
+def verify_model_integrity(
+    repo_id: str,
+    filename: str,
+    revision: str,
+    expected_hash: str,
+    local_dir: str = "./models"
+) -> dict:
+    """Compare bytes with a digest supplied by an authorized protected reference."""
+    # Get model metadata before downloading
+    if not isinstance(revision,str) or not re.fullmatch(r"[a-fA-F0-9]{40}",revision) or not isinstance(expected_hash,str) or not re.fullmatch(r"[a-fA-F0-9]{64}", expected_hash):
+        raise ValueError("INCOMPLETE: protected revision and digest required")
+    info = model_info(repo_id, revision=revision, files_metadata=True)
+
+    local_path = hf_hub_download(
+        repo_id=repo_id,
+        revision=revision,
+        filename=filename,
+        local_dir=local_dir
+    )
+
+    # Calculate hash of downloaded file
+    sha256 = hashlib.sha256()
+    with open(local_path, "rb") as f:
+        for chunk in iter(lambda: f.read(8192), b""):
+            sha256.update(chunk)
+    actual_hash = sha256.hexdigest()
+
+    # Compare hashes
+    if actual_hash == expected_hash:
+        return {
+            "status": "integrity_match",
+            "file": filename,
+            "sha256": actual_hash,
+            "repo": repo_id
+        }
+    else:
+        # Delete compromised file
+        # Preserve mismatched bytes for investigation; do not classify the cause.
+        return {
+            "status": "INCOMPLETE",
+            "file": filename,
+            "expected": expected_hash,
+            "actual": actual_hash,
+            "action": "Mismatch retained for REVIEW; corruption or substitution unconfirmed"
+        }

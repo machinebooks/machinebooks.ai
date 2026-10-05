@@ -1,0 +1,129 @@
+# Reference names require application mapping; optional providers are not required.
+# Model/image identifiers and parser versions are pinned and evaluated before deployment.
+# UTC persistence; retention periods below are example policies, not legal mandates.
+# ============================================================
+# PLATFORM — Reference environment variables
+# Copy to .env and fill with real values
+# NEVER commit the .env file to the repository
+# ============================================================
+
+# --- Database (MySQL version pinned and validated) ---
+DB_HOST=db                              # MySQL container hostname
+DB_PORT=3306
+DB_USER=platform_user                   # User with permissions on all 3 schemas
+DB_PASSWORD=<SECURE_PASSWORD>           # Minimum 16 characters, no shell special characters
+DB_NAME_OPS=operations_db               # Business data schema
+DB_NAME_CORE=platform_core             # Platform schema
+DB_NAME_ANALYTICS=analytics_db         # Analytics schema
+DB_POOL_SIZE=20                         # SQLAlchemy connections per bind
+DB_MAX_OVERFLOW=30                      # Additional connections under load
+
+# --- Redis ---
+REDIS_HOST=redis
+REDIS_PORT=6379
+REDIS_PASSWORD=<REDIS_PASSWORD>
+REDIS_DB_CACHE=0                        # General cache
+REDIS_DB_CELERY=1                       # Celery broker
+REDIS_DB_SESSIONS=2                     # User sessions
+REDIS_DB_RATE_LIMIT=3                   # Rate limiting counters
+
+# --- JWT and authentication ---
+JWT_SECRET_KEY=<JWT_256_BIT_KEY>        # Generate with: openssl rand -hex 32
+JWT_ACCESS_TOKEN_EXPIRES=1800           # 30 minutes in seconds
+JWT_REFRESH_TOKEN_EXPIRES=604800        # 7 days
+MFA_ENCRYPTION_KEY=<FERNET_KEY>         # Generate with: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+CREDENTIAL_VAULT_KEY=<AES_256_KEY>      # For RPA credential encryption
+
+# --- Internal API Keys (one per application) ---
+INTERNAL_API_KEY_OPS=<OPERATIONS_KEY>
+INTERNAL_API_KEY_ANALYTICS=<ANALYTICS_KEY>
+INTERNAL_API_KEY_ADMIN=<ADMIN_KEY>
+
+# --- Anthropic (Claude) ---
+ANTHROPIC_API_KEY=<YOUR_API_KEY>        # Anthropic API key
+CLAUDE_DEFAULT_MODEL=claude-sonnet-4-6  # Default model for standard tasks
+CLAUDE_PREMIUM_MODEL=claude-opus-4-6   # For tasks requiring maximum capability
+CLAUDE_FAST_MODEL=claude-haiku-4-5     # For classification and intent — speed/cost
+CLAUDE_MAX_TOKENS=4096                  # Default output token limit
+CLAUDE_TEMPERATURE=0.3                  # Conservative temperature for business tasks
+
+# --- Azure OpenAI (fallback) ---
+AZURE_OPENAI_API_KEY=<YOUR_AZURE_KEY>
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
+AZURE_OPENAI_DEPLOYMENT=gpt-4o
+AZURE_OPENAI_API_VERSION=<validated-api-version>
+
+# --- OpenAI (secondary fallback) ---
+OPENAI_API_KEY=<YOUR_OPENAI_KEY>
+
+# --- Ollama (local models, development) ---
+OLLAMA_BASE_URL=http://ollama:11434
+OLLAMA_MODEL=llama3.1:8b               # For development without API cost. Or the latest available version
+
+# --- Qdrant (vectors) ---
+QDRANT_HOST=qdrant
+QDRANT_PORT=6333
+# Generate with: openssl rand -base64 32
+QDRANT_API_KEY=<set-in-vault>           # Required in production
+EMBEDDING_MODEL=text-embedding-3-large  # 3072 dimensions
+EMBEDDING_DIMENSIONS=3072
+
+# --- Meilisearch (search) ---
+MEILI_HOST=http://meilisearch:7700
+MEILI_MASTER_KEY=<MEILISEARCH_KEY>
+MEILI_INDEX_MEMORY=512mb                # Memory for indexing
+
+# --- Celery (workers and queues) ---
+CELERY_BROKER_URL=redis://:${REDIS_PASSWORD}@redis:6379/1
+CELERY_RESULT_BACKEND=redis://:${REDIS_PASSWORD}@redis:6379/2
+CELERY_WORKER_CONCURRENCY=4            # Per worker
+CELERY_TASK_TIME_LIMIT=600             # 10 minutes maximum per task
+CELERY_RATE_LIMIT_AI=30/m              # Maximum 30 AI tasks per minute
+CELERY_RATE_LIMIT_AUTOMATION=5/m       # Maximum 5 RPA tasks per minute
+CELERY_RATE_LIMIT_DOCUMENTS=10/m       # Maximum 10 processings per minute
+
+# --- Selenium Grid (RPA) ---
+SELENIUM_HUB_URL=http://selenium-hub:4444/wd/hub
+SELENIUM_SHM_SIZE=2gb                   # Shared memory for Chrome
+SELENIUM_MAX_SESSIONS=3                 # Simultaneous sessions
+SELENIUM_TIMEOUT=300                    # Timeout per RPA operation (seconds)
+
+# --- Email (SMTP) ---
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=notifications@example.com
+SMTP_PASSWORD=<SMTP_PASSWORD>
+SMTP_USE_TLS=true
+EMAIL_FROM_NAME=Platform
+EMAIL_FROM_ADDRESS=notifications@example.com
+
+# --- External CRM (OAuth2) ---
+CRM_OAUTH_CLIENT_ID=<CLIENT_ID>
+CRM_OAUTH_CLIENT_SECRET=<CLIENT_SECRET>
+CRM_OAUTH_REDIRECT_URI=https://api.example.com/api/auth/crm/callback
+CRM_BASE_URL=https://api.example.com
+CRM_SYNC_INTERVAL_MINUTES=5            # Sync every 5 minutes
+
+# --- Nginx ---
+NGINX_SSL_CERT=/etc/nginx/ssl/cert.pem
+NGINX_SSL_KEY=/etc/nginx/ssl/key.pem
+NGINX_MAX_UPLOAD_SIZE=100m              # Maximum upload size
+NGINX_SSE_TIMEOUT=300                   # Timeout for SSE connections
+
+# --- Application ---
+FLASK_DEBUG=0
+APP_SECRET_KEY=<FLASK_KEY>
+CORS_ORIGINS=https://platform.example.com
+LOG_LEVEL=INFO                          # DEBUG | INFO | WARNING | ERROR
+LOG_FORMAT=json                         # json | text (json for production)
+TIMEZONE=UTC
+
+# --- AI Governance ---
+AI_BUDGET_MONTHLY_EUR=500               # Total monthly budget in euros
+AI_BUDGET_ALERT_THRESHOLD=0.8           # Alert at 80% of budget
+AI_BUDGET_BLOCK_THRESHOLD=0.95          # Block at 95%
+AI_PII_CHECK_INTERVAL_HOURS=6           # PII scan frequency
+AI_BIAS_CHECK_CRON=0 6 * * 1            # Bias evaluation: Monday 06:00
+AI_CONFIG_INTEGRITY_CHECK_HOURS=12      # Hash verification every 12h
+GDPR_RETENTION_DAYS=365                 # Personal data retention
+GDPR_CLEANUP_CRON=0 3 * * *             # Daily cleanup at 03:00

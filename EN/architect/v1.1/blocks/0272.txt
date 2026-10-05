@@ -1,0 +1,70 @@
+import anthropic
+import ast
+import inspect
+from pathlib import Path
+
+def extract_blueprint_context(blueprint_path: str) -> dict:
+    """
+    Extracts structured information from a Flask blueprint
+    to use as context for documentation generation.
+    """
+    code = Path(blueprint_path).read_text(encoding="utf-8")
+
+    # Extract routes, HTTP methods, authentication decorators, and docstrings
+    context = {
+        "routes": [],
+        "input_models": [],
+        "output_models": [],
+        "middleware": [],
+        "module_description": ""
+    }
+
+    # Parse the AST to extract structured information
+    tree = ast.parse(code)
+    for node in ast.walk(tree):
+        if isinstance(node, ast.FunctionDef):
+            docstring = ast.get_docstring(node)
+            decorators = [ast.unparse(d) for d in node.decorator_list]
+            if any("route" in d for d in decorators):
+                context["routes"].append({
+                    "function": node.name,
+                    "decorators": decorators,
+                    "docstring": docstring or "",
+                    "line": node.lineno
+                })
+
+    return context
+
+
+def generate_module_documentation(
+    blueprint_path: str,
+    module_name: str
+) -> str:
+    """
+    Generates complete documentation for an API module using Claude.
+    """
+    client = anthropic.Anthropic()
+    context = extract_blueprint_context(blueprint_path)
+
+    prompt = f"""Generate complete technical documentation for the API module '{module_name}'.
+
+Module context:
+{context}
+
+The documentation must include:
+1. General description of the module and its purpose
+2. Table of endpoints with HTTP method, route, required authentication, and description
+3. For each main endpoint: parameters, request body, and response structure
+4. Usage examples with curl
+5. Module-specific error codes
+
+Format: Markdown. Technical level: developer who will integrate against the API.
+Do not include internal information about the implementation or server file paths."""
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    return message.content[0].text

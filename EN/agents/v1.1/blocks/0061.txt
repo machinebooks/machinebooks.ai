@@ -1,0 +1,2 @@
+const isContextError = text.includes('n_ctx') || text.includes('context') ||
+                       text.includes('too long') || text.includes('n_keep');

@@ -1,0 +1,43 @@
+// Educational excerpt: paths and persistence are host dependencies.
+// Paths extracted from tool_use are requests, not confirmed effects.
+
+export interface AgentSnapshot {
+  agentId: string;
+  agentType: AgentConfig['agentType'];
+  parentAgentId?: string;
+  workspacePath?: string;
+  toolUsage: Array<{ name: string; count: number }>;
+  filesRead: string[];
+  filesWritten: string[];
+  finalMessage: string;    // UTF16 character limit; not a bound on the complete JSON
+  tokenCount: number;
+  durationMs: number;
+  capturedAt: number;
+}
+
+export function captureAgentSnapshot(input: {
+  config: AgentConfig;
+  messages: Message[];
+  finalMessage: string;
+  startedAt: number;
+  tokenCount: number;
+}): AgentSnapshot {
+  const { read, written } = extractFiles(input.messages);
+  const snapshot: AgentSnapshot = {
+    agentId: input.config.agentId,
+    agentType: input.config.agentType,
+    parentAgentId: input.config.parentAgentId,
+    workspacePath: input.config.workspacePath,
+    toolUsage: tallyToolUsage(input.messages),  // call occurrences, not confirmed successful executions
+    filesRead: read,
+    filesWritten: written,
+    finalMessage: input.finalMessage.slice(0, 8000),
+    tokenCount: input.tokenCount,
+    durationMs: Date.now() - input.startedAt,
+    capturedAt: Date.now(),
+  };
+  ensureDir();
+  fs.writeFileSync(snapshotPath(snapshot.agentId), JSON.stringify(snapshot, null, 2), 'utf-8');
+  pruneIfNeeded();   // historical retention policy; not a durability or legal guarantee
+  return snapshot;
+}

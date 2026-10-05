@@ -1,0 +1,27 @@
+# Educational ingestion core. A source adapter normalizes unknown budget/date
+# to None, converts known dates to UTC and validates source-owned identifiers.
+import hashlib
+import json
+
+def process_feed_item(item,source_config,security_context,authorize_source,
+                      normalize_item,persist_opportunity_outbox):
+    if not isinstance(item,dict) or not isinstance(source_config,dict):
+        raise ValueError("Item and registered source required")
+    if security_context is None or authorize_source(security_context,source_config) is not True:
+        raise PermissionError("Ingestion denied")
+    data=normalize_item(item,source_config)
+    fields=("external_id","source","title","description","estimated_value","deadline","entity")
+    if not isinstance(data,dict) or any(k not in data for k in fields):
+        raise ValueError("Complete normalized business fields required")
+    if any(not isinstance(data[k],str) or not data[k] for k in ("external_id","source","title")):
+        raise ValueError("Source identifier and title required")
+    canonical={k:data[k] for k in fields}
+    encoded=json.dumps(canonical,sort_keys=True,ensure_ascii=False,
+                       separators=(",",":"),allow_nan=False).encode("utf-8")
+    digest=hashlib.sha256(encoded).hexdigest()
+    result=persist_opportunity_outbox(security_context,canonical,digest)
+    if not isinstance(result,dict) or type(result.get("changed")) is not bool:
+        raise RuntimeError("Atomic ingestion acknowledgement required")
+    return result
+# Adapter enforces unique (source,external_id), concurrent updates and committed
+# outbox publication. A flush is not a commit. Raw feed retention is a separate policy.

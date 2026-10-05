@@ -1,0 +1,5 @@
+rule: python.lang.security.audit.formatted-sql-query
+message: Possible SQL injection via f-string in SQL query
+severity: ERROR
+file: app/api/search.py
+line: 47

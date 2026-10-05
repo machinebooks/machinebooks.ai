@@ -1,0 +1,18 @@
+// index.ts:266-292 (abridged)
+for (const t of mcpClient.getAllTools()) {
+  const fullName = `mcp_${t.serverName}_${t.name}`;
+  registry.register({
+    definition: {
+      name: fullName,
+      description: `[MCP: ${t.serverName}] ${t.description || t.name}`,
+      inputSchema: t.inputSchema || { type: 'object', properties: {} },
+      isConcurrencySafe: false, // Unknown external effects: conservative default.
+      isReadOnly: false, // Annotations alone do not establish host trust.
+      isDeferred: false, // Visible in this snapshot; host permission still applies.
+    },
+    async execute(input) {
+      const res = await mcpClient.executeFromAgent(fullName, input);
+      return { tool_use_id: '', content: (res.output || '').slice(0, 50000), is_error: !!res.error };
+    },
+  });
+}

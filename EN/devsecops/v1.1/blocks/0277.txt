@@ -1,0 +1,68 @@
+from dataclasses import dataclass
+from datetime import datetime
+
+@dataclass
+class DocumentTrustScore:
+    source_score: float      # 0.0 - 1.0 based on verified origin
+    format_score: float      # 0.0 - 1.0 based on expected format
+    content_score: float     # 0.0 - 1.0 based on content analysis
+    overall: float           # Weighted average
+    flags: list[str]
+    indexed_at: datetime | None = None
+
+def score_document(
+    content: str,
+    source: str,
+    metadata: dict
+) -> DocumentTrustScore:
+    """Calculates trust score before indexing in Qdrant."""
+
+    # Source score: official documents > manual uploads
+    source_scores = {
+        "boe": 0.95,        # Official State Gazette
+        "eur-lex": 0.95,    # European legislation
+        "internal_approved": 0.80,  # Approved internal documents
+        "user_upload": 0.40,        # User uploads
+        "external_api": 0.30,       # Unverified external sources
+    }
+    source_score = 0.0  # Caller source_verified is not protected provenance
+
+    # Format score: detect anomalies
+    flags = ["REVIEW: protected source verifier omitted"]
+    format_score = 1.0
+    if len(content) < 100:
+        format_score -= 0.3
+        flags.append("too_short")
+    if len(content) > 500_000:
+        format_score -= 0.2
+        flags.append("excessive_length")
+
+    # Content score: detect adversarial patterns
+    content_score = 1.0
+    injection_indicators = [
+        "ignora las instrucciones",
+        "act as", "you are now",
+        "system prompt", "<|endoftext|>",
+        "IMPORTANT: override",
+    ]
+    for indicator in injection_indicators:
+        if indicator.lower() in content.lower():
+            content_score -= 0.3
+            flags.append(f"injection_indicator: {indicator}")
+
+    content_score = max(0.0, content_score)
+    format_score = max(0.0, format_score)
+
+    overall = (
+        source_score * 0.4 +
+        format_score * 0.2 +
+        content_score * 0.4
+    )
+
+    return DocumentTrustScore(
+        source_score=source_score,
+        format_score=format_score,
+        content_score=content_score,
+        overall=overall,
+        flags=flags,
+    )

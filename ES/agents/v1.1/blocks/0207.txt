@@ -1,0 +1,11 @@
+// Historical dependencies are supplied by the host.
+const bundle = new VmBundleManager();
+let status = bundle.getStatus();
+if (!status.ready) {
+  const copied = await bundle.provisionFromResources();
+  status = bundle.getStatus();
+  if (!copied || !status.ready) {
+    throw new Error('Required VM bundle is unavailable');
+  }
+}
+// Presence is not integrity, boot or isolation evidence.

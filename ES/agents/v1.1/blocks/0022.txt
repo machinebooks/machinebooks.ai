@@ -1,0 +1,47 @@
+classDiagram
+    class StreamCallbacks {
+        <<interface>>
+        +onContent(text) void
+        +onThinking(text) void
+        +onToolCall(idx, id, name, argsChunk) void
+        +onToolCallDone(idx) void
+        +onUsage(input, output) void
+        +onError(error) void
+    }
+
+    class streamAnthropicCall {
+        +callbacks: StreamCallbacks
+        -parseSSEEvents()
+        -trackToolUseBlock()
+    }
+
+    class streamOpenAICompatCall {
+        +callbacks: StreamCallbacks
+        -parseDataLines()
+        -accumulateToolCalls(Map by index)
+        -detectThinkBlock()
+    }
+
+    class streamAzureCall {
+        +callbacks: StreamCallbacks
+        delegates to streamOpenAICompatCall
+    }
+
+    class AgentLoop {
+        -toolCallState: Map
+        -fullContent: string
+        -thinkingContent: string
+        +construct(callbacks)
+    }
+
+    class ChatRouteWrapper {
+        +construct(callbacks)
+        +sendSSE() to frontend
+        +trackUsage() to cost tracker
+    }
+
+    StreamCallbacks <|.. streamAnthropicCall : implements consumer of
+    StreamCallbacks <|.. streamOpenAICompatCall : implements consumer of
+    StreamCallbacks <|.. streamAzureCall : implements consumer of
+    AgentLoop ..> StreamCallbacks : builds and passes
+    ChatRouteWrapper ..> StreamCallbacks : builds and passes

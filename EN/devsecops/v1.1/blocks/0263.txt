@@ -1,0 +1,75 @@
+# roadmap_agent.py — Maturity roadmap generation with Claude
+import anthropic
+import json
+
+client = anthropic.Anthropic()
+
+ROADMAP_SYSTEM_PROMPT = """You are a DevSecOps consultant who generates maturity improvement
+roadmaps. You receive the current state (levels per domain), the target, and constraints.
+
+Generate a roadmap in JSON with this structure:
+{
+  "phases": [
+    {
+      "name": "Phase 1 — Foundations",
+      "duration_months": 3,
+      "objectives": ["description"],
+      "actions": [
+        {"domain": "PS", "from_level": 1, "to_level": 2,
+         "action": "what to do", "effort": "S/M/L",
+         "prerequisite": null, "kpi": "success metric"}
+      ],
+      "expected_score_delta": 0.5
+    }
+  ],
+  "critical_path": ["action that blocks others"],
+  "risks": ["plan risk"],
+  "total_months": 12
+}
+
+Rules:
+1. Never propose jumping more than one level per quarter per domain.
+2. Prioritize domains at level 0-1 over level 3-4 improvements.
+3. Actions must be concrete: "implement Semgrep in CI", not "improve security".
+4. Each action must have a measurable KPI.
+5. Effort (S/M/L) considers a team of 2-3 people dedicated to security.
+"""
+
+def generate_roadmap(
+    current_levels: dict[str, int],
+    target_levels: dict[str, int],
+    constraints: dict,
+) -> dict:
+    """Generates a maturity progression roadmap."""
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        system=ROADMAP_SYSTEM_PROMPT,
+        messages=[{
+            "role": "user",
+            "content": f"""Current state per domain: {json.dumps(current_levels)}
+Target at 12 months: {json.dumps(target_levels)}
+Constraints: {json.dumps(constraints)}
+
+Generate the progression roadmap."""
+        }]
+    )
+    proposal = json.loads(message.content[0].text)
+    if not isinstance(proposal, dict):
+        raise ValueError("INCOMPLETE: invalid proposal schema")
+    proposal["status"] = "REVIEW"
+    proposal["coverage"] = "partial"
+    proposal["origin_verified"] = False
+    return proposal
+# Invocation example
+roadmap = generate_roadmap(
+    current_levels={"PS": 2, "VM": 1, "GOV": 1, "MR": 1, "AIS": 0, "CA": 1},
+    target_levels={"PS": 3, "VM": 3, "GOV": 2, "MR": 2, "AIS": 2, "CA": 2},
+    constraints={
+        "team_size": 3,
+        "budget_eur_annual": 80000,
+        "regulation": ["ENS medium level", "AI Act"],
+        "ai_in_production": True,
+        "current_tools": ["Semgrep", "Grype", "Trivy", "Gitleaks"],
+    }
+)

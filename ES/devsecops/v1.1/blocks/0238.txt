@@ -1,0 +1,81 @@
+from datetime import datetime
+
+
+class ComplianceReportGenerator:
+    """Genera informes legibles para auditores."""
+
+    def generate_audit_report(
+        self,
+        assessments: list[ControlAssessment],
+        framework: str,
+        report_date: datetime,
+    ) -> str:
+        """Genera un informe Markdown para el auditor."""
+
+        known = {ComplianceStatus.COMPLIANT, ComplianceStatus.NON_COMPLIANT,
+                 ComplianceStatus.PARTIAL, ComplianceStatus.NOT_ASSESSED}
+        if not isinstance(assessments, list) or any(getattr(a,"status",None) not in known for a in assessments):
+            return "INCOMPLETE: invalid assessment state"
+        compliant = [
+            a for a in assessments
+            if a.status == ComplianceStatus.COMPLIANT
+        ]
+        non_compliant = [
+            a for a in assessments
+            if a.status == ComplianceStatus.NON_COMPLIANT
+        ]
+        partial = [
+            a for a in assessments
+            if a.status == ComplianceStatus.PARTIAL
+        ]
+        not_assessed = [
+            a for a in assessments
+            if a.status == ComplianceStatus.NOT_ASSESSED
+        ]
+
+        if not assessments:
+            return "INCOMPLETE: no controls assessed"
+        total = len(assessments)
+        pct = (len(compliant) / total * 100) if total > 0 else 0
+
+        report = f"""# Borrador de evidencias — {framework}
+
+**Fecha:** {report_date.strftime('%Y-%m-%d %H:%M UTC')}
+**Evaluador:** Evaluación técnica local, pendiente de revisión de suficiencia
+**Periodo de evidencia:** Verificar en los recibos y referencias de cada control
+
+## Resumen ejecutivo
+
+| Estado | Controles | Porcentaje |
+|--------|-----------|------------|
+| Cumplido | {len(compliant)} | {pct:.1f}% |
+| No cumplido | {len(non_compliant)} | {len(non_compliant)/total*100:.1f}% |
+| Parcial | {len(partial)} | {len(partial)/total*100:.1f}% |
+| No evaluado | {len(not_assessed)} | {len(not_assessed)/total*100:.1f}% |
+| **Total** | **{total}** | **100%** |
+
+## Controles no cumplidos (requieren acción)
+
+"""
+        for a in non_compliant + partial + not_assessed:
+            report += f"""### {a.control.control_id} — {a.control.title}
+
+- **Estado propuesto:** {a.status}
+- **Causa:** {a.justification}
+- **Evidencias evaluadas:** {len(a.evidences)}
+- **Próxima revisión:** {a.next_review.strftime('%Y-%m-%d') if a.next_review else 'N/A'}
+
+"""
+
+        report += "## Controles cumplidos (con evidencia)\n\n"
+        for a in compliant:
+            evidence_list = ", ".join(
+                f"{e.source.value} ({e.timestamp.strftime('%Y-%m-%d')})"
+                for e in a.evidences
+            )
+            report += (
+                f"- **{a.control.control_id}** — {a.control.title}: "
+                f"{evidence_list}\n"
+            )
+
+        return "REVIEW: local evidence draft; conformity and scope not established.\n" + report

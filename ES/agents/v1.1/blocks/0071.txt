@@ -1,0 +1,6 @@
+// Historical text-only result subset; the orchestrator supplies the actual call ID.
+export interface ToolResult {
+  tool_use_id: string;
+  content: string;
+  is_error: boolean;
+}

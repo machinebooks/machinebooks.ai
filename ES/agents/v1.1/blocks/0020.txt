@@ -1,0 +1,45 @@
+@startuml
+!theme plain
+skinparam backgroundColor transparent
+skinparam state {
+  BackgroundColor #0a1224
+  BorderColor #7dd8e8
+  FontColor #f5efe0
+  ArrowColor #ffb347
+}
+
+[*] --> EsperandoBloque
+
+state EsperandoBloque : aún no se ha visto\nningún content_block_start
+
+EsperandoBloque --> ToolUseDeclarado : content_block_start\ntype = tool_use\n(llega id + name)
+
+state ToolUseDeclarado : id, name conocidos\narguments = ""\nmapear event.index a toolIndex\ncallbacks.onToolCall(idx, id, name, "")
+
+ToolUseDeclarado --> RecibiendoArgs : content_block_delta\ntype = input_json_delta
+
+state RecibiendoArgs : arguments += partial_json\ncallbacks.onToolCall(idx, id, name, partial_json)\n\nJSON puede ser inválido\nhasta el último delta
+
+RecibiendoArgs --> RecibiendoArgs : siguiente input_json_delta
+
+RecibiendoArgs --> BloqueCerrado : content_block_stop
+
+state BloqueCerrado : JSON.parse(arguments)\ncallbacks.onToolCallDone(idx)\n\nEl host valida y autoriza\nantes de ejecutar la tool
+
+BloqueCerrado --> EsperandoBloque : siguiente bloque del stream
+BloqueCerrado --> [*] : message_stop
+
+note right of RecibiendoArgs
+  IMPORTANTE: en OpenAI-compat,
+  arguments puede llegar como
+  un único chunk completo o
+  partido en N. La lógica de
+  acumulación es la misma.
+end note
+
+note right of ToolUseDeclarado
+  En OAI-compat, el id puede
+  llegar nulo en chunks posteriores;
+  el primer delta lo fija.
+end note
+@enduml

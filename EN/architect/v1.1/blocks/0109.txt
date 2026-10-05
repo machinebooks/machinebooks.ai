@@ -1,0 +1,31 @@
+# Didactic example: patterns/ai_service/models/budget_config.py
+class BudgetConfig(Base):
+    """
+    Spending limits with graduated actions.
+    Progression: alert → throttle → block
+    """
+    __tablename__ = "budget_config"
+
+    id = Column(Integer, primary_key=True)
+    scope = Column(String(16))    # "global", "provider", "service", "user"
+    scope_id = Column(String(64)) # Provider/service/user ID
+
+    # Limits in EUR
+    daily_limit_eur = Column(Numeric(18, 8))
+    monthly_limit_eur = Column(Numeric(18, 8))
+    per_user_daily_limit_eur = Column(Numeric(18, 8))
+
+    # Thresholds for actions (percentage of limit)
+    alert_threshold_pct = Column(Float, default=80.0)     # Send alert
+    throttle_threshold_pct = Column(Float, default=95.0)  # Reduce rate
+    block_threshold_pct = Column(Float, default=100.0)    # Block
+
+    # Throttle configuration: slow down without blocking
+    throttle_delay_seconds = Column(Float, default=2.0)
+    throttle_max_concurrent = Column(Integer, default=3)
+
+    is_active = Column(Boolean, default=True)
+    notify_emails = Column(JSON)  # List of emails for alerts
+
+# Schema alone does not enforce budgets: reserve estimated exposure atomically
+# across all applicable scopes before a call, then settle/reconcile actual usage.

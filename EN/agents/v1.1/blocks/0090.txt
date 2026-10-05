@@ -1,0 +1,12 @@
+stateDiagram-v2
+    [*] --> connecting: spawn(command, args)
+    connecting --> initializing: stdin/stdout open
+    initializing --> listing: initialize OK
+    listing --> connected: tools/list OK
+    connected --> connected: tools/call
+    connected --> error: exit code != 0
+    error --> reconnecting: scheduleReconnect()
+    reconnecting --> connecting: backoff 2s, 4s, 8s, 16s, 32s
+    reconnecting --> gaveUp: 5 attempts
+    gaveUp --> [*]
+    connected --> [*]: disconnect()

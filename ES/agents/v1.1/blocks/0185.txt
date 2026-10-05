@@ -1,0 +1,8 @@
+export interface RichGuardrailResult extends GuardrailResult {
+  modified?: string;
+}
+
+export interface GuardrailDefinition<T> {
+  name: string;
+  check: (value: T) => RichGuardrailResult | Promise<RichGuardrailResult>;
+}

@@ -1,0 +1,10 @@
+flowchart LR
+    subgraph Request[Provider request]
+        direction TB
+        T[tool schemas<br/>13,000 hypothetical tokens] --> S[system prompt<br/>5,000 hypothetical tokens]
+        S --> MARK[Example cacheable point]
+        MARK --> M[active messages<br/>variable]
+    end
+    Request --> Anthropic{Anthropic}
+    Anthropic -->|5-minute write when applicable| WRITE[cache write<br/>historical 1.25x rate]
+    Anthropic -->|read if hit| READ[cache read<br/>historical 0.1x rate]

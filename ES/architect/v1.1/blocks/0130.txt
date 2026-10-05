@@ -1,0 +1,26 @@
+import hashlib
+import json
+
+def get_cache_key(prompt, model, security_context, parameters):
+    required = ("tenant_id", "user_id", "app_code", "acl_version",
+                "prompt_version", "data_snapshot", "deployment_id")
+    if (not isinstance(prompt, str) or len(prompt) > 100_000
+            or not isinstance(model, str) or not model
+            or not isinstance(security_context, dict)
+            or any(not isinstance(security_context.get(k), str)
+                   or not security_context[k] for k in required)
+            or not isinstance(parameters, dict)):
+        raise ValueError("Invalid cache identity")
+    identity = {"prompt": prompt, "model": model, "parameters": parameters,
+                "scope": {k: security_context[k] for k in required}}
+    canonical = json.dumps(identity, ensure_ascii=False, sort_keys=True,
+                           separators=(",", ":"), allow_nan=False)
+    return "llm_cache:" + hashlib.sha256(canonical.encode()).hexdigest()
+
+CACHE_TTL = 300
+
+# Scope/version values come from server-validated metadata. Reauthorize the actor
+# and documents before cache lookup and before delivery; TTL cannot revoke access.
+# Cached outputs still require protected storage/retention. Hashes are not
+# anonymization, and a key is not an authorization check.
+# This cache identity uses server-normalized string IDs.

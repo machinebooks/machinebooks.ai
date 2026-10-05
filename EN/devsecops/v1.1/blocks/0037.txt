@@ -1,0 +1,39 @@
+# .github/workflows/security-pipeline.yml (SCA expansion)
+jobs:
+  sca-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Syft
+        uses: anchore/sbom-action/download-syft@v0
+        with:
+          syft-version: v1.5.0
+
+      - name: Generate SBOM (CycloneDX)
+        run: syft dir:. -o cyclonedx-json --file sbom.cdx.json
+
+      - name: Store SBOM as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-cyclonedx
+          path: sbom.cdx.json
+          retention-days: 90
+
+      - name: Install Grype
+        uses: anchore/scan-action/download-grype@v4
+        with:
+          grype-version: v0.82.0
+
+      - name: Scan vulnerabilities
+        id: grype-scan
+        run: |
+          grype sbom:sbom.cdx.json -o json --file grype-results.json
+          grype sbom:sbom.cdx.json -o table --fail-on critical
+
+      - name: Intelligent SCA finding triage
+        if: always()
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/triage_sca.py grype-results.json sbom.cdx.json

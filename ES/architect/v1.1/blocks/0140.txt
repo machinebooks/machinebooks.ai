@@ -1,0 +1,24 @@
+    # AI enrichment using a configured and authorized adapter
+    ai_summary = Column(Text, nullable=True)         # Generated summary requiring review
+    ai_keywords = Column(JSON, nullable=True)         # Keywords
+    ai_entities = Column(JSON, nullable=True)         # Detected entities: people, organizations, dates
+    ai_enriched_at = Column(DateTime(timezone=True), nullable=True)
+
+    # Reusable document template
+    is_template = Column(Boolean, default=False)
+    template_variables = Column(JSON, nullable=True)  # Template variables
+
+    # Owner and access metadata; current authorization is checked by the service
+    owner_user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    allowed_roles = Column(JSON, default=list)
+
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime(timezone=True), onupdate=lambda: datetime.now(timezone.utc))
+
+    # Version relationships
+    child_versions = relationship(
+        "Document",
+        foreign_keys=[parent_version_id],
+        backref="parent_version",
+        lazy="dynamic",
+    )

@@ -1,0 +1,9 @@
+METRICS = {
+    "reviews_executed": 0,       # PRs analizadas
+    "findings_total": 0,         # Hallazgos generados
+    "findings_confirmed": 0,     # Confirmados por humano
+    "findings_rejected": 0,      # Descartados como FP
+    "tokens_input": 0,           # Tokens consumidos (input)
+    "tokens_output": 0,          # Tokens consumidos (output)
+    "avg_review_time_seconds": 0, # Tiempo medio de revisión
+}

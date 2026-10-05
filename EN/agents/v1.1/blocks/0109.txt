@@ -1,0 +1,24 @@
+flowchart TB
+    subgraph Static["Layer 2 — Static prompt cache"]
+        SYS["system prompt + MEMORY.md context"]
+        SCH["tool_schemas[] (38 tools)"]
+    end
+    subgraph Live["Layer 1 — Active messages of the turn"]
+        MSG["messages[] (user, assistant, tool_result)"]
+    end
+    subgraph Comp["Layer 3 — Compaction"]
+        SUMMARY["summary of old turns"]
+    end
+    subgraph Snap["Layer 4 — Sub-agent snapshots"]
+        SNAP["agent-snapshots/&lt;agentId&gt;.json"]
+    end
+    subgraph Persist["Layer 5 — Persistent memory"]
+        MEM["~/.sylvarsec/memory.json + MEMORY.md"]
+    end
+
+    MEM -- "injected as context" --> SYS
+    SNAP -- "parent reads after handoff" --> MSG
+    SUMMARY -- "replaces old turns" --> MSG
+    SYS --> PROV["provider.call(messages, tools)"]
+    SCH --> PROV
+    MSG --> PROV

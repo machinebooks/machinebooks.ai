@@ -1,0 +1,20 @@
+# Educational request core; HTTP/JWT adapters supply server-resolved context.
+# persist_job_with_outbox must atomically store owner, document and publication intent.
+def request_document_analysis(doc_id, security_context, authorize_document,
+                              persist_job_with_outbox):
+    if isinstance(doc_id, bool) or not isinstance(doc_id, int) or doc_id < 1:
+        raise ValueError("doc_id must be a positive integer")
+    if security_context is None:
+        raise PermissionError("Authenticated context required")
+    if authorize_document(security_context, doc_id) is not True:
+        raise PermissionError("Document analysis not authorized")
+    job = persist_job_with_outbox(security_context, doc_id, queue="ai")
+    if not isinstance(job, dict) or not isinstance(job.get("job_id"), str):
+        raise RuntimeError("Persistent job acknowledgement required")
+    if not job["job_id"] or job.get("status") != "queued":
+        raise RuntimeError("Invalid persisted job acknowledgement")
+    return {"job_id": job["job_id"], "status": "queued"}, 202
+
+# The outbox publisher and worker are outside this excerpt.
+# The worker must recheck current owner/document authorization before each effect.
+# Status and result endpoints must authorize the persisted job, not trust a task ID.

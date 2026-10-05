@@ -1,0 +1,12 @@
+flowchart LR
+    A[Usuario rellena<br>variables] --> B[Validación y autorización del host]
+    B --> C[Paso 1<br>sustituir datos]
+    C --> D[AgentLoop<br>alcance aprobado]
+    D --> E[resultado con estado]
+    E --> F[Paso 2<br>dependencias válidas]
+    F --> G[AgentLoop]
+    G --> H[resultado con estado]
+    H --> I[Paso N si puede continuar]
+    I --> J[estado final del workflow]
+    style D fill:#cce5ff
+    style G fill:#cce5ff

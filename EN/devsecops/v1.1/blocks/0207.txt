@@ -1,0 +1,47 @@
+def generate_postmortem_draft(incident_id: str) -> str:
+    """Generates a post-mortem draft using Claude."""
+
+    # Gather all incident data
+    incident_data = get_incident_data(incident_id)
+    actions = [a for a in action_log if a["incident_id"] == incident_id]
+
+    prompt = f"""Generate a structured post-mortem for the following incident.
+Use the blameless format (no blame, focused on systems and processes).
+
+## Incident data
+- ID: {incident_data['incident_id']}
+- Severity: {incident_data['severity']}
+- Detected: {incident_data['detected_at']}
+- Contained: {incident_data['contained_at']}
+- Resolved: {incident_data['resolved_at']}
+
+## Correlated alerts
+{json.dumps(incident_data['alerts'], indent=2, default=str)}
+
+## Actions executed
+{json.dumps(actions, indent=2, default=str)}
+
+## Affected services
+{json.dumps(incident_data['affected_services'], indent=2)}
+
+## Required structure
+1. Executive summary (3-5 sentences)
+2. Detailed timeline with timestamps
+3. Root cause (5 Whys)
+4. Impact (affected users, duration, compromised data)
+5. What worked well
+6. What can be improved
+7. Action items with owner and deadline
+8. Metrics: MTTD, MTTC, MTTR
+
+IMPORTANT: Do not invent data. If any information is not available
+in the provided data, explicitly indicate "[PENDING: complete
+with on-call team]"."""
+
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    return "REVIEW: partial unverified draft; human decision pending\n" + response.content[0].text

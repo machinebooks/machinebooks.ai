@@ -1,0 +1,1 @@
+async compactIfNeeded(messages: Message[]): Promise<CompactResult>

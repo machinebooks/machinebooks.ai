@@ -1,0 +1,9 @@
+// Educational delivery excerpt; the host implements these scoped contracts.
+const notifications = await notificationStore.claimPending({ ownerSessionId, parentAgentId });
+for (const notification of notifications) {
+  await reconcileChildUsageOnce(notification.taskId, notification.usage);
+  appendDerivedTaskData(this.messages, notification);
+  await notificationStore.markInserted(notification.taskId, { ownerSessionId, parentAgentId });
+}
+// Claim, insertion and accounting require a defined atomic/recovery policy.
+// Insertion is not provider receipt; absent usage remains unknown.

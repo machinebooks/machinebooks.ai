@@ -1,0 +1,32 @@
+# Educational notification core. Atomic adapter enforces deduplication and outbox.
+import hashlib
+import json
+
+PRIORITY_MAP={"NEW_OPPORTUNITY":"HIGH","OPPORTUNITY_MATCH":"HIGH",
+ "DEAL_STALLED":"MEDIUM","ACCOUNT_RISK":"HIGH","REPORT_READY":"MEDIUM","SYSTEM":"LOW"}
+
+def send_notification(context,user_id,notification_type,event_id,resource_id,
+        title,body,authorize_recipient,persist_notification_outbox,action_url=None):
+    if not isinstance(context,dict) or type(user_id) is not int or user_id<1:
+        raise PermissionError("Recipient scope required")
+    tenant=context.get("tenant_id")
+    if not isinstance(tenant,str) or not tenant or notification_type not in PRIORITY_MAP:
+        raise ValueError("Registered notification and tenant required")
+    if any(not isinstance(x,str) or not x or len(x)>256 for x in (event_id,resource_id)):
+        raise ValueError("Explicit bounded event and resource references required")
+    if not isinstance(title,str) or not title or len(title)>300 or not isinstance(body,str) or len(body)>4000:
+        raise ValueError("Bounded notification text required")
+    if action_url is not None and (not isinstance(action_url,str) or not action_url.startswith('/') or action_url.startswith('//')):
+        raise ValueError("Local resource URL required")
+    if authorize_recipient(context,user_id,resource_id) is not True:
+        raise PermissionError("Recipient/resource denied")
+    key=hashlib.sha256(json.dumps([tenant,user_id,notification_type,event_id,resource_id],
+          ensure_ascii=False,separators=(",",":")).encode()).hexdigest()
+    result=persist_notification_outbox(context,key,{"user_id":user_id,
+        "type":notification_type,"event_id":event_id,"resource_id":resource_id,
+        "title":title,"body":body,"priority":PRIORITY_MAP[notification_type],"action_url":action_url})
+    if not isinstance(result,dict) or type(result.get("created")) is not bool:
+        raise RuntimeError("Atomic notification acknowledgement required")
+    return result
+# Unique key and email intent commit together. Delivery and read state are separate.
+# A None action_url cannot collapse unrelated events; event/resource IDs are mandatory.

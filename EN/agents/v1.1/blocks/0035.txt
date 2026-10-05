@@ -1,0 +1,45 @@
+@startuml
+!theme plain
+skinparam backgroundColor transparent
+skinparam state {
+  BackgroundColor #142038
+  BorderColor #7dd8e8
+  FontColor #f5efe0
+}
+
+[*] --> running : new AgentLoop().run()
+
+state running {
+  state "Processing turns" as turnLoop
+}
+
+running --> paused : cancel() · AbortController
+running --> error : unrecoverable exception
+running --> snapshotted : agent_complete\n+ captureAgentSnapshot()
+running --> running : finish_reason=length\n+ MaxTokensRecoveryManager
+
+snapshotted --> resumed : SendMessage(to, msg)\nor resumeAgent()
+resumed --> running : AgentLoop.run() with available messages
+resumed --> error : preserved context not found
+
+paused --> running : manual resumption (infrequent)
+paused --> [*] : definitive cancellation
+
+running --> [*] : finish_reason=end_turn\n+ validated output
+
+error --> [*]
+
+note right of snapshotted
+  Snapshot persisted in
+  ~/.sylvarsec/agent-snapshots/{id}.json
+  PreservedContext in memory (LRU 50).
+end note
+
+note right of resumed
+  resumeAgent injects a "system"
+  message with summariseSnapshot()
+  before the new "user".
+  Historical case: not a recommended
+  boundary for untrusted data.
+end note
+@enduml

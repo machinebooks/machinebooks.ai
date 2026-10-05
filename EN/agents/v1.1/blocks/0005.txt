@@ -1,0 +1,30 @@
+sequenceDiagram
+    autonumber
+    participant U as ChatScreen.tsx
+    participant Auth as sessionAuth
+    participant RL as rateLimit
+    participant R as routes/chat.ts
+    participant SC as slashCommands
+    participant H as hooks
+    participant L as AgentLoop / internal loop
+    participant P as Provider
+    participant TR as ToolRegistry
+    U->>Auth: POST /api/chat (Bearer token, body)
+    Auth->>RL: authenticated req
+    RL->>R: req within quota
+    R->>SC: parseSlashCommand(message)
+    SC-->>R: command? expanded prompt
+    R->>H: UserPromptSubmit hook
+    R-->>U: SSE headers + status: thinking
+    loop turns until MAX_TOOL_ITERATIONS or end
+        R->>P: streamLLMCall(messages, tools)
+        P-->>R: deltas (text, thinking, tool_use)
+        R-->>U: SSE content/thinking/tool_start
+        alt Has tool_calls
+            R->>TR: executeToolCall(name, args)
+            TR-->>R: result or error
+            R-->>U: SSE tool_result
+        else No tool_calls
+            R-->>U: SSE done (final + cost + tasks)
+        end
+    end

@@ -1,0 +1,19 @@
+# Correct pattern: generated with Claude after providing explicit context
+# Prompt included: domain diagram, entity list per schema,
+# soft delete and audit requirements, GDPR retention policies
+
+class Proposal(db.Model):
+    """Technical proposal — belongs to the business domain (operations_db).
+    Related to Client and Opportunity. Logical exclusion; the retention/erasure pipeline is outside this excerpt."""
+    __tablename__ = 'proposals'
+    # No __bind_key__ -> operations_db by default
+
+    id = db.Column(db.Integer, primary_key=True)
+    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False, index=True)
+    opportunity_id = db.Column(db.Integer, db.ForeignKey('opportunities.id'), nullable=True)
+    proposal_type = db.Column(db.Enum(ProposalType), nullable=False)
+    status = db.Column(db.Enum(ProposalStatus), nullable=False, default=ProposalStatus.DRAFT)
+    created_by = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = db.Column(db.DateTime, onupdate=lambda: datetime.now(timezone.utc))
+    deleted_at = db.Column(db.DateTime, nullable=True)  # Logical exclusion does not establish GDPR erasure

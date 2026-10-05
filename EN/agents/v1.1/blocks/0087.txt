@@ -1,0 +1,13 @@
+// Preserve scan order but allow completed tools to pass unfinished safe tools.
+// An unfinished non-safe tool blocks later delivery; this is not strict FIFO.
+private enqueueReadyResults(): void {
+  for (const tool of this.tools) {
+    if (tool.status === 'completed' || tool.status === 'cancelled') {
+      this.emitState(tool, 'yielded');
+      this.pushUpdate({ type: 'result', result: tool.result! });
+      continue;
+    }
+    if (tool.status === 'executing' && !tool.concurrencySafe) break;
+    if (tool.status === 'queued' && !tool.concurrencySafe) break;
+  }
+}

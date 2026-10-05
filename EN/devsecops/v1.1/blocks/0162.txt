@@ -1,0 +1,18 @@
+SUPERVISOR_PERMS = AgentPermissions(
+    agent_name="agent-supervisor",
+    allowed_risk_levels=[RiskLevel.READ],
+    max_total_tool_calls=50,
+    max_tokens_budget=30_000,
+    max_execution_seconds=120,
+)
+
+SUPERVISOR_PROMPT = """You are a security supervisor agent. Your function is to
+analyze audit logs from other pipeline agents and detect anomalous patterns:
+
+1. Agent approaching 80% of its tool budget.
+2. Unusual concentration of calls to a single tool (>70% of total).
+3. Sequences of rejected actions suggesting escalation attempts.
+4. Tools invoked with arguments outside typical ranges.
+
+Generate a report with alert level: INFO, WARNING, or CRITICAL.
+Do NOT execute corrective actions. Only report."""

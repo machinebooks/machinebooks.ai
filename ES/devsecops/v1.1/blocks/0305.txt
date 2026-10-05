@@ -1,0 +1,13 @@
+rules:
+  - id: devsecops-book.docker.unpinned-base-image
+    pattern-either:
+      - pattern-regex: '(?im)^FROM\s+(?:--platform=\S+\s+)?\S+:latest(?:\s|$)'
+      - pattern-regex: '(?im)^FROM\s+(?:--platform=\S+\s+)?[^:@\s]+(?:\s+AS\s+\S+)?\s*$'
+    message: "FROM sin referencia estable; revise ARGs, etapas y digest."
+    severity: WARNING
+    languages: [generic]
+    metadata:
+      category: security
+      cwe: "CWE-829: Inclusion of Functionality from Untrusted Control Sphere"
+      confidence: MEDIUM
+      chapter: 7

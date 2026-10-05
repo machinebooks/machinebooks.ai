@@ -1,0 +1,51 @@
+from illustrative_host import tool
+
+@tool
+def correlate_findings(
+    service_name: str,
+    cve_id: str | None,
+    cwe_id: str | None,
+    current_findings: list[dict]
+) -> dict:
+    """Searches for related findings: same service, same CVE,
+    same CWE, or same vulnerability pattern."""
+    if not isinstance(current_findings,list) or any(not isinstance(f,dict) or not isinstance(f.get("id"),str) for f in current_findings):
+        raise ValueError("INCOMPLETE: invalid correlation inputs")
+    ids = [f["id"] for f in current_findings]
+    if len(ids) != len(set(ids)):
+        raise ValueError("INCOMPLETE: duplicate finding identity")
+    correlations = {
+        "same_service": [],
+        "same_cve": [],
+        "same_cwe_pattern": [],
+        "recurrent": False,
+        "cluster_size": 0,
+    }
+
+    for f in current_findings:
+        # Findings in the same service
+        if f.get("service_name") == service_name:
+            correlations["same_service"].append(f["id"])
+
+        # Same CVE in different services
+        if cve_id and f.get("cve_id") == cve_id:
+            correlations["same_cve"].append(f["id"])
+
+        # Same CWE pattern (same vulnerability class)
+        if cwe_id and f.get("cwe_id") == cwe_id:
+            correlations["same_cwe_pattern"].append(f["id"])
+
+    correlations["cluster_size"] = len(
+        set(correlations["same_service"]
+            + correlations["same_cve"]
+            + correlations["same_cwe_pattern"])
+    )
+
+    # A large cluster suggests a systemic issue
+    if correlations["cluster_size"] > 5:
+        correlations["systemic_issue"] = True
+    else:
+        correlations["systemic_issue"] = False
+
+    correlations.update(status="REVIEW",coverage="partial",systemic_issue=None)
+    return correlations

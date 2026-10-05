@@ -1,0 +1,12 @@
+# .semgrep-ignore.yml — Confirmed suppressions
+# Each entry requires justification and review date
+suppressions:
+  - rule: command-injection-fastapi
+    file: src/admin/backup.py
+    line: 34
+    justification: >
+      The command is built with values from an internal enum,
+      not with user input. Verified on 2026-03-15.
+    reviewed_by: jmontes
+    review_date: "2026-03-15"
+    expiration_date: "2026-09-15"

@@ -1,0 +1,28 @@
+class LLMQualityScore(db.Model):
+    """AI response quality evaluation.
+    Enables closing the feedback loop and detecting model degradation."""
+    __tablename__ = 'llm_quality_scores'
+    __bind_key__ = 'platform_core'
+
+    id = db.Column(db.Integer, primary_key=True)
+    usage_log_id = db.Column(db.Integer, db.ForeignKey('llm_usage_logs.id'), nullable=False)
+    # FK to the usage record: links cost with quality
+
+    # Six bounded scores and one Boolean; validate values before persistence
+    hallucination_score = db.Column(db.Float)    # Proportion of ungrounded content
+    groundedness_score = db.Column(db.Float)     # Alignment with the provided context
+    relevance_score = db.Column(db.Float)        # Pertinence to the question
+    coherence_score = db.Column(db.Float)        # Internal text coherence
+    bias_score = db.Column(db.Float)             # Presence of detectable bias
+    toxicity_score = db.Column(db.Float)         # Potentially harmful content
+    pii_detected = db.Column(db.Boolean, default=False)  # PII leaked into the output
+
+    # Evaluation origin
+    evaluation_method = db.Column(db.String(20))
+    # Values: human_review, auto_llm, heuristic
+    evaluated_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    evaluated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+    # Free-form feedback from the end user
+    user_rating = db.Column(db.Integer)          # 1-5 stars
+    user_feedback = db.Column(db.Text)

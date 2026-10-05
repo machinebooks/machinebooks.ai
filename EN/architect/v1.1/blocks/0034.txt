@@ -1,0 +1,28 @@
+class LLMServiceConfig(db.Model):
+    """AI service configuration — which model to use for each task.
+    Change model without redeploying: just update this table."""
+    __tablename__ = 'llm_service_configs'
+    __bind_key__ = 'platform_core'
+
+    id = db.Column(db.Integer, primary_key=True)
+    service_type = db.Column(db.String(50), unique=True, nullable=False)
+    # Examples: "chat", "document_analysis", "proposal_generation",
+    #           "intent_classification", "cv_scoring", "opportunity_matching"
+    provider = db.Column(db.String(30), nullable=False)
+    # Values: anthropic, openai, azure_openai, ollama, lm_studio
+    model_name = db.Column(db.String(100), nullable=False)
+    # Examples: claude-sonnet-4-6, claude-haiku-4-5, gpt-4o, llama3.2
+    temperature = db.Column(db.Float, default=0.7)
+    max_tokens = db.Column(db.Integer, default=4096)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+
+    # Fallback if the primary provider fails
+    fallback_provider = db.Column(db.String(30), nullable=True)
+    fallback_model = db.Column(db.String(100), nullable=True)
+
+    # Configuration integrity
+    config_hash = db.Column(db.String(64))   # SHA-256 to detect direct modifications
+    last_verified_at = db.Column(db.DateTime)
+
+    updated_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    updated_at = db.Column(db.DateTime, onupdate=lambda: datetime.now(timezone.utc))

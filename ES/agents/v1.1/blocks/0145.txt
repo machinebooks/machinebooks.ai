@@ -1,0 +1,13 @@
+// Private fork excerpt: inherited context and tools require host checks.
+import { buildForkedContext } from '@/server/agent/forkSubagent';
+import { AgentLoop } from '@/server/agent/AgentLoop';
+const { messages, config } = buildForkedContext(parentMessages, parentConfig, {
+  directive: 'Review the design we just discussed and propose three risks.',
+  name: 'risk-reviewer',
+  tools: ['read_file', 'grep'],
+});
+const forkLoop = new AgentLoop({ config, initialMessages: messages, toolRegistry });
+for await (const event of forkLoop.run()) {
+  consumeForkEvent(event);
+}
+// Tool names do not authorize paths or establish OS isolation.

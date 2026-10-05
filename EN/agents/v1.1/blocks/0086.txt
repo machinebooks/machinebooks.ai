@@ -1,0 +1,26 @@
+// 1. Fill this executor's queue when a tool arrives or finishes.
+private pumpQueue(): void {
+  if (this.cancelled || this.siblingAbortReason) return;
+
+  while (this.canStartAnotherTool()) {
+    const next = this.tools.find(tool => tool.status === 'queued');
+    if (!next) break;
+    if (!this.canStartTool(next)) break;  // Concurrency policy within this instance.
+    this.startTool(next);
+  }
+  this.resolveTerminalWaiters();
+}
+
+// 2. Per-executor cap; other instances need aggregate resource limits.
+private canStartAnotherTool(): boolean {
+  return this.tools
+    .filter(tool => tool.status === 'executing').length < MAX_PARALLEL_TOOLS;
+}
+
+// 3. Serialize a non-safe tool against others in this instance.
+private canStartTool(tool: TrackedTool): boolean {
+  const executing = this.tools.filter(c => c.status === 'executing');
+  if (executing.length === 0) return true;
+  if (!tool.concurrencySafe) return false;
+  return executing.every(c => c.concurrencySafe);
+}

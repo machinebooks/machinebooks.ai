@@ -1,0 +1,28 @@
+const usageByCall = new Map<string, UsageSnapshot>();
+function observeUsage(next: UsageSnapshot) {
+  const units = [next.uncachedInput, next.cacheReadInput,
+    next.cacheWriteInput, next.outputTokens];
+  if (!next.callId || !['partial', 'final'].includes(next.phase)
+      || !units.every(n => Number.isFinite(n) && n >= 0)) {
+    throw new Error('Invalid usage snapshot');
+  }
+  const previous = usageByCall.get(next.callId);
+  if (previous?.phase === 'final') {
+    if (previous.phase !== next.phase ||
+          previous.uncachedInput !== next.uncachedInput ||
+          previous.cacheReadInput !== next.cacheReadInput ||
+          previous.cacheWriteInput !== next.cacheWriteInput ||
+          previous.outputTokens !== next.outputTokens) {
+      throw new Error('Usage changed after final record');
+    }
+    return;
+  }
+  usageByCall.set(next.callId, { ...next });
+}
+// Scope this map to one owned run; the host records all expected call IDs.
+const finals = [...usageByCall.values()].filter(x => x.phase === 'final');
+const inputTotal = finals.reduce((sum, x) =>
+  sum + x.uncachedInput + x.cacheReadInput + x.cacheWriteInput, 0);
+const outputTotal = finals.reduce((sum, x) => sum + x.outputTokens, 0);
+// Apply dated rates separately to each unit; preserve unknown calls.
+// Do not sum partial snapshots or feed the same final twice into totals.

@@ -1,0 +1,30 @@
+flowchart LR
+    LLM["LLM (Anthropic / OpenAI)"]
+    Loop["AgentLoop"]
+    Reg["ToolRegistry"]
+    Exec["StreamingToolExecutor"]
+    Nat["Tool nativa<br/>(Read, Write, Bash...)"]
+    Mcp["Tool MCP<br/>(mcp_github_*, mcp_linear_*...)"]
+    Cli["MCPClient"]
+    Gov["MCPGovernance"]
+    Stdio["Servidor MCP<br/>(proceso hijo, stdio)"]
+    Http["Servidor MCP<br/>(remoto, HTTPS)"]
+    Inp["Servidor MCP<br/>(in-process)"]
+
+    LLM -->|tool_use| Loop
+    Loop --> Reg
+    Reg --> Exec
+    Exec --> Nat
+    Exec --> Mcp
+    Mcp --> Cli
+    Cli --> Gov
+    Gov --> Stdio
+    Gov --> Http
+    Gov --> Inp
+    Stdio -->|tool_result| Cli
+    Http -->|tool_result| Cli
+    Inp -->|tool_result| Cli
+    Cli -->|content[]| Mcp
+    Mcp -->|ToolResult| Exec
+    Exec -->|tool_result| Loop
+    Loop -->|messages| LLM

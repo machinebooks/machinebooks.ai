@@ -1,0 +1,25 @@
+// Manual-thinking request builder; capabilities are verified host input.
+function buildManualThinkingRequest(
+  input: { model: string; maxTokens: number; budgetTokens: number;
+    system?: string; messages: Anthropic.MessageParam[]; tools?: Anthropic.Tool[] },
+  capabilities: { manualThinking: boolean; maxOutputTokens: number },
+): Anthropic.MessageCreateParamsStreaming {
+  if (!capabilities.manualThinking ||
+      !Number.isInteger(capabilities.maxOutputTokens) ||
+      capabilities.maxOutputTokens < 1) {
+    throw new Error('Missing supported manual-thinking capability.');
+  }
+  if (!Number.isInteger(input.maxTokens) || input.maxTokens < 1 ||
+      input.maxTokens > capabilities.maxOutputTokens ||
+      !Number.isInteger(input.budgetTokens) || input.budgetTokens < 1024 ||
+      input.budgetTokens >= input.maxTokens) {
+    throw new Error('Invalid manual-thinking token budget.');
+  }
+  const request: Anthropic.MessageCreateParamsStreaming = {
+    model: input.model, max_tokens: input.maxTokens, system: input.system,
+    messages: input.messages, stream: true,
+    thinking: { type: 'enabled', budget_tokens: input.budgetTokens },
+  };
+  if (input.tools?.length) request.tools = input.tools;
+  return request;
+}

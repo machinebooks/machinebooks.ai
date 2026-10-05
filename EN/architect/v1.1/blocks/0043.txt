@@ -1,0 +1,18 @@
+# Illustrative my.cnf, not a universal production tuning profile.
+# Historical MySQL case: verify every option against the supported target version.
+[mysqld]
+# Example leaves headroom under the case's 4 GB container limit; measure actual use.
+innodb_buffer_pool_size=2G
+innodb_flush_log_at_trx_commit=1
+# Capacity includes all process/bind pools and administrative headroom.
+max_connections=100
+wait_timeout=600
+interactive_timeout=600
+slow_query_log=1
+slow_query_log_file=/var/log/mysql/slow.log
+long_query_time=1
+log_queries_not_using_indexes=1
+# Secure TCP transport; local Unix socket connections may also be accepted.
+require_secure_transport=ON
+local_infile=0
+general_log=0

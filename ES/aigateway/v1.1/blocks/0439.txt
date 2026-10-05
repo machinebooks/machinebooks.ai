@@ -1,0 +1,79 @@
+Operaciones
+  -  Dashboard                  /
+  -  Licencias                 /licenses
+  -  Usuarios                  /users
+  -  Equipos                   /teams
+  -  Organización              /organizations  (superOnly)
+
+Adopción
+  -  Visión general
+     -  Dashboard cohortes     /adoption
+     -  Liga (ranking)         /adoption/leaderboard
+     -  NPS · Encuestas        /adoption/nps
+  -  Catálogos
+     -  Casos de uso           /adoption/use-cases
+     -  Retos                  /adoption/challenges
+     -  Training               /adoption/training
+     -  Banners portal         /adoption/banners
+  -  Operación
+     -  Campañas               /adoption/campaigns
+     -  Importar empleados     /users/import
+
+IA & Routing
+  -  Configuración
+     -  Prompts                /ai-prompts
+     -  Purposes               /llm-config
+     -  Orquestadores          /orchestrator-configs
+  -  Modelos & Cache
+     -  Modelos LLM            /llm-models
+     -  Cooldowns              /cooldowns
+     -  Semantic Cache         /semantic-cache
+  -  Control
+     -  Rate Limits            /rate-limits
+     -  Guardrails             /guardrails
+     -  Governance             /ai-governance
+  -  Observabilidad
+     -  Quality                /ai-quality
+     -  Chat feedback          /chat-feedback
+     -  Debug                  /ai-debug
+
+Seguridad
+  -  Compliance & Audit
+     -  Firewall               /firewall
+     -  Audit Log              /audit
+     -  Classification         /security/classification
+     -  CSE & Break-Glass      /security/cse
+  -  Políticas
+     -  Políticas PII          /policies
+     -  Avisos IA (GIA)        /ai-disclosures
+     -  Hooks                  /hooks
+  -  Acceso
+     -  Enterprise             /enterprise
+
+Conocimiento
+  -  Knowledge Base            /knowledge-base
+  -  Colecciones por equipo    /team-collections
+  -  Skills                    /skills
+  -  Capacidades               /capabilities
+
+Planes & Packs
+  -  Comercial
+     -  Plantillas Propuesta      /template-assets  (superOnly)
+     -  White-label            /whitelabel
+
+Uso & Costes
+  -  Consumo                   /usage
+  -  Presupuesto & ROI         /ai-budget
+  -  Facturación Azure         /admin/spending
+  -  Caché & tokens            /cache-metrics
+
+Extensibilidad
+  -  MCPs org                  /mcps
+  -  Aplicaciones              /applications
+  -  Tokens API                /api-tokens
+
+Sistema
+  -  Health                    /health
+  -  Event webhooks            /event-webhooks
+  -  Email SMTP                /email-smtp
+  -  Guía                      /admin-help

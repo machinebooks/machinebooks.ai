@@ -1,0 +1,8 @@
+async function* forwardEvents(source, signal) {
+  for await (const event of source) {
+    signal.throwIfAborted();
+    yield event;
+  }
+}
+// The host supplies a bounded, validated source and closes its resources.
+// This forwarding generator neither authorizes nor executes tool calls.

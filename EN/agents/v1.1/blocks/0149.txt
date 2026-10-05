@@ -1,0 +1,13 @@
+stateDiagram-v2
+    [*] --> pending
+    pending --> starting: register()
+    starting --> running: update(phase=running)
+    running --> completing: update(phase=completing)
+    completing --> completed: complete()
+    running --> failed: fail()
+    starting --> failed: fail()
+    running --> cancelled: cancel()
+    pending --> cancelled: cancel()
+    completed --> [*]
+    failed --> [*]
+    cancelled --> [*]

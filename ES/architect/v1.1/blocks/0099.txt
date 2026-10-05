@@ -1,0 +1,32 @@
+# Partial pricing adapter. Quarantine and bounded safe Excel parsing are external.
+# upload_pricing_data accepts only the reviewed output of validate_excel with no errors.
+# Didactic example: patterns/automation/bots/pricing_bot.py
+
+import time
+import pandas as pd
+from pathlib import Path
+from decimal import Decimal,InvalidOperation
+from datetime import date,datetime,timezone
+from selenium.webdriver.common.by import By
+from dataclasses import dataclass, field
+
+@dataclass
+class UploadResult:
+    """Result of a bulk upload operation."""
+    total_rows: int = 0
+    successful: int = 0
+    failed: int = 0
+    errors: list[str] = field(default_factory=list)
+
+    @property
+    def success_rate(self) -> float:
+        if self.total_rows == 0:
+            return 0.0
+        return self.successful / self.total_rows
+
+class PricingBot(BaseBot):
+    """Automation bot for the corporate pricing configurator."""
+
+    REQUIRED_COLUMNS = {"service_code", "base_price", "max_discount", "validity"}
+    MAX_BATCH_SIZE = 50  # Process in batches to avoid external system timeouts
+

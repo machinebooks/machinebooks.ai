@@ -1,0 +1,12 @@
+@bp.route('/internal/<slug>', methods=['GET'])
+def internal_get_by_slug(slug):
+    if not _verify_internal_key():
+        return jsonify({'error': 'Acceso denegado'}), 401
+    ctx = resolve_internal_principal(request)
+    if ctx is None or type(ctx.user_id) is not int or ctx.user_id < 1:
+        return jsonify({'error': 'Acceso denegado'}), 403
+    agent = load_authorized_agent_definition(ctx, slug, status='active')
+    if agent is None:
+        return jsonify({'error': 'Referencia no disponible'}), 404
+    return jsonify({'success': True,
+                    'data': agent.to_dict(include_tools=True, include_guardrails=True)})

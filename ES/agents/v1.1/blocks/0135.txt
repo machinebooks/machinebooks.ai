@@ -1,0 +1,42 @@
+classDiagram
+    class Memory {
+      +name: string
+      +description: string
+      +type: MemoryType
+      +content: string
+      +filePath: string
+      +createdAt: string
+      +updatedAt: string
+    }
+    class AgentSnapshot {
+      +agentId: string
+      +agentType: string
+      +toolUsage: Array
+      +filesRead: string[]
+      +filesWritten: string[]
+      +finalMessage: string
+      +tokenCount: number
+      +durationMs: number
+      +capturedAt: number
+    }
+    class RagDocument {
+      +id: string
+      +filePath: string
+      +fileName: string
+      +format: string
+      +chunkCount: number
+      +totalTokens: number
+      +indexedAt: number
+    }
+    class RagChunk {
+      +id: string
+      +docId: string
+      +text: string
+      +startChar: number
+      +endChar: number
+      +page?: number
+    }
+    Memory <.. MemoryStore : guarda como .md
+    AgentSnapshot <.. captureAgentSnapshot : 1 JSON por agente
+    RagDocument "1" --> "*" RagChunk : se divide en
+    RagChunk <.. VectorStore : 1 vector por chunk

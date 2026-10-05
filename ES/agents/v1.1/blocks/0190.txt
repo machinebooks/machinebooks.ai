@@ -1,0 +1,11 @@
+flowchart LR
+    LLM[Provider] --> Loop[AgentLoop]
+    Loop --> Buffer[Cola con contrato de límites y cierre]
+    Buffer --> HTTP[Serializador SSE o NDJSON]
+    HTTP --> Stream[Streaming HTTP]
+    Buffer --> WS[JSON en mensajes WebSocket]
+    Buffer --> Poll[Respuesta JSON de polling]
+    Stream --> UI[Cliente validado]
+    WS --> UI
+    Poll --> UI
+    UI -. cursor con identidad y epoch .-> Poll

@@ -1,0 +1,14 @@
+flowchart LR
+    subgraph Composition[Local composition]
+        T[Tool schemas]
+        S[System prompt]
+        H[Available history]
+    end
+    subgraph Edits[Private queues]
+        P1[Pinned: retained until removed]
+        P2[Pending: delivery state to manage]
+    end
+    Composition --> M[API adapter]
+    P1 --> M
+    P2 --> M
+    M --> V[Validate contract and outgoing content]

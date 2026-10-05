@@ -1,0 +1,10 @@
+// Combined usage in a component: Zustand filters feed the React Query query
+function OperationsListView() {
+  const { activeFilters } = useOperationsUIStore();
+  const [page, setPage] = useState(1);
+
+  // When activeFilters changes, React Query automatically reloads
+  const { data, isLoading } = useOperationsList(page, activeFilters);
+
+  // ...
+}

@@ -1,0 +1,20 @@
+# Partial Microsoft Graph delta adapter. Entra ID/token/drive permissions are external.
+from urllib.parse import urlsplit
+from datetime import datetime,timezone
+import time
+
+class OneDriveSyncBot:
+    def __init__(self,security_context,http_client,get_authorized_token,
+                 authorize_link,persist_delta_batch):
+        self.context=security_context
+        self.client=http_client
+        self.get_token=get_authorized_token
+        self.authorize_link=authorize_link
+        self.persist_batch=persist_delta_batch
+
+    def _validate_link(self,url):
+        parsed=urlsplit(url)
+        if parsed.scheme!="https" or parsed.hostname!="graph.microsoft.com" or parsed.port not in (None,443) or parsed.username is not None or parsed.password is not None:
+            raise ValueError("Allowed Microsoft Graph origin required")
+        if self.authorize_link(self.context,url) is not True:
+            raise PermissionError("Registered drive/cursor scope denied")

@@ -1,0 +1,13 @@
+# Candidate connection events; aggregate rates outside Falco.
+- rule: LLM workload outbound connection
+  desc: Connection event from an inference container; not a rate or token counter
+  condition: >
+    outbound
+    and container
+    and evt.type = connect
+    and container.name startswith "inference-"
+  output: >
+    Inference connection event
+    (container=%container.name process=%proc.name destination=%fd.sip:%fd.sport)
+  priority: WARNING
+  tags: [ai_workload, network]

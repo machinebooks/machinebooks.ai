@@ -1,0 +1,95 @@
+from datetime import datetime, timedelta
+from typing import List
+import hashlib
+from sqlalchemy.orm import Session
+from models.user_memory import UserMemory, MemoryCategory
+
+MAX_MEMORIES_PER_USER = 50
+MAX_MEMORIES_FOR_CONTEXT = 10  # Inyectadas en cada llamada a Claude
+
+def get_relevant_memories(
+    db: Session,
+    user_id: int,
+    category_filter: MemoryCategory | None = None,
+    limit: int = MAX_MEMORIES_FOR_CONTEXT,
+    *, authorize_memory=None
+) -> List[UserMemory]:
+    """
+    Selecciona las memorias más relevantes para inyectar en el system prompt.
+    Usa scoring compuesto: frecuencia de uso + recencia.
+    """
+    if type(user_id) is not int or user_id < 1 or type(limit) is not int or not 1 <= limit <= MAX_MEMORIES_PER_USER:
+        raise ValueError("Invalid memory limit")
+    if category_filter is not None and not isinstance(category_filter, MemoryCategory):
+        raise ValueError("Categoría no válida")
+    if not callable(authorize_memory) or authorize_memory(user_id, "read") is not True:
+        raise PermissionError("Acceso denegado")
+    query = db.query(UserMemory).filter(
+        UserMemory.user_id == user_id,
+        UserMemory.is_active == True
+    )
+
+    if category_filter:
+        query = query.filter(UserMemory.category == category_filter.value)
+
+    memories = query.all()
+
+    # Score compuesto: normalizar use_count + decaimiento temporal
+    now = datetime.utcnow()
+    scored = []
+    for mem in memories:
+        # Frequency: linear score capped at one
+        freq_score = min(mem.use_count / 10.0, 1.0)  # normalizado 0-1
+
+        # Recency: linear decay reaching zero after thirty days
+        if mem.last_used_at:
+            days_ago = (now - mem.last_used_at).days
+            recency_score = max(0, 1.0 - (days_ago / 30.0))
+        else:
+            recency_score = 0.5  # memoria nueva, score neutro
+
+        # Score final: ponderación 60% recencia, 40% frecuencia
+        final_score = (recency_score * 0.6) + (freq_score * 0.4)
+        scored.append((mem, final_score))
+
+    # Ordenar por score descendente y tomar los top-N
+    scored.sort(key=lambda x: (x[1], x[0].id), reverse=True)
+    return [mem for mem, _ in scored[:limit]]
+
+def add_memory(
+    db: Session,
+    user_id: int,
+    category: MemoryCategory,
+    content: str,
+    *, authorize_memory=None
+) -> UserMemory | None:
+    """
+    Añade una memoria nueva. Si el usuario ya tiene el máximo,
+    elimina (soft delete) la menos relevante antes de añadir.
+    """
+    if type(user_id) is not int or user_id < 1 or not isinstance(category, MemoryCategory) or not isinstance(content, str) or not 1 <= len(content.strip()) <= 300:
+        raise ValueError("Memoria no válida")
+    if not callable(authorize_memory) or authorize_memory(user_id, "write") is not True:
+        raise PermissionError("Acceso denegado")
+    current_count = db.query(UserMemory).filter(
+        UserMemory.user_id == user_id,
+        UserMemory.is_active == True
+    ).count()
+
+    if current_count >= MAX_MEMORIES_PER_USER:
+        # Obtener la memoria menos relevante (último de la lista ordenada)
+        all_memories = get_relevant_memories(
+            db, user_id, limit=MAX_MEMORIES_PER_USER, authorize_memory=authorize_memory
+        )
+        least_relevant = all_memories[-1]
+        least_relevant.is_active = False
+
+    new_memory = UserMemory(
+        user_id=user_id,
+        category=category.value,
+        content_hash=hashlib.sha256(content.strip().encode("utf-8")).hexdigest(),
+        content=content
+    )
+    db.add(new_memory)
+    db.commit()
+    return new_memory

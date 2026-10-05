@@ -1,0 +1,6 @@
+interface CacheEdit {
+  action: 'add' | 'remove' | 'update';
+  target: 'tool' | 'skill' | 'agent';
+  name: string;
+  content?: string;
+}

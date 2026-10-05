@@ -1,0 +1,64 @@
+# policies/ai/model_approval.rego
+package ai.model_approval
+
+import future.keywords.in
+import future.keywords.if
+import future.keywords.contains
+
+valid_input if {
+    is_string(input.model_id)
+    input.model_id != ""
+    input.data_classification in {"public","internal","confidential","restricted"}
+    input.llm_provider in {"local","external"}
+    is_number(input.estimated_tokens)
+    input.estimated_tokens >= 0
+    is_array(data.approved_models)
+    count(data.approved_models) > 0
+    count([m | m := data.approved_models[_]; is_string(m); m != ""]) == count(data.approved_models)
+}
+
+deny contains msg if {
+    not valid_input
+    msg := "INCOMPLETE: missing or invalid policy input/data"
+}
+
+# Modelos aprobados para producción
+approved_models := data.approved_models
+
+# Clasificaciones de datos que permiten uso de LLM externo
+external_llm_allowed := ["public", "internal"]
+
+# Denegar uso de modelos no aprobados
+deny contains msg if {
+    model := input.model_id
+    not model in approved_models
+    msg := sprintf(
+        "Modelo '%s' no está aprobado para producción. Modelos permitidos: %v",
+        [model, approved_models]
+    )
+}
+
+# Denegar envío de datos confidenciales a LLM externo
+deny contains msg if {
+    input.data_classification == "confidential"
+    input.llm_provider == "external"
+    msg := sprintf(
+        "Datos con clasificación '%s' no pueden enviarse a LLM externo. Use un modelo local (Ollama) o anonimice los datos.",
+        [input.data_classification]
+    )
+}
+
+# Denegar envío de datos restringidos a cualquier LLM
+deny contains msg if {
+    input.data_classification == "restricted"
+    msg := "Datos con clasificación 'restricted' no pueden procesarse con LLM"
+}
+
+# Advisory: consumo de tokens elevado
+warn contains msg if {
+    input.estimated_tokens > 50000
+    msg := sprintf(
+        "Operación con %d tokens estimados. Considere prompt caching o model routing a claude-haiku-4-5.",
+        [input.estimated_tokens]
+    )
+}

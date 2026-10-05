@@ -1,0 +1,9 @@
+// Educational boundary validation; arguments remain untrusted data.
+export function parseSlashCommand(message: unknown) {
+  if (typeof message !== 'string' || message.length > 65536) return null;
+  const trimmed = message.trim();
+  if (!trimmed.startsWith('/')) return null;
+  const match = /^\/([a-zA-Z0-9_-]+)(?:\s+([\s\S]*))?$/.exec(trimmed);
+  if (!match) return null;
+  return { command: match[1].toLowerCase(), args: match[2] ?? '' };
+}

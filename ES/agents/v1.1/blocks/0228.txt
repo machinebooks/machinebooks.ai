@@ -1,0 +1,25 @@
+// Educational validation before constructing the host's definition.
+const maxTurns = Number(meta['max-turns']);
+const mode = meta['permission-mode'];
+if (!Number.isInteger(maxTurns) || maxTurns < 1 || maxTurns > 200) {
+  throw new Error('Invalid max-turns');
+}
+if (!['ask', 'edit', 'plan', 'bypass'].includes(mode)) {
+  throw new Error('Invalid permission-mode');
+}
+if (typeof meta.description !== 'string' || typeof meta.model !== 'string') {
+  throw new Error('Invalid agent metadata');
+}
+if (typeof meta['allowed-tools'] !== 'string'
+    || typeof meta['disallowed-tools'] !== 'string') {
+  throw new Error('Invalid tool catalog');
+}
+const def = {
+  description: meta.description,
+  model: meta.model,
+  maxTurns,
+  permissionMode: mode,
+  allowedTools: meta['allowed-tools'].split(',').map(x => x.trim()).filter(Boolean),
+  disallowedTools: meta['disallowed-tools'].split(',').map(x => x.trim()).filter(Boolean),
+};
+// The host separately validates names, source, scope, hooks and authorization.

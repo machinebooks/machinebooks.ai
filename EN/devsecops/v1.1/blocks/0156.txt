@@ -1,0 +1,71 @@
+import time
+from dataclasses import dataclass, field
+
+@dataclass
+class BudgetState:
+    """Accumulated consumption state of the agent."""
+    tool_calls: int = 0
+    tokens_used: int = 0
+    start_time: float = field(default_factory=time.monotonic)
+    actions_log: list = field(default_factory=list)
+
+class BudgetExceeded(Exception):
+    """The agent has exceeded its assigned budget."""
+    def __init__(self, dimension: str, limit: int, actual: int):
+        self.dimension = dimension
+        self.limit = limit
+        self.actual = actual
+        super().__init__(
+            f"Budget exceeded: {dimension} "
+            f"(limit={limit}, actual={actual})"
+        )
+
+class AgentBudgetGuard:
+    """Circuit breaker that stops the agent when limits are exceeded."""
+
+    def __init__(self, permissions: AgentPermissions):
+        self.permissions = permissions
+        self.state = BudgetState()
+
+    def check_budget(self) -> None:
+        """Verifies budget before each invocation."""
+        elapsed = time.monotonic() - self.state.start_time
+
+        if self.state.tool_calls >= self.permissions.max_total_tool_calls:
+            raise BudgetExceeded(
+                "tool_calls",
+                self.permissions.max_total_tool_calls,
+                self.state.tool_calls,
+            )
+        if self.state.tokens_used >= self.permissions.max_tokens_budget:
+            raise BudgetExceeded(
+                "tokens",
+                self.permissions.max_tokens_budget,
+                self.state.tokens_used,
+            )
+        if elapsed >= self.permissions.max_execution_seconds:
+            raise BudgetExceeded(
+                "execution_seconds",
+                self.permissions.max_execution_seconds,
+                int(elapsed),
+            )
+
+    def record_call(self, tool_name: str, tokens: int, args: dict):
+        """Records each invocation for auditing and control."""
+        if type(tokens) is not int or tokens < 0:
+            raise ValueError("INCOMPLETE: invalid token usage")
+        self.state.tool_calls += 1
+        self.state.tokens_used += tokens
+        self.state.actions_log.append({
+            "tool": tool_name,
+            "tokens": tokens,
+            "args_summary": _sanitize_args(args),
+            "timestamp": time.monotonic(),
+            "cumulative_calls": self.state.tool_calls,
+        })
+
+def _sanitize_args(args: dict) -> dict:
+    if not isinstance(args,dict):
+        raise ValueError("INCOMPLETE: invalid argument record")
+    # All values are omitted; key allowlists and protected evidence belong to the host.
+    return {str(key):"[REDACTED]" for key in args}

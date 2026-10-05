@@ -1,0 +1,69 @@
+// useOperations.ts — React Query hooks for the operations module
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import axiosClient from '../api/axiosClient';
+import toast from 'react-hot-toast';
+import type { Operation, PaginatedResponse } from '../types/api/models';
+
+// Centralized query keys: facilitate coordinated invalidation
+export const operationKeys = {
+  all: ['operations'] as const,
+  lists: () => [...operationKeys.all, 'list'] as const,
+  list: (filters: object) => [...operationKeys.lists(), filters] as const,
+  details: () => [...operationKeys.all, 'detail'] as const,
+  detail: (id: number) => [...operationKeys.details(), id] as const,
+};
+
+// Hook for paginated operations list
+export function useOperationsList(page: number, filters: object = {}) {
+  return useQuery<PaginatedResponse<Operation>>({
+    queryKey: operationKeys.list({ page, ...filters }),
+    queryFn: () =>
+      axiosClient
+        .get('/operations', { params: { page, ...filters } })
+        .then((r) => r.data),
+    staleTime: 30_000,
+  });
+}
+
+// Hook for operation detail
+export function useOperation(id: number) {
+  return useQuery<Operation>({
+    queryKey: operationKeys.detail(id),
+    queryFn: () =>
+      axiosClient.get(`/operations/${id}`).then((r) => r.data),
+    enabled: !!id,  // Do not execute if id is 0 or undefined
+  });
+}
+
+// Mutation for updating an operation's status
+export function useUpdateOperationStatus() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      id,
+      status,
+    }: {
+      id: number;
+      status: string;
+    }) =>
+      axiosClient
+        .patch(`/operations/${id}/status`, { status })
+        .then((r) => r.data),
+
+    onSuccess: (updatedOperation: Operation) => {
+      // Optimistic cache update: update the detail
+      // and mark the list as stale so it reloads
+      queryClient.setQueryData(
+        operationKeys.detail(updatedOperation.id),
+        updatedOperation
+      );
+      queryClient.invalidateQueries({ queryKey: operationKeys.lists() });
+      toast.success('Status updated successfully.');
+    },
+
+    onError: () => {
+      toast.error('Could not update status. Please try again.');
+    },
+  });
+}

@@ -1,0 +1,18 @@
+// Educational pseudocode; trustedOwner and response routing are host-owned.
+export function requestElicitation(req: ElicitationRequest, trustedOwner: HostOwner): Promise<ElicitationResponse> {
+  const timeoutMs = req.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+  const key = JSON.stringify([trustedOwner.sessionId, trustedOwner.serverId, req.id]);
+  if (!Number.isInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 300000 || pending.has(key)) {
+    return Promise.reject(new Error('Invalid or duplicate elicitation'));
+  }
+  return new Promise((resolve, reject) => {
+    const timeoutHandle = setTimeout(() => {
+      pending.delete(key);
+      reject(new Error('Elicitation timed out'));
+    }, timeoutMs);
+    pending.set(key, { resolve, reject, timeoutHandle, owner: trustedOwner });
+    sendToOwningWindow(trustedOwner.windowId, 'mcp:elicitation:request', req);
+    // Response handler checks owner/key/schema and clears timer and entry.
+    // Transport errors and cancellation also require that cleanup.
+  });
+}

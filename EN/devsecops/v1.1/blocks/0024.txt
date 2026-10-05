@@ -1,0 +1,11 @@
+rules:
+  - id: xss-react-dangerous-html
+    pattern: |
+      <$COMPONENT dangerouslySetInnerHTML={{__html: $EXPR}} />
+    message: "Direct HTML candidate; review provenance and sanitizer. This rule does not verify XSS or absence of sanitization."
+    severity: WARNING
+    languages: [typescript]
+    metadata:
+      cwe: ["CWE-79"]
+      owasp: ["A03:2021"]
+      confidence: LOW

@@ -1,0 +1,19 @@
+this.ws.on('open', () => {
+  if (this.opts.preferWs) {
+    this.mode = 'ws';
+    this.stopPolling();
+    this.emit('mode', 'ws');
+  }
+});
+this.ws.on('close', () => {
+  if (!this.closed) {
+    this.mode = 'http';
+    this.startPolling();
+    this.emit('mode', 'http');
+  }
+});
+this.ws.on('giveup', () => {
+  this.mode = 'http';
+  this.startPolling();
+  this.emit('mode', 'http');
+});

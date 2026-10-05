@@ -1,0 +1,8 @@
+policy = generate_rego_policy(
+    requirement=(
+        "Deployments must have resource limits defined "
+        "for CPU and memory. Block if limits are missing. "
+        "Warn if memory limits exceed 2Gi."
+    ),
+    domain="kubernetes"
+)

@@ -1,0 +1,117 @@
+# scripts/sbom_risk_report.py
+"""
+Partial SBOM summary and risk-draft proposal.
+Missing licenses, maintenance and relationships remain unknown.
+"""
+import json
+import sys
+import anthropic
+
+def summarize_sbom(sbom: dict) -> dict:
+    components=sbom.get("components") if isinstance(sbom,dict) else None
+    if not isinstance(components,list):
+        raise ValueError("INCOMPLETE: missing component coverage")
+    licenses,types={},{}
+    missing=0
+    for component in components:
+        if not isinstance(component,dict) or not isinstance(component.get("name"),str):
+            raise ValueError("INCOMPLETE: invalid component")
+        entries=component.get("licenses",[])
+        if not isinstance(entries,list):
+            raise ValueError("INCOMPLETE: invalid licenses")
+        if not entries: missing+=1
+        for entry in entries:
+            license=entry.get("license") if isinstance(entry,dict) else None
+            expression=entry.get("expression") if isinstance(entry,dict) else None
+            if license is not None and not isinstance(license,dict):
+                raise ValueError("INCOMPLETE: invalid license record")
+            identifier=(license.get("id") or license.get("name")) if license else expression
+            if not isinstance(identifier,str) or not identifier:
+                raise ValueError("INCOMPLETE: missing license identifier")
+            licenses[identifier]=licenses.get(identifier,0)+1
+        kind=component.get("type","unknown")
+        if not isinstance(kind,str):raise ValueError("INCOMPLETE: invalid component type")
+        types[kind]=types.get(kind,0)+1
+    return {"total_components":len(components),"license_distribution":licenses,
+            "ecosystem_distribution":types,"components_without_license":missing}
+
+
+def generate_risk_report(
+    sbom_path: str, grype_path: str
+) -> str:
+    """Proposes a partial review draft from supplied attributes."""
+    with open(sbom_path) as f:
+        sbom = json.load(f)
+    with open(grype_path) as f:
+        vulns = json.load(f)
+
+    format_top_vulns(vulns)
+    summary = summarize_sbom(sbom)
+    vuln_count = len(vulns.get("matches", []))
+    critical = sum(
+        1 for m in vulns["matches"]
+        if m["vulnerability"]["severity"] == "Critical"
+    )
+    high = sum(
+        1 for m in vulns["matches"]
+        if m["vulnerability"]["severity"] == "High"
+    )
+
+    client = anthropic.Anthropic()
+
+    prompt = f"""
+## Datos del SBOM
+
+- Total de componentes: {summary["total_components"]}
+- Distribución de licencias: {json.dumps(summary["license_distribution"])}
+- Componentes sin licencia declarada: {summary["components_without_license"]}
+- Distribución por ecosistema: {json.dumps(summary["ecosystem_distribution"])}
+
+## Datos de vulnerabilidades (Grype)
+
+- Total de vulnerabilidades: {vuln_count}
+- Critical: {critical}
+- High: {high}
+
+## Vulnerabilidades detalladas (top 10 por severidad)
+
+{format_top_vulns(vulns, limit=10)}
+
+## Solicitud
+
+Genera un informe ejecutivo de riesgo de composición que incluya:
+1. **Resumen ejecutivo** (3-5 líneas para el CISO)
+2. **Riesgo de vulnerabilidades**: hallazgos prioritarios con recomendación
+3. **Licencias**: atributos declarados y dudas pendientes de revisión jurídica; no inferir compatibilidad
+4. **Datos ausentes**: mantenimiento no suministrado y licencias ausentes; no inventar abandono
+5. **Acciones recomendadas**: ordenadas por impacto y urgencia
+"""
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        system="""Eres un analista de seguridad que genera informes de riesgo
+de composición de software. Tu audiencia es el security lead y el CISO.
+Sé conciso, cuantitativo y accionable. No incluyas recomendaciones
+genéricas. Cada recomendación debe referirse a un hallazgo concreto
+del SBOM o de las vulnerabilidades proporcionadas.""",
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    return "REVIEW: partial unverified draft; human decision pending\n" + message.content[0].text
+def format_top_vulns(vulns: dict, limit: int = 10) -> str:
+    matches=vulns.get("matches") if isinstance(vulns,dict) else None
+    ranks={"Critical":0,"High":1,"Medium":2,"Low":3,"Negligible":4,"Unknown":5}
+    if not isinstance(matches,list) or type(limit) is not int or limit<=0:
+        raise ValueError("INCOMPLETE: invalid match coverage")
+    for match in matches:
+        v=match.get("vulnerability") if isinstance(match,dict) else None
+        a=match.get("artifact") if isinstance(match,dict) else None
+        if not isinstance(v,dict) or not isinstance(a,dict) or v.get("severity") not in ranks or not isinstance(v.get("id"),str) or not isinstance(a.get("name"),str):
+            raise ValueError("INCOMPLETE: invalid advisory record")
+    return json.dumps(sorted(matches,key=lambda m:ranks[m["vulnerability"]["severity"]])[:limit],ensure_ascii=False)
+
+
+if __name__ == "__main__":
+    report = generate_risk_report(sys.argv[1], sys.argv[2])
+    print(report)

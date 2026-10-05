@@ -1,0 +1,80 @@
+import meilisearch
+from dataclasses import asdict
+
+MEILISEARCH_URL = "http://meilisearch:7700"  # Internal container URL
+MEILISEARCH_KEY = "<YOUR_MEILISEARCH_MASTER_KEY>"
+OPPORTUNITIES_INDEX = "opportunities"
+
+def configure_opportunities_index(client: meilisearch.Client):
+    """
+    Configures the index with correct attributes for search,
+    filtering, and sorting. Run once on initialization.
+    """
+    index = client.index(OPPORTUNITIES_INDEX)
+
+    # Attributes on which text search will be performed
+    index.update_searchable_attributes([
+        "title",
+        "description",
+        "organization",
+        "category",
+    ])
+
+    # Attributes that can be used in filters (WHERE equivalent)
+    index.update_filterable_attributes([
+        "category",
+        "contract_type",
+        "status",
+        "source",
+        "cpv_codes",
+        "budget_min",
+        "budget_max",
+        "publication_date",
+        "deadline",
+    ])
+
+    # Attributes that can be used in ORDER BY
+    index.update_sortable_attributes([
+        "publication_date",
+        "budget_max",
+        "relevance_score",
+    ])
+
+    # Custom ranking: first by textual relevance,
+    # then by precomputed affinity score
+    index.update_ranking_rules([
+        "words",        # Word matching
+        "typo",         # Typo tolerance
+        "proximity",    # Term proximity in document
+        "attribute",    # Weight of field where match appears
+        "sort",         # User-explicit sorting
+        "exactness",    # Exact vs partial match
+    ])
+
+    # Fields that appear in the response but not in search
+    # — improves performance by excluding long texts from the search index
+    index.update_displayed_attributes([
+        "id", "title", "description", "organization",
+        "category", "contract_type", "budget_max",
+        "publication_date", "deadline", "relevance_score",
+        "source", "status",
+    ])
+
+    print(f"Index '{OPPORTUNITIES_INDEX}' configured successfully.")
+
+
+def index_opportunities(opportunities: list, client: meilisearch.Client):
+    """
+    Indexes a batch of normalized opportunities.
+    Meilisearch processes indexing asynchronously;
+    the method returns a task that can be monitored.
+    """
+    index = client.index(OPPORTUNITIES_INDEX)
+    documents = [asdict(op) for op in opportunities]
+
+    # Batches of 1000 documents — official documentation recommendation
+    for i in range(0, len(documents), 1000):
+        batch = documents[i:i+1000]
+        task = index.add_documents(batch)
+        # Task ID allows verifying indexing status
+        print(f"Batch {i//1000 + 1}: task {task.task_uid}")

@@ -1,0 +1,25 @@
+sequenceDiagram
+    autonumber
+    participant L as AgentLoop
+    participant S as Stream (provider)
+    participant E as StreamingToolExecutor
+    participant O as ToolOrchestrator
+    participant H as Handler (tool)
+    L->>S: streamChatEvents()
+    S-->>L: delta tool_call_delta #1 (id, name)
+    S-->>L: delta tool_call_delta #1 (partial arguments)
+    S-->>L: tool_call_complete #1 (explicit event)
+    L->>L: validate schema, scope, and permission #1
+    L->>E: addTool(block #1)
+    E->>O: executeTool(block #1)
+    O->>H: handler.execute(input, runContext)
+    S-->>L: tool_call_complete #2 (explicit event)
+    L->>L: validate schema, scope, and permission #2
+    L->>E: addTool(block #2)
+    E->>O: executeTool(block #2) (parallel if safe)
+    H-->>O: ToolResult
+    O-->>E: ToolResult
+    E-->>L: nextUpdate() = {type: 'result'}
+    S-->>L: stream done
+    L->>E: closeInput()
+    E-->>L: terminal (all yielded)

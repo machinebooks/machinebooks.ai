@@ -1,0 +1,85 @@
+import anthropic
+import json
+from datetime import datetime
+
+client = anthropic.Anthropic()
+
+RISK_ASSESSMENT_PROMPT = """You are a senior security analyst evaluating security
+exception requests in a DevSecOps pipeline.
+
+Analyze the following request and generate a structured report.
+
+## Finding
+- ID: {finding_id}
+- Source: {finding_source}
+- Severity: {severity}
+- CVE: {cve_id}
+- Affected component: {affected_component}
+- Service: {service_name}
+
+## Service context
+{service_context}
+
+## Requester justification
+- Business: {business_justification}
+- Technical: {technical_justification}
+
+## Analysis instructions
+1. Evaluate real exploitability considering existing controls.
+2. Assign a risk_score from 0 to 100 as proposed priority; it proves neither absence of risk nor imminent exploitation.
+3. Suggest 1 to 3 specific and viable compensating controls.
+4. Recommend: approve, approve with controls, or deny.
+5. If recommending approval, suggest a maximum exception period in days.
+
+Respond in JSON with this structure:
+{{
+  "risk_score": <int>,
+  "exploitability_analysis": "<text>",
+  "compensating_controls": ["<control1>", "<control2>"],
+  "recommendation": "approve|approve_with_controls|deny",
+  "suggested_expiry_days": <int>,
+  "reasoning": "<text>"
+}}"""
+
+
+def assess_exception_risk(
+    exception_data: dict,
+    service_context: str
+) -> dict:
+    """Evaluates an exception request's risk with Claude."""
+
+    prompt = RISK_ASSESSMENT_PROMPT.format(
+        **exception_data,
+        service_context=service_context
+    )
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=2048,
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    # Extract JSON from response
+    response_text = message.content[0].text
+    assessment = json.loads(response_text)
+
+    if (not isinstance(assessment,dict) or type(assessment.get("risk_score")) not in (int,float)
+            or not 0 <= assessment["risk_score"] <= 100
+            or assessment.get("recommendation") not in {"approve","approve_with_controls","deny"}
+            or type(assessment.get("suggested_expiry_days")) is not int or not 1 <= assessment["suggested_expiry_days"] <= 90
+            or not isinstance(assessment.get("compensating_controls"),list)
+            or not 1 <= len(assessment["compensating_controls"]) <= 3
+            or any(not isinstance(v,str) or not v.strip() for v in assessment["compensating_controls"])
+            or any(not isinstance(assessment.get(k),str) or not assessment[k].strip() for k in ("exploitability_analysis","reasoning"))):
+        raise ValueError("INCOMPLETE: invalid exception proposal")
+    return {
+        "status": "REVIEW",
+        "coverage": "partial",
+        "risk_score": assessment["risk_score"],
+        "exploitability_analysis": assessment["exploitability_analysis"],
+        "compensating_controls": assessment["compensating_controls"],
+        "recommendation": assessment["recommendation"],
+        "suggested_expiry_days": assessment["suggested_expiry_days"],
+        "reasoning": assessment["reasoning"],
+        "tokens_used": message.usage.input_tokens + message.usage.output_tokens
+    }

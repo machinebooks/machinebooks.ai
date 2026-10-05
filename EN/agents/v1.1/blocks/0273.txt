@@ -1,0 +1,4 @@
+// Workspace identity may differ across users, projects and hosts.
+const workspaceRoot = path.resolve(os.homedir(), 'sylvarsec-workspace');
+const systemPrompt = `${BLOCK_1}\nWorkspace: ${workspaceRoot}\n${BLOCK_2}`;
+// Preserve required trusted scope; place variable data per API contract.

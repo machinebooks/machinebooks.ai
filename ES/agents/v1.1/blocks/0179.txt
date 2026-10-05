@@ -1,0 +1,9 @@
+stateDiagram-v2
+    [*] --> Normal
+    Normal --> PlanMode: EnterPlanModeV2
+    PlanMode --> PlanMode: append PlanStep
+    PlanMode --> PlanMode: markStepStatus
+    PlanMode --> Verifying: ExitPlanModeV2
+    Verifying --> Normal: verification ok
+    Verifying --> Normal: verification mismatch (log)
+    Normal --> [*]: SessionStop

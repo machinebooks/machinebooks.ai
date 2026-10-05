@@ -1,0 +1,6 @@
+// Educational host contract: reserve the session before launching.
+const sessionName = crypto.randomUUID();
+await vmRunner.reserveSession(sessionName);
+const vm = new VmSpawnProvider(sessionName);
+// The host has already authorized this exact workspace and rw mode.
+const workspaceMount = vm.mountWorkspace('D:\\projects\\app');

@@ -1,0 +1,27 @@
+security-policies/
+├── policies/
+│   ├── kubernetes/
+│   │   ├── container_security.rego
+│   │   ├── network_policy.rego
+│   │   └── rbac.rego
+│   ├── pipeline/
+│   │   ├── deployment_gates.rego
+│   │   └── image_approval.rego
+│   └── ai/
+│       ├── model_approval.rego
+│       └── data_classification.rego
+├── tests/
+│   ├── kubernetes/
+│   │   ├── container_security_test.rego
+│   │   └── network_policy_test.rego
+│   ├── pipeline/
+│   │   └── deployment_gates_test.rego
+│   └── ai/
+│       └── model_approval_test.rego
+├── data/
+│   ├── approved_images.json
+│   ├── approved_models.json
+│   └── network_ranges.json
+└── .github/
+    └── workflows/
+        └── policy-ci.yml

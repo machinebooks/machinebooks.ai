@@ -1,0 +1,15 @@
+# Flask adapter to the Chapter 4 request core. Dependencies are application-owned.
+from flask import jsonify,g
+
+@documents_bp.route("/documents/<int:doc_id>/analyze",methods=["POST"])
+@platform_guard
+@require_permission("documents","analyze")
+def launch_analysis(doc_id):
+    context={"user_id":g.current_user_id,"app_code":g.app_code}
+    # Resolver adds current tenant/object scope; client IDs are never authorization.
+    context=resolve_document_job_context(context,doc_id)
+    result,status=request_document_analysis(doc_id,context,
+                 authorize_document,persist_job_with_outbox)
+    return jsonify(result),status
+# Publisher drains the committed outbox. It does not publish between two commits.
+# Polling endpoint must authorize the persisted job and current document access.

@@ -1,0 +1,6 @@
+# nginx.conf — timeouts anti-slowloris
+client_body_timeout     10s;
+client_header_timeout   10s;
+send_timeout            30s;
+keepalive_timeout       65s;
+keepalive_requests      1000;

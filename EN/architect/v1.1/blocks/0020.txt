@@ -1,0 +1,65 @@
+# Motor de ejecución: bucle principal del DAG
+# Fichero: ai_service/services/team_executor.py
+
+class TeamExecutor:
+    """Ejecuta un DAG de tareas en orden topológico, lanzando
+    tareas independientes en paralelo con asyncio.gather."""
+
+    async def execute_team(self, config, team_db_id=None):
+        """Ejecuta todas las tareas respetando dependencias.
+        Genera eventos SSE para progreso en tiempo real."""
+        from graphlib import TopologicalSorter, CycleError
+        ids = [task.task_id for task in config.tasks]
+        if any(not isinstance(task_id, str) or not task_id for task_id in ids) or len(ids) != len(set(ids)):
+            raise ValueError("IDs de tarea no válidos")
+        graph = {task.task_id: set(task.depends_on) for task in config.tasks}
+        if any(dependency not in graph for dependencies in graph.values() for dependency in dependencies):
+            raise ValueError("Dependencia desconocida")
+        try:
+            tuple(TopologicalSorter(graph).static_order())
+        except CycleError:
+            raise ValueError("El grafo contiene un ciclo") from None
+        task_states = {t.task_id: TaskState(config=t) for t in config.tasks}
+        completed, failed = set(), set()
+        total = len(config.tasks)
+
+        yield _sse("team_start", team_name=config.team_name, total_tasks=total)
+
+        while len(completed) + len(failed) < total:
+            # Encontrar tareas cuyas dependencias están resueltas
+            ready = self._find_ready_tasks(
+                config.tasks, completed, failed, task_states
+            )
+
+            if not ready:
+                # Deadlock: dependencias irresolubles o circulares
+                for tid in self._remaining(config.tasks, completed, failed):
+                    task_states[tid].status = "failed"
+                    failed.add(tid)
+                break
+
+            # Lanzar todas las tareas listas en paralelo
+            for t in ready:
+                task_states[t.task_id].status = "running"
+                yield _sse("task_start", task_id=t.task_id, title=t.title)
+
+            results = await asyncio.gather(
+                *[self._execute_task_safe(t, task_states, config)
+                  for t in ready],
+                return_exceptions=True,
+            )
+
+            for task_cfg, result in zip(ready, results):
+                # Clasificar resultado y actualizar estado
+                if isinstance(result, BaseException) or not isinstance(result, dict) or result.get("success") is not True or "output" not in result:
+                    task_states[task_cfg.task_id].status = "failed"
+                    failed.add(task_cfg.task_id)
+                else:
+                    task_states[task_cfg.task_id].status = "completed"
+                    task_states[task_cfg.task_id].output = result["output"]
+                    completed.add(task_cfg.task_id)
+
+                yield _sse("team_progress", completed=len(completed),
+                           failed=len(failed), total=total)
+
+        yield _sse("team_complete", summary=self._build_summary(task_states))

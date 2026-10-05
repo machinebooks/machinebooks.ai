@@ -1,0 +1,59 @@
+from sqlalchemy import Column, Integer, String, JSON, Boolean, Enum, DateTime
+from sqlalchemy.orm import relationship
+import enum
+
+class AgentType(enum.Enum):
+    ASSISTANT = "assistant"
+    AUTONOMOUS = "autonomous"
+    WORKFLOW = "workflow"
+    SPECIALIZED = "specialized"
+
+class ExecutionMode(enum.Enum):
+    CHAT_RAG = "chat_rag"         # Informational queries with RAG
+    AGENT_TOOLS = "agent_tools"   # Execution with tools
+    ORCHESTRATE = "orchestrate"   # Predefined workflow activation
+
+class AgentDefinition(Base):
+    __tablename__ = "agent_definitions"
+
+    id = Column(Integer, primary_key=True)
+    slug = Column(String(100), unique=True, nullable=False)  # Auto-generated from name
+    name = Column(String(200), nullable=False)
+    agent_type = Column(Enum(AgentType), nullable=False)
+    execution_mode = Column(Enum(ExecutionMode), nullable=False)
+
+    # Model configuration
+    model_id = Column(String(100), default="claude-sonnet-4-6")
+    temperature = Column(Float, default=0.3)
+    max_tokens = Column(Integer, default=4096)
+
+    # System prompt and behavior
+    system_prompt = Column(Text)
+    intent_keywords = Column(JSON)  # For auto-routing from the classifier
+
+    # Agent lifecycle state
+    status = Column(Enum("draft", "active", "archived"), default="draft")
+    is_template = Column(Boolean, default=False)
+
+    # M2M relationship with tools
+    tool_assignments = relationship(
+        "AgentToolAssignment",
+        back_populates="agent",
+        order_by="AgentToolAssignment.execution_order"
+    )
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, onupdate=datetime.utcnow)
+
+class AgentToolAssignment(Base):
+    """M2M assignment of tools to agents with order and specific configuration."""
+    __tablename__ = "agent_tool_assignments"
+
+    id = Column(Integer, primary_key=True)
+    agent_id = Column(Integer, ForeignKey("agent_definitions.id"))
+    tool_name = Column(String(100))       # Name in the tool_registry
+    execution_order = Column(Integer)     # Presentation order to Claude
+    tool_config = Column(JSON)            # Specific configuration for this agent
+    is_required = Column(Boolean, default=False)
+
+    agent = relationship("AgentDefinition", back_populates="tool_assignments")

@@ -1,0 +1,26 @@
+docs/
+├── architecture/         ← System architecture guides
+│   ├── overview.md
+│   ├── tech-stack.md
+│   ├── decisions-adr/    ← Architecture decision records
+│   └── integrations.md
+├── api/                  ← Endpoint documentation by module
+│   ├── authentication.md
+│   ├── operations.md
+│   └── ai-copilot.md
+├── manuals/              ← User manuals by application and module
+│   ├── main-app/
+│   ├── analytics-app/
+│   └── admin-app/
+├── operations/           ← Runbooks for operators and administrators
+│   ├── deployment.md
+│   ├── monitoring.md
+│   └── incidents.md
+├── development/          ← Guides for developers working on the project
+│   ├── environment-setup.md
+│   ├── conventions.md
+│   └── workflow.md
+└── compliance/           ← Regulatory compliance documentation
+    ├── gdpr.md
+    ├── ai-governance-framework.md
+    └── audit.md

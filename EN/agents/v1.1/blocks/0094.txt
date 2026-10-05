@@ -1,0 +1,7 @@
+// Educational variant: command, arguments and environment come from trusted host configuration.
+const child = spawn(validatedExecutablePath, validatedArgs, {
+  stdio: ['pipe', 'pipe', 'pipe'],
+  env: allowedEnvironment,
+  shell: false,
+});
+// The host still enforces lifecycle, resource limits and filesystem/network scope.

@@ -1,0 +1,63 @@
+import anthropic
+import json
+from dataclasses import dataclass
+
+@dataclass
+class SecretFinding:
+    file: str
+    line: int
+    pattern: str
+    confidence: str  # "high", "medium", "low"
+    reason: str
+    recommendation: str
+
+    status: str = "REVIEW"
+    coverage: str = "partial"
+
+    def __post_init__(self):
+        if (not isinstance(self.file,str) or not self.file or type(self.line) is not int
+                or self.line < 1 or self.confidence not in {"high","medium","low"}
+                or not all(isinstance(v,str) and v for v in (self.pattern,self.reason,self.recommendation))):
+            raise ValueError("INCOMPLETE: invalid secret proposal")
+
+def analyze_diff_for_secrets(diff_content: str) -> list[SecretFinding]:
+    """Analyze a Git diff looking for non-obvious secrets with Claude."""
+    client = anthropic.Anthropic()
+
+    system_prompt = """You are a security analyst specializing in detecting
+leaked secrets in source code. Your task is to analyze Git diffs
+and detect secrets that regex-based tools would NOT detect.
+
+Look specifically for:
+1. Passwords as string literals without an identifiable prefix
+2. Tokens in non-standard proprietary formats
+3. Encryption keys encoded in base64 or hexadecimal
+4. Credentials embedded in URLs not following standard connection patterns
+5. High-entropy values assigned to variables whose name suggests a secret
+6. Comments containing "temporary" test credentials
+
+Do NOT report:
+- Git commit hashes
+- Non-sensitive identification UUIDs
+- Values that are clearly placeholders (<set-in-vault>, xxxx, example)
+- File checksums (SHA-256 of dependencies)
+
+For each finding, respond in JSON with: file, line, pattern,
+confidence (high/medium/low), reason, recommendation."""
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        system=system_prompt,
+        messages=[{
+            "role": "user",
+            "content": f"Analyze this diff for secrets:\n\n{diff_content}"
+        }]
+    )
+
+    # Parse the model's JSON response
+    findings = json.loads(message.content[0].text)
+    if not isinstance(findings,list) or any(not isinstance(f,dict) for f in findings):
+        raise ValueError("INCOMPLETE: invalid secret proposal list")
+    # Locations still require checking against the actual diff by the host.
+    return [SecretFinding(**f) for f in findings]

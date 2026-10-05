@@ -1,0 +1,26 @@
+flowchart LR
+    subgraph WHILE["Bucle ReAct ilustrativo"]
+        direction TB
+        wu[user: lee, cuenta y escribe] --> wloop["while true<br/>llama al LLM"]
+        wloop --> wq{tool_use?}
+        wq -- "sí (Read, Bash, Write)" --> wexec[validar, autorizar y ejecutar tool] --> wloop
+        wq -- "no" --> wend([return texto final])
+    end
+
+    subgraph GRAPH["Grafo fijo ilustrativo"]
+        direction TB
+        gu[user input] --> gplan[node: plan<br/>LLM = plan steps]
+        gplan --> gread[node: read_file<br/>tool = Read]
+        gread --> gcount[node: count_empty<br/>LLM = analizar CSV]
+        gcount --> gwrite[node: write_report<br/>tool = Write]
+        gwrite --> gend([return texto final])
+        gplan -.-> gerror[node: error_recovery]
+        gread -.-> gerror
+        gcount -.-> gerror
+        gwrite -.-> gerror
+    end
+
+    classDef w fill:#142038,stroke:#7dd8e8,color:#f5efe0
+    classDef g fill:#142038,stroke:#ffb347,color:#f5efe0
+    class wu,wloop,wq,wexec,wend w
+    class gu,gplan,gread,gcount,gwrite,gend,gerror g

@@ -1,0 +1,10 @@
+# gateway/app/services/prompt_service.py:render_template (sintético)
+import re
+
+TEMPLATE_RE = re.compile(r"\{\{\s*([\w.]+)\s*\}\}")
+
+def render_template(content: str, variables: dict[str, str]) -> str:
+    """Interpola variables {{name}} en el prompt. No elimina no-resueltas."""
+    return TEMPLATE_RE.sub(
+        lambda m: variables.get(m.group(1), m.group(0)), content
+    )

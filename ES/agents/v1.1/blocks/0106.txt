@@ -1,0 +1,15 @@
+async callTool(serverName, toolName, args) {
+  // 1. Historical name check; effective host permission is required separately.
+  const auth = MCPGovernance.authorize(serverName, toolName);
+  if (!auth.allowed) throw new Error(`MCP governance: ${auth.reason}`);
+
+  // 2. Per-server quota check in the case.
+  const rate = MCPGovernance.checkRateLimit(serverName);
+  if (!rate.allowed) throw new Error(`rate limit excedido para "${serverName}"`);
+
+  // 3. Count the call; a concurrent implementation needs atomic reservation.
+  MCPGovernance.recordCall(serverName, toolName);
+
+  // 4. Transport call; framing, schema and ownership checks are omitted.
+  return await this.sendRequest(serverName, 'tools/call', { name: toolName, arguments: args });
+}

@@ -1,0 +1,35 @@
+from illustrative_host import Agent, tool
+
+@tool
+def classify_leaked_secret(
+    secret_type: str,
+    service: str,
+    environment: str
+) -> dict:
+    """Classify a leaked secret by impact and rotation urgency."""
+    # Impact matrix by type and environment
+    impact_matrix = {
+        ("aws-access-key", "production"): "critical",
+        ("aws-access-key", "staging"): "high",
+        ("database-password", "production"): "critical",
+        ("database-password", "development"): "medium",
+        ("api-key-readonly", "production"): "medium",
+        ("api-key-readonly", "development"): "low",
+    }
+    impact = impact_matrix.get(
+        (secret_type, environment), "high"  # Default to high
+    )
+    if any(not isinstance(value,str) or not value.strip() for value in (secret_type,service,environment)):
+        raise ValueError("INCOMPLETE: invalid secret context")
+    return {
+        "status":"REVIEW","coverage":"partial",
+        "impact": impact,
+        "rotate_within": {
+            "critical": "1 hour",
+            "high": "4 hours",
+            "medium": "24 hours",
+            "low": "7 days",
+        }[impact],
+        "notify": ["security-team"] if impact in ("critical", "high")
+                  else ["dev-team"],
+    }

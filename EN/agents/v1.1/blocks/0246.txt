@@ -1,0 +1,58 @@
+// Educational component; recognition availability and egress are host-specific.
+import { useEffect, useRef, useState } from 'react';
+
+const VoiceInputButton = ({ onTranscript, onInterim }) => {
+  const [listening, setListening] = useState(false);
+  const [starting, setStarting] = useState(false);
+  const [supported, setSupported] = useState(true);
+  const [error, setError] = useState('');
+  const recognitionRef = useRef(null);
+  useEffect(() => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { setSupported(false); return; }
+    const recognition = new SR();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'es-ES';
+    recognition.onstart = () => { setStarting(false); setListening(true); };
+    recognition.onend = () => {
+      setStarting(false); setListening(false); onInterim('');
+    };
+    recognition.onresult = (event) => {
+      let interim = '', final = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const result = event.results[i];
+        if (result.isFinal) final += result[0].transcript;
+        else interim += result[0].transcript;
+      }
+      if (final.trim()) onTranscript(final.trim());
+      onInterim(interim);
+    };
+    recognition.onerror = () => {
+      setStarting(false); setListening(false);
+      setError('The microphone could not be used. You can type your message.');
+    };
+    recognitionRef.current = recognition;
+    return () => {
+      recognitionRef.current = null;
+      recognition.onstart = recognition.onend = recognition.onresult = recognition.onerror = null;
+      try { recognition.abort(); } catch {}
+    };
+  }, [onTranscript, onInterim]);
+  const toggle = () => {
+    const recognition = recognitionRef.current;
+    if (!recognition) return;
+    setError('');
+    try {
+      if (listening) recognition.stop();
+      else { setStarting(true); recognition.start(); }
+    } catch { setStarting(false); setError('Dictation could not start.'); }
+  };
+  if (!supported) return <span>Dictation unavailable. You can type.</span>;
+  return <>
+    <button type="button" disabled={starting} aria-pressed={listening} onClick={toggle}>
+      {listening ? 'Stop dictation' : starting ? 'Starting dictation' : 'Dictate message'}
+    </button>
+    <span role="status">{error}</span>
+  </>;
+};

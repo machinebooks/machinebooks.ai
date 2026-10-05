@@ -1,0 +1,107 @@
+# maturity_model.py — DevSecOps maturity model in 6 domains x 5 levels
+from dataclasses import dataclass, field
+from enum import IntEnum
+from typing import Optional
+
+class Level(IntEnum):
+    INEXISTENT = 0
+    REACTIVE = 1
+    REPEATABLE = 2
+    DEFINED = 3
+    OPTIMIZED = 4
+
+@dataclass
+class Criterion:
+    id: str                    # E.g.: "PS-2.3" (Pipeline Security, level 2, criterion 3)
+    domain: str                # Domain code
+    level: Level               # Level it belongs to
+    description: str           # Binary question
+    verification: str          # How it's verified (expected evidence)
+    automated: bool = False    # Can it be verified automatically?
+
+@dataclass
+class DomainAssessment:
+    domain: str
+    achieved_level: Level
+    criteria_met: dict[str, bool] = field(default_factory=dict)
+    evidence: dict[str, str] = field(default_factory=dict)
+
+MATURITY_MODEL: dict[str, dict[int, list[Criterion]]] = {
+    "PS": {  # Pipeline Security
+        1: [
+            Criterion("PS-1.1", "PS", Level.REACTIVE,
+                "Is at least one type of security scanning (SAST, SCA, or secrets) executed?",
+                "CI logs with Semgrep, Grype, or Gitleaks execution"),
+            Criterion("PS-1.2", "PS", Level.REACTIVE,
+                "Are scanning results visible to the development team?",
+                "Screenshot of findings accessible in CI or dashboard"),
+        ],
+        2: [
+            Criterion("PS-2.1", "PS", Level.REPEATABLE,
+                "Does SAST scanning run on every PR automatically?",
+                "GitHub Actions workflow with on pull_request trigger",
+                automated=True),
+            Criterion("PS-2.2", "PS", Level.REPEATABLE,
+                "Is there at least one gate that blocks merge for CRITICAL findings?",
+                "Branch protection configuration + gate in workflow"),
+            Criterion("PS-2.3", "PS", Level.REPEATABLE,
+                "Do SCA and container scanning run on every build?",
+                "Grype and Trivy jobs in CI pipeline"),
+        ],
+        3: [
+            Criterion("PS-3.1", "PS", Level.DEFINED,
+                "Do scanning rules include custom rules in addition to defaults?",
+                "Custom Semgrep rules directory in the repository"),
+            Criterion("PS-3.2", "PS", Level.DEFINED,
+                "Does DAST run against staging environments periodically?",
+                "DAST scan schedule with ZAP or equivalent"),
+        ],
+        4: [
+            Criterion("PS-4.1", "PS", Level.OPTIMIZED,
+                "Are scanning rules automatically generated or adjusted based on historical findings?",
+                "Rule generation agent logs with precision metrics"),
+            Criterion("PS-4.2", "PS", Level.OPTIMIZED,
+                "Does scanning coverage exceed 95% of active repos for 6+ months?",
+                "Coverage dashboard with time series",
+                automated=True),
+        ],
+    },
+    "AIS": {  # AI Security
+        1: [
+            Criterion("AIS-1.1", "AIS", Level.REACTIVE,
+                "Is there an inventory of LLM models deployed in production?",
+                "Document or registry with models, versions, and endpoints"),
+            Criterion("AIS-1.2", "AIS", Level.REACTIVE,
+                "Are user inputs validated before being sent to the LLM?",
+                "Validation code in the AI service"),
+        ],
+        2: [
+            Criterion("AIS-2.1", "AIS", Level.REPEATABLE,
+                "Are prompt injection tests run against LLM endpoints?",
+                "Adversarial test suite with documented results"),
+            Criterion("AIS-2.2", "AIS", Level.REPEATABLE,
+                "Do deployed models have a documented ML-BOM or model card?",
+                "ML-BOM files or model cards in the repository"),
+        ],
+        3: [
+            Criterion("AIS-3.1", "AIS", Level.DEFINED,
+                "Is there a security agent that periodically audits LLM endpoints?",
+                "Audit agent logs with execution schedule"),
+            Criterion("AIS-3.2", "AIS", Level.DEFINED,
+                "Do autonomous agents operate under a documented least-privilege principle?",
+                "Per-agent permissions configuration with justification"),
+            Criterion("AIS-3.3", "AIS", Level.DEFINED,
+                "Does the RAG corpus have source validation before indexing?",
+                "Ingestion pipeline with provenance verification"),
+        ],
+        4: [
+            Criterion("AIS-4.1", "AIS", Level.OPTIMIZED,
+                "Are prompt injection defenses adjusted based on detected attacks?",
+                "Defense update log with incident triggers"),
+            Criterion("AIS-4.2", "AIS", Level.OPTIMIZED,
+                "Is model security integrated into the CI/CD pipeline with automatic gates?",
+                "Workflow with pre-deploy model validation"),
+        ],
+    },
+    # VM, GOV, MR, and CA follow the same structure — omitted for brevity
+}

@@ -1,0 +1,14 @@
+@dataclass(frozen=True)
+class PricingRates:
+    prompt: Decimal
+    cached_input: Decimal | None
+    output: Decimal
+    reasoning_output: Decimal | None
+
+    def effective_cached(self) -> Decimal:
+        # None means unspecified; Decimal(0) is an explicit free rate.
+        return self.prompt if self.cached_input is None else self.cached_input
+
+    def effective_reasoning(self) -> Decimal:
+        # Normalize overlapping output/reasoning counts before pricing.
+        return self.output if self.reasoning_output is None else self.reasoning_output

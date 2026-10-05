@@ -1,0 +1,24 @@
+def triage_findings(findings: list[dict], service_name: str) -> dict:
+    """Sends findings to the triage agent and returns prioritized ranking."""
+    if not isinstance(findings,list) or not findings or len(findings) > 50:
+        raise ValueError("INCOMPLETE: batch exceeds supplied coverage")
+    findings_summary = json.dumps(findings, indent=2)  # Batch of 50
+
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        system=(
+            "You are a security triage agent. Analyze each finding "
+            "using available tools to obtain context. Classify "
+            "each finding as: IMMEDIATE, PLANNED, ACCEPT_TEMPORARY, "
+            "FALSE_POSITIVE. Justify each classification in one sentence."
+        ),
+        tools=tools,
+        messages=[{
+            "role": "user",
+            "content": f"Triage these findings from service {service_name}:"
+                       f"\n\n{findings_summary}"
+        }]
+    )
+    # Process response with tool_use loop (omitted for brevity)
+    return {"status":"INCOMPLETE", "coverage":"partial", "original_findings":findings, "reason":"Tool loop and validated result parser omitted"}

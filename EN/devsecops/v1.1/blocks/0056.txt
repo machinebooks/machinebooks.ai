@@ -1,0 +1,4 @@
+# Image scan with JSON output for the agent
+trivy image --format json --output trivy-results.json \
+  --severity HIGH,CRITICAL \
+  my-app:latest

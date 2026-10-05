@@ -1,0 +1,7 @@
+session.lifetime           [traceId: xH4k2Lm9, 14.2 s]
+  └─ agent.turn (turnIdx=1)  [span: aB12, 2.1 s]
+  └─ agent.turn (turnIdx=2)  [span: cD34, 8.7 s]
+       ├─ agent.tool.Read    [span: eF56, 0.3 s, status=ok]
+       ├─ agent.tool.Grep    [span: gH78, 1.2 s, status=ok]
+       └─ agent.tool.Bash    [span: iJ90, 6.9 s, status=error]
+  └─ agent.turn (turnIdx=3)  [span: kL12, 3.4 s]

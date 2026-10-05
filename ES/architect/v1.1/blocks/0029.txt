@@ -1,0 +1,30 @@
+# Supported driver/version and a verified server CA are deployment prerequisites.
+import os
+from sqlalchemy import URL
+
+DB_USER = os.environ["DB_USER"]
+DB_PASS = os.environ["DB_PASSWORD"]
+DB_HOST = os.environ.get("DB_HOST", "db")
+
+# URL.create accepts raw credentials; do not concatenate or print passwords.
+def database_url(schema):
+    return URL.create("mysql+pymysql", username=DB_USER, password=DB_PASS,
+                      host=DB_HOST, port=3306, database=schema,
+                      query={"charset": "utf8mb4"})
+
+# Illustrative bounds PER PROCESS and PER BIND; size against server capacity.
+engine_options = {
+    "pool_size": 5, "max_overflow": 5, "pool_timeout": 30,
+    "pool_pre_ping": True, "pool_recycle": 3600,
+    "connect_args": {
+        "ssl_ca": os.environ["MYSQL_SSL_CA"],
+        "ssl_verify_cert": True, "ssl_verify_identity": True,
+    },
+}
+SQLALCHEMY_DATABASE_URI = database_url("operations_db")
+SQLALCHEMY_ENGINE_OPTIONS = engine_options
+SQLALCHEMY_BINDS = {
+    name: {"url": database_url(name), **engine_options}
+    for name in ("platform_core", "analytics_db")
+}
+# The CA file and hostname must validate; charset does not configure TLS.

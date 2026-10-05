@@ -1,0 +1,11 @@
+type ScopeRequest = { target: string; ticket: string };
+type ScopeContext = { callId: string; principal: string };
+async function checkScopeFixture(host, ctx: ScopeContext, request: ScopeRequest) {
+  if (!ctx.callId || !ctx.principal || !request.target || !request.ticket) {
+    throw new Error('Missing scope identity');
+  }
+  const grant = await host.resolveGrant(ctx.principal, request.ticket);
+  return host.authorizeTarget(grant, request.target);
+}
+// The host validates grant origin, ownership, expiry and mandatory policy.
+// An editable scope file or model boolean is not an authenticated grant.

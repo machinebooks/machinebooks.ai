@@ -1,0 +1,61 @@
+from datetime import datetime, timedelta, timezone
+from sqlalchemy.orm import Session
+
+
+def review_active_exceptions(db: Session) -> list[dict]:
+    """Reviews active exceptions and generates actions."""
+
+    actions = []
+    now = datetime.now(timezone.utc)
+
+    # Expired exceptions not yet resolved
+    expired = (
+        db.query(SecurityException)
+        .filter(
+            SecurityException.status == ExceptionStatus.APPROVED,
+            SecurityException.expires_at <= now
+        )
+        .all()
+    )
+
+    for exc in expired:
+        exc.status = ExceptionStatus.EXPIRED
+        actions.append({
+            "action": "expired",
+            "exception_id": exc.id,
+            "finding_id": exc.finding_id,
+            "owner": exc.requested_by,
+            "message": (
+                f"Exception {exc.id} for {exc.finding_id} has expired. "
+                f"The finding will block the pipeline again."
+            )
+        })
+
+    # Exceptions expiring in the next 14 days
+    expiring_soon = (
+        db.query(SecurityException)
+        .filter(
+            SecurityException.status == ExceptionStatus.APPROVED,
+            SecurityException.expires_at > now,
+            SecurityException.expires_at <= now + timedelta(days=14)
+        )
+        .all()
+    )
+
+    for exc in expiring_soon:
+        days_left = (exc.expires_at - now).days
+        actions.append({
+            "action": "expiring_soon",
+            "exception_id": exc.id,
+            "finding_id": exc.finding_id,
+            "owner": exc.requested_by,
+            "days_remaining": days_left,
+            "can_renew": exc.renewal_count < exc.max_renewals,
+            "message": (
+                f"Exception {exc.id} expires in {days_left} days. "
+                f"{'Can be renewed.' if exc.renewal_count < exc.max_renewals else 'No renewals remaining. Must be resolved.'}"
+            )
+        })
+
+    db.commit()
+    return actions

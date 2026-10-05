@@ -1,0 +1,33 @@
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Optional
+
+class FindingSource(Enum):
+    SAST = "sast"          # Semgrep
+    SCA = "sca"            # Grype
+    CONTAINER = "container" # Trivy
+
+class Severity(Enum):
+    CRITICAL = "critical"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+
+@dataclass
+class NormalizedFinding:
+    """Normalized finding from any scanning tool."""
+    id: str                          # Unique finding identifier
+    source: FindingSource            # Source tool
+    severity: Severity               # Original reported severity
+    title: str                       # Brief description
+    cve_id: Optional[str] = None     # CVE if applicable (SCA/container)
+    cwe_id: Optional[str] = None     # CWE for classification
+    cvss_score: Optional[float] = None
+    file_path: Optional[str] = None  # Affected file
+    line_number: Optional[int] = None
+    service_name: Optional[str] = None  # Owning service
+    package_name: Optional[str] = None  # Affected package (SCA)
+    package_version: Optional[str] = None
+    fixed_version: Optional[str] = None # Version that fixes
+    code_snippet: Optional[str] = None  # Code context
+    raw_output: dict = field(default_factory=dict)

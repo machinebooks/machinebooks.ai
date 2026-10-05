@@ -1,0 +1,31 @@
++------------------------------------------------------+
+| User input                                           |
++------------------------------------------------------+
+                       |
++------------------------------------------------------+
+| 1 Input checks: analyze_input()                      |
+| BLOCKED halts; other outcomes are partial            |
++------------------------------------------------------+
+                       |
++------------------------------------------------------+
+| 2 Prompt fields: build_secure_prompt()               |
+| RAG context needs separate host authorization        |
++------------------------------------------------------+
+                       |
++------------------------------------------------------+
+| Historical model adapter                             |
+| 4 Tool calls: guardrails + protected host            |
+| Scope, approval and atomic reservation pending       |
++------------------------------------------------------+
+                       |
++------------------------------------------------------+
+| 3 Output checks: filter_output()                     |
+| No matched pattern does not establish safety         |
++------------------------------------------------------+
+                       |
++------------------------------------------------------+
+| 5 Metrics and alerts: instruments declared           |
+| Event, persistence and delivery adapters pending     |
++------------------------------------------------------+
+                       |
+                 REVIEW draft

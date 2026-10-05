@@ -1,0 +1,10 @@
+import asyncio
+
+# Illustrative concurrency caps per process/event loop, not provider quotas.
+LLM_SEMAPHORE = asyncio.Semaphore(5)
+DOCUMENT_ANALYSIS_SEMAPHORE = asyncio.Semaphore(3)
+EVALUATION_SEMAPHORE = asyncio.Semaphore(3)
+DOCUMENT_READ_SEMAPHORE = asyncio.Semaphore(10)
+
+# All relevant call paths must acquire the same scoped semaphore.
+# Multiple processes/replicas require a separate shared admission mechanism.

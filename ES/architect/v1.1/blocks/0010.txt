@@ -1,0 +1,16 @@
+.claude/
+├── rules/
+│   ├── anonimizacion.md      ← Qué no mencionar nunca
+│   ├── code-samples.md       ← Cómo mostrar código en el libro
+│   ├── writing.md            ← Estilo y estructura de capítulos
+│   └── security-gate.md      ← Revisión obligatoria antes de publicar
+├── commands/
+│   ├── write.md              ← Plantilla para escribir un capítulo
+│   ├── review.md             ← Checklist de revisión
+│   ├── security-review.md    ← Revisión de seguridad especializada
+│   └── status.md             ← Estado de redacción de todos los caps
+└── memory/
+    ├── MEMORY.md             ← Índice de memorias activas
+    ├── project_focus.md      ← Premisa y foco del proyecto
+    ├── user_profile.md       ← Perfil del arquitecto/autor
+    └── feedback_formato_final.md ← Preferencias de formato editorial

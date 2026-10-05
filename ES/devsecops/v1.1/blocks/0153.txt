@@ -1,0 +1,71 @@
+# .github/workflows/model-validation.yml
+name: Model Supply Chain Validation
+on:
+  push:
+    paths:
+      - 'models/**'
+      - 'ml-bom.yaml'
+  workflow_dispatch:
+    inputs:
+      model_repo:
+        description: 'Hugging Face repo ID'
+        required: true
+      model_file:
+        description: 'Nombre del fichero de pesos'
+        required: true
+
+jobs:
+  validate-model:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install huggingface-hub pyyaml anthropic
+
+      # Gate 1: Verificar formato ANTES de descargar
+      - name: Check format policy
+        run: |
+          python - <<'PY'
+          import yaml, sys
+          try:
+              bom = yaml.safe_load(open('ml-bom.yaml'))
+              policy = bom['policy']
+              allowed, blocked = policy['allowed_formats'], policy['blocked_formats']
+              if not isinstance(allowed,list) or not allowed or not isinstance(blocked,list) or any(not isinstance(v,str) or not v for v in allowed+blocked) or not isinstance(bom['models'],list) or not bom['models']:
+                  raise ValueError('invalid policy or inventory')
+              for model in bom['models']:
+                  if not isinstance(model,dict) or not isinstance(model.get('id'),str) or not isinstance(model.get('format'),str):
+                      raise ValueError('missing model identity or format')
+                  if model['format'] not in allowed or model['format'] in blocked:
+                      sys.exit('FAIL: format outside protected allowlist')
+          except (OSError,ValueError,KeyError,TypeError):
+              sys.exit('INCOMPLETE: invalid format policy')
+          print('Format allowlist check only; integrity and safety review remain pending')
+          PY
+
+      # Gate 2: Verificar integridad (hash SHA-256)
+      - name: Verify model integrity
+        run: python scripts/verify_model_integrity.py
+
+      # Gate 3: Escanear formato de serialización
+      - name: Scan serialization format
+        run: python scripts/analyze_model_format.py
+
+      # Gate 4: Auditar ML-BOM completo
+      - name: Audit ML-BOM compliance
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python scripts/audit_ml_bom.py
+
+      # Gate 5: Generar informe y notificar
+      - name: Generate audit report
+        if: always()
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python scripts/generate_model_report.py

@@ -1,0 +1,48 @@
+package devsecops_book.agent_permissions
+import rego.v1
+
+default allow_action := false
+
+allow_action if {
+    is_string(input.run_id)
+    is_object(input.action)
+    is_string(input.action.id)
+    is_string(input.action.tool_name)
+    is_boolean(input.action.destructive)
+    regex.match("^[a-f0-9]{64}$",input.action.arguments_hash)
+    run := data.agent_runs[input.run_id]
+    run.status == "VERIFIED"
+    is_number(input.now_ns)
+    input.now_ns == data.clock.now_ns
+    run.starts_ns <= input.now_ns
+    input.now_ns < run.expires_ns
+    reservation := run.reservations[input.action.id]
+    reservation.tool_name == input.action.tool_name
+    reservation.arguments_hash == input.action.arguments_hash
+    reservation.destructive == input.action.destructive
+    input.action.tool_name in run.permitted_tools
+    is_number(run.actions_reserved)
+    is_number(run.max_actions)
+    run.actions_reserved >= 0
+    run.actions_reserved < run.max_actions
+    not unapproved_destructive
+}
+
+unapproved_destructive if {
+    input.action.destructive == true
+    not approval_matches
+}
+
+approval_matches if {
+    approval := data.approvals[input.approval_id]
+    approval.run_id == input.run_id
+    approval.action_id == input.action.id
+    approval.arguments_hash == input.action.arguments_hash
+    approval.status == "AUTHORIZED"
+    is_number(input.now_ns)
+    input.now_ns == data.clock.now_ns
+    is_number(approval.starts_ns)
+    is_number(approval.expires_ns)
+    approval.starts_ns <= input.now_ns
+    input.now_ns < approval.expires_ns
+}

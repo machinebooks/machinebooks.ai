@@ -1,0 +1,19 @@
+Evalúa la adecuación de los siguientes candidatos para el perfil requerido.
+
+PERFIL REQUERIDO:
+- Familia técnica: {technical_family}
+- Seniority mínimo: {min_seniority}
+- Tecnologías clave: {required_technologies}
+- Experiencia sectorial: {required_sector_experience}
+
+CANDIDATOS:
+{candidates_json}
+
+Para cada candidato, genera:
+1. Puntuación de adecuación (0-100)
+2. Fortalezas relevantes para este perfil
+3. Gaps identificados
+4. Recomendación: RECOMENDADO | POSIBLE | NO_ADECUADO
+
+Ordena por puntuación descendente. Sé riguroso: un candidato sin la tecnología
+clave principal NO puede tener puntuación superior a 60.

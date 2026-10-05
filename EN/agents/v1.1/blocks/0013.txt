@@ -1,0 +1,75 @@
+import { GatewayClient } from './GatewayClient.js';
+import { PromptFetcher } from './PromptFetcher.js';
+
+// Register 2: template with {{userMsg}} and {{assistantBlock}}.
+// It is the fallback used if the local DB is not yet seeded.
+const TITLE_PROMPT_FALLBACK = `Summarize this conversation in a short title (maximum 6 words, no quotes, no emojis).
+Only respond with the title, nothing more.
+
+User: {{userMsg}}
+{{assistantBlock}}`;
+
+export class ConversationTitler {
+  private static pending = new Map<string, boolean>();
+
+  // Register 5: single-step orchestrator combining registers 1, 2, and 3.
+  static async generateTitle(
+    conversationId: string,
+    messages: { role: string; content: string }[],
+  ): Promise<string | null> {
+    if (this.pending.has(conversationId)) return null;
+    this.pending.set(conversationId, true);
+    try {
+      const userMsg = messages.find(m => m.role === 'user')?.content || '';
+      const assistantMsg = messages.find(m => m.role === 'assistant')?.content || '';
+      if (!userMsg) return null;
+
+      // Register 2: fetch + variable substitution.
+      const assistantBlock = assistantMsg ? `Assistant: ${assistantMsg.slice(0, 300)}` : '';
+      const template = await PromptFetcher.fetchWithFallback(
+        'internal.conversation_title', TITLE_PROMPT_FALLBACK,
+      );
+      const userSlice = userMsg.slice(0, 500);
+      // IMPORTANT: the second argument is a function, not a string, so that
+      // $1, $&, $$ from the input are not interpreted as backreferences.
+      const prompt = template
+        .replace(/\{\{\s*userMsg\s*\}\}/g, () => userSlice)
+        .replace(/\{\{\s*assistantBlock\s*\}\}/g, () => assistantBlock);
+
+      // Register 1 + 5: LLM call with a prompt that controls its output.
+      const result = await GatewayClient.postAuth<{
+        choices?: { message?: { content?: string } }[];
+      }>('/v1/chat/completions', {
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 20,
+        temperature: 0.3,
+        stream: false,
+        purpose: 'auto_title',
+      });
+
+      // Register 3: deterministic cleaning of LLM output.
+      const title = result?.choices?.[0]?.message?.content?.trim();
+      if (title && title.length > 0 && title.length < 80) {
+        return title.replace(/^["']|["']$/g, '');
+      }
+      return null;
+    } catch {
+      return null;
+    } finally {
+      this.pending.delete(conversationId);
+    }
+  }
+
+  // Pure Register 3: no LLM, no network, no DB. Deterministic.
+  static generateFallbackTitle(firstMessage: string): string {
+    const clean = firstMessage
+      .replace(/```[\s\S]*?```/g, '')
+      .replace(/\[.*?\]\(.*?\)/g, '')
+      .replace(/[#*_~`]/g, '')
+      .trim();
+    if (clean.length <= 50) return clean;
+    const cutoff = clean.slice(0, 50);
+    const lastSpace = cutoff.lastIndexOf(' ');
+    return (lastSpace > 20 ? cutoff.slice(0, lastSpace) : cutoff) + '...';
+  }
+}

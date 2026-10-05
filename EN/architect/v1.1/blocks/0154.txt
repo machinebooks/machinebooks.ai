@@ -1,0 +1,20 @@
+def _check_intermediate_text(self, response_content: list) -> Optional[GuardrailResult]:
+    """
+    Checks output guardrails on intermediate text blocks of the loop.
+    Invoked before executing tools for each iteration.
+    """
+    for block in response_content:
+        if block.type == "text" and block.text.strip():
+            # Credentials guardrail on intermediate text
+            if self._contains_credentials(block.text):
+                return GuardrailResult(
+                    action=GuardrailAction.BLOCK,
+                    reason="Credentials detected in agent intermediate reasoning"
+                )
+            # System prompt exposure guardrail
+            if self._contains_system_prompt_leak(block.text):
+                return GuardrailResult(
+                    action=GuardrailAction.BLOCK,
+                    reason="Possible system prompt exposure in intermediate response"
+                )
+    return None  # No findings

@@ -1,0 +1,40 @@
+def analyze_pr(context: dict) -> list[dict]:
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        system=REVIEW_SYSTEM_PROMPT,
+        messages=[{"role": "user", "content": build_review_prompt(context)}],
+    )
+    try:
+        result = json.loads(message.content[0].text)
+        if not isinstance(result, dict) or result.get("coverage") != "partial":
+            raise ValueError("invalid coverage")
+        findings = result.get("findings")
+        if not isinstance(findings, list):
+            raise ValueError("invalid findings")
+        required = {"file", "line", "category", "severity", "confidence", "explanation"}
+        for finding in findings:
+            if not isinstance(finding, dict) or not required.issubset(finding):
+                raise ValueError("missing finding fields")
+            if finding["file"] not in context["files"]:
+                raise ValueError("file outside supplied context")
+            if type(finding["line"]) is not int or finding["line"] < 1:
+                raise ValueError("invalid line")
+            if finding["line"] > len(context["files"][finding["file"]].splitlines()):
+                raise ValueError("line outside supplied context")
+            if finding["severity"] not in {"critical", "high", "medium", "low", "info"}:
+                raise ValueError("invalid severity")
+            if finding["confidence"] not in {"high", "medium", "low"}:
+                raise ValueError("invalid confidence")
+            if finding["category"] not in {"AUTH", "INPUT", "SQLI", "XSS", "IDOR", "RACE", "CRYPTO", "INFO"}:
+                raise ValueError("invalid category")
+            if not isinstance(finding["explanation"], str) or not finding["explanation"].strip():
+                raise ValueError("missing explanation")
+            if "suggested_fix" in finding and not isinstance(finding["suggested_fix"], str):
+                raise ValueError("invalid suggested fix")
+            finding["status"] = "REVIEW"
+            finding["coverage"] = "partial"
+            finding["origin_verified"] = False
+        return findings
+    except (ValueError, KeyError, TypeError, AttributeError, IndexError) as error:
+        raise ValueError("INCOMPLETE: invalid review output") from error

@@ -1,0 +1,9 @@
+// Esquema de un hook (forma del dato)
+{
+  "name": "slack-alert-on-block",
+  "event": "firewall.blocked",
+  "url": "https://webhook.ejemplo.com/alerts",
+  "method": "POST",
+  "is_active": true,
+  "events": ["firewall.blocked", "moderation.flagged"]
+}

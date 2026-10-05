@@ -1,0 +1,28 @@
+@app.after_request
+def apply_security_headers(response):
+    """Illustrative headers for responses handled by this Flask application."""
+    # Strict Content Security Policy — only same-origin resources
+    response.headers['Content-Security-Policy'] = (
+        "default-src 'self'; script-src 'self'; "
+        "style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data:; font-src 'self'; connect-src 'self'; "
+        "frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+    )
+    # HSTS policy; preload enrollment requires a separate domain process
+    response.headers['Strict-Transport-Security'] = (
+        'max-age=31536000; includeSubDomains; preload'
+    )
+    # Prevent clickjacking — no external frame can embed the app
+    response.headers['X-Frame-Options'] = 'DENY'
+    # Prevent MIME sniffing — the browser does not infer content types
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    # Block access to device sensors
+    response.headers['Permissions-Policy'] = (
+        'geolocation=(), camera=(), microphone=()'
+    )
+    # Cross-origin referrer sends the origin; same-origin can include the full URL
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    # COOP/CORP alone do not establish crossOriginIsolated; COEP also matters
+    response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
+    response.headers['Cross-Origin-Resource-Policy'] = 'same-origin'
+    return response

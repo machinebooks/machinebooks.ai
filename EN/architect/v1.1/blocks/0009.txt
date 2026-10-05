@@ -1,0 +1,24 @@
+"""
+THE PLATFORM - Copilot Orchestrator
+=====================================
+Intelligent orchestrator — single entry point for the Copilot.
+
+Flow:
+  1. Receives message + context
+  2. Intent Classifier decides the mode (chat_rag / agent_tools / orchestrate)
+  3. Routes to the appropriate handler
+  4. Unified SSE streaming
+
+Three modes:
+  A) Chat + RAG — direct response with document context
+  B) Agent with Tools — agentic ReAct loop (plan → act → observe → reflect)
+  C) Workflow Orchestrator — chains sub-pipelines as tools
+
+SECURITY (detail in Chapter 6):
+  - SecurityContext propagated to every layer (default-DENY on collection access)
+  - Input guardrails: regex + semantic detection with Haiku
+  - Output guardrails: credential filtering, internal paths, system prompt exposure
+  - Timeout per mode (chat: 30s, agent: 120s, workflow: 300s)
+  - Max iterations in loops (prevents infinite loops and unlimited token consumption)
+  - Rate limiting per user with sliding window in Redis
+"""

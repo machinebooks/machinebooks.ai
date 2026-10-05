@@ -1,0 +1,34 @@
+# Didactic example: centralized task routing
+# Pattern: workers/celery_routing.py
+
+task_routes = {
+    # AI tasks -> ai queue (ai worker)
+    "tasks.ai.analyze_document":       {"queue": "ai"},
+    "tasks.ai.generate_proposal":      {"queue": "ai"},
+    "tasks.ai.analyze_cv":             {"queue": "ai"},
+    "tasks.ai.score_opportunity":      {"queue": "ai"},
+    "tasks.ai.compliance_check":       {"queue": "ai"},
+
+    # Document processing -> documents queue (ai worker)
+    "tasks.documents.process_upload":  {"queue": "documents"},
+    "tasks.documents.index_vectors":   {"queue": "documents"},
+    "tasks.documents.reindex_rag":     {"queue": "documents"},
+
+    # RPA automation -> automation queue (automation worker)
+    "tasks.automation.crm_bot":        {"queue": "automation"},
+    "tasks.automation.portal_bot":     {"queue": "automation"},
+    "tasks.automation.pricing_bot":    {"queue": "automation"},
+    "tasks.automation.reporting_bot":  {"queue": "automation"},
+
+    # CRM synchronization -> crm queue (default worker)
+    "tasks.sync.crm_opportunities":    {"queue": "crm"},
+    "tasks.sync.crm_accounts":         {"queue": "crm"},
+
+    # Generic synchronization -> sync queue (default worker)
+    "tasks.sync.meilisearch_reindex":  {"queue": "sync"},
+    "tasks.sync.gdpr_cleanup":         {"queue": "sync"},
+
+    # Critical alerts -> priority queue (default worker)
+    "tasks.alerts.proactive_scan":     {"queue": "priority"},
+    "tasks.alerts.compliance_alert":   {"queue": "priority"},
+}

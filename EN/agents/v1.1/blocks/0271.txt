@@ -1,0 +1,4 @@
+// Registration order can change serialized collection order.
+const toolSchemas = [readTool, writeTool, editTool, ...packTools];
+const prefix = JSON.stringify({ tools: toolSchemas });
+// Normalize only when the schema contract permits reordering.

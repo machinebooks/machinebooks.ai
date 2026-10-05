@@ -1,0 +1,158 @@
+flowchart TD
+    User((User)):::user
+    UI[React UI]:::front
+    NdjsonClient[NdjsonStream client]:::front
+
+    subgraph Bucle["Loop and execution"]
+        direction TB
+        Loop[AgentLoop<br/>ch 4]:::core
+        Registry[ToolRegistry<br/>ch 12]:::core
+        Orchestrator[ToolOrchestrator<br/>ch 13]:::core
+        Executor[StreamingToolExecutor<br/>ch 13]:::core
+    end
+
+    subgraph Providers["LLM providers"]
+        direction TB
+        SC{{StreamCallbacks<br/>ch 8}}:::iface
+        PAnthropic[providers/anthropic.ts<br/>ch 9]:::prov
+        POAI[providers/openai-compat.ts<br/>ch 10]:::prov
+        PAzure[providers/azure.ts<br/>ch 9]:::prov
+        LLMA[(Anthropic API)]:::cloud
+        LLMO[(OpenAI-compat<br/>LM Studio / Ollama / vLLM)]:::cloud
+        LLMAz[(Azure OpenAI<br/>reasoning)]:::cloud
+    end
+
+    subgraph Mem["Memory (5 layers)"]
+        direction TB
+        Msgs[Active messages<br/>ch 15]:::mem
+        Cache[Prompt cache<br/>ch 16]:::mem
+        Compact[Compact / MicroCompact<br/>ch 17]:::mem
+        Snap[SnapshotManager<br/>ch 7 / 18]:::mem
+        PersistMem[MemoryManager<br/>persistent<br/>ch 18]:::mem
+    end
+
+    subgraph Team["Agent team"]
+        direction TB
+        SubAgent[SubAgentManager<br/>ch 19]:::team
+        Spawn[Spawn<br/>ch 19]:::team
+        Fork[Fork<br/>ch 19]:::team
+        InProc[InProcessTeammate<br/>ch 19]:::team
+        Handoff[Handoff<br/>ch 19]:::team
+        Swarm[swarmManager<br/>ch 20]:::team
+        Tasks[TaskManager<br/>ch 20]:::team
+    end
+
+    subgraph Ctrl["Control and security"]
+        direction TB
+        Perm[PermissionEngine<br/>ch 22]:::ctrl
+        BashCls[bashClassifier<br/>ch 22]:::ctrl
+        Hooks[HookManager<br/>ch 23]:::ctrl
+        Guard[Guardrails<br/>ch 23]:::ctrl
+        Plan[planModeV2<br/>ch 23]:::ctrl
+        A2A[A2AGovernance<br/>ch 20]:::ctrl
+        MCPG[MCPGovernance<br/>ch 14]:::ctrl
+    end
+
+    subgraph MCPGroup["MCP and plugins"]
+        direction TB
+        MCP[MCPClient<br/>ch 14]:::mcp
+        MStdio[stdio transport]:::mcp
+        MSSE[SSE transport]:::mcp
+        MHTTP[HTTP transport]:::mcp
+        PluginSDK[Plugin SDK / packs<br/>ch 27]:::mcp
+        Slash[SlashCommands /<br/>SkillDiscovery<br/>ch 26]:::mcp
+    end
+
+    subgraph Sandbox["Sandbox"]
+        direction TB
+        VmBundle[VmBundleManager<br/>ch 25]:::sbx
+        VmSpawn[VmSpawnProvider<br/>ch 25]:::sbx
+        Shell[ShellRuntimeService<br/>ch 25]:::sbx
+    end
+
+    subgraph Obs["Observability"]
+        direction TB
+        NDJSON[NdjsonStream server<br/>ch 24]:::obs
+        Telem[Telemetry<br/>ch 29]:::obs
+        Cost[cost-tracker<br/>ch 29]:::obs
+        Rate[rate-limiter<br/>ch 29]:::obs
+        Audit[AuditService<br/>ch 22 / 29]:::obs
+        AuditSync[AuditSyncService]:::obs
+        AuditHtml[AuditHtmlExporter]:::obs
+    end
+
+    User --> UI
+    UI --> NdjsonClient
+    NdjsonClient --> NDJSON
+    NDJSON --> Loop
+
+    Loop -->|stream| SC
+    SC -.implements.-> PAnthropic
+    SC -.implements.-> POAI
+    SC -.implements.-> PAzure
+    PAnthropic --> LLMA
+    POAI --> LLMO
+    PAzure --> LLMAz
+
+    Loop -->|schemas| Registry
+    Loop -->|tool_use| Orchestrator
+    Orchestrator -->|executes| Executor
+    Executor -->|handler| Registry
+
+    Loop --> Msgs
+    Loop --> Cache
+    Loop --> Compact
+    Compact --> Snap
+    Loop --> PersistMem
+
+    Executor -->|ask| Perm
+    Perm --> BashCls
+    Executor -->|PreToolUse / PostToolUse| Hooks
+    Hooks --> Guard
+    Loop --> Plan
+
+    Executor -->|invokes| MCP
+    MCP --> MStdio
+    MCP --> MSSE
+    MCP --> MHTTP
+    MCPG --> MCP
+    PluginSDK -->|registers| Registry
+    Slash -->|registers| Registry
+
+    Executor -->|Bash| Shell
+    Shell --> VmSpawn
+    VmSpawn --> VmBundle
+
+    Loop -->|task| SubAgent
+    SubAgent --> Spawn
+    SubAgent --> Fork
+    SubAgent --> InProc
+    SubAgent --> Handoff
+    SubAgent --> Swarm
+    SubAgent --> Tasks
+    A2A --> SubAgent
+
+    Loop --> NDJSON
+    Executor --> NDJSON
+    Loop --> Telem
+    PAnthropic --> Cost
+    POAI --> Cost
+    PAzure --> Cost
+    Loop --> Rate
+    Hooks --> Audit
+    Perm --> Audit
+    Audit --> AuditSync
+    Audit --> AuditHtml
+
+    classDef user fill:#fff7d6,stroke:#b89a2c
+    classDef front fill:#d6e6ff,stroke:#3a6db8
+    classDef core fill:#d6f0d6,stroke:#3a8b3a
+    classDef iface fill:#f5f5dc,stroke:#555,stroke-dasharray:4
+    classDef prov fill:#ffe6cc,stroke:#b8742c
+    classDef cloud fill:#f0f0f0,stroke:#666
+    classDef mem fill:#f0d6ff,stroke:#7a3ab8
+    classDef team fill:#ffd6d6,stroke:#b83a3a
+    classDef ctrl fill:#fffacd,stroke:#a89b2c
+    classDef mcp fill:#d6f5f5,stroke:#3aa8a8
+    classDef sbx fill:#e6d6ff,stroke:#6a3ab8
+    classDef obs fill:#e0e0e0,stroke:#555

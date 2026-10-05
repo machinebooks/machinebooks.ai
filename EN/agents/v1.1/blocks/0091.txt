@@ -1,0 +1,19 @@
+sequenceDiagram
+    autonumber
+    participant A as Agent (McpAuthTool)
+    participant L as oauthLoopback
+    participant B as Browser
+    participant I as MCP IdP
+
+    A->>L: runOAuthLoopback({authUrl, clientId, scope})
+    L->>L: PKCE (verifier+challenge), state, free port
+    L->>L: http.createServer at 127.0.0.1:<port>/callback
+    L->>B: shell.openExternal(authUrl + params)
+    B->>I: GET authUrl?code_challenge=...
+    I-->>B: redirect 302 → 127.0.0.1:<port>/callback?code=...&state=...
+    B->>L: GET /callback?code=...&state=...
+    L->>L: verify state, redirect, and endpoints from trusted metadata
+    L-->>A: {code, codeVerifier, redirectUri}
+    A->>I: POST token_url<br/>{code, code_verifier, ...}
+    I-->>A: {access_token, refresh_token, expires_in}
+    A->>A: LocalSecureStore.encrypt + persist

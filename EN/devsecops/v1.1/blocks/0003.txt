@@ -1,0 +1,127 @@
+# scripts/triage_findings.py
+"""
+Intelligent triage of SAST findings using Claude.
+Partial prototype; chapter 9 expands interfaces, not a complete operational agent.
+"""
+import json
+import sys
+from pathlib import Path
+import anthropic
+
+def load_sarif(path: str) -> list[dict]:
+    """Load SARIF findings and extract relevant fields."""
+    with open(path) as f:
+        sarif = json.load(f)
+
+    if (not isinstance(sarif,dict) or not isinstance(sarif.get("runs"),list)
+            or not sarif["runs"] or any(not isinstance(run,dict)
+               or not isinstance(run.get("results"),list) for run in sarif["runs"])):
+        raise ValueError("INCOMPLETE: invalid SARIF run/results")
+    findings = []
+    for run in sarif["runs"]:
+        tool_name = run["tool"]["driver"]["name"]
+        for result in run.get("results", []):
+            location = result["locations"][0]["physicalLocation"]
+            file_path = location["artifactLocation"]["uri"]
+            region = location.get("region", {})
+            findings.append({
+                "rule_id": result["ruleId"],
+                "message": result["message"]["text"],
+                "severity": result.get("level", "warning"),
+                "file": file_path,
+                "line": region.get("startLine", 0),
+                "tool": tool_name,
+            })
+    return findings
+
+
+def triage_finding(client: anthropic.Anthropic, finding: dict,
+                   code_context: str) -> dict:
+    """Send a finding to Claude for triage with code context."""
+    prompt = f"""You are an expert security analyst. Analyze this SAST
+finding and propose a reviewable classification, retaining uncertainty and missing evidence.
+
+## Finding
+- Rule: {finding['rule_id']}
+- Message: {finding['message']}
+- Reported severity: {finding['severity']}
+- File: {finding['file']}
+- Line: {finding['line']}
+
+## Source code (context)
+{code_context}
+
+Respond in JSON with these fields:
+- "is_true_positive": true/false
+- "confidence": "high"/"medium"/"low"
+- "risk_score": 1-10 (proposed estimate; does not confirm exploitability)
+- "explanation": brief explanation
+- "suggested_fix": suggested fix if true positive, null if not
+"""
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=1024,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    try:
+        result = json.loads(message.content[0].text)
+        if (not isinstance(result,dict) or type(result.get("is_true_positive")) is not bool
+                or result.get("confidence") not in {"high","medium","low"}
+                or type(result.get("risk_score")) not in (int,float)
+                or not 1 <= result["risk_score"] <= 10
+                or not isinstance(result.get("explanation"),str)):
+            raise ValueError("invalid triage proposal")
+        result["proposed_true_positive"] = result.pop("is_true_positive")
+        result["status"] = "REVIEW"
+        return result
+    except (ValueError, TypeError, KeyError, IndexError, AttributeError):
+        return {"status":"INCOMPLETE", "coverage":"partial",
+                "explanation":"Invalid model output; retain original finding for review"}
+
+
+def get_code_context(file_path: str, line: int,
+                     context_lines: int = 20) -> str:
+    """Read source code around the finding."""
+    try:
+        path = Path(file_path).resolve()
+        path.relative_to(Path(".").resolve())
+        if type(line) is not int or line < 1 or type(context_lines) is not int or not 0 <= context_lines <= 200:
+            raise ValueError("INCOMPLETE: invalid context range")
+        source = path.read_text()
+        lines = source.splitlines()
+        start = max(0, line - context_lines)
+        end = min(len(lines), line + context_lines)
+        return "\n".join(
+            f"{i+1}: {l}" for i, l in enumerate(lines[start:end], start=start)
+        )
+    except FileNotFoundError:
+        return "(file not found)"
+
+
+def main():
+    sarif_path = sys.argv[1]
+    findings = load_sarif(sarif_path)
+    print(f"[triage] {len(findings)} findings received from SAST")
+
+    client = anthropic.Anthropic()  # Reads ANTHROPIC_API_KEY from environment
+    triaged = []
+
+    for finding in findings:
+        code = get_code_context(finding["file"], finding["line"])
+        result = triage_finding(client, finding, code)
+        result["original"] = finding
+        triaged.append(result)
+
+    # A model label is a proposal; retain every original finding.
+    for item in triaged:
+        item.setdefault("status", "REVIEW")
+        item["coverage"] = "partial"
+    print(f"REVIEW: {len(triaged)} retained findings; no automatic dismissal")
+
+    output = Path("triage-results.json")
+    output.write_text(json.dumps(triaged, indent=2, ensure_ascii=False))
+    print(f"[triage] Results saved to {output}")
+
+
+if __name__ == "__main__":
+    main()

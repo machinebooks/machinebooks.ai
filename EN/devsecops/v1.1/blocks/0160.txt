@@ -1,0 +1,55 @@
+# docker-compose.agents.yml
+services:
+  triage-agent:
+    image: pipeline-agents:latest
+    command: python -m agents.triage
+    read_only: true                    # Read-only file system
+    security_opt:
+      - no-new-privileges:true         # No privilege escalation
+    cap_drop:
+      - ALL                            # Remove all capabilities
+    networks:
+      - agent-network
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - AGENT_MAX_TOKENS=100000
+      - AGENT_MAX_TOOL_CALLS=200
+    tmpfs:
+      - /tmp:size=100M                 # Limited temporary space
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"                  # Maximum 1 CPU
+          memory: 512M                 # Maximum 512 MB RAM
+        reservations:
+          memory: 256M
+
+  remediation-agent:
+    image: pipeline-agents:latest
+    command: python -m agents.remediation
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    networks:
+      - agent-network
+      - git-network                    # Access to Git API
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}   # Token with limited scope
+      - AGENT_MAX_TOKENS=80000
+      - AGENT_MAX_TOOL_CALLS=50
+    tmpfs:
+      - /tmp:size=200M
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 1G
+
+networks:
+  agent-network:
+    internal: true                     # No internet access
+  git-network:
+    driver: bridge                     # Egress allowlist must be enforced by the host

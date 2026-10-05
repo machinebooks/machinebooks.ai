@@ -1,0 +1,23 @@
+test('exports the exact workbook fixture', async () => {
+  const ownedDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'qa-audit-'));
+  const output = path.join(ownedDir, 'audit.xlsx');
+  try {
+    await exportAuditReport(fixture.findings, fixture.evidence, output);
+    const bytes = await fs.promises.readFile(output);
+    expect([...bytes.subarray(0, 4)]).toEqual([0x50, 0x4B, 0x03, 0x04]);
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.readFile(output);
+    expect(workbook.worksheets.map(sheet => sheet.name))
+      .toEqual(['Findings', 'Evidence', 'Summary']);
+    for (const expected of fixture.expectedCells) {
+      const cell = workbook.getWorksheet(expected.sheet).getCell(expected.address);
+      expect(cell.value).toEqual(expected.value);
+      if (expected.fillArgb !== undefined) {
+        expect(cell.fill.type).toBe('pattern');
+        expect(cell.fill.fgColor?.argb).toBe(expected.fillArgb);
+      }
+    }
+  } finally {
+    await fs.promises.rm(ownedDir, { recursive: true, force: true });
+  }
+});

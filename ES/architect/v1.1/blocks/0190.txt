@@ -1,0 +1,17 @@
+# Bloque location para el endpoint de streaming
+location /ai/chat/stream {
+    proxy_pass http://ai_service:8001;
+
+    # Crítico para SSE: deshabilitar buffering
+    proxy_buffering off;
+    proxy_cache off;
+
+    # Mantener conexión abierta durante el stream
+    proxy_read_timeout 300s;
+    proxy_send_timeout 300s;
+
+    # Headers necesarios para SSE
+    proxy_set_header Connection '';
+    proxy_http_version 1.1;
+    chunked_transfer_encoding on;
+}

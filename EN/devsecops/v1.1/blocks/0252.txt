@@ -1,0 +1,66 @@
+import math
+# Debt budget configuration
+DEBT_BUDGET = {
+    "max_total_score": 75.0,          # Maximum tolerated score
+    "max_critical_exceptions": 0,      # Zero CRITICAL exceptions
+    "max_high_exceptions": 10,         # Maximum 10 HIGH exceptions
+    "max_avg_age_days": 90,            # Maximum average age: 90 days
+    "max_expired_unresolved": 0        # Zero expired unresolved
+}
+
+
+def evaluate_debt_budget(debt_data: dict) -> dict:
+    """Evaluates current debt against the defined budget."""
+    if not isinstance(debt_data,dict):
+        raise ValueError("INCOMPLETE: invalid debt data")
+    for key in ("total_debt_score","average_exception_age_days","expired_unresolved"):
+        value = debt_data.get(key)
+        if type(value) not in (int,float) or not math.isfinite(value) or value < 0:
+            raise ValueError("INCOMPLETE: invalid debt metric")
+    counts = debt_data.get("exception_counts_by_severity")
+    if not isinstance(counts,dict) or any(type(counts.get(key)) is not int or counts[key] < 0 for key in ("critical","high")):
+        raise ValueError("INCOMPLETE: severity count coverage missing")
+    violations = []
+
+    if debt_data["total_debt_score"] > DEBT_BUDGET["max_total_score"]:
+        violations.append({
+            "rule": "total_score",
+            "current": debt_data["total_debt_score"],
+            "limit": DEBT_BUDGET["max_total_score"],
+            "message": "Total debt exceeds budget"
+        })
+
+    if debt_data["average_exception_age_days"] > DEBT_BUDGET["max_avg_age_days"]:
+        violations.append({
+            "rule": "avg_age",
+            "current": debt_data["average_exception_age_days"],
+            "limit": DEBT_BUDGET["max_avg_age_days"],
+            "message": "Average exception age exceeds limit"
+        })
+
+    if debt_data["expired_unresolved"] > DEBT_BUDGET["max_expired_unresolved"]:
+        violations.append({
+            "rule": "expired_unresolved",
+            "current": debt_data["expired_unresolved"],
+            "limit": DEBT_BUDGET["max_expired_unresolved"],
+            "message": "Expired unresolved exceptions exist"
+        })
+
+    for severity in ("critical","high"):
+        limit = DEBT_BUDGET["max_"+severity+"_exceptions"]
+        if counts[severity] > limit:
+            violations.append({"rule":severity+"_count","current":counts[severity],"limit":limit,"message":"Severity exception budget exceeded"})
+    budget_utilization = (
+        debt_data["total_debt_score"] / DEBT_BUDGET["max_total_score"]
+    ) * 100
+
+    return {
+        "status": "REVIEW",
+        "coverage": "partial",
+        "budget_utilization_pct": round(budget_utilization, 1),
+        "violations": violations,
+        "within_budget": len(violations) == 0,
+        "remaining_capacity": round(
+            DEBT_BUDGET["max_total_score"] - debt_data["total_debt_score"], 1
+        )
+    }

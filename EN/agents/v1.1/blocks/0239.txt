@@ -1,0 +1,18 @@
+type PackContext = { callId: string; principal: string };
+type PackHost = {
+  authorize(ctx: PackContext, pack: string, input: unknown): Promise<boolean>;
+};
+const PACK_SLUG = 'cloud-sysops';
+const definition = {
+  name: 'IamPolicyAnalyzer',
+  requiredPack: PACK_SLUG,
+  isReadOnly: true,
+};
+async function executeFixture(host: PackHost, ctx: PackContext, input: unknown) {
+  if (!ctx.callId || !ctx.principal) throw new Error('Missing call identity');
+  if (!await host.authorize(ctx, PACK_SLUG, input)) {
+    return { tool_use_id: ctx.callId, content: 'Acceso denegado.', is_error: true };
+  }
+  return { tool_use_id: ctx.callId, content: 'Fixture sin consulta cloud.', is_error: false };
+}
+// Metadata does not enforce authorization; the host owns the actual policy.

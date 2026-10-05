@@ -1,0 +1,27 @@
+# Educational character splitter; evaluate semantic loss and overlap for the purpose.
+@staticmethod
+def _split_text(text, chunk_size=1500, chunk_overlap=200):
+    if chunk_size <= 0 or not 0 <= chunk_overlap < chunk_size:
+        raise ValueError("Invalid chunk size or overlap")
+    chunks, current_chunk = [], ""
+    for paragraph in text.split("\n\n"):
+        paragraph = paragraph.strip()
+        if not paragraph:
+            continue
+        candidate = current_chunk + "\n\n" + paragraph if current_chunk else paragraph
+        if len(candidate) <= chunk_size:
+            current_chunk = candidate
+            continue
+        if current_chunk:
+            chunks.append(current_chunk)
+            current_chunk = ""
+        while len(paragraph) > chunk_size:
+            chunks.append(paragraph[:chunk_size])
+            paragraph = paragraph[chunk_size:]
+        current_chunk = paragraph
+    if current_chunk:
+        chunks.append(current_chunk)
+    if chunk_overlap and len(chunks) > 1:
+        chunks = [chunks[0]] + [chunks[i - 1][-chunk_overlap:] + "\n" + chunks[i]
+                                for i in range(1, len(chunks))]
+    return chunks

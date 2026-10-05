@@ -1,0 +1,20 @@
+// Educational TypeScript object; this is not JSON source or a forensic validator.
+const workflow = {
+  id: 'dfir-triage', name: 'DFIR: Draft triage',
+  variables: [
+    { name: 'evidencePath', label: 'Input path', type: 'file', required: true },
+    { name: 'caseId', label: 'Case ID', type: 'string', required: true },
+    { name: 'analyst', label: 'Analyst', type: 'string', required: false, defaultValue: 'on-duty' },
+  ],
+  steps: [
+    { id: 'timeline', name: 'Candidate timeline',
+      prompt: 'Describe candidate events in {{evidencePath}}; identify sources and limits.' },
+    { id: 'iocs', name: 'Check indicators',
+      prompt: 'Use {{timeline.output}} to check indicators against available sources; declare missing data.' },
+    { id: 'informe', name: 'Technical draft',
+      prompt: 'Draft case {{caseId}} using {{iocs.output}}; do not establish custody without evidence.',
+      saveOutputTo: 'output/informe_{{caseId}}_{{evidencePath}}.md' },
+    { id: 'custody', name: 'Review provenance documentation',
+      prompt: 'Review {{informe.output}} and list missing provenance documentation; do not claim complete custody.' },
+  ],
+};

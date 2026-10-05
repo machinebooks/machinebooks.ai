@@ -1,0 +1,46 @@
+@startuml
+!theme plain
+skinparam backgroundColor transparent
+skinparam componentStyle uml2
+
+package "AgentLoop" {
+  [ToolExecutor] as Exec
+  [DocxEdit handler] as Docx
+  [AuthRoutes] as Auth
+}
+
+package "Audit plane" {
+  [AuditService] as Svc
+  [AuditSyncService] as Sync
+  [AuditHtmlExporter] as Html
+  [AIGovernanceMetadata] as Govern
+}
+
+package "Persistence" {
+  database "desktop_audit_log\n(append-only JSON)" as Log
+  folder "OOXML files\ndocProps/custom.xml" as Doc
+}
+
+Exec --> Svc : log(tool outcome)
+Auth --> Svc : log(auth.login)
+Docx --> Govern : markOoxmlDocumentAsAIAssisted
+Govern --> Svc : log(ai.document_marked)
+Govern --> Doc : custom properties
+
+Svc --> Log : append
+Sync --> Log : prune > 90d
+Sync ..> Svc : flush (no-op local)
+Html --> Log : read findings
+
+note right of Svc
+  API de alta: añade eventos.
+  Sync y prune cambian estado.
+  No acredita inmutabilidad.
+end note
+
+note right of Govern
+  Marca .docx/.xlsx/.pptx
+  con SylvarSecAIContent,
+  SylvarSecAIRiskClass...
+end note
+@enduml

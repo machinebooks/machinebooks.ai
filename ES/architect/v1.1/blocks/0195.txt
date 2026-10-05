@@ -1,0 +1,23 @@
+interface MentionContext {
+  type: 'proposal' | 'client' | 'opportunity' | 'document';
+  id: string;
+  displayText: string;
+}
+
+export function parseMentions(text: string): {
+  cleanText: string;
+  mentions: MentionContext[];
+} {
+  const pattern = /@(propuesta|cliente|oportunidad|doc):(?:"([^"\r\n]{1,120})"|([A-Za-z0-9_.-]{1,120}))(?![A-Za-z0-9_.-])/g;
+  const typeMap: Record<string, MentionContext['type']> = {
+    propuesta: 'proposal', cliente: 'client', oportunidad: 'opportunity', doc: 'document'
+  };
+  const mentions: MentionContext[] = [];
+  const cleanText = text.replace(pattern, (match, type, quotedId, plainId) => {
+    const id = (quotedId ?? plainId).trim();
+    if (!id || mentions.length >= 20) return match;
+    mentions.push({ type: typeMap[type], id, displayText: match });
+    return `[${type}:${id}]`;
+  });
+  return { cleanText, mentions };
+}

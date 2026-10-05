@@ -1,0 +1,39 @@
+import yaml
+from pathlib import Path
+from illustrative_host import tool
+
+# Inventario de servicios cargado desde YAML
+SERVICE_INVENTORY_PATH = Path("config/service-inventory.yaml")
+
+@tool
+def check_service_exposure(service_name: str) -> dict:
+    """Determina si un servicio está expuesto a internet,
+    requiere autenticación y qué tipo de datos procesa."""
+    # Cargar inventario
+    with open(SERVICE_INVENTORY_PATH) as f:
+        inventory = yaml.safe_load(f)
+
+    if not isinstance(inventory,dict) or not isinstance(inventory.get("services"),dict):
+        raise ValueError("INCOMPLETE: invalid service inventory")
+    service = inventory.get("services", {}).get(service_name)
+    if not service:
+        return {
+            "service_name": service_name,
+            "found": False,
+            "status": "INCOMPLETE",
+            "warning": "Servicio no encontrado en inventario"
+        }
+
+    return {
+        "service_name": service_name,
+        "found": True,
+        "status": "REVIEW",
+        "coverage": "partial",
+        "internet_facing": service.get("internet_facing", None),
+        "requires_auth": service.get("requires_auth", None),
+        "waf_protected": service.get("waf_protected", None),
+        "data_classification": service.get("data_classification", "unknown"),
+        "criticality": service.get("criticality", "unknown"),
+        "owner_team": service.get("owner_team", "unknown"),
+        "compliance_scope": service.get("compliance_scope", []),
+    }

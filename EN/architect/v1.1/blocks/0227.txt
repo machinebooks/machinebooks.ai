@@ -1,0 +1,10 @@
+# config/mysql/analytics.cnf
+[mysqld]
+innodb_buffer_pool_size = 2G
+innodb_buffer_pool_instances = 4
+# Aggressive read-ahead for full table scans
+innodb_read_ahead_threshold = 0
+max_connections = 100
+# Temporary tables in memory for intermediate subqueries
+tmp_table_size = 256M
+max_heap_table_size = 256M

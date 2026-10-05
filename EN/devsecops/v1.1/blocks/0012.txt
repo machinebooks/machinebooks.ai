@@ -1,0 +1,13 @@
+# services_inventory.yaml
+services:
+  reports-api:
+    name: "Reports API"
+    internet_facing: true
+    data_classification: "confidential"
+    compensating_controls:
+      - "WAF with OWASP CRS rules"
+      - "Rate limiting: 100 req/min per IP"
+    user_count: 450
+    compliance_requirements:
+      - "GDPR"
+      - "ENS medium level"

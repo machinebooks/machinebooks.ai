@@ -1,0 +1,34 @@
+classDiagram
+    class AgentStreamEvent {
+        <<union>>
+        type
+    }
+    class TextDelta {
+        type: 'text_delta'
+        text: string
+    }
+    class Thinking {
+        type: 'thinking'
+        content: string
+    }
+    class ToolUseStart {
+        type: 'tool_use_start'
+        id: string
+        name: string
+    }
+    class ToolResult {
+        type: 'tool_result'
+        id: string
+        result: ToolResult
+    }
+    class Usage {
+        type: 'usage'
+        promptTokens: number
+        completionTokens: number
+        costUsd?: number
+    }
+    AgentStreamEvent <|-- TextDelta
+    AgentStreamEvent <|-- Thinking
+    AgentStreamEvent <|-- ToolUseStart
+    AgentStreamEvent <|-- ToolResult
+    AgentStreamEvent <|-- Usage

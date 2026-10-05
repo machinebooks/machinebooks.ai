@@ -1,0 +1,16 @@
+// Educational idle integration; completion and host policy are omitted.
+if (dreamManager.shouldDream(state.turnCount, state.lastMessageAt)) {
+  const controller = new AbortController();
+  const onUserMessage = () => controller.abort();
+  bus.on('user_message', onUserMessage);
+  const timer = setTimeout(() => controller.abort(), 60_000);
+  void (async () => {
+    try {
+      await runDreamUntilSettled(messages, memoryStore, controller.signal);
+    } finally {
+      clearTimeout(timer);
+      bus.off('user_message', onUserMessage);
+    }
+  })().catch(() => reportDreamFailureWithoutSensitiveData());
+}
+// Abort is cooperative; it does not roll back completed writes.

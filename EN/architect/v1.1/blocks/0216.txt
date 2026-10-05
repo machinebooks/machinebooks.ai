@@ -1,0 +1,44 @@
+# tests/mocks/llm_mock.py
+from unittest.mock import MagicMock, patch
+from contextlib import contextmanager
+
+DOCUMENT_ANALYSIS_RESPONSE_OK = {
+    "summary": "Technical requirements document for CRM system implementation.",
+    "key_requirements": ["High availability", "REST API integration", "GDPR compliance"],
+    "go_no_go": "GO",
+    "confidence": 0.87,
+    "flags": []
+}
+
+MALFORMED_LLM_RESPONSE = "This text is not valid JSON {{{malformed"
+
+EMPTY_LLM_RESPONSE = ""
+
+@contextmanager
+def mock_llm_correct_response():
+    """Mock for tests verifying the happy path of AI analysis."""
+    with patch("app.services.ai.llm_factory.LLMFactory.create_completion") as mock:
+        mock.return_value = MagicMock(
+            content=str(DOCUMENT_ANALYSIS_RESPONSE_OK),
+            usage=MagicMock(input_tokens=450, output_tokens=120),
+            model="claude-sonnet-4-6"
+        )
+        yield mock
+
+@contextmanager
+def mock_llm_malformed_response():
+    """Mock for tests verifying handling of invalid LLM responses."""
+    with patch("app.services.ai.llm_factory.LLMFactory.create_completion") as mock:
+        mock.return_value = MagicMock(
+            content=MALFORMED_LLM_RESPONSE,
+            usage=MagicMock(input_tokens=450, output_tokens=5),
+            model="claude-sonnet-4-6"
+        )
+        yield mock
+
+@contextmanager
+def mock_llm_timeout():
+    """Mock for tests verifying behavior on LLM timeout."""
+    with patch("app.services.ai.llm_factory.LLMFactory.create_completion") as mock:
+        mock.side_effect = TimeoutError("LLM request timeout after 30s")
+        yield mock

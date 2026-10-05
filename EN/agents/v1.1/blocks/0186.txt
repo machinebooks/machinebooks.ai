@@ -1,0 +1,10 @@
+{
+  "hooks": [
+    {
+      "event": "PreToolUse",
+      "matcher": "Write",
+      "command": "node ./tools/secret-validator.js",
+      "timeout": 5000
+    }
+  ]
+}

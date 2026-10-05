@@ -1,0 +1,15 @@
+// Wiring excerpt: the host supplies an authorized runner and scope.
+function runBashInVm(cmd: string, hostCwd: string) {
+  const vmCwd = vm.translatePath(hostCwd);
+  return vmRunner.exec({
+    cwd: vmCwd,
+    command: cmd,
+    mounts: vm.toVMMounts([
+      { hostPath: 'D:\\projects\\app', mountName: workspaceMount, mode: 'rw' },
+      { hostPath: 'D:\\datasets\\eval', mountName: 'eval-dataset', mode: 'ro' },
+      { hostPath: path.join(os.homedir(), '.sylvarsec', 'memories'),
+        mountName: 'memories', mode: 'rwd' },
+    ]),
+  });
+}
+// No fallback mount or host execution is authorized by this excerpt.

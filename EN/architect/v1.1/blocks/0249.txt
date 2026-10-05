@@ -1,0 +1,44 @@
+class FeatureUsageEvent(db.Model):
+    """Granular feature usage event.
+
+    Enables funnel analysis: started -> completed (success)
+                                      -> abandoned (abandonment)
+    The session_id field groups events from the same work session.
+    """
+    __tablename__ = 'feature_usage_events'
+    __bind_key__ = 'platform_core'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    # User and session
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    session_id = db.Column(db.String(100), nullable=True)  # Groups related events
+
+    # Feature
+    feature_name = db.Column(db.String(100), nullable=False)
+    # Examples: 'document_analyzer', 'proposal_generator', 'cv_analyzer',
+    #           'analytics_chat', 'opportunity_search', 'proactive_alert'
+
+    action = db.Column(db.String(50), nullable=False)
+    # Values: 'started', 'completed', 'abandoned', 'error', 'feedback_given'
+
+    # Enriched context (different per feature)
+    context = db.Column(db.JSON, nullable=True)
+    # Examples:
+    # document_analyzer: {"document_type": "requirements", "pages": 182, "step": 2}
+    # analytics_chat: {"query_type": "trend", "time_range": "90d"}
+    # proposal_generator: {"proposal_type": "competitive", "ai_sections": 4}
+
+    # Timing
+    duration_seconds = db.Column(db.Float, nullable=True)  # Only on 'completed'
+
+    # Quality (if provided by the user)
+    user_rating = db.Column(db.Integer, nullable=True)  # 1-5
+
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        Index('idx_feature_usage_feature_action', 'feature_name', 'action'),
+        Index('idx_feature_usage_user_session', 'user_id', 'session_id'),
+        Index('idx_feature_usage_created', 'created_at'),
+    )

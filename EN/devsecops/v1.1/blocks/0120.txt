@@ -1,0 +1,11 @@
+# BEFORE (vulnerable to SQL injection — CWE-89)
+def get_report(cursor, report_id: str) -> dict:
+    query = f"SELECT * FROM reports WHERE id = {report_id}"
+    cursor.execute(query)
+    return cursor.fetchone()
+
+# AFTER (parameterized query — agent fix)
+def get_report(cursor, report_id: str) -> dict:
+    query = "SELECT * FROM reports WHERE id = %s"
+    cursor.execute(query, (report_id,))
+    return cursor.fetchone()

@@ -1,0 +1,9 @@
+import re
+def publicar_comentario_pr(
+    repo: str, pr_number: int, hallazgo: dict, token: str
+):
+    commit = hallazgo.get("commit_id")
+    if not isinstance(commit,str) or not re.fullmatch(r"[a-fA-F0-9]{40}|[a-fA-F0-9]{64}",commit):
+        return {"status":"INCOMPLETE","finding":hallazgo,"error":"Immutable commit required"}
+    return {"status":"REVIEW","finding":hallazgo,"commit_id":commit,
+            "action":"Host must validate scope, diff line, authorization and publish response; publishing adapter omitted"}

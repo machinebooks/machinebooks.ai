@@ -1,0 +1,22 @@
+# La Plataforma — Instrucciones del Proyecto
+
+## Stack y arquitectura
+- **Backend**: Flask 3.0 + SQLAlchemy — `backend/`
+- **Servicio IA**: FastAPI + LangChain — `ai_service/`
+- **Frontal Principal**: React 18 + TypeScript — `frontend/`
+- **Frontal Analytics**: React 18 + TypeScript — `analytics/frontend/`
+- **Admin**: React 18 + TypeScript — `admin/frontend/`
+- **BD**: MySQL 8.0 (pymysql) · Redis · Qdrant · Meilisearch
+- **Infraestructura**: 17 contenedores Docker, NGINX como proxy inverso
+
+## Convenciones obligatorias
+- Usar logger, no print() en producción
+- No codificar identificadores de tenant ni claves de API en el código fuente
+- Las migraciones de esquema van siempre con Alembic, nunca con ALTER TABLE manual
+- Todo endpoint nuevo requiere decorador de autenticación y comprobación de permisos
+
+## Lo que NO hacer
+- No usar `print()` en producción — usa logger
+- No hardcodear IDs de tenant, API keys ni secrets
+- No hacer ALTER TABLE manual — siempre Alembic
+- No commitear sin revisar que los tipos TypeScript compilen

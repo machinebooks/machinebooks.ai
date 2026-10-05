@@ -1,0 +1,43 @@
+# autonomy_classifier.py — Clasifica hallazgos por nivel de autonomía
+from dataclasses import dataclass
+from enum import IntEnum
+import anthropic
+
+class AutonomyLevel(IntEnum):
+    AUTONOMOUS = 1      # Agente actúa sin aprobación
+    SUPERVISED = 2      # Agente propone, humano aprueba
+    HUMAN_ONLY = 3      # Humano decide y ejecuta
+
+@dataclass
+class Finding:
+    severity: str           # critical, high, medium, low
+    category: str           # dependency, code, secret, config, runtime
+    reversible: bool        # ¿se puede deshacer?
+    affects_production: bool
+    component_criticality: str  # core, standard, peripheral
+
+def classify_autonomy(finding: Finding) -> AutonomyLevel:
+    """Clasifica un hallazgo en nivel de autonomía basado en políticas."""
+    if finding.severity not in {"critical", "high", "medium", "low"} or finding.category not in {"dependency", "code", "secret", "config", "runtime"} or finding.component_criticality not in {"core", "standard", "peripheral"} or type(finding.reversible) is not bool or type(finding.affects_production) is not bool:
+        return AutonomyLevel.HUMAN_ONLY
+    # Nivel 3: siempre humano para hallazgos en componentes core
+    # con impacto en producción e irreversibles
+    if (finding.component_criticality == "core"
+        and finding.affects_production
+        and not finding.reversible):
+        return AutonomyLevel.HUMAN_ONLY
+
+    # Nivel 1: autónomo para dependencias reversibles no críticas
+    if (not finding.affects_production
+        and finding.category == "dependency"
+        and finding.reversible
+        and finding.severity in ("medium", "low")
+        and finding.component_criticality != "core"):
+        return AutonomyLevel.AUTONOMOUS
+
+    # Secrets require supervision under this local policy
+    if finding.category == "secret":
+        return AutonomyLevel.SUPERVISED
+
+    # Nivel 2: todo lo demás requiere supervisión
+    return AutonomyLevel.SUPERVISED

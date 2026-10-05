@@ -1,0 +1,61 @@
+# Tool definitions for the triage agent
+read_findings = SecureTool(
+    name="read_scan_results",
+    func=fetch_scan_results,       # Reads Semgrep/Trivy/Grype results
+    risk_level=RiskLevel.READ,
+    description="Reads security scan results from the pipeline.",
+    max_calls_per_run=10,
+)
+
+read_sbom = SecureTool(
+    name="read_sbom",
+    func=fetch_sbom,               # Reads the project's SBOM
+    risk_level=RiskLevel.READ,
+    description="Reads the project's SBOM (CycloneDX).",
+    max_calls_per_run=5,
+)
+
+analyze_context = SecureTool(
+    name="analyze_business_context",
+    func=get_service_context,      # Queries service inventory
+    risk_level=RiskLevel.ANALYZE,
+    description="Queries the business context of the affected service.",
+    max_calls_per_run=20,
+)
+
+classify_finding = SecureTool(
+    name="classify_finding",
+    func=invoke_claude_classification,  # Calls Claude for classification
+    risk_level=RiskLevel.ANALYZE,
+    description="Classifies a finding by real severity using Claude.",
+    max_calls_per_run=100,
+)
+
+# Tool it should NOT have: create PR (MODIFY level)
+create_pr = SecureTool(
+    name="create_pull_request",
+    func=create_github_pr,
+    risk_level=RiskLevel.MODIFY,
+    description="Creates a pull request on GitHub.",
+    max_calls_per_run=5,
+)
+
+# Secured agent execution
+runner = SecureAgentRunner(
+    permissions=TRIAGE_AGENT_PERMS,  # READ + ANALYZE only
+    tools=[
+        read_findings, read_sbom, analyze_context,
+        classify_finding, create_pr,  # create_pr will be filtered out
+    ],
+    system_prompt=(
+        "You are a security triage agent. Your objective is to "
+        "classify security findings by real priority, considering "
+        "business context and exploitability. "
+        "Do NOT execute remediation actions. Only classify and report."
+    ),
+)
+
+result = runner.run(
+    "Classify the 47 findings from the last scan by real priority. "
+    "Cross-reference with the SBOM and business context of each service."
+)

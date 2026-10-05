@@ -1,0 +1,45 @@
+def generate_api_fuzz_payloads(
+    endpoint: dict,
+    api_context: str,
+) -> list[dict]:
+    """Generates contextualized fuzzing payloads for an endpoint."""
+    prompt = f"""Generate fuzzing payloads for this API endpoint:
+
+Endpoint: {endpoint['method']} {endpoint['path']}
+Parameters: {json.dumps(endpoint['parameters'])}
+Body schema: {json.dumps(endpoint.get('body_schema', {}))}
+Context: {api_context}
+
+Payload categories to generate:
+1. BOUNDARY: boundary values (0, -1, MAX_INT, empty strings,
+   10,000-character strings)
+2. TYPE_CONFUSION: send incorrect type (string where int expected,
+   array where string expected)
+3. INJECTION: SQL, NoSQL, command injection adapted to field type
+4. AUTH_BYPASS: authorization field manipulation (IDOR with other
+   users' IDs, elevated roles)
+5. BUSINESS_LOGIC: values valid in format but invalid in logic
+   (negative amounts, future dates in birth date fields)
+
+Rules:
+- NO destructive payloads (mass DELETE, DROP)
+- Detection payloads, not exploitation
+- Maximum 10 payloads per category
+- Each payload with the expected response if vulnerable
+
+Respond in JSON."""
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=2048,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    proposal = json.loads(message.content[0].text)
+    if not isinstance(proposal, list):
+        raise ValueError("INCOMPLETE: invalid proposal schema")
+    for item in proposal:
+        if not isinstance(item, dict):
+            raise ValueError("INCOMPLETE: invalid proposal item")
+        item["status"] = "REVIEW"
+        item["coverage"] = "partial"
+    return proposal

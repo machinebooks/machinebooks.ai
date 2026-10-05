@@ -1,0 +1,7 @@
+# Selection priorities, not a guarantee that any full document always fits.
+DOCUMENT_PRIORITY = {
+    "requirements": 1,
+    "specifications": 2,
+    "annexes": 3,
+    "templates": 4,
+}

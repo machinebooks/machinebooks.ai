@@ -1,0 +1,3 @@
+async getSpending(): Promise<SpendingSummary> {
+  return this.get<SpendingSummary>('/api/v1/spending/me');
+}

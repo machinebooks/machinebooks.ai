@@ -1,0 +1,2 @@
+docker compose up -d mysql redis qdrant
+docker compose exec gateway pytest tests/integration/ -v

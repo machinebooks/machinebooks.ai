@@ -1,0 +1,21 @@
+sequenceDiagram
+    autonumber
+    participant L as AgentLoop
+    participant A as AutoCompact
+    participant G as Gateway/Provider
+    participant FS as Owned artifacts
+    participant U as UI
+    L->>A: compactIfNeeded(messages)
+    A->>A: estimate input and check pairs
+    alt input within threshold
+        A-->>L: compacted: false
+    else reduction needed
+        A->>A: separate instructions and complete blocks
+        A->>G: API-specific summary request
+        G-->>A: candidate summary
+        A->>A: validate result and remaining budget
+        A-->>L: reduced messages and estimated counts
+        L->>U: compact event
+        L->>FS: clean only authorized objects without consumers
+    end
+    L->>G: turn request if within limit

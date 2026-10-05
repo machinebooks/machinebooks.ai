@@ -1,0 +1,96 @@
+# scripts/security_aggregator.py
+import json
+import math
+import argparse
+from pathlib import Path
+from dataclasses import dataclass, field
+
+@dataclass
+class Finding:
+    source: str
+    severity: str
+    title: str
+    description: str
+    location: str
+    cvss_score: float | None = None
+    cve_id: str = ""
+    fixable: bool | None = None
+
+    def __post_init__(self):
+        if self.source not in {"sast","sca","secrets","container"} or self.severity not in {"critical","high","medium","low","info"}:
+            raise ValueError("INCOMPLETE: unknown source or severity")
+        if any(not isinstance(value,str) for value in (self.title,self.description,self.location,self.cve_id)) or not self.title or not self.location:
+            raise ValueError("INCOMPLETE: invalid finding identity")
+        if self.cvss_score is not None and (type(self.cvss_score) not in (int,float) or not math.isfinite(self.cvss_score) or not 0 <= self.cvss_score <= 10):
+            raise ValueError("INCOMPLETE: invalid CVSS")
+        if self.fixable is not None and type(self.fixable) is not bool:
+            raise ValueError("INCOMPLETE: invalid fixability")
+
+@dataclass
+class GateReport:
+    gate_decision: str = "review"
+    block_reason: str = ""
+    findings: list = field(default_factory=list)
+    summary: dict = field(default_factory=dict)
+    pr_comment: str = ""
+
+def read_rows(path, key):
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data,dict) or not isinstance(data.get(key),list) or data.get("errors"):
+        raise ValueError("INCOMPLETE: invalid scanner schema or scanner errors")
+    if any(not isinstance(row,dict) for row in data[key]):
+        raise ValueError("INCOMPLETE: invalid scanner row")
+    return data[key]
+
+def parse_semgrep(path: Path) -> list[Finding]:
+    rows = read_rows(path,"results")
+    severities = {"ERROR":"critical","WARNING":"high","INFO":"medium"}
+    findings = []
+    for row in rows:
+        extra = row["extra"]
+        if not isinstance(extra,dict) or extra.get("severity") not in severities or type(row["start"]["line"]) is not int or row["start"]["line"] <= 0:
+            raise ValueError("INCOMPLETE: invalid Semgrep finding")
+        findings.append(Finding("sast",severities[extra["severity"]],row["check_id"],extra.get("message",""),f"{row['path']}:{row['start']['line']}"))
+    return findings
+
+def parse_grype(path: Path) -> list[Finding]:
+    findings = []
+    for row in read_rows(path,"matches"):
+        vulnerability, package = row["vulnerability"], row["artifact"]
+        scores = vulnerability.get("cvss",[])
+        if not isinstance(scores,list):
+            raise ValueError("INCOMPLETE: invalid CVSS list")
+        values = [score["metrics"]["baseScore"] for score in scores]
+        if any(type(value) not in (int,float) or not math.isfinite(value) or not 0 <= value <= 10 for value in values):
+            raise ValueError("INCOMPLETE: invalid CVSS value")
+        versions = vulnerability.get("fix",{}).get("versions")
+        if versions is not None and (not isinstance(versions,list) or any(not isinstance(v,str) for v in versions)):
+            raise ValueError("INCOMPLETE: invalid fix versions")
+        findings.append(Finding("sca",vulnerability["severity"].lower(),f"{package['name']}@{package['version']}",vulnerability.get("description",""),f"{package['name']}:{package['version']}",max(values) if values else None,vulnerability["id"],bool(versions) if versions is not None else None))
+    return findings
+
+def parse_gitleaks(path: Path) -> list[Finding]:
+    rows = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(rows,list):
+        raise ValueError("INCOMPLETE: invalid Gitleaks schema")
+    findings = []
+    for row in rows:
+        if not isinstance(row,dict) or not isinstance(row.get("File"),str) or not row["File"] or type(row.get("StartLine")) is not int or row["StartLine"] <= 0:
+            raise ValueError("INCOMPLETE: invalid Gitleaks identity")
+        findings.append(Finding("secrets","critical",row["RuleID"],row.get("Description",""),f"{row['File']}:{row['StartLine']}"))
+    return findings
+
+def parse_trivy(path: Path) -> list[Finding]:
+    findings = []
+    for result in read_rows(path,"Results"):
+        rows = result.get("Vulnerabilities",[])
+        if rows is None:
+            rows = []
+        if not isinstance(rows,list) or not isinstance(result.get("Target"),str) or not result["Target"]:
+            raise ValueError("INCOMPLETE: invalid Trivy result")
+        for row in rows:
+            fixed = row.get("FixedVersion")
+            if fixed is not None and not isinstance(fixed,str):
+                raise ValueError("INCOMPLETE: invalid fixed version")
+            findings.append(Finding("container",row["Severity"].lower(),f"{row['PkgName']}@{row['InstalledVersion']}",row.get("Title",""),result["Target"],row.get("CVSS",{}).get("nvd",{}).get("V3Score"),row["VulnerabilityID"],bool(fixed) if fixed is not None else None))
+    return findings

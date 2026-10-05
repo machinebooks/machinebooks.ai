@@ -1,0 +1,26 @@
+// src/router/index.tsx — Main App main router
+import { createBrowserRouter } from 'react-router-dom'
+import { ProtectedLayout } from '@/components/layouts/ProtectedLayout'
+import { proposalRoutes } from '@/modules/proposals/routes'
+import { clientRoutes } from '@/modules/clients/routes'
+import { documentRoutes } from '@/modules/documents/routes'
+import { opportunityRoutes } from '@/modules/opportunities/routes'
+// ... 19 more modules
+
+export const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <ProtectedLayout />,         // Auth + general layout
+    children: [
+      ...proposalRoutes,
+      ...clientRoutes,
+      ...documentRoutes,
+      ...opportunityRoutes,
+      // ... rest of modules
+    ],
+  },
+  {
+    path: '/login',
+    element: <LoginPage />,
+  },
+])

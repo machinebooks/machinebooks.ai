@@ -1,0 +1,12 @@
+flowchart LR
+    subgraph Rate[Contadores del caso]
+        L60[llmCallWindow<br/>60 s]
+        T60[toolCallWindow<br/>60 s]
+        H60[tokensThisHour<br/>acumulado con reset por periodo]
+    end
+    Turn[turn LLM] --> L60
+    ToolExec[ejecución tool] --> T60
+    Usage[onUsage tokens] --> H60
+    L60 -- >30/min --> Reject1[rechazo según estado efectivo]
+    T60 -- >60/min --> Reject2[rechazo según estado efectivo]
+    H60 -- >500k/hora --> Warn[warning UI]

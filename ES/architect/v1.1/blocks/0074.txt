@@ -1,0 +1,17 @@
+# Only store protected replay references, not str(args) or arbitrary error messages.
+from datetime import datetime, timezone
+
+
+def persist_failed_task(task_id,task_name,error_type,replay_ref,
+                        persist_protected_failed_job):
+    for value in (task_id,task_name,error_type,replay_ref):
+        if not isinstance(value,str) or not value or len(value) > 256:
+            raise ValueError("Bounded server-owned failure metadata required")
+    record={"task_id":task_id,"task_name":task_name,"error_type":error_type,
+            "replay_ref":replay_ref,"failed_at":datetime.now(timezone.utc),
+            "reviewed":False}
+    if persist_protected_failed_job(record) is not True:
+        raise RuntimeError("Durable failure acknowledgement required")
+    return record
+# The persistence adapter enforces owner/tenant and protects the referenced job.
+# Review and re-enqueue require current authorization and idempotency reconciliation.

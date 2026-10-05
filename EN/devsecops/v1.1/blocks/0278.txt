@@ -1,0 +1,29 @@
+def build_rag_context(
+    retrieved_chunks: list[dict], protected_source_verifier=None
+) -> str:
+    """Builds RAG context with visible trust scores."""
+    if not callable(protected_source_verifier):
+        raise ValueError("REVIEW: protected source verification adapter omitted")
+    if not isinstance(retrieved_chunks,list) or not retrieved_chunks:
+        raise ValueError("INCOMPLETE: no retrieved context")
+    context_parts = []
+
+    for chunk in retrieved_chunks:
+        if (not isinstance(chunk,dict) or not isinstance(chunk.get("source"),str)
+                or not chunk["source"] or not isinstance(chunk.get("text"),str)
+                or not chunk["text"] or protected_source_verifier(chunk) is not True):
+            raise ValueError("REVIEW: source, content and scope verification required")
+        trust = chunk["trust_score"]
+        if type(trust) not in (int, float) or not 0 <= trust <= 1 or trust <= 0.7:
+            raise ValueError("REVIEW: invalid or insufficient source trust")
+        label = (
+            "HIGH TRUST" if trust > 0.7
+            else "MEDIUM TRUST" if trust > 0.5
+            else "LOW TRUST — verify manually"
+        )
+        context_parts.append(
+            f"[Source: {chunk['source']} | Trust: {label}]\n"
+            f"{chunk['text']}\n"
+        )
+
+    return "\n---\n".join(context_parts)

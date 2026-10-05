@@ -1,0 +1,61 @@
+# assessment_engine.py — Maturity assessment engine
+from maturity_model import MATURITY_MODEL, Level, DomainAssessment
+
+def evaluate_domain(
+    domain: str,
+    responses: dict[str, bool]    # criterion_id -> True/False
+) -> DomainAssessment:
+    """Evaluates a domain and determines the achieved level."""
+    if domain not in MATURITY_MODEL or not isinstance(responses, dict):
+        raise ValueError("INCOMPLETE: unknown domain or responses")
+    achieved = Level.INEXISTENT
+    criteria_met = {}
+
+    for level_num in range(1, 5):  # Levels 1 to 4
+        level_criteria = MATURITY_MODEL.get(domain, {}).get(level_num, [])
+        if not level_criteria:
+            break
+
+        all_met = True
+        for criterion in level_criteria:
+            if criterion.id not in responses or type(responses[criterion.id]) is not bool:
+                raise ValueError("INCOMPLETE: criterion evidence missing or untyped")
+            met = responses[criterion.id]
+            criteria_met[criterion.id] = met
+            if not met:
+                all_met = False
+
+        if all_met:
+            achieved = Level(level_num)
+        else:
+            break  # Cannot skip levels
+
+    return DomainAssessment(
+        domain=domain,
+        achieved_level=achieved,
+        criteria_met=criteria_met,
+    )
+
+def calculate_global_score(
+    assessments: list[DomainAssessment],
+    weights: dict[str, float]
+) -> float:
+    """Calculates the weighted global score (0.0 to 4.0)."""
+    domains = [a.domain for a in assessments]
+    if not domains or len(set(domains)) != len(domains) or set(domains) != set(weights):
+        raise ValueError("INCOMPLETE: domain coverage or weights")
+    if any(type(v) not in (int, float) or not 0 < v <= 1 for v in weights.values()) or abs(sum(weights.values()) - 1) > 1e-9:
+        raise ValueError("INCOMPLETE: unnormalized weights")
+    total = 0.0
+    for assessment in assessments:
+        if not isinstance(assessment.achieved_level,Level):
+            raise ValueError("INCOMPLETE: invalid ordinal level")
+        weight = weights[assessment.domain]
+        total += assessment.achieved_level * weight
+    return round(total, 2)
+
+# Usage example
+ENTERPRISE_AI_WEIGHTS = {
+    "PS": 0.20, "VM": 0.20, "GOV": 0.15,
+    "MR": 0.15, "AIS": 0.20, "CA": 0.10,
+}

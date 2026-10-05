@@ -1,0 +1,13 @@
+flowchart TB
+    A[Active messages] --> B{Estimated input exceeds threshold?}
+    B -- No --> C[Validate budget and call provider]
+    B -- Yes --> D[AutoCompact.compactIfNeeded]
+    D --> E[Separate trusted instructions and complete pairs]
+    E --> F[LLM summarizes selected history]
+    F -- valid summary --> G[Construct data context]
+    F -- failure or open breaker --> H[Lossy deterministic fallback]
+    H --> G
+    G --> I[Retain provenance and check budget]
+    I --> J[Clean owned artifacts without live consumers]
+    J --> C
+    D -.notice with independent threshold.-> K[Emit renderer state]

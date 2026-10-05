@@ -1,0 +1,134 @@
+"""remediation_agent.py — Remediation agent with Claude Agent SDK."""
+import anthropic
+import json
+from pathlib import Path
+
+client = anthropic.Anthropic()
+
+# Remediation agent tool definitions
+tools = [
+    {
+        "name": "read_file",
+        "description": (
+            "Reads the contents of a repository file. "
+            "Use this tool to understand the code affected "
+            "by the vulnerability before generating a fix."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "description": "Relative path to the file"
+                },
+                "start_line": {
+                    "type": "integer",
+                    "description": "Start line (optional)"
+                },
+                "end_line": {
+                    "type": "integer",
+                    "description": "End line (optional)"
+                }
+            },
+            "required": ["file_path"]
+        }
+    },
+    {
+        "name": "read_changelog",
+        "description": (
+            "Queries a dependency's changelog to "
+            "identify breaking changes between two versions."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "package_name": {"type": "string"},
+                "current_version": {"type": "string"},
+                "target_version": {"type": "string"}
+            },
+            "required": [
+                "package_name",
+                "current_version",
+                "target_version"
+            ]
+        }
+    },
+    {
+        "name": "create_branch",
+        "description": (
+            "Creates a new branch in the repository to "
+            "apply the fix. Never modifies main directly."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "branch_name": {"type": "string"},
+                "base_branch": {
+                    "type": "string",
+                    "default": "main"
+                }
+            },
+            "required": ["branch_name"]
+        }
+    },
+    {
+        "name": "apply_fix",
+        "description": (
+            "Applies changes to a file on the fix branch. "
+            "Receives the complete new file content."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "file_path": {"type": "string"},
+                "new_content": {"type": "string"},
+                "commit_message": {"type": "string"}
+            },
+            "required": [
+                "file_path", "new_content", "commit_message"
+            ]
+        }
+    },
+    {
+        "name": "create_pull_request",
+        "description": (
+            "Creates a GitHub pull request with the "
+            "applied fix, explanation, and labels."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "title": {"type": "string"},
+                "body": {"type": "string"},
+                "branch": {"type": "string"},
+                "labels": {
+                    "type": "array",
+                    "items": {"type": "string"}
+                },
+                "reviewers": {
+                    "type": "array",
+                    "items": {"type": "string"}
+                }
+            },
+            "required": ["title", "body", "branch"]
+        }
+    },
+    {
+        "name": "check_exclusion_policy",
+        "description": (
+            "Checks whether the finding is excluded from "
+            "automatic remediation by OPA policies."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "finding_id": {"type": "string"},
+                "file_path": {"type": "string"},
+                "fix_category": {"type": "string"}
+            },
+            "required": [
+                "finding_id", "file_path", "fix_category"
+            ]
+        }
+    }
+]

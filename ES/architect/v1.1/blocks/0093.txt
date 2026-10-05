@@ -1,0 +1,36 @@
+    def __enter__(self):
+        try:
+            self.driver=self._create_driver()
+            self.wait=WebDriverWait(self.driver,self.DEFAULT_WAIT)
+            logger.info("Driver started",extra={"task_id":self.task_id})
+            return self
+        except BaseException:
+            if self.driver is not None:
+                try:self.driver.quit()
+                except Exception:logger.warning("Driver entry cleanup unconfirmed")
+            raise
+
+    def __exit__(self,exc_type,exc_val,exc_tb):
+        if self.driver is not None:
+            try:self.driver.quit()
+            except Exception:logger.warning("Driver exit cleanup unconfirmed")
+        return False
+    # Context cleanup cannot handle process hard termination; Grid lease/timeout
+    # and external reconciliation are separate controls.
+
+    def wait_for_element(self, locator, timeout: int = None):
+        """Waits for an element to be visible and returns the reference."""
+        t = timeout or self.DEFAULT_WAIT
+        try:
+            return WebDriverWait(self.driver, t).until(
+                EC.visibility_of_element_located(locator)
+            )
+        except TimeoutException:
+            # Capture screenshot for diagnostics before propagating the error
+            self._capture_screenshot(f"timeout_{locator[1][:20]}")
+            raise
+
+    def _capture_screenshot(self,name):
+        # Capture is disabled here. A protected, reviewed capture adapter must
+        # enforce destination, retention, authorization and redaction separately.
+        logger.info("Diagnostic capture disabled",extra={"task_id":self.task_id})

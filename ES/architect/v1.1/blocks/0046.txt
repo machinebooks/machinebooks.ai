@@ -1,0 +1,49 @@
+# Excerpt: JWT validation is configured separately (issuer, audience, expiry, blocklist).
+from functools import wraps
+from types import SimpleNamespace
+from flask import g, jsonify, current_app
+from flask_jwt_extended import jwt_required, get_jwt_identity
+
+
+def platform_guard(function):
+    @wraps(function)
+    @jwt_required()
+    def decorated(*args, **kwargs):
+        # resolve_current_principal queries server-owned state, not role headers/claims.
+        # It verifies user/application/membership activity, role.app_id and revocation.
+        principal = resolve_current_principal(
+            get_jwt_identity(), current_app.config["APP_CODE"]
+        )
+        if not isinstance(principal, dict) or principal.get("active") is not True:
+            return jsonify({"error": "Access denied"}), 403
+        user_id = principal.get("user_id")
+        if type(user_id) is not int or user_id < 1:
+            return jsonify({"error": "Access denied"}), 403
+        if principal.get("app_code") != current_app.config["APP_CODE"]:
+            return jsonify({"error": "Access denied"}), 403
+        permissions = principal.get("permissions")
+        if not isinstance(permissions, dict):
+            return jsonify({"error": "Access denied"}), 403
+        if not all(isinstance(k, str) and isinstance(v, (list, tuple))
+                   and all(isinstance(x, str) for x in v)
+                   for k, v in permissions.items()):
+            return jsonify({"error": "Access denied"}), 403
+        g.current_user_id = user_id
+        g.current_user = SimpleNamespace(id=user_id)
+        g.app_code = principal["app_code"]
+        g.permissions = permissions
+        return function(*args, **kwargs)
+    return decorated
+
+
+def require_permission(module, action):
+    def decorator(function):
+        @wraps(function)
+        def decorated(*args, **kwargs):
+            if action not in getattr(g, "permissions", {}).get(module, ()):
+                return jsonify({"error": "Insufficient permission"}), 403
+            return function(*args, **kwargs)
+        return decorated
+    return decorator
+# No administrator bypass: object/tenant checks remain inside each handler.
+# The resolver and JWT blocklist callback are dependencies, not implemented here.

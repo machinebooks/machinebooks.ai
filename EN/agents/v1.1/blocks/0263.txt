@@ -1,0 +1,10 @@
+test('rejects destinations outside the fixture policy', async ({ request }) => {
+  const headers = { 'X-SylvarSec-Token': fixture.token };
+  for (const url of ['http://fixture.invalid:11434', 'file:///fixture/outside']) {
+    const response = await request.put(`${fixture.api}/api/reversing/config`, {
+      headers, data: { analysisOllamaUrl: url },
+    });
+    expect(response.status()).toBe(400);
+  }
+  expect(fixture.outboundCalls()).toBe(0);
+});

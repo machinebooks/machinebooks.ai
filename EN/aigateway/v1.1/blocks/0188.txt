@@ -1,0 +1,18 @@
+# Partial reconciliation: bind to the original reservation and buckets; idempotency and concurrent updates are omitted.
+async def reconcile_eur_reservation(
+    db, device_id, user_id, org_id,
+    *, estimated_cost_eur, actual_cost_eur, pack_slug=None,
+):
+    if estimated_cost_eur is None or actual_cost_eur is None:
+        return {"status": "pending_reconciliation"}
+    estimate = Decimal(str(estimated_cost_eur))
+    actual = Decimal(str(actual_cost_eur))
+    delta = actual - estimate
+    if abs(delta) < Decimal("0.000001"):
+        return  # Insignificant difference
+
+    # Adjust used in all active buckets
+    for bucket in ACTIVE_BUCKETS:
+        q = await _get_or_create_quota(..., lock=True)
+        q.used = max(Decimal("0"), q.used + delta)
+    await db.commit()

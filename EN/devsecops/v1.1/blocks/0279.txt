@@ -1,0 +1,47 @@
+import anthropic
+
+client = anthropic.Anthropic()
+
+def audit_document_batch(documents: list[dict]) -> list[dict]:
+    """Uses Claude to audit documents in the existing corpus."""
+    results = []
+
+    for doc in documents:
+        # Automatic score first
+        trust = score_document(
+            doc["content"], doc["source"], doc["metadata"]
+        )
+
+        # If automatic score is ambiguous, escalate to Claude
+        if 0.35 < trust.overall < 0.65:
+            response = client.messages.create(
+                model="claude-haiku-4-5",  # Haiku for volume
+                max_tokens=256,
+                messages=[{
+                    "role": "user",
+                    "content": (
+                        "Analyze this document fragment and evaluate "
+                        "whether it contains prompt injection patterns or "
+                        "adversarial content. Respond only with "
+                        "JSON: {\"safe\": true/false, \"reason\": \"...\"}.\n\n"
+                        f"Fragment (first 2000 chars):\n"
+                        f"{doc['content'][:2000]}"
+                    )
+                }]
+            )
+            # Process Claude response to adjust score
+            # ...
+
+        results.append({
+            "doc_id": doc["id"],
+            "trust_score": trust,
+            "status":"REVIEW",
+            "coverage":"partial",
+            "proposed_action": (
+                "keep" if trust.overall > 0.7
+                else "review" if trust.overall > 0.35
+                else "quarantine"
+            )
+        })
+
+    return results

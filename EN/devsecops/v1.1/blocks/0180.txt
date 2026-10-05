@@ -1,0 +1,29 @@
+# Historical Falco + exporter adapter; validate pinned artifacts and host permissions.
+services:
+  falco:
+    image: falcosecurity/falco:0.38.1
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock:ro
+      - /proc:/host/proc:ro
+      - /etc:/host/etc:ro
+      - ./falco/rules:/etc/falco/rules.d:ro
+      - ./falco/falco.yaml:/etc/falco/falco.yaml:ro
+      - falco-runtime:/run/falco
+    command: ["falco", "-o", "engine.kind=modern_ebpf", "-o", "grpc.enabled=true", "-o", "grpc.bind_address=unix:///run/falco/falco.sock", "-o", "grpc_output.enabled=true"]
+    ports:
+      - "127.0.0.1:8765:8765"  # Health/version webserver, not HTTP event output
+    networks: [security-net]
+  falco-exporter:
+    image: falcosecurity/falco-exporter:0.8.7
+    depends_on: [falco]
+    volumes:
+      - falco-runtime:/run/falco:ro
+    command: ["--client-socket=unix:///run/falco/falco.sock"]
+    ports:
+      - "127.0.0.1:9376:9376"  # Historical event metrics
+    networks: [security-net]
+volumes:
+  falco-runtime: {}
+networks:
+  security-net: {}

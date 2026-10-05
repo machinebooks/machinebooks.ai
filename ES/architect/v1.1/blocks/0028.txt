@@ -1,0 +1,22 @@
+# ADR-004: Framework separation in the historical case
+
+**Date:** [record the actual decision date]
+**Status:** [accepted only after review]
+
+## Context
+The backend handles business authorization. The AI service needs streaming
+and management of potentially long model calls. Latency is measured per workload.
+
+## Decision in the case
+- Main backend: Flask with blueprints
+- AI service: FastAPI with an ASGI server
+
+## Alternatives considered
+- FastAPI for both: valid; evaluate team skills and migration cost
+- Flask for both: supports streaming; evaluate WSGI server and worker capacity
+- Modular monolith: valid if requirements and load do not justify separation
+
+## Consequences
+- Two builds and authenticated, versioned internal contracts
+- Independent sizing; shared dependencies can still cause cascading failures
+- Pin supported dependency versions and test cancellation and actual load

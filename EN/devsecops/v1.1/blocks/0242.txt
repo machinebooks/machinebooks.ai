@@ -1,0 +1,68 @@
+from datetime import datetime, timedelta, timezone
+from enum import Enum
+from sqlalchemy import (
+    Column, String, Text, DateTime, Integer,
+    ForeignKey, JSON, Enum as SAEnum
+)
+from sqlalchemy.orm import DeclarativeBase, relationship
+
+
+class Base(DeclarativeBase):
+    pass
+
+
+class ExceptionStatus(str, Enum):
+    REQUESTED = "requested"       # Request submitted
+    UNDER_REVIEW = "under_review" # Agent evaluating risk
+    APPROVED = "approved"         # Approved by security lead
+    DENIED = "denied"             # Denied
+    EXPIRED = "expired"           # Expiration date passed
+    RESOLVED = "resolved"         # Vulnerability remediated
+
+
+class Severity(str, Enum):
+    CRITICAL = "critical"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+
+
+class SecurityException(Base):
+    """Each exception links a finding to a risk decision."""
+    __tablename__ = "security_exceptions"
+
+    id = Column(Integer, primary_key=True)
+    finding_id = Column(String(128), nullable=False, index=True)
+    finding_source = Column(String(64), nullable=False)  # semgrep, grype, trivy
+    severity = Column(SAEnum(Severity), nullable=False)
+    cve_id = Column(String(32), nullable=True)           # CVE-2024-XXXXX
+    affected_component = Column(String(256), nullable=False)
+    service_name = Column(String(128), nullable=False)
+
+    # Request
+    requested_by = Column(String(128), nullable=False)
+    requested_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    business_justification = Column(Text, nullable=False)
+    technical_justification = Column(Text, nullable=False)
+
+    # Agent evaluation
+    agent_risk_score = Column(Integer, nullable=True)     # 0-100
+    agent_assessment = Column(Text, nullable=True)
+    compensating_controls = Column(JSON, nullable=True)   # List of suggested controls
+
+    # Approval
+    status = Column(SAEnum(ExceptionStatus), default=ExceptionStatus.REQUESTED)
+    approved_by = Column(String(128), nullable=True)
+    approved_at = Column(DateTime(timezone=True), nullable=True)
+    denial_reason = Column(Text, nullable=True)
+
+    # Validity
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    max_renewals = Column(Integer, default=2)
+    renewal_count = Column(Integer, default=0)
+
+    # Resolution
+    resolved_at = Column(DateTime(timezone=True), nullable=True)
+    resolution_notes = Column(Text, nullable=True)
+
+    reviews = relationship("ExceptionReview", back_populates="exception")

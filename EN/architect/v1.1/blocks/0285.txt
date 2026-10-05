@@ -1,0 +1,52 @@
+def code_validation_pipeline(
+    generated_code: str,
+    business_requirements: str
+) -> dict:
+    """
+    Multi-perspective validation pipeline for AI-generated code.
+    The architect supervises the result; the pipeline executes the systematic review.
+    Using claude-opus-4-6 in the synthesis ensures high-quality reasoning
+    for the final decision on whether the code can go to production.
+    """
+    # Step 1: independent security review
+    security_review = security_reviewer(
+        task=f"Review this code:\n\n```python\n{generated_code}\n```",
+        additional_context="Environment: B2B application in production with enterprise client data."
+    )
+
+    # Step 2: business validation with context from security findings
+    # Passing security findings prevents the business validator from repeating the same analysis
+    business_review = business_validator(
+        task=f"Validate this code against the requirements:\n\nRequirements:\n{business_requirements}\n\nCode:\n```python\n{generated_code}\n```",
+        additional_context=f"Security findings already identified: {security_review}"
+    )
+
+    # Step 3: synthesis by the coordinator with the most capable model
+    # claude-opus-4-6 for complex reasoning in the final decision
+    final_decision = client.messages.create(
+        model="claude-opus-4-6",
+        max_tokens=2048,
+        messages=[{
+            "role": "user",
+            "content": f"""Synthesize these two reviews and determine whether the code can
+go to production or requires prior corrections.
+
+Security review:
+{security_review}
+
+Business logic review:
+{business_review}
+
+Return:
+1. Status: APPROVED or CORRECTIONS_NEEDED
+2. Critical blockers (if status = CORRECTIONS_NEEDED): what prevents production
+3. Recommended improvements (optional): what would improve quality without blocking
+4. Decision confidence (high/medium/low) and why"""
+        }]
+    ).content[0].text
+
+    return {
+        "security": security_review,
+        "business": business_review,
+        "decision": final_decision
+    }

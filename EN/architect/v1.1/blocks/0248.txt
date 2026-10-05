@@ -1,0 +1,23 @@
+# Fragment of docker-compose.yml — Flower service
+flower:
+  image: mher/flower:2.0
+  command: >
+    celery
+    --broker=redis://:${REDIS_PASSWORD}@redis:6379/0
+    flower
+    --port=5555
+    --basic_auth=${FLOWER_USER}:${FLOWER_PASSWORD}
+    --url_prefix=flower
+    --max_tasks=10000          # In-memory history
+    --persistent=True          # Persists state between restarts
+    --db=/data/flower.db
+  volumes:
+    - flower_data:/data
+  ports:
+    - "127.0.0.1:5555:5555"   # External access via Nginx with auth, not direct
+  depends_on:
+    - redis
+  environment:
+    - CELERY_BROKER_URL=redis://:${REDIS_PASSWORD}@redis:6379/0
+    - CELERY_RESULT_BACKEND=redis://:${REDIS_PASSWORD}@redis:6379/0
+  restart: unless-stopped

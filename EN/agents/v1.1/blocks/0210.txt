@@ -1,0 +1,13 @@
+// 6. Add a dataset in read-only
+vm.add({
+  hostPath: 'D:\\datasets\\eval',
+  mountName: 'eval-dataset',
+  mode: 'ro',
+});
+
+// 7. Add agent memory in rwd mode (persistent without touching host)
+vm.add({
+  hostPath: path.join(os.homedir(), '.sylvarsec', 'memories'),
+  mountName: 'memories',
+  mode: 'rwd',
+});

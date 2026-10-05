@@ -1,0 +1,43 @@
+# policies/ai/data_classification.rego
+package ai.data_classification
+
+import future.keywords.in
+import future.keywords.if
+import future.keywords.contains
+
+valid_input if {
+    input.data_classification in {"public","internal","confidential","restricted"}
+    is_number(input.log_retention_days)
+    input.log_retention_days >= 0
+    floor(input.log_retention_days) == input.log_retention_days
+}
+
+deny contains msg if {
+    not valid_input
+    msg := "INCOMPLETE: missing or invalid policy input/data"
+}
+
+# Retention rules by classification
+max_retention_days := {
+    "public": 365,
+    "internal": 90,
+    "confidential": 30,
+    "restricted": 7,
+}
+
+# Deny LLM log retention exceeding maximum
+deny contains msg if {
+    classification := input.data_classification
+    max_days := max_retention_days[classification]
+    input.log_retention_days > max_days
+    msg := sprintf(
+        "Retention of %d days exceeds maximum of %d for '%s' data",
+        [input.log_retention_days, max_days, classification]
+    )
+}
+
+# Deny operations without data classification
+deny contains msg if {
+    not input.data_classification
+    msg := "Every LLM operation must include data classification"
+}

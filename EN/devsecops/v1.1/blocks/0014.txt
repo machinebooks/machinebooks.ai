@@ -1,0 +1,48 @@
+from illustrative_host import Agent, tool
+
+@tool
+def get_service_context(service_name: str) -> dict:
+    """Query the service inventory and return the security context."""
+    import yaml
+    with open("services_inventory.yaml") as f:
+        inventory = yaml.safe_load(f)
+    return inventory["services"].get(service_name, {"error": "Service not found"})
+
+@tool
+def get_cve_details(cve_id: str) -> dict:
+    """Query the NVD database for CVE details."""
+    import requests
+    url = f"https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={cve_id}"
+    response = requests.get(url, timeout=10)
+    if response.status_code == 200:
+        return response.json()
+    return {"error": f"CVE {cve_id} not found"}
+
+@tool
+def check_exploitability(cwe_id: str) -> dict:
+    """Verify if public exploits exist for the given weakness type."""
+    # Simplified query to the exploit database
+    known_exploitable = {
+        "CWE-89": {"exploitable": True, "exploit_count": 1247, "ease": "trivial"},
+        "CWE-79": {"exploitable": True, "exploit_count": 892, "ease": "easy"},
+        "CWE-798": {"exploitable": True, "exploit_count": 156, "ease": "trivial"},
+        "CWE-502": {"exploitable": True, "exploit_count": 203, "ease": "moderate"},
+    }
+    return {"status":"REVIEW","coverage":"partial","synthetic":True, "catalog_entry":known_exploitable.get(cwe_id), "exploitable":None}
+
+# Triage agent definition
+triage_agent = Agent(
+    model="claude-sonnet-4-6",
+    tools=[get_service_context, get_cve_details, check_exploitability],
+    system_prompt="""You are a senior security analyst specializing in vulnerability
+    triage. You receive findings from SAST/SCA tools and classify them
+    by real business risk, not just technical severity.
+
+    For each finding:
+    1. Query the affected service's context
+    2. If there is an associated CVE, query the NVD details
+    3. Verify the exploitability of the weakness type (CWE)
+    4. Classify the real risk as CRITICAL, HIGH, MEDIUM, LOW, or FALSE_POSITIVE
+    5. Explain your reasoning in 2-3 sentences
+    6. Propose a concrete fix if the risk is MEDIUM or above"""
+)

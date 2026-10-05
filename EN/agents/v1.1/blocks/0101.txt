@@ -1,0 +1,7 @@
+export interface ChannelRule {
+  serverName: string;
+  toolName?: string;
+  argMatch?: Record<string, string>;
+  decision: 'allow' | 'deny' | 'ask';
+  reason?: string;
+}

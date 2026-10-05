@@ -1,0 +1,27 @@
+┌────────────────────────┐
+│   Plan de acción       │
+│   (Capítulo 9)         │
+│   ┌─────────────────┐  │
+│   │ immediate_action│  │
+│   │ planned_action  │  │
+│   └────────┬────────┘  │
+└────────────┼────────────┘
+             │
+     ┌───────▼───────┐
+     │  Clasificador  │     ¿Auto-corregible?
+     │  de fix        │     ¿Excluido por política?
+     └───────┬───────┘
+             │
+     ┌───────┴───────────────┐
+     │                       │
+┌────▼────┐          ┌──────▼──────┐
+│  Plan   │          │  Advisory   │
+│  fix    │          │  task only  │
+│ (agente)│          │ (contexto)  │
+└────┬────┘          └──────┬──────┘
+     │                      │
+┌────▼────────────────┐  ┌──▼───────────────┐
+│ Diff propuesto      │  │ Tarea/coment.    │
+│ + explicación       │  │ + sugerencia     │
+│ + tests propuestos  │  │ + análisis       │
+└─────────────────────┘  └──────────────────┘

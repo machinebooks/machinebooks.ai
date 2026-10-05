@@ -1,0 +1,106 @@
+// useClaudeStream.ts — Hook for consuming SSE streams from Claude
+import { useState, useCallback, useRef } from 'react';
+
+interface UseClaudeStreamOptions {
+  onChunk?: (chunk: string) => void;  // Callback for each received fragment
+  onComplete?: (fullText: string) => void;
+  onError?: (error: string) => void;
+}
+
+interface UseClaudeStreamReturn {
+  streamText: string;
+  isStreaming: boolean;
+  startStream: (endpoint: string, payload: object) => void;
+  stopStream: () => void;
+}
+
+export function useClaudeStream(
+  options: UseClaudeStreamOptions = {}
+): UseClaudeStreamReturn {
+  const [streamText, setStreamText] = useState('');
+  const [isStreaming, setIsStreaming] = useState(false);
+  // Ref for the EventSource connection: does not trigger renders on change
+  const eventSourceRef = useRef<EventSource | null>(null);
+  const fullTextRef = useRef('');
+
+  const stopStream = useCallback(() => {
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
+      eventSourceRef.current = null;
+    }
+    setIsStreaming(false);
+  }, []);
+
+  const startStream = useCallback(
+    (endpoint: string, payload: object) => {
+      // Clear previous text before starting
+      setStreamText('');
+      fullTextRef.current = '';
+      setIsStreaming(true);
+
+      // Native SSE does not directly support POST, so we use
+      // a prior POST request to obtain an ephemeral stream_id,
+      // then open the EventSource with GET using that ID
+      const token = localStorage.getItem('access_token');
+      const baseUrl = import.meta.env.VITE_API_URL || 'https://api.example.com';
+
+      fetch(`${baseUrl}${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
+        .then(({ stream_id }) => {
+          // Open the EventSource with the stream_id and token as query param
+          // Note: EventSource does not allow custom headers; the token
+          // goes in the URL and the backend validates it as a security parameter.
+          // The stream_id is stored in Redis with a 30-second TTL
+          // and is deleted after the first connection.
+          const url = `${baseUrl}/stream/${stream_id}?token=${token}`;
+          const eventSource = new EventSource(url);
+          eventSourceRef.current = eventSource;
+
+          eventSource.onmessage = (event) => {
+            if (event.data === '[DONE]') {
+              // The server indicates the stream has ended
+              eventSource.close();
+              eventSourceRef.current = null;
+              setIsStreaming(false);
+              options.onComplete?.(fullTextRef.current);
+              return;
+            }
+
+            try {
+              const data = JSON.parse(event.data);
+              const chunk = data.text || '';
+              fullTextRef.current += chunk;
+              setStreamText((prev) => prev + chunk);
+              options.onChunk?.(chunk);
+            } catch {
+              // Malformed fragments are ignored; the stream continues
+            }
+          };
+
+          eventSource.onerror = () => {
+            eventSource.close();
+            eventSourceRef.current = null;
+            setIsStreaming(false);
+            options.onError?.('Stream connection error. Please try again.');
+          };
+        })
+        .catch((err) => {
+          setIsStreaming(false);
+          options.onError?.(err.message);
+        });
+    },
+    [options]
+  );
+
+  return { streamText, isStreaming, startStream, stopStream };
+}

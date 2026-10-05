@@ -1,0 +1,20 @@
+sequenceDiagram
+    autonumber
+    participant AL as AgentLoop
+    participant HL as HookLoader
+    participant FS as Filesystem
+    participant TW as TrustedWorkspaces
+    AL->>HL: loadHooks(workspaceRoot)
+    HL->>FS: read ~/.sylvarsec/settings.json
+    FS-->>HL: hooks de usuario
+    HL->>FS: read <workspace>/.sylvar/settings.json
+    FS-->>HL: hooks de proyecto (candidatos)
+    HL->>TW: isWorkspaceTrusted(workspaceRoot)?
+    alt Workspace confiado
+        TW-->>HL: true
+        HL->>HL: fusionar usuario + proyecto
+    else No confiado
+        TW-->>HL: false
+        HL->>HL: ignorar hooks de proyecto, log warning
+    end
+    HL-->>AL: HookDefinition[] filtrados por enabled

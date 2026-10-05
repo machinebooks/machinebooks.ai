@@ -1,0 +1,7 @@
+// src/server/slash-commands.ts:35-40
+export interface CommandResult {
+  type: 'message' | 'action' | 'prompt';
+  content: string;
+  action?: string;
+  data?: unknown;
+}

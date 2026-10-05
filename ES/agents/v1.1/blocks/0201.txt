@@ -1,0 +1,37 @@
+// Updated educational example; the host supplies authorizeRun.
+import { readFile } from 'node:fs/promises';
+import { once } from 'node:events';
+
+async function* runAgent(input, signal) {
+  signal.throwIfAborted();
+  yield { type: 'tool_use_start', id: 'tu_1', name: 'Read' };
+  const content = await readFile(input.filePath, { encoding: 'utf8', signal });
+  signal.throwIfAborted();
+  yield { type: 'tool_result', id: 'tu_1', result: content };
+  yield { type: 'agent_complete', finalMessage: 'Listo.' };
+}
+
+app.post('/api/agent/stream', async (req, res) => {
+  const controller = new AbortController();
+  const close = () => controller.abort();
+  res.once('close', close);
+  try {
+    const input = await authorizeRun(req);
+    controller.signal.throwIfAborted();
+    res.setHeader('Content-Type', 'application/x-ndjson');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.flushHeaders();
+    for await (const event of runAgent(input, controller.signal)) {
+      controller.signal.throwIfAborted();
+      if (!res.write(JSON.stringify(event) + '\n')) {
+        await once(res, 'drain', { signal: controller.signal });
+      }
+    }
+  } catch (error) {
+    if (!controller.signal.aborted) res.destroy(error);
+  } finally {
+    res.off('close', close);
+    controller.abort();
+    if (!res.destroyed) res.end();
+  }
+});

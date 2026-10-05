@@ -1,0 +1,20 @@
+rules:
+  - id: devsecops-book.llm.code-execution-from-llm-output
+    mode: taint
+    pattern-sources:
+      - pattern: client.messages.create(...)
+    pattern-sinks:
+      - pattern-either:
+          - pattern: exec($VALUE, ...)
+          - pattern: eval($VALUE, ...)
+          - pattern: subprocess.run($VALUE, ...)
+          - pattern: os.system($VALUE)
+    message: "Posible flujo de respuesta LLM a ejecución; requiera aislamiento y autorización."
+    severity: ERROR
+    languages: [python]
+    metadata:
+      category: security
+      cwe: "CWE-94: Code Injection"
+      owasp-llm: "LLM05: Improper Output Handling"
+      confidence: MEDIUM
+      chapter: 4

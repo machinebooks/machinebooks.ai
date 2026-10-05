@@ -1,0 +1,15 @@
+rules:
+  - id: devsecops-book.llm.sensitive-data-in-system-prompt
+    patterns:
+      - pattern: '{"role": "system", "content": $PROMPT}'
+      - metavariable-regex:
+          metavariable: $PROMPT
+          regex: '(?is).*(password|secret|api_key|token|credential|internal_url).*'
+    message: "Término potencialmente sensible en system prompt; revise contenido y flujo."
+    severity: WARNING
+    languages: [python]
+    metadata:
+      category: security
+      owasp-llm: "LLM07: System Prompt Leakage"
+      confidence: LOW
+      chapter: 13

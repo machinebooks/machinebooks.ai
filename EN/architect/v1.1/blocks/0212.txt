@@ -1,0 +1,110 @@
+# tests/test_basic_security.py
+
+class TestAuthentication:
+    """Basic robustness tests for the authentication system."""
+
+    def test_login_incorrect_credentials_returns_401(self, client):
+        """The system must not give hints about which field is incorrect."""
+        response = client.post("/api/auth/login", json={
+            "email": "user@example.com",
+            "password": "wrong_password"
+        })
+        assert response.status_code == 401
+        # The message must not indicate whether it was the email or password that was incorrect
+        message = response.json.get("message", "")
+        assert "email" not in message.lower()
+        assert "user" not in message.lower()
+        assert "not found" not in message.lower()
+
+    def test_expired_token_returns_401(self, client, expired_token):
+        """An expired JWT must be rejected even with a valid signature."""
+        response = client.get(
+            "/api/v1/clients",
+            headers={"Authorization": f"Bearer {expired_token}"}
+        )
+        assert response.status_code == 401
+
+    def test_tampered_token_returns_401(self, client, valid_token):
+        """A token with a modified payload must be rejected (invalid signature)."""
+        parts = valid_token.split(".")
+        modified_payload = parts[1] + "XYZ"  # Corrupts the payload
+        corrupt_token = f"{parts[0]}.{modified_payload}.{parts[2]}"
+        response = client.get(
+            "/api/v1/clients",
+            headers={"Authorization": f"Bearer {corrupt_token}"}
+        )
+        assert response.status_code == 401
+
+    def test_rate_limiting_login_blocks_excessive_attempts(self, client):
+        """More than 5 consecutive failed attempts must result in 429."""
+        # The rate limiting threshold (5 attempts/minute) is configured in the backend
+        for _ in range(5):
+            client.post("/api/auth/login", json={
+                "email": "test@example.com",
+                "password": "incorrect"
+            })
+        response = client.post("/api/auth/login", json={
+            "email": "test@example.com",
+            "password": "incorrect"
+        })
+        assert response.status_code == 429
+
+
+class TestSQLInjection:
+    """
+    Basic SQL injection resistance tests.
+    They do not replace a professional security analysis,
+    but detect the most obvious vulnerabilities.
+    """
+
+    INJECTION_PAYLOADS = [
+        "' OR '1'='1",
+        "'; DROP TABLE users; --",
+        "1 UNION SELECT * FROM users--",
+        "admin'--",
+        "' OR 1=1--",
+    ]
+
+    @pytest.mark.parametrize("payload", INJECTION_PAYLOADS)
+    def test_search_parameter_resists_sql_injection(self, client, auth_headers_by_role):
+        """The search parameter must not be vulnerable to basic SQL injection."""
+        response = client.get(
+            f"/api/v1/clients?search={payload}",
+            headers=auth_headers_by_role["analyst"]
+        )
+        # The endpoint must respond with 200 (empty search) or 400 (validation)
+        # It must never result in a 500 error (signal that the payload reached the DB)
+        assert response.status_code != 500, \
+            f"Possible SQL injection vulnerability with payload: {payload}"
+
+    @pytest.mark.parametrize("payload", INJECTION_PAYLOADS)
+    def test_email_field_login_resists_injection(self, client):
+        """The login email field must not be vulnerable to SQL injection."""
+        response = client.post("/api/auth/login", json={
+            "email": payload,
+            "password": "anything"
+        })
+        assert response.status_code != 500
+
+
+class TestDataExposure:
+    """Verifies that endpoints do not leak sensitive fields in responses."""
+
+    def test_user_response_does_not_contain_password_hash(self, client, auth_headers_by_role):
+        """The user profile must never include the password hash."""
+        response = client.get("/api/v1/auth/me", headers=auth_headers_by_role["analyst"])
+        assert response.status_code == 200
+        data = response.json
+        assert "password" not in data
+        assert "password_hash" not in data
+        assert "hashed_password" not in data
+
+    def test_client_response_does_not_expose_internal_fields(self, client, auth_headers_by_role):
+        """Client data must not include internal audit fields."""
+        response = client.get("/api/v1/clients/1", headers=auth_headers_by_role["analyst"])
+        if response.status_code == 200:
+            data = response.json
+            internal_fields = ["_sa_instance_state", "deleted_at", "internal_notes"]
+            for field in internal_fields:
+                assert field not in data, \
+                    f"Internal field '{field}' should not be exposed in the API"

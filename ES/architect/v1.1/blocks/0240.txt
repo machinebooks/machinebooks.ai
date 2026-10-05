@@ -1,0 +1,27 @@
+# Añadir en el bloque server, junto a las configuraciones de location
+# Cabeceras de seguridad para todos los frontales
+
+# Evita que el navegador infiera el tipo MIME del contenido
+add_header X-Content-Type-Options "nosniff" always;
+
+# Protección básica contra clickjacking
+add_header X-Frame-Options "SAMEORIGIN" always;
+
+# Fuerza HTTPS en peticiones futuras (solo si hay TLS)
+# add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+# Política de referrer: solo enviar el origen, no la URL completa
+add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+# Content Security Policy: restricción de fuentes de contenido
+# Esta CSP se ajusta al contenido específico de la Plataforma
+add_header Content-Security-Policy "
+  default-src 'self';
+  script-src 'self';
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' data: blob:;
+  connect-src 'self' https://api.ejemplo.com;
+  font-src 'self';
+  object-src 'none';
+  frame-ancestors 'self'
+" always;

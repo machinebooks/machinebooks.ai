@@ -1,0 +1,57 @@
+# Didactic example: coordination of specialized agents with Claude Agent SDK
+# Orchestration pattern: coordinator agent + specialized agents by domain
+# The architect designs the roles and criteria; the agents execute the validation
+
+import anthropic
+
+client = anthropic.Anthropic()
+
+def create_specialized_agent(
+    system_instructions: str,
+    model: str = "claude-sonnet-4-6"
+) -> Callable:  # from typing import Callable
+    """
+    Creates a specialized agent with its own context and instructions.
+    The architect defines the specialization; Claude manages the execution.
+    Separating agents by specialization improves the quality of each perspective.
+    """
+    def execute(task: str, additional_context: str = "") -> str:
+        full_prompt = task
+        if additional_context:
+            full_prompt += f"\n\nRelevant context:\n{additional_context}"
+
+        response = client.messages.create(
+            model=model,
+            max_tokens=4096,
+            system=system_instructions,
+            messages=[{"role": "user", "content": full_prompt}]
+        )
+        return response.content[0].text
+
+    return execute
+
+
+# Agent specialized in security review
+# Uses claude-sonnet-4-6 for speed; complex reasoning goes to the coordinator
+security_reviewer = create_specialized_agent(
+    system_instructions="""You are an application security reviewer.
+Analyze the code for specific vulnerabilities. Specifically evaluate:
+- Access control: does each operation verify the user has permission?
+- Sensitive data handling: are PII, credentials, tokens protected?
+- Injection vectors: SQL, prompts, system commands
+- Input validation: what happens with unexpected or malicious inputs?
+- Information exposure: what does the system reveal in errors and logs?
+Be specific: cite the line and specific vulnerability, not generalities."""
+)
+
+# Agent specialized in business logic validation
+business_validator = create_specialized_agent(
+    system_instructions="""You are a business logic validator.
+Verify that the code correctly implements the processes described in the requirements.
+Specifically look for:
+- Inconsistencies between what the code does and what the process requires
+- Process edge cases the code does not handle (empty documents, users without data)
+- Business metrics or criteria the code calculates incorrectly
+- Alternative process flows the code ignores
+Cite the specific discrepancy between requirement and code."""
+)

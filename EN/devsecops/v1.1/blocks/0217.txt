@@ -1,0 +1,32 @@
+# policies/kubernetes/rbac.rego
+package kubernetes.rbac
+
+import future.keywords.in
+import future.keywords.if
+import future.keywords.contains
+
+# Dangerous roles requiring explicit approval
+dangerous_verbs := ["*", "delete", "exec", "escalate"]
+dangerous_resources := ["secrets", "pods/exec", "clusterroles"]
+
+# Deny ClusterRoleBindings to the system:masters group
+deny contains msg if {
+    input.kind == "ClusterRoleBinding"
+    some subject in input.subjects
+    subject.name == "system:masters"
+    msg := "Creating ClusterRoleBinding to group system:masters is prohibited"
+}
+
+# Warn about roles with excessive permissions
+warn contains msg if {
+    input.kind == "ClusterRole"
+    some rule in input.rules
+    some verb in rule.verbs
+    verb in dangerous_verbs
+    some resource in rule.resources
+    resource in dangerous_resources
+    msg := sprintf(
+        "ClusterRole '%s' grants verb '%s' on '%s'. Requires security team approval.",
+        [input.metadata.name, verb, resource]
+    )
+}

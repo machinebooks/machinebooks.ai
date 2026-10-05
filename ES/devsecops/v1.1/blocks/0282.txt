@@ -1,0 +1,32 @@
+from prometheus_client import Counter, Histogram, Gauge
+
+# Métricas de seguridad AI
+prompt_injection_detected = Counter(
+    "ai_prompt_injection_detected_total",
+    "Intentos de prompt injection detectados",
+    ["endpoint", "risk_level"]
+)
+
+output_leak_detected = Counter(
+    "ai_output_leak_detected_total",
+    "Fugas de información detectadas en output",
+    ["endpoint", "pattern_type"]
+)
+
+agent_budget_usage = Gauge(
+    "ai_agent_budget_usage_ratio",
+    "Ratio de uso del presupuesto de acciones del agente",
+    ["agent_name"]
+)
+
+rag_trust_score = Histogram(
+    "ai_rag_document_trust_score",
+    "Distribución de scores de confianza de documentos RAG",
+    buckets=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+)
+
+model_verification_failures = Counter(
+    "ai_model_verification_failure_total",
+    "Fallos de verificación de integridad de modelos",
+    ["model_name", "failure_type"]
+)

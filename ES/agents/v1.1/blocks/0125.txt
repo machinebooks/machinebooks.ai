@@ -1,0 +1,11 @@
+flowchart TB
+    A[Compactación completada] --> B[Inventario de artefactos propios]
+    B --> C[Referencias de todos los consumidores]
+    C --> D{¿Elegible según retención y propiedad?}
+    D -- No --> G[Conservar]
+    D -- Sí --> E{¿Referencia o lease activo?}
+    E -- Sí --> G
+    E -- No --> F{¿Antigüedad supera margen configurado?}
+    F -- No --> G
+    F -- Sí --> I[Comprobar identidad y borrar objeto autorizado]
+    I --> J[Registrar resultado sin datos sensibles]

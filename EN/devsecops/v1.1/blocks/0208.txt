@@ -1,0 +1,42 @@
+# Runbook: critical CVE in dependency
+def runbook_critical_cve(cve_id: str, affected_services: list[str]) -> dict:
+    """Executes the runbook for a critical CVE in a dependency."""
+    results = {"status":"REVIEW", "coverage":"partial", "steps": []}
+
+    # Step 1: Check which services use the vulnerable dependency
+    for service in affected_services:
+        sbom = query_sbom_for_service(service)
+        if not isinstance(sbom,list) or not sbom or any(not isinstance(d,dict) for d in sbom):
+            return {"status":"INCOMPLETE","service":service,"reason":"SBOM evidence missing"}
+        vuln_deps = [d for d in sbom if d.get("cve") == cve_id]
+        results["steps"].append({
+            "step": "inventory",
+            "service": service,
+            "vulnerable_dependencies": vuln_deps,
+            "status": "REVIEW"
+        })
+
+    # Step 2: Evaluate if a patch is available
+    patch_info = check_patch_availability(cve_id)
+    if not isinstance(patch_info,dict) or type(patch_info.get("available")) is not bool:
+        return {"status":"INCOMPLETE","reason":"Patch evidence missing"}
+    results["steps"].append({
+        "step": "patch_check",
+        "cve": cve_id,
+        "patch_available": patch_info["available"],
+        "fixed_version": patch_info.get("fixed_version"),
+        "breaking_changes": patch_info.get("breaking_changes")
+    })
+
+    # Step 3: Generate remediation PR if patch exists
+    if patch_info["available"]:
+        results["steps"].append({"step":"remediation_proposal","status":"REVIEW","patch_info":patch_info})
+
+    # Step 4: Notify the team
+    notify_team(
+        channel="#security-incidents",
+        summary=f"CVE {cve_id}: {len(affected_services)} services affected. "
+                f"Patch {'available' if patch_info['available'] else 'NOT available'}."
+    )
+
+    return results

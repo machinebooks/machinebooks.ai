@@ -1,0 +1,22 @@
+# Generic prompt (insufficient)
+"Document the document analysis module from the privacy perspective."
+
+# Context-engineered prompt (effective)
+"Generate the draft of the personal data processing section for the privacy impact
+assessment of the document analysis module.
+
+Regulatory context: GDPR, Article 35. The module processes documents that may contain
+contact data of natural persons (names, emails, phone numbers) in the context of
+B2B commercial proposals.
+
+Technical data of the processing:
+- Documents are processed with Claude claude-sonnet-4-6 for requirements extraction
+- Text is vectorized with sentence-transformers and stored in Qdrant
+- Vectors are retained for the lifetime of the business opportunity + 12 months
+- No data is sent to external services other than the Anthropic API
+- Access is restricted by IAM with organization-level isolation
+
+Required structure: processing description, legal basis, data categories,
+retention period, security measures, residual risk assessment.
+Mark with [LEGAL-REVIEW] any compliance statement that requires
+validation by the privacy officer."

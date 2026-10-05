@@ -1,0 +1,24 @@
+┌────────────────────────────────────────┐
+│ BLOCK 1 — Role and mission             │ ← Static
+│  - Agent identity                     │
+│  - Global mission                     │
+│  - Tone and register                  │
+│  - Absolute prohibitions              │
+├────────────────────────────────────────┤
+│ BLOCK 2 — Operational instructions     │ ← Static
+│  - Tool use rules                     │
+│  - When to use memory                 │
+│  - When to request confirmation       │
+│  - Output conventions                 │
+├────────────────────────────────────────┤
+│ TOOL SCHEMAS (API tools field)         │ ← By API
+├════════════════════════════════════════┤
+│ CACHE_BOUNDARY_MARKER                  │
+├════════════════════════════════════════┤
+│ BLOCK 3 — Turn context                 │ ← Dynamic
+│  - Current time                       │
+│  - Workspace root                     │
+│  - Active permission mode             │
+│  - Active packs                       │
+│  - Relevant episodic memory           │
+└────────────────────────────────────────┘

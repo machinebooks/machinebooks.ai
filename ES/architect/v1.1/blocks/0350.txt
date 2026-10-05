@@ -1,0 +1,12 @@
+Clasifica la intención del siguiente mensaje del usuario.
+
+MENSAJE: "{user_message}"
+
+INTENCIONES POSIBLES:
+- CHAT_RAG: pregunta consultiva que se responde con información existente
+- AGENT_TOOLS: petición que requiere ejecutar acciones (crear, modificar, generar, buscar activamente)
+- WORKFLOW: petición que encaja con un proceso multi-paso predefinido
+- OFF_TOPIC: mensaje que no está relacionado con el dominio de la plataforma
+
+Responde EXCLUSIVAMENTE con un JSON:
+{"intent": "CHAT_RAG|AGENT_TOOLS|WORKFLOW|OFF_TOPIC", "confidence": 0.0-1.0, "reasoning": "explicación breve"}

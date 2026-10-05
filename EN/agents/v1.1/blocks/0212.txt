@@ -1,0 +1,45 @@
+flowchart TB
+    classDef user fill:#e0f0ff,stroke:#3b82f6
+    classDef sys fill:#fef3c7,stroke:#d97706
+    classDef agent fill:#dcfce7,stroke:#16a34a
+
+    U[User types /command]:::user
+    L[AgentLoop turn N]:::agent
+    M[LLM model]:::sys
+
+    subgraph layer1[Slash commands]
+        SC[slash-commands.ts]
+        REG[static registry of 35 commands]
+    end
+
+    subgraph layer2[Skills]
+        SS[SkillSearchTool]
+        IDX[skills_local RAG index]
+        SD[resources/skills SKILL.md]
+        US[~/.sylvarsec/cyber-skills]
+    end
+
+    subgraph layer3[Versioned prompts]
+        PF[PromptFetcher]
+        DB[ai_prompts collection]
+        SEED[PROMPT_SEED in-memory]
+        CACHE[cache TTL 5 min]
+    end
+
+    U --> SC
+    SC -->|type=prompt| L
+    SC -->|type=action| L
+    SC -->|type=message| U
+
+    L --> M
+    M -->|tool_use SkillSearch| SS
+    SS --> IDX
+    IDX -. seeded from .-> SD
+    IDX -. seeded from .-> US
+    SS -->|workflow markdown| L
+
+    L --> PF
+    PF -->|cache hit| L
+    PF -->|cache miss| DB
+    DB -. seeded once .-> SEED
+    PF -. ttl 5 min .-> CACHE

@@ -1,0 +1,45 @@
+@startuml
+!theme plain
+skinparam backgroundColor transparent
+skinparam state {
+  BackgroundColor #142038
+  BorderColor #7dd8e8
+  FontColor #f5efe0
+}
+
+[*] --> running : new AgentLoop().run()
+
+state running {
+  state "Procesando turnos" as turnLoop
+}
+
+running --> paused : cancel() · AbortController
+running --> error : excepción no recuperable
+running --> snapshotted : agent_complete\n+ captureAgentSnapshot()
+running --> running : finish_reason=length\n+ MaxTokensRecoveryManager
+
+snapshotted --> resumed : SendMessage(to, msg)\nor resumeAgent()
+resumed --> running : AgentLoop.run() con messages disponibles
+resumed --> error : preserved context no encontrado
+
+paused --> running : reanudación manual (poco frecuente)
+paused --> [*] : cancelación definitiva
+
+running --> [*] : finish_reason=end_turn\n+ salida validada
+
+error --> [*]
+
+note right of snapshotted
+  Snapshot persistido en
+  ~/.sylvarsec/agent-snapshots/{id}.json
+  PreservedContext en memoria (LRU 50).
+end note
+
+note right of resumed
+  resumeAgent inyecta un mensaje
+  "system" con summariseSnapshot()
+  antes del nuevo "user".
+  Caso histórico: no es una frontera
+  recomendable para datos no confiables.
+end note
+@enduml

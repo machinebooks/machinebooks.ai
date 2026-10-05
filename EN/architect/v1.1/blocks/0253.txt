@@ -1,0 +1,49 @@
+class LLMUsageLog(db.Model):
+    """Log of each LLM model call.
+
+    Source of truth for cost, quality, and performance analysis.
+    Correlates with TaskCompletionLog for per-model ROI analysis.
+    """
+    __tablename__ = 'llm_usage_logs'
+    __bind_key__ = 'platform_core'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    # Traceability
+    user_id = db.Column(db.Integer, nullable=True)
+    session_id = db.Column(db.String(100), nullable=True)
+    request_id = db.Column(db.String(100), nullable=True)  # Correlation with HTTP logs
+
+    # Model used
+    provider = db.Column(db.String(50), nullable=False)  # 'anthropic', 'azure_openai', etc.
+    model = db.Column(db.String(100), nullable=False)     # 'claude-sonnet-4-6', etc.
+    service_type = db.Column(db.String(100), nullable=True)
+    # 'document_analysis', 'proposal_generation', 'cv_analyzer', 'rag_query'
+
+    # Tokens
+    prompt_tokens = db.Column(db.Integer, nullable=False)
+    completion_tokens = db.Column(db.Integer, nullable=False)
+    total_tokens = db.Column(db.Integer, nullable=False)
+
+    # Costs (calculated with LLMModelPricing at call time)
+    input_cost_usd = db.Column(db.Float, nullable=True)
+    output_cost_usd = db.Column(db.Float, nullable=True)
+    total_cost_usd = db.Column(db.Float, nullable=True)
+
+    # Performance
+    latency_ms = db.Column(db.Integer, nullable=True)
+
+    # Status
+    status = db.Column(db.String(20), default='success')  # 'success', 'error', 'timeout'
+    error_type = db.Column(db.String(100), nullable=True)
+
+    # Prompt hash to detect duplicates and analyze variants
+    prompt_hash = db.Column(db.String(64), nullable=True)  # SHA-256
+
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        Index('idx_llm_usage_provider_model', 'provider', 'model', 'created_at'),
+        Index('idx_llm_usage_service_type', 'service_type', 'created_at'),
+        Index('idx_llm_usage_user', 'user_id', 'created_at'),
+    )

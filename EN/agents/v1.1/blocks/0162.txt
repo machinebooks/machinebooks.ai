@@ -1,0 +1,12 @@
+flowchart LR
+    A[User fills in<br>variables] --> B[Host validation and authorization]
+    B --> C[Step 1<br>substitute data]
+    C --> D[AgentLoop<br>approved scope]
+    D --> E[result with state]
+    E --> F[Step 2<br>valid dependencies]
+    F --> G[AgentLoop]
+    G --> H[result with state]
+    H --> I[Step N if continuation is allowed]
+    I --> J[final workflow state]
+    style D fill:#cce5ff
+    style G fill:#cce5ff

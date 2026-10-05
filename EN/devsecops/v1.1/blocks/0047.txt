@@ -1,0 +1,36 @@
+  claude-secret-analysis:
+    name: "Claude — semantic secret analysis"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # We only need the diff
+      - name: Generate PR diff
+        run: |
+          git diff ${{ github.event.pull_request.base.sha }}..HEAD > pr_diff.txt
+      - name: Analyze with Claude
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python scripts/claude_secret_scanner.py pr_diff.txt \
+            --output findings.json
+      - name: Prepare REVIEW draft
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const findings = JSON.parse(
+              fs.readFileSync('findings.json', 'utf8')
+            );
+            if (!Array.isArray(findings) || findings.some(f => !f || !["REVIEW","INCOMPLETE"].includes(f.status))) {
+              throw new Error("INCOMPLETE: invalid retained secret proposals");
+            }
+            if (findings.length > 0) {
+              const body = findings.map(f =>
+                `REVIEW **${f.confidence}** — \`${f.file}:${f.line}\`\n` +
+                `> ${f.reason}\n` +
+                `> Recommendation: ${f.recommendation}`
+              ).join('\n\n');
+              fs.writeFileSync("review-comment.json", JSON.stringify({status:"REVIEW", body, findings}));
+            }

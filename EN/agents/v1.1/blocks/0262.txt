@@ -1,0 +1,8 @@
+test('rejects fixture paths outside its owned workspace', async ({ request }) => {
+  const headers = { 'X-SylvarSec-Token': fixture.token };
+  const read = await request.get(`${fixture.api}/api/workspace/tree?path=../outside`, { headers });
+  expect(read.status()).toBe(403);
+  const remove = await request.delete(`${fixture.api}/api/workspace/file?path=../outside`, { headers });
+  expect(remove.status()).toBe(403);
+  expect(await fixture.outsideBytes()).toEqual(fixture.initialOutsideBytes);
+});

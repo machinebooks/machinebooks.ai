@@ -1,0 +1,62 @@
+interface ToolSchema {
+  name: string;
+  inputSchema: Record<string, unknown>;
+}
+interface ToolCall {
+  id: string;
+  name: string;
+  input: Record<string, unknown>;
+}
+type Message =
+  | { role: 'user'; content: string }
+  | { role: 'assistant'; content: string; toolCalls: ToolCall[] }
+  | { role: 'tool'; content: string; toolCallId: string };
+
+interface MiniProvider {
+  call(messages: Message[], tools: ToolSchema[]): Promise<{
+    content: string;
+    toolUses: ToolCall[];
+    finishReason: 'stop' | 'tool_calls' | 'length';
+  }>;
+}
+interface MiniRegistry {
+  getSchemas(): ToolSchema[];
+  // The host validates and authorizes before any effect.
+  execute(call: ToolCall): Promise<string>;
+}
+
+async function runAgent(
+  userInput: string,
+  provider: MiniProvider,
+  registry: MiniRegistry,
+  maxTurns = 10,
+): Promise<string> {
+  if (!Number.isInteger(maxTurns) || maxTurns < 1) {
+    throw new Error('Invalid maxTurns.');
+  }
+  const messages: Message[] = [{ role: 'user', content: userInput }];
+  for (let turn = 0; turn < maxTurns; turn++) {
+    const reply = await provider.call(messages, registry.getSchemas());
+    if (reply.finishReason === 'length') {
+      throw new Error('Model turn was truncated.');
+    }
+    if (reply.toolUses.length === 0) {
+      if (reply.finishReason !== 'stop') {
+        throw new Error('Missing tool calls.');
+      }
+      return reply.content;
+    }
+    const ids = reply.toolUses.map(call => call.id);
+    if (ids.some(id => !id) || new Set(ids).size !== ids.length) {
+      throw new Error('Invalid tool call identifiers.');
+    }
+    messages.push({
+      role: 'assistant', content: reply.content, toolCalls: reply.toolUses,
+    });
+    for (const call of reply.toolUses) {
+      const result = await registry.execute(call);
+      messages.push({ role: 'tool', content: result, toolCallId: call.id });
+    }
+  }
+  throw new Error(`Max turns (${maxTurns}) reached.`);
+}

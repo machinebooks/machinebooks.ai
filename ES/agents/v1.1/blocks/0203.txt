@@ -1,0 +1,12 @@
+flowchart TD
+    A[Solicitud que requiere VM] --> B[Comprobar presencia de bundle]
+    B --> C{Artefactos presentes}
+    C -- no --> F[Detener e informar]
+    C -- sí --> D[Verificar revisión y digests con evidencia confiable]
+    D --> E{Verificación válida}
+    E -- no --> F
+    E -- sí --> H[Reservar sesión y recursos autorizados]
+    H --> I[Runner externo arranca VM]
+    I --> J{Boot y controles comprobados}
+    J -- no --> F
+    J -- sí --> K[Aplicar mounts, red y límites del scope]

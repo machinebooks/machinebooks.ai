@@ -1,0 +1,9 @@
+// anthropic.ts:173-179
+function convertTools(tools: readonly ToolDef[]): Anthropic.Tool[] {
+  return tools.map(t => ({
+    name: t.function.name,
+    description: t.function.description,
+    input_schema: (t.function.parameters || { type: 'object', properties: {} })
+      as Anthropic.Tool.InputSchema,
+  }));
+}

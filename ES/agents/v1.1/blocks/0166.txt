@@ -1,0 +1,10 @@
+flowchart LR
+    subgraph Workflow
+        WA[programador<br>define secuencia de pasos]
+        WB[modelo<br>propone dentro de cada paso]
+    end
+    subgraph Agente
+        AA[host<br>define alcance y controles]
+        AB[modelo<br>propone pasos y herramientas]
+    end
+    Workflow -.invoca.-> Agente

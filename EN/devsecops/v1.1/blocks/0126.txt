@@ -1,0 +1,78 @@
+import json
+import yaml
+import os
+from pathlib import Path
+
+# Base directory for OpenAPI specs
+SPECS_BASE_DIR = Path(os.environ.get("SPECS_BASE_DIR", "specs")).resolve()
+ALLOWED_SPEC_EXTENSIONS = {".yaml", ".yml", ".json"}
+
+def parse_openapi_spec(spec_path: str) -> dict:
+    """Analyzes an OpenAPI specification and extracts the attack surface.
+
+    The spec path is validated against SPECS_BASE_DIR to prevent
+    path traversal attacks.
+    """
+    resolved = Path(spec_path).resolve()
+    if not resolved.is_relative_to(SPECS_BASE_DIR):
+        raise ValueError(
+            f"Access denied: '{spec_path}' is outside the allowed directory."
+        )
+    if resolved.suffix.lower() not in ALLOWED_SPEC_EXTENSIONS:
+        raise ValueError(
+            f"Unsupported file type: '{resolved.suffix}'. "
+            f"Allowed: {', '.join(ALLOWED_SPEC_EXTENSIONS)}"
+        )
+
+    with open(str(resolved)) as f:
+        if resolved.suffix.lower() in (".yaml", ".yml"):
+            spec = yaml.safe_load(f)
+        else:
+            spec = json.load(f)
+
+    if not isinstance(spec,dict) or not isinstance(spec.get("paths"),dict):
+        raise ValueError("INCOMPLETE: invalid OpenAPI paths")
+    endpoints = []
+    security_schemes = spec.get("components", {}).get("securitySchemes", {})
+
+    for path, methods in spec.get("paths", {}).items():
+        for method, details in methods.items():
+            if method in ("get", "post", "put", "patch", "delete"):
+                params = []
+                # Path and query parameters
+                for p in details.get("parameters", []):
+                    params.append({
+                        "name": p["name"],
+                        "in": p["in"],
+                        "type": p.get("schema", {}).get("type", "string"),
+                        "required": p.get("required", False),
+                    })
+                # Request body
+                request_body = details.get("requestBody", {})
+                body_schema = {}
+                if request_body:
+                    content = request_body.get("content", {})
+                    json_content = content.get("application/json", {})
+                    body_schema = json_content.get("schema", {})
+
+                # Endpoint security
+                endpoint_security = details.get("security", spec.get("security", []))
+
+                endpoints.append({
+                    "path": path,
+                    "method": method.upper(),
+                    "parameters": params,
+                    "body_schema": body_schema,
+                    "security": endpoint_security,
+                    "tags": details.get("tags", []),
+                    "summary": details.get("summary", ""),
+                })
+
+    return {
+        "status":"REVIEW", "coverage":"partial",
+        "omitted":["reference resolution","path-level parameters","HEAD","OPTIONS","TRACE","external authorization"],
+        "base_url": spec.get("servers", [{}])[0].get("url", ""),
+        "endpoints": endpoints,
+        "security_schemes": security_schemes,
+        "total_endpoints": len(endpoints),
+    }

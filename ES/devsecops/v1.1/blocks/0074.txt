@@ -1,0 +1,9 @@
+# .github/CODEOWNERS
+# Los workflows de seguridad requieren revisión del equipo de seguridad
+.github/workflows/security-pipeline.yml  @org/security-team
+.github/workflows/weekly-security-report.yml  @org/security-team
+scripts/security_aggregator.py  @org/security-team
+scripts/weekly_security_report.py  @org/security-team
+
+# Las reglas de Semgrep también requieren revisión de seguridad
+.semgrep/  @org/security-team

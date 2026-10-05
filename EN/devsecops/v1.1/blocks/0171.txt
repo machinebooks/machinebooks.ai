@@ -1,0 +1,28 @@
+# ai-system-manifest.yaml — AI system metadata
+system:
+  name: "agente-triaje-sast"
+  version: "2.1.0"
+  description: "Agent that triages SAST findings and prioritizes by real risk"
+
+purpose:
+  domain: "cybersecurity"
+  use_case: "automatic code vulnerability triage"
+  decision_impact: "prioritization of remediation tasks"
+  affects_natural_persons: false
+
+ai_components:
+  models:
+    - provider: "anthropic"
+      model: "claude-sonnet-4-6"
+      type: "api"
+  data_sources:
+    - type: "code_repository"
+      contains_personal_data: false
+    - type: "sast_findings"
+      contains_personal_data: false
+  autonomy_level: "human-in-the-loop"  # autonomous | human-in-the-loop | human-on-the-loop
+
+deployment:
+  environment: "ci_cd_pipeline"
+  users: "development_team"
+  geographic_scope: "EU"

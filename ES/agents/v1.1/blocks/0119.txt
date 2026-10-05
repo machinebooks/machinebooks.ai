@@ -1,0 +1,14 @@
+const parent = new AgentLoop(config, registry);
+const parentKey = parent.getCacheKey();
+
+// Consume one iterator. Yielded events are not necessarily model turns.
+const iterator = parent.run();
+try {
+  for (;;) {
+    const event = await iterator.next();
+    if (event.done) break;
+    consumeEvent(event.value); // Host handling is omitted from this excerpt.
+  }
+} finally {
+  await iterator.return?.();
+}

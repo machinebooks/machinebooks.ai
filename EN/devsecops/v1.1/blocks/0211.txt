@@ -1,0 +1,46 @@
+def generate_incident_communications(
+    incident: CorrelatedIncident,
+    audiences: list[str]
+) -> dict:
+    """Generates communication drafts adapted by audience."""
+    communications = {}
+
+    audience_prompts = {
+        "executive": (
+            "Generate a 5-7 line executive summary for leadership. "
+            "No technical jargon. Include: what happened (1 sentence), "
+            "service impact, current containment status, "
+            "and next steps. Tone: informative, without unnecessary alarm."
+        ),
+        "engineering": (
+            "Generate a technical summary for the development team. "
+            "Include: attack vector, affected services, CVEs "
+            "involved, containment actions executed, and pending "
+            "remediation PRs. Include useful commands to "
+            "verify the status of affected services."
+        ),
+        "regulatory": (
+            "Generate a draft notification for the data protection "
+            "authority per GDPR Article 33. "
+            "Include: nature of the breach, categories of affected "
+            "data, approximate number of records, measures "
+            "taken, and DPO contact point. Mark with "
+            "[PENDING] any information requiring verification."
+        )
+    }
+
+    for audience in audiences:
+        if audience not in audience_prompts:
+            continue
+        context = format_incident_for_communication(incident)
+        response = client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=1024,
+            messages=[{"role": "user", "content": (
+                f"{audience_prompts[audience]}\n\n"
+                f"Incident data:\n{context}"
+            )}]
+        )
+        communications[audience] = response.content[0].text
+
+    return {"status":"REVIEW","coverage":"partial","drafts":communications,"sent":False}

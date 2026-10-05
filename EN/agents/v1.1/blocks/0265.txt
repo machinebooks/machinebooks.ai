@@ -1,0 +1,17 @@
+test('enforces one isolated rate bucket and recovers', async () => {
+  let now = 0;
+  // The host supplies an isolated HTTP fixture with no LLM or tool effects.
+  const api = await makeRateFixture({ clock: () => now, limit: 60, windowMs: 60000 });
+  try {
+    for (let i = 0; i < 60; i++) expect((await api.request()).status).toBe(200);
+    let limited = await api.request();
+    expect(limited.status).toBe(429);
+    expect(limited.headers['retry-after']).toBe('60');
+    now = 30000;
+    limited = await api.request();
+    expect(limited.status).toBe(429);
+    expect(limited.headers['retry-after']).toBe('30');
+    now = 60000;
+    expect((await api.request()).status).toBe(200);
+  } finally { await api.close(); }
+});

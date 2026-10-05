@@ -1,0 +1,32 @@
+# Optional adapters: configure only providers enabled by server policy.
+# Model/deployment IDs and API versions are validated for the actual resource.
+LLM_DEFAULT_DEPLOYMENT=<approved-deployment-id>
+LLM_HEAVY_DEPLOYMENT=<approved-deployment-id>
+LLM_FAST_DEPLOYMENT=<approved-deployment-id>
+ANTHROPIC_API_KEY=<only-if-anthropic-enabled>
+AZURE_OPENAI_API_KEY=<only-if-azure-enabled>
+AZURE_OPENAI_ENDPOINT=https://<resource>.openai.azure.com/
+AZURE_OPENAI_API_VERSION=<validated-api-version>
+AZURE_OPENAI_DEPLOYMENT=<approved-deployment-name>
+OPENAI_API_KEY=<only-if-openai-enabled>
+OLLAMA_BASE_URL=http://ollama:11434
+OLLAMA_MODEL=<pinned-evaluated-model-id>
+
+# Vector/search credentials are scoped separately for administration and queries.
+QDRANT_HOST=qdrant
+QDRANT_PORT=6333
+QDRANT_API_KEY=<set-in-vault>
+MEILISEARCH_HOST=http://meilisearch:7700
+MEILISEARCH_API_KEY=<scoped-query-key-in-vault>
+MEILISEARCH_INDEX_MEMORY=512Mb
+
+# Construct authenticated URLs with encoded passwords in the real configuration.
+REDIS_PASSWORD=<set-in-vault>
+REDIS_URL=<validated-cache-url>
+CELERY_BROKER_URL=<validated-broker-url>
+CELERY_RESULT_BACKEND=<validated-result-backend-url>
+CELERY_RATE_LIMIT_AI=30/m
+CELERY_RATE_LIMIT_AUTOMATION=5/m
+CELERY_RATE_LIMIT_DOCUMENTS=10/m
+# Task rates apply per worker; these labels require explicit application mapping.
+# Example placeholders are not a runnable .env or proof of enabled adapters.

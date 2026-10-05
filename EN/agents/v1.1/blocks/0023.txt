@@ -1,0 +1,9 @@
+export interface StreamCallbacks {
+  onContent: (text: string) => void;
+  onThinking: (text: string) => void;
+  // index identifies the tool_use; the id is set with the first delta.
+  onToolCall: (index: number, id: string, name: string, argsChunk: string) => void;
+  onToolCallDone: (index: number) => void;
+  onUsage: (input: number, output: number) => void;
+  onError: (error: string) => void;
+}

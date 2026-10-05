@@ -1,0 +1,8 @@
+flowchart LR
+    HOST[Authorized hook output] --> LEN{Size within limit}
+    LEN -->|no| FAIL[Reject or truncate under contract]
+    LEN -->|yes| CHECK[Partial content checks]
+    CHECK -->|rejection| DROP[Omit and record minimal metadata]
+    CHECK -->|admits| DATA[Data with provenance, without raising authority]
+    DATA --> LLM[Model context]
+    FAIL --> DROP

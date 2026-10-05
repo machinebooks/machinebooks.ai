@@ -1,0 +1,22 @@
+## advisory(security): CWE-863 — Authorization bypass in middleware
+
+### Vulnerability
+The authorization middleware uses direct role comparison
+(`user.role == "admin"`) instead of a granular permissions
+system. This can allow privilege escalation if new roles
+are added without updating all verifications.
+
+### Why it is not auto-fixed
+The file `services/auth/middleware.py` contains authorization
+logic. The remediation policy excludes automatic modifications
+to authentication/authorization files due to the risk of
+introducing bypasses.
+
+### Suggested approach
+1. Migrate to an RBAC system with a permissions table
+2. Replace string comparisons with `has_permission(user, "action")`
+3. Add tests verifying deny-by-default access
+
+### Reference
+Finding: TRIAGE-2025-0912 | Agent: remediation-v1.2
+Label: needs-human-review

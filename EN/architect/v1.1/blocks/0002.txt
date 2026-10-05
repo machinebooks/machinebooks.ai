@@ -1,0 +1,22 @@
+# The Platform — Project Instructions
+
+## Stack and architecture
+- **Backend**: Flask 3.0 + SQLAlchemy — `backend/`
+- **AI Service**: FastAPI + LangChain — `ai_service/`
+- **Main Frontend**: React 18 + TypeScript — `frontend/`
+- **Analytics Frontend**: React 18 + TypeScript — `analytics/frontend/`
+- **Admin**: React 18 + TypeScript — `admin/frontend/`
+- **DB**: MySQL 8.0 (pymysql) · Redis · Qdrant · Meilisearch
+- **Infrastructure**: 17 Docker containers, NGINX as reverse proxy
+
+## Mandatory conventions
+- Use logger, not print() in production
+- Never hardcode tenant IDs or API keys in source code
+- Schema migrations always with Alembic, never with manual ALTER TABLE
+- Every new endpoint requires an authentication decorator and permission check
+
+## What NOT to do
+- Do not use `print()` in production — use logger
+- Do not hardcode tenant IDs, API keys, or secrets
+- Do not use manual ALTER TABLE — always Alembic
+- Do not commit without verifying that TypeScript types compile

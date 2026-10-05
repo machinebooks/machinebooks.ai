@@ -1,0 +1,15 @@
+sequenceDiagram
+    participant U as User
+    participant P as Parent AgentLoop
+    participant H as Child
+    Note over P,H: example spawn with deferred coordination
+    U->>P: question
+    P->>H: start authorized child
+    P-->>U: independent progress if available
+    H-->>P: result correlated with work
+    Note over P,H: private handoff awaiting a result
+    U->>P: question
+    P->>H: transfer_to_specialist(task)
+    Note over P: awaits promise; Node can handle other events
+    H-->>P: call-correlated tool_result
+    P-->>U: continues with specialist data

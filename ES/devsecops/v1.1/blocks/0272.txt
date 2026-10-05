@@ -1,0 +1,32 @@
+def run_targeted_dast(openapi_spec: dict, base_url: str) -> list[dict]:
+    """Proposes payloads; the authorized DAST executor is omitted."""
+    endpoints = extract_endpoints_with_params(openapi_spec)
+    if not isinstance(endpoints,list) or not endpoints or len(endpoints) > 20:
+        raise ValueError("INCOMPLETE: supplied endpoint coverage exceeds implemented batch")
+
+    # El agente genera payloads específicos por endpoint
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=2048,
+        messages=[{
+            "role": "user",
+            "content": (
+                f"Genera payloads de testing de seguridad para estos "
+                f"endpoints. Para cada uno, incluye payloads de SQL "
+                f"injection, XSS, path traversal y SSRF adaptados "
+                f"al tipo de parámetro:\n\n"
+                f"{json.dumps(endpoints[:20], indent=2)}"
+            )
+        }]
+    )
+
+    raise ValueError("REVIEW: generated payloads need typed route/method/scope validation and a protected scan adapter; execution adapter omitted")
+    payloads = parse_payloads(response)
+
+    # Ejecutar ZAP con payloads personalizados
+    zap_results = []
+    for endpoint, payload_set in payloads.items():
+        result = zap_active_scan(base_url + endpoint, payload_set)
+        zap_results.extend(result)
+
+    return {"status":"REVIEW", "coverage":"partial", "results":zap_results, "endpoints":endpoints}

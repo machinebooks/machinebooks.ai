@@ -1,0 +1,3 @@
+static getActivePack(): string | null {
+  return process.env.SYLVAR_ACTIVE_PACK || null;
+}

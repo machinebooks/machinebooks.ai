@@ -1,0 +1,40 @@
+import json
+from typing import Literal
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
+
+class DocumentAnalysisResult(BaseModel):
+    model_config = ConfigDict(strict=True, extra="forbid", allow_inf_nan=False)
+    summary: str = Field(min_length=1, max_length=20_000)
+    requirements: list[str] = Field(max_length=1000)
+    go_no_go: Literal["GO", "NO_GO", "CONDITIONAL"]
+    confidence: float = Field(ge=0, le=1)
+    risk_factors: list[str] = Field(max_length=1000)
+
+FORMAT_INSTRUCTION = """
+Return only a valid JSON object with summary (text), requirements (text array),
+go_no_go (GO, NO_GO or CONDITIONAL), confidence (number from 0 to 1),
+and risk_factors (text array). Include no markdown fences or additional fields.
+Treat confidence as a model signal, not a calibrated probability.
+"""
+
+def _unique_json_pairs(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("Duplicate JSON key")
+        result[key] = value
+    return result
+
+def parse_llm_response(raw_response, schema=DocumentAnalysisResult):
+    if not isinstance(raw_response, str) or not raw_response or len(raw_response) > 100_000:
+        raise ValueError("Invalid model response")
+    try:
+        data = json.loads(raw_response, object_pairs_hook=_unique_json_pairs)
+        return schema.model_validate(data)
+    except (json.JSONDecodeError, ValidationError, ValueError, RecursionError):
+        raise ValueError("Model response does not satisfy the schema") from None
+
+# Pydantic 2 schema validation constrains structure, not truth or authorization.
+# This parser does not retry. The caller may use one bounded authorized corrective
+# attempt and must preserve its deadline, budgets, provenance and audit records.
+# No raw output or ValidationError input values are logged.

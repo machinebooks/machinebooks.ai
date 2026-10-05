@@ -1,0 +1,66 @@
+from dataclasses import dataclass
+from enum import Enum
+
+class Severity(Enum):
+    CRITICAL = "critical"
+    HIGH = "high"
+    MEDIUM = "medium"
+
+@dataclass
+class Finding:
+    id: str
+    title: str
+    severity: Severity
+    cwe: str
+    file_path: str
+    line: int
+    code_snippet: str
+    tool: str           # "semgrep", "grype", "trivy"
+    suggested_fix: str
+
+def generate_training_module(
+    finding: Finding,
+    team_stack: list[str]
+) -> dict:
+    """Genera módulo de microformación a partir de un hallazgo."""
+    client = anthropic.Anthropic()
+
+    prompt = f"""Genera un módulo de formación breve para un security champion
+sobre el siguiente hallazgo de seguridad.
+
+Hallazgo: {finding.title}
+Severidad: {finding.severity.value}
+CWE: {finding.cwe}
+Herramienta: {finding.tool}
+Archivo: {finding.file_path}:{finding.line}
+Código afectado:
+{finding.code_snippet}
+Fix sugerido:
+{finding.suggested_fix}
+Stack del equipo: {', '.join(team_stack)}
+
+Estructura del módulo:
+1. QUÉ (2-3 frases): qué vulnerabilidad es y su CWE.
+2. POR QUÉ IMPORTA (2-3 frases): impacto real si se explota.
+3. CÓMO SE EXPLOTA (3-4 frases): vector de ataque simplificado.
+4. CÓMO SE REMEDIA (3-4 frases): explicación del fix sugerido.
+5. REGLA PARA RECORDAR (1 frase): regla mnemotécnica.
+
+Escribe en español técnico. Máximo 250 palabras total."""
+
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=800,
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    return {
+        "status":"REVIEW",
+        "coverage":"partial",
+        "origin_verified":False,
+        "finding_id": finding.id,
+        "module_text": response.content[0].text,
+        "cwe": finding.cwe,
+        "severity": finding.severity.value,
+        "estimated_read_time_minutes": None
+    }

@@ -1,0 +1,121 @@
+"""
+surface_discovery_agent.py — Agente Claude que descubre cambios
+en la superficie de ataque entre ejecuciones, clasifica nuevos
+activos con STRIDE y genera alertas de cambio.
+"""
+from illustrative_host import Agent, tool
+import json
+from pathlib import Path
+from datetime import datetime,timezone
+
+@tool
+def scan_pipeline_assets(project_root: str) -> dict:
+    """Ejecuta el inventario de activos del pipeline.
+    Retorna la lista de activos descubiertos con metadatos."""
+    from pipeline_inventory import run_inventory
+    assets = run_inventory(Path(project_root))
+    return {"assets": [_asset_to_dict(a) for a in assets],
+            "status":"REVIEW","coverage":"partial",
+            "timestamp": datetime.now(timezone.utc).isoformat()}
+
+@tool
+def load_previous_inventory(inventory_path: str) -> dict:
+    """Carga el inventario de la ejecución anterior para comparar."""
+    path = Path(inventory_path).resolve()
+    path.relative_to(Path(".").resolve())
+    if path.exists():
+        with open(path) as f:
+            result = json.load(f)
+            if (not isinstance(result,dict) or not isinstance(result.get("assets"),list)
+                    or any(not isinstance(a,dict) for a in result["assets"])):
+                raise ValueError("INCOMPLETE: invalid baseline inventory")
+            result.update(status="REVIEW",coverage="partial",origin_verified=False)
+            return result
+    return {"status":"INCOMPLETE","assets": [], "timestamp": None}
+
+@tool
+def diff_inventories(current: list[dict], previous: list[dict]) -> dict:
+    """Compara dos inventarios y detecta activos nuevos,
+    eliminados y modificados."""
+    for rows in (current,previous):
+        if not isinstance(rows,list) or any(not isinstance(a,dict) or not isinstance(a.get("name"),str) or not a["name"] for a in rows):
+            raise ValueError("INCOMPLETE: invalid inventory identity")
+        if len({a["name"] for a in rows}) != len(rows):
+            raise ValueError("INCOMPLETE: duplicate inventory identity")
+    if not previous:
+        raise ValueError("INCOMPLETE: no comparable baseline")
+    current_names = {a["name"] for a in current}
+    previous_names = {a["name"] for a in previous}
+    added = [a for a in current if a["name"] in current_names - previous_names]
+    removed = [a for a in previous if a["name"] in previous_names - current_names]
+    # Detectar cambios en activos existentes
+    prev_map = {a["name"]: a for a in previous}
+    modified = []
+    for asset in current:
+        if asset["name"] in prev_map:
+            prev = prev_map[asset["name"]]
+            if asset.get("exposed") != prev.get("exposed"):
+                modified.append({
+                    "asset": asset["name"],
+                    "change": "exposure_changed",
+                    "from": prev.get("exposed"),
+                    "to": asset.get("exposed")
+                })
+            if asset.get("metadata") != prev.get("metadata"):
+                modified.append({
+                    "asset": asset["name"],
+                    "change": "metadata_changed",
+                    "details": "Configuración modificada"
+                })
+    return {
+        "added": added,
+        "possibly_absent": removed,
+        "status":"REVIEW","coverage":"partial",
+        "modified": modified,
+        "summary": (
+            f"{len(added)} nuevos, {len(removed)} eliminados, "
+            f"{len(modified)} modificados"
+        )
+    }
+
+@tool
+def classify_new_assets_stride(assets: list[dict]) -> list[dict]:
+    """Aplica clasificación STRIDE a activos recién descubiertos."""
+    from stride_classifier import run_stride_analysis
+    return run_stride_analysis(assets)
+
+@tool
+def save_inventory(inventory: dict, output_path: str) -> str:
+    """Persiste el inventario actual para la próxima comparación."""
+    raise ValueError("REVIEW: authorized persistence adapter omitted")
+    with open(output_path, "w") as f:
+        json.dump(inventory, f, indent=2, ensure_ascii=False)
+    return f"Inventario guardado en {output_path}"
+
+# Configuración del agente
+agent = Agent(
+    model="claude-sonnet-4-6",
+    tools=[
+        scan_pipeline_assets,
+        load_previous_inventory,
+        diff_inventories,
+        classify_new_assets_stride,
+        save_inventory,
+    ],
+    system_prompt="""Eres un agente de descubrimiento de superficie de ataque.
+Tu trabajo es:
+1. Ejecutar el inventario de activos del pipeline.
+2. Comparar con el inventario anterior.
+3. Para activos NUEVOS, ejecutar clasificación STRIDE.
+4. Generar un informe con cambios detectados y amenazas de nuevos activos.
+5. Guardar el inventario actualizado.
+
+Prioriza activos expuestos (exposed=true) y activos de IA
+(llm_endpoint, rag_corpus, agent_tool).
+Si un activo pasa de no expuesto a expuesto, márcalo como cambio crítico."""
+)
+
+def _asset_to_dict(asset) -> dict:
+    """Convierte un dataclass Asset a diccionario."""
+    from dataclasses import asdict
+    return asdict(asset)

@@ -1,0 +1,13 @@
+// Private handoff excerpt; the model proposes and the host authorizes.
+import { createHandoff, HandoffRegistry } from '@/server/agent/handoff';
+const sqlExpert = createHandoff({
+  targetAgent: {
+    agentId: 'sql-expert', agentType: 'specialist',
+    tools: ['run_sql_query'], maxTurns: 5,
+    systemPrompt: 'You are a SQL specialist. Review queries within host policy.',
+  },
+  description: 'Request a SQL query review from the specialist.',
+});
+const registry = new HandoffRegistry([sqlExpert]);
+// Register schemas; validate complete calls and target scope in the host.
+// Return a correlated tool result; a model-selected target is not permission.

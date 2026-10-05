@@ -1,0 +1,20 @@
+// src/server/services/PromptFetcher.ts:42-61
+function ensureSeeded(): void {
+  if (seeded) return;
+  seeded = true;
+  try {
+    const existing = DatabaseService.getCollection<PromptRow>(COLLECTION_NAME);
+    if (existing.length === 0) {
+      DatabaseService.setCollection<PromptRow>(COLLECTION_NAME, [...PROMPT_SEED]);
+      return;
+    }
+    // Top-up: add seeds whose key is not yet stored.
+    const existingKeys = new Set(existing.map(r => r.key));
+    const additions = PROMPT_SEED.filter(p => !existingKeys.has(p.key));
+    if (additions.length > 0) {
+      DatabaseService.setCollection<PromptRow>(COLLECTION_NAME, [...existing, ...additions]);
+    }
+  } catch {
+    // DatabaseService not initialized — fetcher falls back to in-memory seed.
+  }
+}

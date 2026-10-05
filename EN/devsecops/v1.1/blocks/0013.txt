@@ -1,0 +1,18 @@
+import json
+import anthropic
+
+client = anthropic.Anthropic()
+
+def generate_pr_comment(triaged_findings: list[dict]) -> str:
+    """Generate the PR comment with prioritized findings."""
+
+    if not isinstance(triaged_findings,list) or any(not isinstance(f,dict) for f in triaged_findings):
+        raise ValueError("INCOMPLETE: invalid retained findings")
+    prompt = "Draft a REVIEW comment. Retain every proposal including low and false-positive labels; no merge decision. " + json.dumps(triaged_findings)
+    message = client.messages.create(
+        model="claude-haiku-4-5",
+        max_tokens=2048,
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    return "REVIEW: partial context; all original findings retained.\n" + message.content[0].text

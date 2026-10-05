@@ -1,0 +1,32 @@
+package devsecops_book.aiact_compliance
+import rego.v1
+
+# Local technical evidence readiness; legal sufficiency remains REVIEW.
+default evidence_ready := false
+
+evidence_ready if {
+    is_object(input.llm_call)
+    is_string(input.llm_call.timestamp)
+    regex.match("(Z|[+]00:00)$",input.llm_call.timestamp)
+    stamp := time.parse_rfc3339_ns(input.llm_call.timestamp)
+    is_number(input.now_ns)
+    input.now_ns == data.clock.now_ns
+    stamp <= input.now_ns
+    input.now_ns - stamp <= 86400000000000
+    is_string(input.llm_call.model)
+    input.llm_call.model != ""
+    is_string(input.llm_call.purpose)
+    input.llm_call.purpose != ""
+    is_number(input.llm_call.tokens_input)
+    is_number(input.llm_call.tokens_output)
+    input.llm_call.tokens_input >= 0
+    input.llm_call.tokens_output >= 0
+    round(input.llm_call.tokens_input) == input.llm_call.tokens_input
+    round(input.llm_call.tokens_output) == input.llm_call.tokens_output
+    system := data.authorized_systems[input.system_id]
+    system.human_oversight_enabled == true
+    is_number(system.escalation_threshold)
+    system.escalation_threshold > 0
+    system.logging_purpose_reviewed == true
+    system.retention_policy_reviewed == true
+}

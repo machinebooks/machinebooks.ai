@@ -1,0 +1,25 @@
+rules:
+  - id: command-injection-fastapi
+    patterns:
+      - pattern-either:
+          - pattern: |
+              subprocess.call($CMD, shell=True, ...)
+          - pattern: |
+              subprocess.run($CMD, shell=True, ...)
+          - pattern: |
+              subprocess.Popen($CMD, shell=True, ...)
+      - pattern-inside: |
+          @app.$METHOD($PATH)
+          def $FUNC(..., $PARAM: str, ...):
+              ...
+    message: >
+      Possible command injection: $CMD is executed with shell=True
+      inside a FastAPI endpoint. If $CMD contains user input,
+      an attacker can execute arbitrary commands.
+      Use subprocess with argument list and shell=False.
+    severity: ERROR
+    languages: [python]
+    metadata:
+      cwe: ["CWE-78"]
+      owasp: ["A03:2021"]
+      confidence: HIGH

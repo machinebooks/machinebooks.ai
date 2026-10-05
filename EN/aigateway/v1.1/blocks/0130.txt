@@ -1,0 +1,21 @@
+# Partial SDK-independent example; authorize remote counting before calling it.
+async def count_anthropic_tokens_async(messages, model, system=None, tools=None, *, api_key):
+    if not messages or not model:
+        return None
+    payload = {"model": model, "messages": messages}
+    if system is not None:
+        payload["system"] = system
+    if tools is not None:
+        payload["tools"] = tools
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.post(
+                "https://api.anthropic.com/v1/messages/count_tokens",
+                json=payload,
+                headers={"x-api-key": api_key, "anthropic-version": "2023-06-01"},
+            )
+            if response.status_code == 200:
+                return response.json().get("input_tokens")
+    except httpx.HTTPError:
+        return None
+    return None

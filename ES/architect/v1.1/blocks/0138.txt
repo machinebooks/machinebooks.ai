@@ -1,0 +1,62 @@
+def query_rag_with_access_control(query, collection_name, security_context,
+                                  load_authorized_query_scope, authorize_current_chunk,
+                                  embeddings_model, qdrant_client, k=5):
+    if (not isinstance(query, str) or not query.strip() or len(query) > 10_000
+            or type(k) is not int or not 1 <= k <= 50):
+        raise ValueError("Invalid RAG query")
+    # Resolve registered collection, current actor/roles and minimized embedding input.
+    scope = load_authorized_query_scope(security_context, collection_name, query)
+    required = ("tenant_id", "app_code", "prepared_query")
+    if not isinstance(scope, dict) or any(
+            not isinstance(scope.get(key), str) or not scope[key] for key in required):
+        raise ValueError("Invalid authorized query scope")
+    user_id, roles = scope.get("user_id"), scope.get("roles")
+    dimension, threshold = scope.get("embedding_dimension"), scope.get("score_threshold")
+    if (type(user_id) is not int or user_id <= 0
+            or not isinstance(roles, list)
+            or any(not isinstance(role, str) or not role for role in roles)
+            or type(dimension) is not int or not 1 <= dimension <= 4096
+            or type(threshold) not in (int, float) or not math.isfinite(threshold)
+            or not -1 <= threshold <= 1 or len(scope["prepared_query"]) > 10_000):
+        raise ValueError("Invalid registered retrieval policy")
+    params = qdrant_client.get_collection(collection_name).config.params.vectors
+    if (not isinstance(params, VectorParams) or params.size != dimension
+            or params.distance != Distance.COSINE):
+        raise ValueError("Registered embedding/collection configuration differs")
+    vector = embeddings_model.embed_query(scope["prepared_query"])
+    if (not isinstance(vector, list) or len(vector) != dimension
+            or any(type(v) not in (int, float) or not math.isfinite(v) for v in vector)):
+        raise ValueError("Invalid query embedding")
+    alternatives = [FieldCondition(key="owner_user_id", match=MatchValue(value=user_id))]
+    if roles:
+        alternatives.append(FieldCondition(key="allowed_roles", match=MatchAny(any=roles)))
+    access_filter = Filter(must=[
+        FieldCondition(key="tenant_id", match=MatchValue(value=scope["tenant_id"])),
+        FieldCondition(key="app_code", match=MatchValue(value=scope["app_code"])),
+        FieldCondition(key="is_current_version", match=MatchValue(value=True)),
+        Filter(should=alternatives),
+    ])
+    hits = qdrant_client.query_points(
+        collection_name=collection_name, query=vector, query_filter=access_filter,
+        limit=k, with_payload=True, score_threshold=threshold).points
+    result = []
+    for hit in hits:
+        payload = hit.payload or {}
+        doc_id, version = payload.get("document_id"), payload.get("version_id")
+        if type(doc_id) is not int or not isinstance(version, str):
+            raise ValueError("Invalid stored source identity")
+        # Checks current tenant/object ACL, published version and processed state.
+        if authorize_current_chunk(security_context, doc_id, version) is not True:
+            continue
+        if not isinstance(payload.get("text"), str):
+            raise ValueError("Invalid stored chunk")
+        result.append({
+            "text": payload["text"], "document_id": doc_id, "version_id": version,
+            "document_type": payload.get("document_type"), "score": hit.score,
+            "source_page": payload.get("source_page"),
+        })
+    return result
+
+# Payload filtering reduces candidates; it is not the authority for current ACL.
+# Role and owner IDs are server-resolved, not request claims. query_points is used
+# with the installed client API; cosine thresholds are task-specific, not probabilities.

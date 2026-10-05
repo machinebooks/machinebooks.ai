@@ -1,0 +1,11 @@
+## Context Analysis
+
+| Component     | Tokens   | % of total      |
+|---------------|----------|-----------------|
+| System prompt | ~3,200   | 8%              |
+| Tools         | ~6,100   | 15%             |
+| Conversation  | ~30,500  | 77%             |
+| Total         | ~39,800  | 20% of 200K max |
+
+Recommendations:
+- Tool results dominate the context — micro-compaction would help

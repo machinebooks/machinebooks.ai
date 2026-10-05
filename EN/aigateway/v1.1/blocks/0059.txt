@@ -1,0 +1,9 @@
+// Request received by the pipeline
+{
+    "model": "gpt-5.4",
+    "messages": [
+        {"role": "system", "content": "You are a security assistant..."},
+        {"role": "user", "content": "Compare these two IAM policies and evaluate risks..."}
+    ],
+    "purpose": "code"
+}

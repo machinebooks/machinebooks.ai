@@ -1,0 +1,9 @@
+## proposal(security): SYN-YAML-001 — synthetic YAML review
+
+This is an illustrative finding, not a CVE or an NVD advisory.
+The exercise proposes reviewing YAML loaders, untrusted input,
+dependency versions, and compatibility. No real exploit, applied
+update, passing tests, or zero residual risk is established.
+
+Status: REVIEW. The host supplies an authorized diff, tests,
+scanner receipts, and human approval before accepting a change.

@@ -1,0 +1,21 @@
+sequenceDiagram
+    autonumber
+    participant L as Parent AgentLoop
+    participant M as SubAgentManager
+    participant G as A2AGovernance
+    participant C as Child (child AgentLoop)
+    participant N as TaskNotificationManager
+
+    L->>M: spawnAgent(type, prompt)
+    M->>M: register in sessions / pool
+    M->>C: runAgent() (async)
+    M-->>L: agentId (returns immediately)
+    Note over L: the parent continues its turn
+    C->>C: internal ReAct loop
+    C-->>M: final result
+    M->>G: record(A2AEvent {tokens, latency, status})
+    M->>N: enqueue(taskNotification)
+    L->>L: next turn
+    L->>N: flushPending(messages)
+    N-->>L: injects <task-notification> as user msg
+    L->>L: the LLM sees the child's result

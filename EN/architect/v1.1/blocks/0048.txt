@@ -1,0 +1,9 @@
+@proposals_bp.route('/api/proposals', methods=['POST'])
+@platform_guard                           # Layer 1: Valid JWT, claims extracted
+@require_permission('proposals', 'write') # Layer 2: Role has write permission
+@rate_limit(max_requests=30, window_seconds=60, key_prefix="proposal_create")  # Layer 3: 30 req/min (sliding window, Redis)
+def create_proposal():
+    """Create proposal — requires write permission on proposals module."""
+    # g.current_user_id, g.app_code and g.permissions are server-resolved
+    data = request.get_json()
+    # ... business logic

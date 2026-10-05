@@ -1,0 +1,23 @@
+# falco/rules/ai-agent-escape.yaml
+- rule: System tool execution from agent container
+  desc: >
+    Claude agent containers run Python and the tools
+    declared in their configuration. If an agent process
+    invokes curl, wget, nc, nmap, or network tools,
+    it may indicate the agent has been manipulated
+    by prompt injection to execute unauthorized commands.
+  condition: >
+    spawned_process
+    and container
+    and container.name startswith "agent-"
+    and proc.name in (curl, wget, nc, ncat, nmap, dig,
+         host, ssh, scp, rsync, python3)
+    and not proc.pname = "supervisord"
+  output: >
+    System tool executed from agent container
+    (container=%container.name tool=%proc.name
+    parent=%proc.pname cmdline=%proc.cmdline
+    user=%user.name)
+  priority: CRITICAL
+  tags: [ai_workload, agent_escape, prompt_injection,
+         mitre_execution]

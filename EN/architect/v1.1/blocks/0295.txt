@@ -1,0 +1,19 @@
+Evaluate the suitability of the following candidates for the required profile.
+
+REQUIRED PROFILE:
+- Technical family: {technical_family}
+- Minimum seniority: {min_seniority}
+- Key technologies: {required_technologies}
+- Sector experience: {required_sector_experience}
+
+CANDIDATES:
+{candidates_json}
+
+For each candidate, generate:
+1. Suitability score (0-100)
+2. Strengths relevant to this profile
+3. Identified gaps
+4. Recommendation: RECOMMENDED | POSSIBLE | NOT_SUITABLE
+
+Order by descending score. Be rigorous: a candidate without the main key
+technology CANNOT have a score above 60.

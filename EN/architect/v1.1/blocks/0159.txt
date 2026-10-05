@@ -1,0 +1,36 @@
+@bp.route('/<int:agent_id>/tools', methods=['PUT'])
+@jwt_required()
+@require_permission('ai_config.update')
+def set_tools(agent_id):
+    body = request.get_json(silent=True)
+    if not isinstance(body, dict) or set(body) != {'tools'} or not isinstance(body['tools'], list) or len(body['tools']) > 100:
+        return jsonify({'error': 'Entrada no válida'}), 400
+    tools_data = body['tools']
+    seen = set()
+    for item in tools_data:
+        if not isinstance(item, dict) or not set(item).issubset({'tool_name', 'is_enabled', 'sort_order'}):
+            return jsonify({'error': 'Herramienta no válida'}), 400
+        name = item.get('tool_name')
+        if not isinstance(name, str) or not 1 <= len(name) <= 100 or name in seen or type(item.get('is_enabled', True)) is not bool or type(item.get('sort_order', 0)) is not int:
+            return jsonify({'error': 'Herramienta no válida'}), 400
+        seen.add(name)
+    ctx = resolve_current_security_context()
+    agent = load_authorized_agent_for_update(ctx, agent_id)
+    if agent is None:
+        return jsonify({'error': 'Acceso denegado'}), 403
+    valid_names = load_authorized_tool_registry(ctx)
+    if not isinstance(valid_names, (set, frozenset)) or not all(isinstance(name, str) for name in valid_names):
+        return jsonify({'error': 'Registro no disponible'}), 503
+    if not seen.issubset(valid_names):
+        return jsonify({'error': 'Herramienta no registrada'}), 400
+    try:
+        AgentToolAssignment.query.filter_by(agent_definition_id=agent_id).delete()
+        for order, item in enumerate(tools_data):
+            db.session.add(AgentToolAssignment(agent_definition_id=agent_id,
+                tool_name=item['tool_name'], is_enabled=item.get('is_enabled', True),
+                sort_order=item.get('sort_order', order)))
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        return jsonify({'error': 'Asignación no completada'}), 503
+    return jsonify({'success': True}), 200

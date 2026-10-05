@@ -1,0 +1,22 @@
+# .security-review-config.yml
+exceptions:
+  # Intentionally public endpoints
+  public_paths:
+    - "/webhooks/*"
+    - "/health"
+    - "/metrics"
+    - "/api/v1/public/*"
+
+  # Files excluded from security review
+  excluded_files:
+    - "tests/**"
+    - "migrations/**"
+    - "scripts/seed_*.py"
+
+  # Patterns accepted by team decision
+  accepted_patterns:
+    - id: "md5-checksum-non-crypto"
+      description: "MD5 used for file checksums, not for cryptography"
+      files: ["utils/file_hash.py"]
+      approved_by: "security-lead"
+      approved_date: "2026-02-15"

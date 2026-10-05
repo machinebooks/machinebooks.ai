@@ -1,0 +1,13 @@
+<context>                            ← Opcional: RAG documental
+  [chunks recuperados]
+</context>
+
+<memories>                           ← Opcional: memoria episódica
+  [hechos relevantes encontrados]
+</memories>
+
+[texto del usuario, tal cual]
+
+<task-notification>                  ← Opcional: notificaciones de tasks
+  [estado de tasks en background]
+</task-notification>

@@ -1,0 +1,32 @@
+@startuml
+!theme plain
+skinparam backgroundColor transparent
+skinparam componentStyle uml2
+
+package "services/telemetry" {
+  [instrumentation] as Instr
+  [sessionTracing] as Sess
+  [pluginTelemetry] as Plug
+}
+
+interface "TelemetryFlushTarget" as TFT
+interface "SpanContext" as SC
+
+Instr ..> SC : crea / cierra
+Instr ..> TFT : flush opcional
+Sess --> Instr : startSpan / endSpan
+Plug --> Instr : recordPluginInvocation
+
+note right of Instr
+  Buffer en memoria, FLUSH_BATCH=50,
+  FLUSH_INTERVAL_MS=30_000.
+  Sin target → spans se acumulan
+  hasta vaciado manual.
+end note
+
+note bottom of Sess
+  Identidad de trace por ámbito,
+  un span por turn,
+  N spans por tool dentro del turn.
+end note
+@enduml

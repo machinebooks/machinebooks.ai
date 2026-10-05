@@ -1,0 +1,13 @@
+flowchart LR
+    subgraph "Topologias UI agentica"
+        A[Electron Desktop<br/>renderer process]
+        B[Office Add-in<br/>task pane según plataforma]
+        C[Browser Extension<br/>service worker + popup]
+        D[IDE Plugin<br/>VSCode webview]
+        E[Chat Bot<br/>Slack / Teams]
+    end
+    A -->|bridge o HTTP del caso| R1[AgentLoop<br/>en proceso Node]
+    B -->|canal autorizado| R2[Backend autorizado<br/>local o remoto]
+    C -->|canal autorizado| R2
+    D -->|bridge o sidecar autorizado| R3[AgentLoop<br/>en sidecar local]
+    E -->|webhook + REST| R4[AgentLoop<br/>en servidor backend]

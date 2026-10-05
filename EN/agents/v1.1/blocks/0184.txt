@@ -1,0 +1,7 @@
+export interface PlanStep {
+  id: string;
+  description: string;
+  expectedTools?: string[];
+  expectedOutcome?: string;
+  status: 'pending' | 'in_progress' | 'completed' | 'skipped';
+}

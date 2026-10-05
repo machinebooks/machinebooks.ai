@@ -1,0 +1,15 @@
+// Educational event shape; missing usage is explicit.
+export interface A2AEvent {
+  id: string;
+  timestamp: number; // UTC epoch milliseconds, not an elapsed duration.
+  owner_session_id: string;
+  caller_agent_id: string;
+  callee_agent_id: string;
+  method: string;
+  payload_summary: string; // Minimized; no secrets or personal data.
+  tokens_in: number | null;
+  tokens_out: number | null;
+  latency_ms: number; // From a monotonic clock.
+  status: 'success' | 'error' | 'timeout';
+  error_message?: string; // Sanitized, bounded diagnostics.
+}

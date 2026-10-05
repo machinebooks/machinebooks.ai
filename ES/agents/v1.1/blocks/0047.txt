@@ -1,0 +1,34 @@
+sequenceDiagram
+    autonumber
+    participant A as Agente interno
+    participant C as chat.ts dispatch
+    participant Conv as convertMessages()
+    participant Anth as anthropic.ts
+    participant OAI as openai-compat.ts
+    participant Az as azure.ts
+
+    A->>C: messages format: { role, content, tool_calls, tool_call_id }
+    Note over A,C: Formato OpenAI-canónico
+
+    alt Provider = anthropic
+        C->>Conv: convertMessages(messages)
+        Conv->>Conv: extrae system del array
+        Conv->>Conv: tool_calls → bloques tool_use
+        Conv->>Conv: tool_results → bloques tool_result
+        Conv->>Conv: roles consecutivos → agrupación del adaptador
+        Conv->>Conv: dummy inicial histórico → instrucción registrada
+        Conv-->>C: { system, anthropicMessages }
+        C->>Anth: streamAnthropicCall(callbacks)
+        Anth-->>C: LLMResult: { content, reasoning, toolCalls, streamError }
+    else Provider = azure
+        C->>Az: streamAzureCall(config, callbacks)
+        Az->>Az: build AzureOverride
+        Az->>OAI: streamOpenAICompatCall(callbacks, azure)
+        OAI-->>Az: LLMResult
+        Az-->>C: LLMResult
+    else Provider = openai/lmstudio/ollama
+        C->>OAI: fetch + SSE parse directo
+        OAI-->>C: LLMResult
+    end
+
+    C-->>A: LLMResult común; pérdidas y estados explícitos

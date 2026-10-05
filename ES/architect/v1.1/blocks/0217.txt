@@ -1,0 +1,1 @@
+isRefreshing coordina peticiones dentro de esta instancia del módulo JavaScript. failedQueue espera el resultado del refresco; otras pestañas o clientes conservan su propio estado. Timeout, cancelación, errores de cola, rotación y repetición requieren contratos probados. auth:logout permite que AuthContext actualice la sesión y que la integración limpie datos del actor anterior.

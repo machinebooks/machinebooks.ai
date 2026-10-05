@@ -1,0 +1,8 @@
+if (isReasoning) {
+  requestBody.max_completion_tokens = options?.maxTokens || 4096;
+  requestBody.reasoning_effort = azure?.reasoningEffort || 'medium';
+} else {
+  requestBody.max_tokens = options?.maxTokens || 4096;
+  requestBody.temperature = options?.temperature ?? 0.7;
+  requestBody.top_p = 0.9;
+}

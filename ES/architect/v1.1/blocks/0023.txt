@@ -1,0 +1,17 @@
+Prompt inicial al arrancar el proyecto con Claude Code:
+
+"Tengo un proceso de negocio B2B que consume 50-120 horas por propuesta.
+Necesito automatizarlo con IA. Los usuarios son operativos de negocio,
+analistas y administradores con roles y permisos distintos. Requisitos:
+- Análisis de documentos complejos (PDF 100-300 páginas con OCR)
+- Generación de propuestas técnicas con contexto de propuestas anteriores
+- Búsqueda semántica en base documental de varios millones de documentos
+- Chat con contexto RAG sobre documentación propia
+- Automatización de cargas a sistemas externos mediante navegador
+- Panel de administración con gobernanza de IA y control de costes
+
+El equipo conoce Flask y React. La infraestructura del cliente usa MySQL 8.0.
+El sistema debe cumplir requisitos de privacidad y auditoría empresariales.
+
+¿Qué stack recomiendas y por qué? Dame pros y contras de cada opción
+y las condiciones bajo las cuales cambiarías la recomendación."

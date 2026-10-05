@@ -1,0 +1,19 @@
+def escalate_critical(finding: dict, pr_url: str) -> None:
+    """Notifies the security team about critical findings."""
+    # Integration with Slack via webhook
+    import requests
+
+    webhook_url = os.environ.get("SLACK_SECURITY_WEBHOOK")
+    if not webhook_url:
+        return
+
+    requests.post(webhook_url, json={
+        "text": (
+            f"🔴 *Critical finding in PR*\n"
+            f"*PR:* {pr_url}\n"
+            f"*Category:* {finding['category']}\n"
+            f"*File:* {finding['file']}:{finding['line']}\n"
+            f"*Explanation:* {finding['explanation']}\n"
+            f"Requires review before merge."
+        ),
+    })

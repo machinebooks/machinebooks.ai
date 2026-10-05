@@ -1,0 +1,18 @@
+-- NNN_description.sql: educational MySQL 8 migration.
+-- Runner preconditions: authorized schema; column and index absent.
+-- Check INFORMATION_SCHEMA before each DDL; implicit commits apply.
+SET NAMES utf8mb4;
+
+ALTER TABLE existing_table
+    ADD COLUMN new_col VARCHAR(100) NULL;
+UPDATE existing_table SET new_col = 'default' WHERE new_col IS NULL;
+CREATE INDEX idx_table_col ON existing_table (new_col);
+
+-- Separate trigger example for the mysql client (not driver SQL):
+DELIMITER $$
+CREATE TRIGGER trg_name BEFORE UPDATE ON existing_table
+FOR EACH ROW
+BEGIN
+    SET NEW.new_col = COALESCE(NEW.new_col, 'default');
+END$$
+DELIMITER ;

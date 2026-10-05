@@ -1,0 +1,14 @@
+# Educational bilingual heuristic; accuracy needs a labeled evaluation set.
+_COMPLEX_PATTERNS = re.compile(
+    r"\b(?:analizar?|analy[sz]e|compar[ae]r?|evaluar?|evaluate|implement(?:ar)?|"
+    r"refactor(?:ing|izar|ización)?|architect\w*|review|audit|generate|diseñar?|"
+    r"explica en detalle|comprehensive|investigar?|investigate|"
+    r"desarrollar?|develop|optimi[sz]e|optimizar|debug(?:ging)?)\b",
+    re.IGNORECASE,
+)
+_SIMPLE_PATTERNS = re.compile(
+    r"^\s*[¿¡]?(?:qué es|cuál es|cuándo |cómo se llama|quién es|dónde está|"
+    r"what is|who is|when is|how many|cuántos?|dame un ejemplo|"
+    r"define |traduc|hola|hello|hi |gracias|thanks|ok\b)",
+    re.IGNORECASE,
+)

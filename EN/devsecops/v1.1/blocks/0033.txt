@@ -1,0 +1,9 @@
+# Generate SBOM of the project directory
+syft dir:. -o cyclonedx-json > sbom.cdx.json
+
+# Generate SBOM of a Docker image
+syft registry:my-org/my-app:latest -o cyclonedx-json > sbom.cdx.json
+
+# Generate SBOM with detailed license information
+syft dir:. -o cyclonedx-json --file sbom.cdx.json \
+  --catalogers all

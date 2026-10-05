@@ -1,0 +1,34 @@
+{
+  "ml_bom": {
+    "version": "0.1.0",
+    "timestamp": "2026-03-29T10:00:00Z",
+    "models": [
+      {
+        "name": "claude-sonnet-4-6",
+        "provider": "anthropic",
+        "type": "api",
+        "endpoints": ["src/services/chat_service.py",
+                      "src/agents/triage_agent.py"],
+        "permissions": ["read_findings", "generate_reports"],
+        "last_verified": "2026-03-28T08:00:00Z"
+      },
+      {
+        "name": "claude-haiku-4-5",
+        "provider": "anthropic",
+        "type": "api",
+        "endpoints": ["src/services/classification.py"],
+        "permissions": ["classify_severity"],
+        "last_verified": "2026-03-28T08:00:00Z"
+      }
+    ],
+    "vector_stores": [
+      {
+        "name": "normative-corpus",
+        "engine": "qdrant",
+        "document_count": 2847,
+        "last_indexed": "2026-03-27T14:30:00Z",
+        "source_validation": true
+      }
+    ]
+  }
+}

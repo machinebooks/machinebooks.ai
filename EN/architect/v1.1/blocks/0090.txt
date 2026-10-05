@@ -1,0 +1,23 @@
+# The 8 tools of the evaluation agent
+EVALUATION_TOOLS = [
+    "read_requirement_documents",     # Read requirements document
+    "read_proposal_documents",        # Read generated proposal
+    "extract_evaluation_criteria",    # Extract evaluation criteria
+    "compare_proposal_vs_criteria",   # Point-by-point comparison
+    "analyze_pricing",                # Economic analysis
+    "analyze_team",                   # Team matching vs required profiles
+    "calculate_final_scores",         # Weighted score calculation
+    "evaluation_complete",            # Completion signal
+]
+
+@dataclass
+class CriterionEvaluation:
+    criterion_name: str
+    found_in_proposal: bool
+    estimated_score: float
+    max_possible_score: float
+    confidence: float           # 0-1
+    alignment_level: str        # 'low', 'medium', 'high', 'excellent'
+    strengths: List[str]
+    weaknesses: List[str]
+    recommendations: List[str]

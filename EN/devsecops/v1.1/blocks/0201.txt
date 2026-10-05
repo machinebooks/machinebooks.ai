@@ -1,0 +1,31 @@
+# Raw artifacts only; /ingest normalization and authentication are omitted.
+jobs:
+  sast:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: semgrep --config auto --json -o semgrep-results.json .
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: raw-semgrep-review
+          path: semgrep-results.json
+          if-no-files-found: error
+      - run: |
+          echo 'REVIEW: metric ingestion, identity and adjudication adapter omitted'
+          exit 2
+  sca:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: syft . -o cyclonedx-json > sbom.json
+      - run: grype sbom:sbom.json -o json > grype-results.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: raw-grype-review
+          path: grype-results.json
+          if-no-files-found: error
+      - run: |
+          echo 'REVIEW: metric ingestion, identity and adjudication adapter omitted'
+          exit 2

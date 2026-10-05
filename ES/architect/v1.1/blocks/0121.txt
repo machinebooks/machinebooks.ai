@@ -1,0 +1,48 @@
+import hashlib
+import math
+from datetime import datetime, timezone, timedelta
+
+def check_pii_in_outputs(security_context, load_authorized_samples,
+                         scan_sample, persist_scan_and_alert_outbox):
+    cutoff = datetime.now(timezone.utc) - timedelta(hours=6)
+    samples = load_authorized_samples(security_context, cutoff)
+    processed = 0
+    for sample in samples:
+        if (not isinstance(sample, dict) or not isinstance(sample.get("sample_id"), str)
+                or not isinstance(sample.get("text"), str) or len(sample["text"]) > 500):
+            raise ValueError("Invalid authorized sample")
+        result = scan_sample(sample["text"])
+        if not isinstance(result, dict) or type(result.get("has_pii")) is not bool:
+            raise ValueError("Invalid PII scan result")
+        # Store only classification, not another copy of the sample.
+        if persist_scan_and_alert_outbox(
+                security_context, sample["sample_id"], result,
+                datetime.now(timezone.utc)) is not True:
+            raise RuntimeError("Scan persistence was not confirmed")
+        processed += 1
+    return {"scanned_samples": processed, "full_outputs_scanned": False}
+
+def evaluate_model_bias(scores, threshold=0.3):
+    if type(threshold) not in (int, float) or not math.isfinite(threshold) or not 0 <= threshold <= 1:
+        raise ValueError("Invalid bias threshold")
+    known = []
+    for score in scores:
+        if score is None:
+            continue
+        if type(score) not in (int, float) or not math.isfinite(score) or not 0 <= score <= 1:
+            raise ValueError("Invalid bias signal")
+        known.append(score)
+    average = sum(known) / len(known) if known else None
+    return {"mean_bias_signal": average, "known_samples": len(known),
+            "alert": None if average is None else average > threshold}
+
+def verify_config_integrity(content, expected_hash):
+    if not isinstance(content, str) or not isinstance(expected_hash, str):
+        raise TypeError("Invalid prompt integrity input")
+    return hashlib.sha256(content.encode("utf-8")).hexdigest() == expected_hash
+
+# Authorized sample storage, bounded batch selection and durable scan/alert outbox
+# are external dependencies. Historical sample scans cannot prevent an export.
+# Bias scores are proxies (higher = more bias here); missing scores are not zero.
+# expected_hash must come from an independently protected approved-version record;
+# comparison with a hash stored beside editable content does not prove authenticity.

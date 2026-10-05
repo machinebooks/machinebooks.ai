@@ -1,0 +1,32 @@
+def main():
+    """Entry point: context -> analysis -> publication."""
+    print(f"Analyzing PR #{PR_NUMBER} in {REPO_NAME}...")
+
+    # 1. Get PR context
+    context = get_pr_context()
+
+    if context.get("omissions"):
+        publish_findings([{"status":"INCOMPLETE","coverage":"partial","reason":"context retrieval omissions"}])
+        return {"status":"INCOMPLETE","coverage":"partial","omissions":context["omissions"]}
+    diff_size = len(context["diff"])
+    file_count = len(context["files"])
+    print(f"Diff: {diff_size} characters, {file_count} files")
+
+    # 2. Limit analysis to PRs with relevant code
+    if diff_size < 10:
+        publish_findings([{"status":"INCOMPLETE", "coverage":"partial",
+                           "reason":"REVIEW: minimal diff not analyzed"}])
+        return {"status":"INCOMPLETE", "coverage":"partial"}
+
+    # 3. Analyze with Claude
+    findings = analyze_pr(context)
+    print(f"Findings detected: {len(findings)}")
+
+    # 4. Filter by confidence (double check)
+    # Retain every finding and its partial coverage for human review.
+    publish_findings(findings)
+    print("REVIEW: partial draft submitted; publication receipt and human review required")
+
+
+if __name__ == "__main__":
+    main()

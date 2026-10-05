@@ -1,0 +1,4 @@
+    document = db.query(Document).filter(
+        Document.id == document_id,
+        Document.owner_id == current_user.id  # Verificar propiedad
+    ).first()

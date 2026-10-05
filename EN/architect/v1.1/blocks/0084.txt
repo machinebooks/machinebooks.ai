@@ -1,0 +1,37 @@
+# Tested query_points interface; adapters resolve current tenant/actor scope.
+from qdrant_client.models import Filter,FieldCondition,MatchValue,MatchAny
+import math
+
+def find_matching_profiles(requirements_text,family,seniority_min,
+        security_context,client,get_embedding,authorize_search,
+        authorize_profile,limit=10):
+    levels=["JUNIOR","SENIOR","LEAD","PRINCIPAL","DIRECTOR"]
+    if type(limit) is not int or not 1<=limit<=50 or seniority_min not in levels:
+        raise ValueError("Valid seniority and bounded limit required")
+    if not isinstance(requirements_text,str) or not requirements_text.strip():
+        raise ValueError("Requirements text required")
+    if not isinstance(family,str) or not family or not isinstance(security_context,dict):
+        raise PermissionError("Server-resolved scope required")
+    tenant=security_context.get("tenant_id")
+    if not isinstance(tenant,str) or not tenant or authorize_search(security_context,"talent_profiles") is not True:
+        raise PermissionError("Talent search denied")
+    vector=get_embedding(requirements_text,security_context)
+    results=client.query_points(collection_name="talent_profiles",query=vector,
+        query_filter=Filter(must=[
+          FieldCondition(key="tenant_id",match=MatchValue(value=tenant)),
+          FieldCondition(key="family",match=MatchValue(value=family)),
+          FieldCondition(key="seniority",match=MatchAny(any=levels[levels.index(seniority_min):])),
+          FieldCondition(key="available",match=MatchValue(value=True)),
+        ]),limit=limit,with_payload=True).points
+    output=[]
+    for hit in results:
+        if authorize_profile(security_context,hit.id) is not True:continue
+        if not math.isfinite(hit.score) or not isinstance(hit.payload,dict):
+            raise ValueError("Valid profile payload required")
+        output.append({"profile_id":hit.id,"score":round(hit.score,3),
+             "name":hit.payload.get("display_name"),
+             "seniority":hit.payload.get("seniority"),
+             "specialties":hit.payload.get("specialties",[])})
+    return output
+# Current per-profile permission is rechecked even when index ACL is stale.
+# Embedding/model dimension and provider minimization are external contracts.

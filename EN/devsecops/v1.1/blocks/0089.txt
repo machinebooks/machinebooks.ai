@@ -1,0 +1,13 @@
+from functools import lru_cache
+
+@lru_cache(maxsize=256)
+def cached_service_exposure(service_name: str) -> dict:
+    """Service exposure cache — avoids repeated
+    inventory queries during a triage cycle."""
+    return check_service_exposure(service_name)
+
+@lru_cache(maxsize=512)
+def cached_cve_query(cve_id: str) -> dict:
+    """CVE query cache — avoids repeated NVD/OSV
+    calls for the same vulnerability."""
+    return query_cve_database(cve_id)

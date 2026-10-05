@@ -1,0 +1,57 @@
+from functools import wraps
+from collections.abc import Mapping
+from types import MappingProxyType, SimpleNamespace
+import inspect
+import time
+
+class NativeClientUsageTracker:
+    def __init__(self, client, model_name: str, service_type: str,
+                 provider_type: str, audit_sink, context: dict):
+        if not callable(audit_sink):
+            raise TypeError("Se requiere un destino duradero de auditoría")
+        if not isinstance(context, Mapping):
+            raise TypeError("Contexto no válido")
+        self._client = client
+        self._audit_sink = audit_sink
+        fields = ("user_id", "tenant_id", "app_code", "request_id", "entity_type", "entity_id")
+        if any(context.get(key) is not None and type(context.get(key)) not in (str, int) for key in fields):
+            raise TypeError("Contexto debe contener sólo identificadores escalares")
+        self._context = MappingProxyType({key: context.get(key) for key in fields})
+        original = client.messages.create
+        if inspect.iscoroutinefunction(original) or inspect.iscoroutinefunction(audit_sink):
+            raise TypeError("Este adaptador requiere cliente y destino síncronos")
+
+        def deliver(record):
+            if self._audit_sink(record) is not True:
+                raise RuntimeError("El destino no confirmó persistencia")
+
+        @wraps(original)
+        def tracked_create(*args, **kwargs):
+            if kwargs.get("stream"):
+                raise NotImplementedError("Streaming requiere otro adaptador instrumentado")
+            start = time.perf_counter()
+            base = {**dict(self._context), "model_name": kwargs.get("model", model_name),
+                    "service_type": service_type, "provider_type": provider_type}
+            try:
+                response = original(*args, **kwargs)
+            except BaseException as error:
+                record = {**base, "success": False, "prompt_tokens": None,
+                          "completion_tokens": None,
+                          "latency_ms": int((time.perf_counter() - start) * 1000)}
+                try:
+                    deliver(record)
+                except Exception:
+                    error.add_note("También falló la entrega de auditoría")
+                raise
+            usage = getattr(response, "usage", None)
+            record = {**base, "success": True,
+                      "prompt_tokens": getattr(usage, "input_tokens", None),
+                      "completion_tokens": getattr(usage, "output_tokens", None),
+                      "latency_ms": int((time.perf_counter() - start) * 1000)}
+            deliver(record)
+            return response
+
+        self.messages = SimpleNamespace(create=tracked_create)
+
+    def __getattr__(self, name):
+        return getattr(self._client, name)

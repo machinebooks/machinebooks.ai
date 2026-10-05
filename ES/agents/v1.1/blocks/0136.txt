@@ -1,0 +1,12 @@
+---
+name: prefer-strict-typescript
+description: El usuario prefiere TypeScript estricto en proyectos nuevos
+type: user
+created: 2026-04-12T09:22:00Z
+updated: 2026-04-12T09:22:00Z
+---
+
+Cuando arrancamos un proyecto nuevo TypeScript, configurar
+tsconfig con "strict": true desde el primer commit. El usuario
+lo ha pedido en tres sesiones distintas y se ha frustrado las
+tres veces cuando no se aplicaba.

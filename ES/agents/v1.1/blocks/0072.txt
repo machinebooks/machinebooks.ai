@@ -1,0 +1,49 @@
+// Schema exposed to the model
+const countLinesTool: ToolHandler = {
+  definition: {
+    name: 'count_lines',
+    description: `Counts the number of newline-delimited lines in a text file and returns the count.
+
+Use count_lines when:
+- You need a quick estimate of file size in lines (e.g. to decide between Read full vs paginated).
+- You want to verify a file has the expected number of records.
+
+Do not use count_lines for:
+- Counting tokens — use the tokenizer.
+- Binary files — the count is meaningless on binary content.
+
+Operating notes:
+- The count includes the final line even if it lacks a trailing newline.
+- Reads the whole file into memory; no file-size or memory bound is implemented here.
+- The host must authorize the path and supply the real tool-call ID.`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        file_path: { type: 'string', description: 'Absolute path to the text file' },
+      },
+      required: ['file_path'],
+    },
+    isReadOnly: true,
+    isConcurrencySafe: true,
+    timeoutMs: 5000,
+  },
+  async execute(input, ctx): Promise<ToolResult> {
+    // Validate input before reading
+    const filePath = typeof input.file_path === 'string' ? input.file_path : '';
+    if (!filePath) {
+      return { tool_use_id: '', content: 'file_path is required and must be a non-empty string', is_error: true };
+    }
+    // Distinguish input errors from system errors
+    // Pedagogical handler: host path authorization and cancellation are omitted.
+    try {
+      const content = await fs.promises.readFile(filePath, 'utf-8');
+      const count = content.length === 0 ? 0 :
+        content.split('\n').length - Number(content.endsWith('\n'));
+      return { tool_use_id: '', content: `${filePath}: ${count} lines`, is_error: false };
+    } catch (err: any) {
+      // Return the historical text-only result subset.
+      const msg = err?.code === 'ENOENT' ? `File not found: ${filePath}` : `Error reading ${filePath}: ${err.message}`;
+      return { tool_use_id: '', content: msg, is_error: true };
+    }
+  },
+};

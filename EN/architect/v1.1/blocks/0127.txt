@@ -1,0 +1,82 @@
+# Didactic example: patterns/models/document_model.py
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, JSON, Enum, ForeignKey
+from sqlalchemy.orm import relationship
+from datetime import datetime, timezone
+import enum
+
+class DocumentType(enum.Enum):
+    DOCUMENTO_REQUISITOS = "documento_requisitos"
+    PROPUESTA_TECNICA = "propuesta_tecnica"
+    CV_PROFILE = "cv_profile"
+    CONTRATO = "contrato"
+    INFORME_ANALISIS = "informe_analisis"
+    CATALOGO_SERVICIO = "catalogo_servicio"
+    OPORTUNIDAD = "oportunidad"
+    PLANTILLA = "plantilla"
+    ACTA_REUNION = "acta_reunion"
+    PRESUPUESTO = "presupuesto"
+    CERTIFICACION = "certificacion"
+    NORMATIVA = "normativa"
+
+class ProcessingStatus(enum.Enum):
+    PENDING = "pending"       # Received; pending processing
+    PROCESSING = "processing" # Extraction and embedding in progress
+    PROCESSED = "processed"   # Indexed; publication must be confirmed externally
+    FAILED = "failed"         # Processing failed; requires review
+
+class Document(Base):
+    __tablename__ = "documents"
+
+    id = Column(Integer, primary_key=True)
+    tenant_id = Column(String(100), nullable=False)
+    application_id = Column(String(100), nullable=False)
+    version_id = Column(String(100), nullable=False)
+    title = Column(String(500), nullable=False)
+    document_type = Column(Enum(DocumentType), nullable=False)
+    file_path = Column(String(1000))
+    file_hash = Column(String(64))  # SHA-256 for change detection; not proof of authenticity
+
+    # Version tree; a current flag alone is not an atomic publication protocol
+    parent_version_id = Column(Integer, ForeignKey("documents.id"), nullable=True)
+    is_current_version = Column(Boolean, default=True, nullable=False)
+    version_number = Column(Integer, default=1)
+
+    # RAG processing state
+    processing_status = Column(
+        Enum(ProcessingStatus),
+        default=ProcessingStatus.PENDING,
+        nullable=False,
+    )
+    processing_started_at = Column(DateTime(timezone=True), nullable=True)
+    processing_completed_at = Column(DateTime(timezone=True), nullable=True)
+    processing_error = Column(Text, nullable=True)  # Sanitized error class/code; do not persist raw provider errors
+
+    # Qdrant collection and point metadata
+    qdrant_collection = Column(String(100), nullable=True)
+    qdrant_point_ids = Column(JSON, nullable=True)  # Vector point IDs
+    chunks_count = Column(Integer, nullable=True)
+
+    # AI enrichment using a configured and authorized adapter
+    ai_summary = Column(Text, nullable=True)         # Generated summary requiring review
+    ai_keywords = Column(JSON, nullable=True)         # Keywords
+    ai_entities = Column(JSON, nullable=True)         # Detected entities: people, organizations, dates
+    ai_enriched_at = Column(DateTime(timezone=True), nullable=True)
+
+    # Reusable document template
+    is_template = Column(Boolean, default=False)
+    template_variables = Column(JSON, nullable=True)  # Template variables
+
+    # Owner and access metadata; current authorization is checked by the service
+    owner_user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    allowed_roles = Column(JSON, default=list)
+
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime(timezone=True), onupdate=lambda: datetime.now(timezone.utc))
+
+    # Version relationships
+    child_versions = relationship(
+        "Document",
+        foreign_keys=[parent_version_id],
+        backref="parent_version",
+        lazy="dynamic",
+    )

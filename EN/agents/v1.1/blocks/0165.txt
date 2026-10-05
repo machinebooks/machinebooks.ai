@@ -1,0 +1,15 @@
+stateDiagram-v2
+    [*] --> pending
+    pending --> running: request validated and authorized
+    running --> completed: terminal state and required output saved
+    running --> failed: execution failure
+    running --> timeout: wait limit reached
+    running --> cancelled: cancellation requested
+    running --> failed_save: output generated; saving failed
+    pending --> skipped: failed dependency or cancellation
+    completed --> [*]
+    failed --> [*]
+    timeout --> [*]
+    cancelled --> [*]
+    failed_save --> [*]
+    skipped --> [*]

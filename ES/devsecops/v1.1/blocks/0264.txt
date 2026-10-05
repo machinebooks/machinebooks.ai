@@ -1,0 +1,80 @@
+# progress_tracker.py — Seguimiento de madurez DevSecOps
+from dataclasses import dataclass, field
+from datetime import date
+import math
+import json
+from pathlib import Path
+
+@dataclass
+class AssessmentSnapshot:
+    date: date
+    levels: dict[str, int]       # dominio -> nivel alcanzado
+    global_score: float
+    criteria_detail: dict[str, dict[str, bool]]  # dominio -> {criterio: cumplido}
+    assessor: str                # Quién ejecutó el assessment
+    notes: str = ""
+
+@dataclass
+class MaturityTracker:
+    organization: str
+    profile: str                 # "startup", "enterprise_ai", "public_regulated"
+    snapshots: list[AssessmentSnapshot] = field(default_factory=list)
+
+    def add_snapshot(self, snapshot: AssessmentSnapshot) -> None:
+        if not isinstance(snapshot,AssessmentSnapshot) or type(snapshot.date) is not date or snapshot.date > date.today():
+            raise ValueError("INCOMPLETE: invalid assessment date")
+        if any(old.date == snapshot.date for old in self.snapshots):
+            raise ValueError("INCOMPLETE: duplicate assessment date")
+        if not isinstance(snapshot.levels,dict) or not snapshot.levels or any(type(level) is not int or not 0 <= level <= 4 for level in snapshot.levels.values()):
+            raise ValueError("INCOMPLETE: invalid domain level")
+        if type(snapshot.global_score) not in (int,float) or not math.isfinite(snapshot.global_score) or not 0 <= snapshot.global_score <= 4:
+            raise ValueError("INCOMPLETE: invalid global score")
+        self.snapshots.append(snapshot)
+        self.snapshots.sort(key=lambda s: s.date)
+
+    def get_trend(self, domain: str) -> list[tuple[date, int]]:
+        """Devuelve la serie temporal de nivel para un dominio."""
+        return [(s.date, s.levels[domain]) for s in self.snapshots]
+
+    def get_improvement_rate(self, domain: str) -> float:
+        """Calcula la tasa de mejora (niveles/mes) para un dominio."""
+        trend = self.get_trend(domain)
+        if len(trend) < 2:
+            raise ValueError("INCOMPLETE: two dated assessments required")
+        first_date, first_level = trend[0]
+        last_date, last_level = trend[-1]
+        months = (last_date - first_date).days / 30.0
+        if months <= 0:
+            raise ValueError("INCOMPLETE: nonpositive observation interval")
+        return round((last_level - first_level) / months, 3)
+
+    def domains_below_target(
+        self, targets: dict[str, int]
+    ) -> list[tuple[str, int, int]]:
+        """Identifica dominios por debajo del objetivo."""
+        if not self.snapshots:
+            raise ValueError("INCOMPLETE: no assessment baseline")
+        current = self.snapshots[-1].levels
+        return [
+            (domain, current[domain], target)
+            for domain, target in targets.items()
+            if current[domain] < target
+        ]
+
+    def save(self, path: Path) -> None:
+        """Persiste el histórico de assessments."""
+        data = {
+            "organization": self.organization,
+            "profile": self.profile,
+            "snapshots": [
+                {
+                    "date": s.date.isoformat(),
+                    "levels": s.levels,
+                    "global_score": s.global_score,
+                    "assessor": s.assessor,
+                    "notes": s.notes,
+                }
+                for s in self.snapshots
+            ]
+        }
+        path.write_text(json.dumps(data, indent=2, ensure_ascii=False))

@@ -1,0 +1,70 @@
+from fastapi import FastAPI, Request, Depends, HTTPException
+from fastapi.responses import StreamingResponse
+from sse_starlette.sse import EventSourceResponse
+import anthropic
+import json
+from typing import AsyncGenerator
+
+client = anthropic.AsyncAnthropic()
+
+async def stream_claude_response(
+    messages: list[dict],
+    system_prompt: str,
+    model: str = "claude-sonnet-4-6"
+) -> AsyncGenerator[str, None]:
+    """
+    Asynchronous generator yielding model text deltas as SSE events.
+    Actual delivery latency depends on the server and transport.
+    """
+    async with client.messages.stream(
+        model=model,
+        max_tokens=2048,
+        system=system_prompt,
+        messages=messages
+    ) as stream:
+        async for text in stream.text_stream:
+            # SSE payload: each text chunk is a delta event
+            yield json.dumps({"type": "delta", "content": text})
+
+        # Final event with SDK token-usage metadata
+        final_message = await stream.get_final_message()
+        usage = final_message.usage
+        yield json.dumps({
+            "type": "done",
+            "input_tokens": usage.input_tokens,
+            "output_tokens": usage.output_tokens
+        })
+
+@app.post("/chat/stream")
+async def chat_stream(
+    request: Request,
+    user_id: int = Depends(get_current_user_id)
+):
+    """
+    Chat endpoint with SSE streaming.
+    Request authorized context, history, and user memories before inference.
+    """
+    body = await request.json()
+    if not isinstance(body, dict) or not isinstance(body.get("message"), str) or not 1 <= len(body["message"]) <= 4000:
+        raise HTTPException(status_code=400, detail="Mensaje no válido")
+    message = body["message"]
+    chat_context = await load_authorized_chat_context(user_id, body.get("context", {}))
+    conversation_history = await load_authorized_conversation(user_id, body.get("conversation_id"))
+    user_memories = await load_authorized_user_memories(user_id, chat_context, limit=10)
+
+    # 2. Build the system prompt from authorized context and memories
+    system_prompt = build_system_prompt(
+        base_context=chat_context,
+        memories=user_memories
+    )
+
+    # 3. Append the new message to the authorized history
+    messages = conversation_history + [
+        {"role": "user", "content": message}
+    ]
+
+    # 4. Wrap payloads in EventSourceResponse
+    return EventSourceResponse(
+        stream_claude_response(messages, system_prompt),
+        media_type="text/event-stream"
+    )

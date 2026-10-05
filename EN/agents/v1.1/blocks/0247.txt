@@ -1,0 +1,24 @@
+flowchart TB
+    subgraph Runtime[Agent runtime]
+        Loop[AgentLoop<br/>cap 4]
+        Prov[Provider router<br/>cap 8]
+        Tools[ToolRegistry<br/>cap 12]
+        Sub[SubAgentManager<br/>cap 19]
+    end
+    subgraph Obs[Cross-cutting layers]
+        Cost[cost-tracker<br/>src/server/cost-tracker.ts]
+        Rate[rate-limiter<br/>src/server/rate-limiter.ts]
+        Tel[telemetry<br/>services/telemetry/]
+        Aud[AuditService<br/>cap 22]
+    end
+    Prov -- onUsage --> Cost
+    Prov -- checkLLMRate --> Rate
+    Tools -- checkToolRate --> Rate
+    Loop -- withTurnSpan --> Tel
+    Tools -- withToolSpan --> Tel
+    Loop -- audit event --> Aud
+    Tools -- audit event --> Aud
+    Cost -- cost per session --> UI
+    Rate -- 429 if exceeded --> UI
+    Tel -- spans / traces --> UI
+    Aud -- HTML / Excel --> Disk

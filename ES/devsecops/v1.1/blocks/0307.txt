@@ -1,0 +1,27 @@
+package devsecops_book.k8s_validation
+import rego.v1
+
+deny contains msg if {
+    input.kind == "Pod"
+    some container in input.spec.containers
+    container.securityContext.privileged == true
+    msg := sprintf("Contenedor '%s' privileged", [container.name])
+}
+deny contains msg if {
+    input.kind == "Pod"
+    some container in input.spec.containers
+    not container.resources.limits
+    msg := sprintf("Contenedor '%s' sin limits", [container.name])
+}
+deny contains msg if {
+    input.kind == "Pod"
+    some container in input.spec.containers
+    not container.securityContext.runAsNonRoot == true
+    msg := sprintf("Contenedor '%s' sin runAsNonRoot", [container.name])
+}
+deny contains msg if {
+    input.kind == "Pod"
+    some container in input.spec.containers
+    not container.securityContext.readOnlyRootFilesystem == true
+    msg := sprintf("Contenedor '%s' sin root filesystem sólo lectura", [container.name])
+}

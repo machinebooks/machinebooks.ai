@@ -1,0 +1,21 @@
+// Educational integration excerpt; per-session fields are host-owned.
+const warning = evaluateCompactWarning({
+  totalChars: totalCharsNow,
+  maxChars: this.config.maxContextChars,
+}, this.lastCompactWarningLevel);
+this.lastCompactWarningLevel = warning.level;
+if (warning.message && !warning.warnedThisSession) {
+  yield { type: 'warning', level: warning.level, message: warning.message };
+}
+const result = await this.compactor.compactIfNeeded(this.messages);
+if (result.compacted) {
+  this.messages = result.messages;
+  yield { type: 'compact', before: result.beforeChars, after: result.afterChars };
+  try {
+    // The host must check ownership, retention and all live consumers.
+    await cleanupOwnedArtifactsAfterCompaction(this.messages);
+  } catch {
+    yield { type: 'warning', level: 'maintenance', message: 'No se completó la limpieza de artefactos.' };
+  }
+}
+// The cleanup implementation and final request budget check are omitted.

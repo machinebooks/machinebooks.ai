@@ -1,0 +1,12 @@
+def generate_weekly_tuning(false_positives: list[dict]) -> str:
+    """Generates adjustment instructions based on the week's FPs."""
+    if not false_positives:
+        return ""
+
+    tuning = "\n## Lessons from this week (do not repeat these FPs)\n"
+    for fp in false_positives[:5]:  # Maximum 5 lessons
+        tuning += (
+            f"- {fp['file']}: you flagged [{fp['category']}] but it was FP "
+            f"because {fp['reason']}. Do not repeat this pattern.\n"
+        )
+    return tuning

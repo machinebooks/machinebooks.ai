@@ -1,0 +1,14 @@
+flowchart LR
+    A[messages array]
+    A --> S[system msg]
+    A --> U1[user msg]
+    A --> AS1[assistant msg]
+    A --> U2[user msg]
+
+    S -->|estático| Static[buildStaticPrefix<br/>JSON.stringify ordenado]
+    U1 -->|dinámico| Dynamic[buildDynamicContent<br/>concatenación role:content]
+    AS1 -->|dinámico| Dynamic
+    U2 -->|dinámico| Dynamic
+
+    Static --> SHA[createHash sha256]
+    SHA --> Key[cache key 64 hex chars]

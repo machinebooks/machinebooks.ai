@@ -1,0 +1,18 @@
+sequenceDiagram
+    autonumber
+    participant U as User
+    participant L as AgentLoop
+    participant P as Provider (LLM)
+    participant R as ToolRegistry
+    U->>L: message
+    loop Until finish_reason = end_turn without tool_use
+        L->>P: messages[] + tools[]
+        P-->>L: stream (text, thinking, tool_use)
+        alt Has tool_use
+            L->>R: execute(name, input)
+            R-->>L: tool_result
+            L->>L: messages.push(tool_result)
+        else No tool_use
+            L-->>U: final reply
+        end
+    end

@@ -1,0 +1,21 @@
+# Prompt genérico (insuficiente)
+"Escribe un manual de usuario para el módulo de análisis de documentos."
+
+# Prompt con ingeniería de contexto (efectivo)
+"Genera la sección 'Análisis de documentos' del manual de usuario de la Plataforma,
+dirigida a un analista de negocio con experiencia media en herramientas digitales.
+
+Perfil del lector: no es técnico, trabaja con documentos de requisitos de clientes,
+necesita extraer información clave de documentos extensos (50-200 páginas) para
+preparar propuestas comerciales. Su objetivo no es entender cómo funciona la IA sino
+completar su tarea más rápido.
+
+Flujo principal del usuario:
+1. Sube un documento PDF o Word desde la pestaña 'Análisis'
+2. El sistema extrae automáticamente requisitos, plazos y criterios de evaluación
+3. El usuario revisa los resultados, corrige si es necesario, y exporta
+
+Incluir: guía paso a paso con capturas descritas textualmente, errores comunes
+y cómo resolverlos, preguntas frecuentes basadas en los tickets de soporte reales.
+NO usar jerga técnica. Referirse al sistema como 'la Plataforma'.
+Tono: profesional y accesible, sin condescendencia."

@@ -1,0 +1,12 @@
+// ToolRegistry.ts:34-45
+register(handler: ToolHandler): void {
+  const name = handler.definition.name;
+  if (this.tools.has(name) && !this.duplicateWarned.has(name)) {
+    this.duplicateWarned.add(name);
+    console.warn(
+      `[ToolRegistry] Tool '${name}' registrada más de una vez. ` +
+      `Se conserva la última implementación.`,
+    );
+  }
+  this.tools.set(name, handler);
+}

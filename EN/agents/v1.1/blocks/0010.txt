@@ -1,0 +1,29 @@
+sequenceDiagram
+    autonumber
+    participant Caller as routes/chat.ts
+    participant Titler as ConversationTitler
+    participant Fetcher as PromptFetcher
+    participant DB as DatabaseService
+    participant Gateway as GatewayClient
+    participant LLM as Provider (LLM)
+
+    Caller->>Titler: generateTitle(convId, messages)
+    alt LLM path (registers 1+2+5)
+        Titler->>Fetcher: fetchWithFallback("internal.conversation_title", FALLBACK)
+        Fetcher->>DB: getCollection<PromptRow>("ai_prompts")
+        DB-->>Fetcher: [{ key, content, ... }]
+        Fetcher-->>Titler: template (string with {{userMsg}}, {{assistantBlock}})
+        Titler->>Titler: replace(/\{\{userMsg\}\}/g, () => userSlice) + replace(...)
+        Titler->>Gateway: postAuth("/v1/chat/completions", { messages, max_tokens: 20 })
+        Gateway->>LLM: HTTPS request
+        LLM-->>Gateway: { choices: [{ message: { content }}]}
+        Gateway-->>Titler: result
+        Titler-->>Caller: title.trim().replace(/^["']|["']$/g, '')
+    else Fallback path (pure register 3)
+        Caller->>Titler: generateFallbackTitle(firstMessage)
+        Titler->>Titler: replace(/```[\s\S]*?```/g, '')
+        Titler->>Titler: replace(/\[.*?\]\(.*?\)/g, '')
+        Titler->>Titler: replace(/[#*_~`]/g, '')
+        Titler->>Titler: slice(0, 50) + lastIndexOf(' ')
+        Titler-->>Caller: 'first 50 chars + "..."'
+    end

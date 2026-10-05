@@ -1,0 +1,58 @@
+@startuml
+!theme plain
+skinparam backgroundColor transparent
+skinparam component {
+  BackgroundColor #142038
+  BorderColor #7dd8e8
+  FontColor #f5efe0
+}
+skinparam interface {
+  BackgroundColor #0a1224
+  BorderColor #ffb347
+  FontColor #f5efe0
+}
+
+interface "StreamCallbacks" as SC {
+  +onContent(text: string)
+  +onThinking(text: string)
+  +onToolCall(index, id, name, argsChunk)
+  +onToolCallDone(index)
+  +onUsage(input, output)
+  +onError(error: string)
+}
+
+package "Providers" {
+  [anthropic.ts] as Anth
+  [azure.ts] as Az
+  [openai-compat.ts] as OAI
+}
+
+Anth ..> SC : implementa callbacks
+Az ..> OAI : delega a
+OAI ..> SC : implementa callbacks
+
+note right of SC
+  Dos definiciones independientes
+  del mismo contrato:\n
+  - anthropic.ts:31-38\n
+  - openai-compat.ts:22-29\n
+  Mismo firma, diferente fichero.\n
+  No hay interfaz TypeScript compartida.
+end note
+
+note right of Anth
+  Usa el SDK nativo\n
+  @anthropic-ai/sdk.\n
+  Convierte mensajes del formato\n
+  OpenAI al formato Anthropic\n
+  (convertMessages, convertTools).
+end note
+
+note right of OAI
+  Fetch directo + SSE parser.\n
+  Gestiona LM Studio, Ollama,\n
+  OpenAI y Azure (vía AzureOverride).\n
+  ~260 líneas, de las cuales\n
+  ~90 son parsing del stream SSE.
+end note
+@enduml

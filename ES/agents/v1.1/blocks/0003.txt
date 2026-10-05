@@ -1,0 +1,30 @@
+flowchart LR
+    subgraph CB["Chatbot — sin tools, sin bucle interno"]
+        direction LR
+        cb_u[user] --> cb_l[LLM] --> cb_r[reply] --> cb_u
+    end
+
+    subgraph WF["Workflow — pasos fijos, decisión del código"]
+        direction LR
+        wf_1[step 1] --> wf_2[step 2] --> wf_3[step 3] --> wf_e((fin))
+    end
+
+    subgraph RG["Pipeline RAG — un solo turno con contexto inyectado"]
+        direction LR
+        rg_q[query] --> rg_r[retrieve] --> rg_l[LLM] --> rg_p[reply]
+    end
+
+    subgraph AG["Agente — bucle, decisión del modelo, condición de parada"]
+        direction LR
+        ag_u[user] --> ag_loop["LLM ⇄ tool<br/>(N iteraciones)"] --> ag_r[reply]
+        ag_loop -.-> ag_loop
+    end
+
+    classDef cb fill:#142038,stroke:#7dd8e8,color:#f5efe0
+    classDef wf fill:#142038,stroke:#806030,color:#f5efe0
+    classDef rg fill:#142038,stroke:#a07840,color:#f5efe0
+    classDef ag fill:#142038,stroke:#ffb347,color:#f5efe0
+    class cb_u,cb_l,cb_r cb
+    class wf_1,wf_2,wf_3,wf_e wf
+    class rg_q,rg_r,rg_l,rg_p rg
+    class ag_u,ag_loop,ag_r ag

@@ -1,0 +1,72 @@
+# policies/pipeline/deployment_gates.rego
+package pipeline.deployment_gates
+
+import future.keywords.if
+import future.keywords.contains
+
+# Expected input structure:
+# {
+#   "scan_results": { "critical": 0, "high": 2, "medium": 15 },
+#   "tests": { "passed": 142, "failed": 0, "coverage": 78.5 },
+#   "image_signed": true,
+#   "sbom_generated": true,
+#   "last_security_review_days": 12
+# }
+
+# Gate 1: zero critical vulnerabilities
+deny contains msg if {
+    input.scan_results.critical > 0
+    msg := sprintf(
+        "Deployment blocked: %d critical vulnerabilities unresolved",
+        [input.scan_results.critical]
+    )
+}
+
+# Gate 2: image signed with cosign
+deny contains msg if {
+    not input.image_signed
+    msg := "Deployment blocked: image is not signed"
+}
+
+# Gate 3: SBOM generated and available
+deny contains msg if {
+    not input.sbom_generated
+    msg := "Deployment blocked: SBOM has not been generated"
+}
+
+# Gate 4: minimum test coverage
+deny contains msg if {
+    input.tests.coverage < 70
+    msg := sprintf(
+        "Deployment blocked: test coverage %.1f%% (minimum 70%%)",
+        [input.tests.coverage]
+    )
+}
+
+# Advisory: stale security review
+warn contains msg if {
+    input.last_security_review_days > 30
+    msg := sprintf(
+        "Warning: the last security review was %d days ago",
+        [input.last_security_review_days]
+    )
+}
+
+valid_input if {
+    is_object(input.scan_results)
+    is_number(input.scan_results.critical)
+    input.scan_results.critical >= 0
+    is_object(input.tests)
+    is_number(input.tests.coverage)
+    input.tests.coverage >= 0
+    input.tests.coverage <= 100
+    input.tests.failed == 0
+    input.image_signed == true
+    input.sbom_generated == true
+    is_number(input.last_security_review_days)
+    input.last_security_review_days >= 0
+}
+
+deny contains "INCOMPLETE: invalid deployment input" if {
+    not valid_input
+}

@@ -1,0 +1,22 @@
+sequenceDiagram
+    autonumber
+    participant M as Modelo (Anthropic o OAI-compat)
+    participant N as Red (TCP/TLS)
+    participant SDK as SDK / fetch parser
+    participant Prov as streamAnthropicCall / streamOpenAICompatCall
+    participant CB as StreamCallbacks.onContent
+    participant L as Consumidor de la ruta elegida
+
+    alt Anthropic — SSE oficial
+        M->>N: event: content_block_delta\ndata: {"delta":{"type":"text_delta","text":"Hola"}}
+        N->>SDK: bytes\n\n separados
+        SDK->>Prov: event.type === 'content_block_delta'
+        Prov->>CB: callbacks.onContent("Hola")
+    else OpenAI-compatible — SSE
+        M->>N: data: {"choices":[{"delta":{"content":"Hola"}}]}\n\n
+        N->>SDK: reader.read() (Uint8Array)
+        SDK->>Prov: framing SSE + parse JSON
+        Prov->>CB: callbacks.onContent("Hola")
+    end
+    CB->>L: text_delta event
+    L->>L: messages[].content += "Hola"

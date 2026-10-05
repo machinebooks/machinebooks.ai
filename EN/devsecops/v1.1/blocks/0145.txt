@@ -1,0 +1,79 @@
+from dataclasses import dataclass
+from datetime import datetime, timezone
+
+@dataclass
+class SecurityDecision:
+    allowed: bool
+    blocked_by: str | None
+    details: dict
+    timestamp: str
+
+def process_secure_request(
+    user_input: str,
+    context: str = ""
+) -> str | SecurityDecision:
+    """5-layer pipeline against prompt injection."""
+    timestamp = datetime.now(timezone.utc).isoformat()
+
+    # Layer 1: Input sanitization (< 1ms)
+    sanitization = sanitize_input(user_input)
+    if not sanitization.no_pattern_match:
+        return SecurityDecision(
+            allowed=False,
+            blocked_by="input_sanitization",
+            details={"pattern": sanitization.matched_pattern},
+            timestamp=timestamp
+        )
+
+    # Layer 5: Injection classifier (200-500ms)
+    # Executed before the main model to avoid unnecessary cost
+    classification = classify_injection(user_input, context)
+    if classification.get("status") != "PASS" or classification.get("is_injection") is not False:
+        return SecurityDecision(
+            allowed=False,
+            blocked_by="injection_classifier",
+            details=classification,
+            timestamp=timestamp
+        )
+
+    # Layers 2 + 3: Hardened system prompt + Sandwich defense
+    messages = build_sandwiched_messages(user_input, context)
+
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=2048,
+        system=HARDENED_SYSTEM_PROMPT,
+        messages=messages
+    )
+    response_text = response.content[0].text
+
+    # Layer 4: Output validation
+    validation = validate_output(
+        response_text,
+        HARDENED_SYSTEM_PROMPT,
+        user_input
+    )
+    if not validation.no_detected_violation:
+        # Log the incident for later analysis
+        log_security_event(
+            event_type="output_violation",
+            user_input=user_input,
+            response=response_text,
+            violations=validation.violations,
+            timestamp=timestamp
+        )
+        return SecurityDecision(
+            allowed=False,
+            blocked_by="output_validation",
+            details={"violations": validation.violations},
+            timestamp=timestamp
+        )
+
+    return validation.sanitized_output
+
+
+def log_security_event(**kwargs):
+    """Logs security events for analysis and continuous improvement."""
+    # In production: send to SIEM or audit table
+    event = {key: value for key, value in kwargs.items() if key not in {"user_input", "response", "context"}}
+    print(f"[SECURITY] {json.dumps(event, ensure_ascii=False)}")

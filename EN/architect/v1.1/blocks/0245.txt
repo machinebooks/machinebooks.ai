@@ -1,0 +1,36 @@
+from flask import g, request
+import time
+import uuid
+
+def register_request_logging_middleware(app):
+    """Registers timing and request correlation middlewares."""
+
+    @app.before_request
+    def start_timer():
+        # Generates or propagates request_id from X-Request-ID header
+        # This allows tracing requests coming from other services
+        g.request_id = request.headers.get("X-Request-ID", str(uuid.uuid4()))
+        g.request_start_time = time.monotonic()
+
+        # Adds request_id to response so the client can correlate
+        g.logger = structlog.get_logger().bind(
+            request_id=g.request_id,
+            method=request.method,
+            path=request.path,
+            user_id=getattr(g, "current_user_id", None)
+        )
+
+    @app.after_request
+    def log_request(response):
+        duration_ms = (time.monotonic() - g.request_start_time) * 1000
+
+        g.logger.info(
+            "http_request",
+            status_code=response.status_code,
+            duration_ms=round(duration_ms, 2),
+            content_length=response.content_length,
+        )
+
+        # Propagates request_id in the HTTP response
+        response.headers["X-Request-ID"] = g.request_id
+        return response

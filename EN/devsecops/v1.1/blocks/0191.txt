@@ -1,0 +1,53 @@
+# runtime_analyzer/auto_response.py
+"""
+Automatic containment actions for alerts confirmed
+as TRUE_POSITIVE with CRITICAL severity.
+Reversibility and delivery need host verification; actions retain review.
+"""
+import subprocess
+import logging
+from datetime import datetime, timezone
+
+logger = logging.getLogger("auto_response")
+
+
+def isolate_container(container_name: str) -> dict:
+    """Attempt two network changes; this does not establish complete isolation."""
+    actions_taken = []
+
+    # Disconnect from the production network
+    result = subprocess.run(
+        ["docker", "network", "disconnect",
+         "production-net", container_name],
+        capture_output=True, text=True, timeout=10
+    )
+    actions_taken.append({
+        "action": "network_disconnect",
+        "network": "production-net",
+        "success": result.returncode == 0,
+        "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    })
+
+    # Connect to the quarantine network (no external access)
+    result = subprocess.run(
+        ["docker", "network", "connect",
+         "quarantine-net", container_name],
+        capture_output=True, text=True, timeout=10
+    )
+    actions_taken.append({
+        "action": "network_connect_quarantine",
+        "success": result.returncode == 0,
+        "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    })
+
+    logger.critical(
+        f"Container {container_name}: partial network changes; isolation unverified. "
+        f"Actions: {actions_taken}"
+    )
+
+    return {
+        "container": container_name,
+        "status": "PARTIAL" if all(action["success"] for action in actions_taken) else "FAILED",
+        "actions": actions_taken,
+        "forensics_note": "Preservation and custody require independent validation"
+    }

@@ -1,0 +1,20 @@
+sequenceDiagram
+    autonumber
+    participant L as AgentLoop
+    participant R as rate-limiter
+    participant P as Provider
+    participant C as cost-tracker
+    participant T as telemetry
+    L->>R: checkLLMRate()
+    alt allowed
+        R-->>L: { allowed: true, currentRate: 12 }
+        L->>T: withTurnSpan(sessionId, turnIndex)
+        L->>P: stream(messages, tools)
+        P-->>L: chunks (text, tool_use)
+        P->>C: observed usage with call identity
+        C->>C: reconcile partials with final total once
+        L->>T: close span with actual state and coverage
+    else not allowed
+        R-->>L: { allowed: false, waitMs: 5000 }
+        L-->>L: bounded wait or rejection; record decision
+    end

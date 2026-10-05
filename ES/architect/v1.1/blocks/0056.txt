@@ -1,0 +1,29 @@
+# Educational enrollment core; authenticated adapters supply a server-resolved user.
+# Store a pending TOTP secret. Enable MFA only after verifying possession separately.
+import hashlib
+import secrets
+
+
+def prepare_mfa_enrollment(user_id, security_context, authorize_enrollment,
+                           generate_totp_secret, encrypt_secret, save_pending):
+    if type(user_id) is not int or user_id < 1 or security_context is None:
+        raise PermissionError("Authenticated user required")
+    if authorize_enrollment(security_context, user_id) is not True:
+        raise PermissionError("Enrollment not authorized")
+    secret = generate_totp_secret()
+    if not isinstance(secret, str) or not secret:
+        raise ValueError("TOTP secret required")
+    encrypted = encrypt_secret(secret.encode("utf-8"))
+    codes, hashes = [], []
+    for _ in range(10):
+        code = secrets.token_hex(16).upper()  # 128 bits, not eight hex characters
+        salt = secrets.token_hex(16)
+        digest = hashlib.sha256((salt + code).encode("ascii")).hexdigest()
+        codes.append(code)
+        hashes.append(f"{salt}:{digest}")
+    if save_pending(security_context, user_id, encrypted, hashes) is not True:
+        raise RuntimeError("Pending enrollment persistence required")
+    # Authenticated setup channel displays the enrollment secret and codes once.
+    # Codes must not be enabled until TOTP possession is verified.
+    return {"enrollment_secret": secret, "backup_codes": codes, "enabled": False}
+# Rate limits, protected storage and atomic one-time consumption are external controls.

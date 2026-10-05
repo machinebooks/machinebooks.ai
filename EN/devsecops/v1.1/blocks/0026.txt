@@ -1,0 +1,64 @@
+import json
+import anthropic
+
+client = anthropic.Anthropic()
+
+TRIAGE_PROMPT = """You are a senior security engineer. Analyze
+the following SAST finding and surrounding code.
+
+Finding: {finding_id}
+Reported severity: {severity}
+Message: {message}
+File: {file_path}
+Line: {line}
+
+Surrounding code (40 lines):
+{code_context}
+
+Respond EXCLUSIVELY in JSON with this format:
+{{
+  "classification": "true_positive" | "false_positive" | "requires_review",
+  "adjusted_severity": "critical" | "high" | "medium" | "low",
+  "justification": "explanation in 2-3 sentences",
+  "attack_vector": "description of attack if true positive",
+  "remediation": "concrete fix suggestion"
+}}"""
+
+
+def read_surrounding_code(filepath, line, margin=20):
+    """Read lines around the finding to provide context."""
+    with open(filepath, "r") as f:
+        lines = f.readlines()
+    start = max(0, line - margin)
+    end = min(len(lines), line + margin)
+    return "".join(lines[start:end])
+
+
+def triage_finding(finding: dict) -> dict:
+    """Send a finding to Claude and return the classification."""
+    context = read_surrounding_code(
+        finding["path"], finding["start"]["line"]
+    )
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=512,
+        temperature=0,
+        messages=[{
+            "role": "user",
+            "content": TRIAGE_PROMPT.format(
+                finding_id=finding["check_id"],
+                severity=finding["extra"]["severity"],
+                message=finding["extra"]["message"],
+                file_path=finding["path"],
+                line=finding["start"]["line"],
+                code_context=context,
+            ),
+        }],
+    )
+    proposal = json.loads(response.content[0].text)
+    if not isinstance(proposal, dict):
+        raise ValueError("INCOMPLETE: invalid proposal schema")
+    proposal["status"] = "REVIEW"
+    proposal["coverage"] = "partial"
+    proposal["origin_verified"] = False
+    return proposal

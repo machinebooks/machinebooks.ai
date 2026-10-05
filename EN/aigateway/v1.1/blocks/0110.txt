@@ -1,0 +1,20 @@
+# gateway/app/services/dual_cache.py:82-169 (synthesized)
+class DualCache:
+    async def get(self, key: str) -> Any | None:
+        # 1. In-memory first (hit = microseconds)
+        local = await self.in_memory.get(key)
+        if local is not None:
+            return local
+        # 2. Redis as fallback (hit = milliseconds)
+        raw = await self.redis.get(key)
+        if raw is not None:
+            await self.in_memory.set(key, raw, ttl=5)  # repopulates L1
+            return raw
+        return None
+
+    async def set(self, key: str, value: Any, redis_ttl: int | None = None):
+        if redis_ttl is not None and redis_ttl <= 0:
+            raise ValueError("redis_ttl must be positive")
+        # Writes to both levels with different TTLs
+        await self.in_memory.set(key, value, ttl=5)       # L1: 5s
+        await self.redis.setex(key, 300 if redis_ttl is None else redis_ttl, value)  # L2: 5min

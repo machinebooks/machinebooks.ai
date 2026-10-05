@@ -1,0 +1,18 @@
+@startuml
+!theme plain
+skinparam backgroundColor transparent
+skinparam state {
+  BackgroundColor #142038
+  BorderColor #7dd8e8
+  FontColor #f5efe0
+}
+
+[*] --> queued : addTool(block)
+queued --> executing : pumpQueue()\nfree slot + canStartTool
+queued --> completed : cancelled / siblingAbort\n(with interruptBehavior=cancel)
+executing --> completed : handler resolves
+executing --> cancelled : abortSignal\n(interruptBehavior=cancel)
+completed --> yielded : enqueueReadyResults()\ncan overtake safe pending entries
+cancelled --> yielded : enqueueReadyResults()
+yielded --> [*]
+@enduml

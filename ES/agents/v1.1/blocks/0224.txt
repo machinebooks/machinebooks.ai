@@ -1,0 +1,6 @@
+// src/server/services/PromptFetcher.ts:81-86
+return template.replace(/\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g, (full, name: string) => {
+  const v = vars[name];
+  if (v === undefined || v === null) return '';
+  return String(v);
+});

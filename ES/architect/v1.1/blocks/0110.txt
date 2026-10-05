@@ -1,0 +1,66 @@
+from dataclasses import dataclass
+from enum import Enum
+
+class LLMProvider(str, Enum):
+    ANTHROPIC = "anthropic"
+    AZURE_OPENAI = "azure_openai"
+    AZURE_AI_FOUNDRY = "azure_ai_foundry"
+    OPENAI = "openai"
+    OLLAMA = "ollama"
+    LM_STUDIO = "lm_studio"
+
+class TaskComplexity(str, Enum):
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+
+@dataclass(frozen=True)
+class LLMRequest:
+    service_type: str
+    task_complexity: TaskComplexity
+    requires_local: bool = False
+
+class LLMFactory:
+    def __init__(self, config_service, budget_service, audit_service, adapters):
+        self._config = config_service
+        self._budget = budget_service
+        self._audit = audit_service
+        self._adapters = dict(adapters)
+
+    def get_client(self, request, security_context):
+        if (not isinstance(request, LLMRequest)
+                or not isinstance(request.service_type, str)
+                or not request.service_type
+                or not isinstance(request.task_complexity, TaskComplexity)
+                or type(request.requires_local) is not bool):
+            raise ValueError("Invalid LLM request")
+        # Server policy authorizes this actor, data class and task before selection.
+        deployments = self._config.resolve_authorized_deployments(
+            security_context, request.service_type, request.task_complexity.value)
+        if not isinstance(deployments, list) or len(deployments) > 20:
+            raise ValueError("Invalid authorized deployment list")
+        for deployment in deployments:
+            if (not isinstance(deployment, dict)
+                    or not isinstance(deployment.get("model_id"), str)
+                    or not deployment["model_id"]
+                    or not isinstance(deployment.get("deployment_id"), str)
+                    or not deployment["deployment_id"]
+                    or type(deployment.get("is_local")) is not bool):
+                raise ValueError("Invalid registered deployment")
+            provider = LLMProvider(deployment["provider"])
+            if request.requires_local and not deployment["is_local"]:
+                continue
+            if self._config.is_available(deployment["deployment_id"]) is not True:
+                continue
+            adapter = self._adapters.get(provider.value)
+            if not callable(adapter):
+                continue
+            inner = adapter(dict(deployment))
+            if not callable(getattr(inner, "complete", None)):
+                raise TypeError("Adapter must implement the complete protocol")
+            return AuditedLLMClient(inner, deployment, self._budget,
+                                    self._audit, request, security_context)
+        raise RuntimeError("No authorized deployment is available")
+
+# Adapters, current authorization, availability and atomic budget storage
+# are integration dependencies. This factory selects; it does not retry calls.

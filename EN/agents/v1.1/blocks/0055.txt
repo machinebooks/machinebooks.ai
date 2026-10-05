@@ -1,0 +1,6 @@
+const url = azure
+  ? `${azure.endpoint}/openai/deployments/${azure.deployment}/chat/completions?api-version=${azure.apiVersion}`
+  : `${baseUrl}/chat/completions`;
+const headers = azure
+  ? { 'Content-Type': 'application/json', 'api-key': apiKey }
+  : { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` };

@@ -1,0 +1,37 @@
+// Educational contract; Message, Usage and callbacks are supplied below.
+type ProviderScript = {
+  events: Array<{ type: 'text_delta'; text: string } |
+    { type: 'tool_use'; toolUse: ToolUse }>;
+  finalMessage: Message;
+  usage: Usage;
+  finishReason: string;
+  assertMessages?: (messages: Message[]) => void;
+};
+function makeProviderMock(scripts: ProviderScript[]): Provider {
+  let index = 0;
+  return { async call(messages, tools, callbacks) {
+    const script = scripts[index++];
+    if (!script) throw new Error('Provider fixture exhausted');
+    script.assertMessages?.(messages);
+    for (const event of script.events) {
+      if (event.type === 'text_delta') await callbacks.onTextDelta?.(event.text);
+      else await callbacks.onToolUse?.(event.toolUse);
+    }
+    await callbacks.onMessageStop?.(script.usage);
+    return { finalMessage: script.finalMessage, usage: script.usage,
+      finishReason: script.finishReason };
+  } };
+}
+
+it('stops after an explicit final fixture', async () => {
+  const provider = makeProviderMock([{
+    events: [{ type: 'text_delta', text: 'Hello.' }],
+    finalMessage: { role: 'assistant', content: [{ type: 'text', text: 'Hello.' }] },
+    usage: { input: 12, output: 8 }, finishReason: 'end_turn',
+  }]);
+  // createLoop and emptyRegistry are adapters supplied by the test host.
+  const loop = createLoop({ provider, registry: emptyRegistry });
+  const out = await loop.run([{ role: 'user', content: [{ type: 'text', text: 'hello' }] }]);
+  expect(out.iterations).toBe(1);
+  expect(out.finishReason).toBe('end_turn');
+});

@@ -1,0 +1,97 @@
+import re
+from enum import Enum
+from dataclasses import dataclass
+from typing import Optional
+
+class GuardrailAction(Enum):
+    ALLOW = "allow"
+    SANITIZE = "sanitize"
+    BLOCK = "block"
+
+@dataclass
+class GuardrailResult:
+    action: GuardrailAction
+    reason: Optional[str] = None
+    sanitized_text: Optional[str] = None
+
+# Prompt injection patterns (10 patterns: English and Spanish)
+INJECTION_PATTERNS = [
+    r"ignore\s+(all\s+)?previous\s+instructions",
+    r"you\s+are\s+now\s+(?:a\s+)?(?:different|new|another)",
+    r"reveal\s+(?:your\s+)?system\s+prompt",
+    r"disregard\s+(?:your\s+)?(?:previous\s+)?instructions",
+    r"act\s+as\s+(?:if\s+you\s+(?:are|were)\s+)?(?:a\s+different|an?\s+unrestricted)",
+    r"jailbreak|dan\s+mode|developer\s+mode",
+    # Spanish patterns — cover attacks formulated in the user's language
+    r"ignora\s+(las\s+)?instrucciones\s+anteriores",
+    r"ahora\s+eres\s+un",
+    r"revela\s+tu\s+prompt\s+de\s+sistema",
+    r"olvida\s+tus\s+restricciones",
+]
+
+# Expressions for PII detection
+PII_PATTERNS = {
+    "dni":     r"\b\d{8}[A-Z]\b",
+    "nie":     r"\b[XYZ]\d{7}[A-Z]\b",
+    "iban":    r"\bES\d{2}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b",
+    "card":    r"\b(?:\d{4}[\s-]?){3}\d{4}\b",
+    "phone":   r"\b(?:\+34\s?)?[6789]\d{8}\b",
+    "email":   r"\b[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}\b",
+}
+
+def check_prompt_injection(text: str) -> GuardrailResult:
+    """Detects prompt injection attempts with the 10 registered patterns."""
+    text_lower = text.lower()
+    for pattern in INJECTION_PATTERNS:
+        if re.search(pattern, text_lower, re.IGNORECASE):
+            return GuardrailResult(
+                action=GuardrailAction.BLOCK,
+                reason=f"Possible prompt injection detected"
+            )
+    return GuardrailResult(action=GuardrailAction.ALLOW)
+
+def redact_pii_for_llm(text: str) -> tuple[str, bool]:
+    """
+    Sanitizes PII from text before sending to Claude.
+    Returns (sanitized_text, had_changes).
+    """
+    modified = False
+    result = text
+    for pii_type, pattern in PII_PATTERNS.items():
+        new_text = re.sub(pattern, f"[{pii_type.upper()}_REDACTED]", result)
+        if new_text != result:
+            modified = True
+            result = new_text
+    return result, modified
+
+def run_input_guardrails(
+    user_text: str,
+    off_topic_patterns: list[str]
+) -> GuardrailResult:
+    """
+    Runs all input guardrails in decreasing severity order.
+    The first BLOCK or SANITIZE action stops the chain.
+    """
+    # 1. Prompt injection (HIGH) — immediate block
+    result = check_prompt_injection(user_text)
+    if result.action == GuardrailAction.BLOCK:
+        return result
+
+    # 2. Off-topic (MEDIUM) — block with message
+    for pattern in off_topic_patterns:
+        if re.search(pattern, user_text, re.IGNORECASE):
+            return GuardrailResult(
+                action=GuardrailAction.BLOCK,
+                reason="Query outside the Platform's scope"
+            )
+
+    # 3. PII (MEDIUM) — sanitization before sending to Claude
+    sanitized, had_pii = redact_pii_for_llm(user_text)
+    if had_pii:
+        return GuardrailResult(
+            action=GuardrailAction.SANITIZE,
+            reason="PII detected and removed for data protection",
+            sanitized_text=sanitized
+        )
+
+    return GuardrailResult(action=GuardrailAction.ALLOW)

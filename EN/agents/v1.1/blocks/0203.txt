@@ -1,0 +1,12 @@
+flowchart TD
+    A[Request requiring a VM] --> B[Check bundle presence]
+    B --> C{Artifacts present}
+    C -- no --> F[Stop and report]
+    C -- yes --> D[Verify revision and digests against trusted evidence]
+    D --> E{Verification valid}
+    E -- no --> F
+    E -- yes --> H[Reserve authorized session and resources]
+    H --> I[External runner starts VM]
+    I --> J{Boot and controls verified}
+    J -- no --> F
+    J -- yes --> K[Apply mounts, network, and scope limits]

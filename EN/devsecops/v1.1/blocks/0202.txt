@@ -1,0 +1,42 @@
+# prometheus-alerts.yml
+groups:
+  - name: devsecops_security
+    rules:
+      # Alert only if CRITICAL findings are open for more than 24h
+      - alert: CriticalFindingsOverdue
+        expr: >
+          (devsecops_findings_open_total{severity="critical"} > 0)
+          and on(service, severity)
+          (time() - devsecops_oldest_open_finding_timestamp_seconds{severity="critical"} > 86400)
+        for: 1h
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "{{ $labels.service }}: critical finding open >24h"
+          action: "Review in Grafana: /d/devsecops-security-lead"
+
+      # Fix rate below threshold for 3 consecutive days
+      - alert: LowFixRate
+        expr: >
+          (sum(increase(devsecops_findings_remediated_total[7d]))
+          / sum(increase(devsecops_findings_detected_total[7d])))
+          < 0.5
+        for: 72h
+        labels:
+          severity: warning
+        annotations:
+          summary: "Weekly fix rate below 50%"
+          description: "The team remediates fewer than half of detected findings"
+
+      # MTTR of critical findings exceeds 72-hour SLA
+      - alert: MTTRBreachCritical
+        expr: >
+          histogram_quantile(0.50,
+            rate(devsecops_mttr_seconds_bucket{severity="critical"}[7d])
+          ) > 259200
+        for: 1h
+        labels:
+          severity: critical
+        annotations:
+          summary: "MTTR of critical findings exceeds 72 hours"

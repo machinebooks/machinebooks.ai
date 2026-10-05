@@ -1,0 +1,8 @@
+private next(): Promise<IteratorResult<T>> {
+  if (this.queue.length > 0) {
+    return Promise.resolve({ value: this.queue.shift()!, done: false });
+  }
+  if (this.isDone) return Promise.resolve({ value: undefined as T, done: true });
+  // The consumer waits; the producer is not limited.
+  return new Promise((resolve) => { this.readResolve = resolve; });
+}

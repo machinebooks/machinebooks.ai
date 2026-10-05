@@ -1,0 +1,101 @@
+import anthropic
+from typing import Any
+from copy import deepcopy
+from jsonschema import Draft202012Validator
+import json
+
+client = anthropic.Anthropic()
+
+class AutonomousAgent:
+    """
+    Bounded synchronous ReAct example with synchronous tool handlers.
+    A model turn ending does not validate the business result.
+    """
+
+    def __init__(self, agent_def: AgentDefinition, tool_registry: dict,
+                 *, security_ctx, authorize_tool):
+        if security_ctx is None or type(security_ctx.user_id) is not int or security_ctx.user_id < 1 or not callable(authorize_tool):
+            raise PermissionError("Acceso denegado")
+        self.security_ctx = security_ctx
+        self.authorize_tool = authorize_tool
+        self.agent_def = agent_def
+        self.tool_registry = tool_registry
+        self.tools = self._build_tool_schemas(tool_registry)
+        self.max_iterations = 10
+        self.memory = []  # Session working memory
+
+    def run(self, user_message: str, session_context: dict) -> dict:
+        """
+        Run until the model turn ends or the iteration limit is reached.
+        """
+        messages = self._build_initial_messages(user_message, session_context)
+        iteration = 0
+
+        while iteration < self.max_iterations:
+            iteration += 1
+
+            # Act: request the next model response with available tools
+            response = client.messages.create(
+                model=self.agent_def.model_id,
+                max_tokens=self.agent_def.max_tokens,
+                system=self.agent_def.system_prompt,
+                tools=self.tools,
+                messages=messages
+            )
+
+            # Observe: did the model turn end or request tools?
+            if response.stop_reason == "end_turn":
+                # Model turn ended; business-result validation is a separate step
+                final_text = self._extract_text(response)
+                self._update_memory(user_message, final_text)
+                return {
+                    "status": "model_stopped",
+                    "response": final_text,
+                    "iterations": iteration
+                }
+
+            if response.stop_reason not in {"end_turn", "tool_use"}:
+                return {"status": "incomplete", "response": "Respuesta no completada", "iterations": iteration}
+
+            if response.stop_reason == "tool_use":
+                # The model requests one or more synchronous tool calls
+                tool_results = self._execute_tools(response)
+
+                # Append the model response and tool results to the history
+                messages.append({"role": "assistant", "content": response.content})
+                messages.append({
+                    "role": "user",
+                    "content": tool_results
+                })
+                # Continue the loop with tool results
+                continue
+
+        # Iteration limit reached
+        return {
+            "status": "max_iterations_reached",
+            "response": "No fue posible completar la tarea en el número máximo de pasos.",
+            "iterations": iteration
+        }
+
+    def _execute_tools(self, response) -> list:
+        results = []
+        for block in response.content:
+            if block.type != "tool_use":
+                continue
+            item = {"type": "tool_result", "tool_use_id": block.id}
+            try:
+                tool = self.tool_registry.get(block.name)
+                if tool is None or not isinstance(block.input, dict) or "security_ctx" in block.input:
+                    raise PermissionError("Acceso denegado")
+                arguments = deepcopy(block.input)
+                schema = {**tool.parameters, "additionalProperties": False}
+                Draft202012Validator.check_schema(schema)
+                Draft202012Validator(schema).validate(arguments)
+                if self.authorize_tool(self.security_ctx, block.name, arguments) is not True:
+                    raise PermissionError("Acceso denegado")
+                result = tool.handler(security_ctx=self.security_ctx, **arguments)
+                item["content"] = json.dumps(result)
+            except Exception:
+                item.update(content="No se pudo ejecutar la herramienta", is_error=True)
+            results.append(item)
+        return results

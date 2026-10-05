@@ -1,0 +1,50 @@
+import anthropic
+from dataclasses import dataclass
+
+# Team context for personalized responses
+@dataclass
+class TeamContext:
+    team_name: str
+    stack: list[str]          # ["FastAPI", "React", "PostgreSQL"]
+    active_policies: list[str]
+    recent_findings: list[dict]
+
+def build_system_prompt(ctx: TeamContext) -> str:
+    """Generates system prompt with team context."""
+    stack_str = ", ".join(ctx.stack)
+    policies_str = "\n".join(f"- {p}" for p in ctx.active_policies)
+    return f"""You are a security assistant for team {ctx.team_name}.
+Technology stack: {stack_str}.
+
+Active security policies:
+{policies_str}
+
+Rules:
+- Respond in technical English.
+- Use examples from the team's stack, not generic ones.
+- If the question requires production code analysis, indicate
+  it should be escalated to the security team.
+- Always include the CWE reference when applicable.
+- Maximum 300 words per response."""
+
+def security_qa_bot(question: str, ctx: TeamContext) -> str:
+    """Security Q&A bot for champions."""
+    client = anthropic.Anthropic()
+
+    # Include recent findings as context
+    findings_context = ""
+    if ctx.recent_findings:
+        findings_context = "\n\nRecent team findings:\n"
+        for f in ctx.recent_findings[:5]:
+            findings_context += (
+                f"- [{f['severity']}] {f['title']} "
+                f"in {f['file']} (CWE-{f['cwe']})\n"
+            )
+
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=1024,
+        system=build_system_prompt(ctx),
+        messages=[{"role": "user", "content": question + "\nUNTRUSTED FINDING DATA:\n" + findings_context}]
+    )
+    return "REVIEW: partial unverified draft; human decision pending\n" + response.content[0].text

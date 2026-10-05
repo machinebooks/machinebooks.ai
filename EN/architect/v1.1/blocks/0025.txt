@@ -1,0 +1,14 @@
+Prompt for detecting inconsistencies in requirements:
+
+"These are the steps of the business process I want to automate:
+[list of steps]
+
+Act as a systems architect. Identify:
+1. Dependencies between steps that could create bottlenecks
+2. Steps that can fail and block the entire flow
+3. Data needed in multiple steps — can it be shared?
+4. Steps with very different technical characteristics (latency, concurrency, security)
+5. Implicit assumptions that may be false in production
+
+Don't give me solutions yet. Only identify the problems so I
+can decide how to address them."

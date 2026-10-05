@@ -1,0 +1,11 @@
+// src/server/services/PromptFetcher.ts:15-24
+export interface PromptRow {
+  key: string;
+  name: string;
+  category: string;
+  role: 'system' | 'user';
+  content: string;
+  variables?: string[];
+  is_active?: boolean;
+  updated_at?: number;
+}

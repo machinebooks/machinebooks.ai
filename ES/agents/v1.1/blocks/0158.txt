@@ -1,0 +1,10 @@
+// Educational close-event excerpt; usage is not yet available in this route.
+A2AGovernance.record({
+  owner_session_id: sessionId,
+  caller_agent_id: parentAgentId, callee_agent_id: agentId,
+  method: 'run', payload_summary: '[content omitted]',
+  tokens_in: null, tokens_out: null,
+  latency_ms: performance.now() - rpcStartMonotonicMs,
+  status: finalStatus,
+});
+// Start time, event ID and status validation are supplied by the host.

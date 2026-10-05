@@ -1,0 +1,18 @@
+sequenceDiagram
+    autonumber
+    participant U as Usuario
+    participant L as AgentLoop
+    participant PC as promptCache
+    participant P as Anthropic
+    U->>L: mensaje 1
+    L->>PC: computeCacheKey({system, tools, model})
+    PC-->>L: SHA-256 = abc123…
+    L->>P: POST /v1/messages con cache_control
+    P-->>L: usage hipotético: escritura de 18.000 tokens
+    Note over L: Verificar tarifa y retención de la escritura
+    U->>L: mensaje 2
+    L->>PC: computeCacheKey({system, tools, model})
+    PC-->>L: SHA-256 = abc123…
+    L->>P: POST /v1/messages con contenido común
+    P-->>L: usage hipotético si hay hit: lectura de 18.000 tokens
+    Note over L: Medir lectura; la clave local no la garantiza

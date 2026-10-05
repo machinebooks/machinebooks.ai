@@ -1,0 +1,5 @@
+const token = sessionStorage.getItem('n7x_auth_token');
+const ws = new WebSocket(
+  '/api/v1/realtime/events',          // mismo origen, vía proxy
+  [`n7x.auth.bearer.${token}`],
+);

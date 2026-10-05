@@ -1,0 +1,35 @@
+@startuml
+!theme plain
+skinparam backgroundColor transparent
+skinparam componentStyle uml2
+package "Pool de hijos" {
+  [SubAgentManager] as Mgr
+  [CoordinatorSession] as Sess
+  [SubAgentConfig (1..n)] as Cfg
+}
+package "Registro interno" {
+  [A2AGovernance singleton] as Gov
+  [Buffer volátil (5000)] as Ring
+}
+package "Framework de tareas" {
+  [TaskRegistry singleton] as Reg
+  [ManagedTask] as MT
+  [TaskNotificationManager] as Notif
+}
+[AgentLoop padre] as Loop
+[Ventana autorizada] as UI
+Loop --> Mgr : solicitar trabajo
+Mgr --> Sess : sesión propietaria
+Sess --> Cfg : hijos registrados
+Mgr --> Gov : cierre instrumentado
+Gov --> Ring : registrar con pérdida al rotar
+Mgr --> Notif : encolar para destinatario
+Loop --> Notif : entregar sólo notificaciones propias
+Mgr --> Reg : transiciones validadas
+Reg --> UI : IPC con destino autorizado
+note right of Gov
+  Estado global por proceso:
+  requiere atribución y control de acceso.
+  No es evidencia durable por sí mismo.
+end note
+@enduml

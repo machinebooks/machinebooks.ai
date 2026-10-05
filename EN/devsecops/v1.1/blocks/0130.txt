@@ -1,0 +1,52 @@
+import tempfile
+import subprocess
+import json
+import time
+from pathlib import Path
+
+def run_zap_scan(
+    plan_path: str,
+    target_url: str,
+    results_dir: str = "/tmp/zap-results",
+) -> dict:
+    """Executes OWASP ZAP with the generated automation plan."""
+    Path(results_dir).mkdir(parents=True,exist_ok=True)
+    results_dir = tempfile.mkdtemp(prefix="zap-run-",dir=results_dir)
+
+    # Run ZAP in headless mode with the automation plan
+    cmd = [
+        "docker", "run", "--rm",
+        "-v", f"{plan_path}:/zap/plan.yaml:ro",
+        "-v", f"{results_dir}:/zap/results",
+        "--network", "host",
+        "ghcr.io/zaproxy/zaproxy:stable",
+        "zap.sh", "-cmd",
+        "-autorun", "/zap/plan.yaml",
+    ]
+
+    start_time = time.time()
+    result = subprocess.run(cmd, capture_output=True, text=True, timeout=1800)
+    elapsed = time.time() - start_time
+
+    # Read results
+    report_path = Path(results_dir) / "zap-report.json"
+    if result.returncode in (0,2) and report_path.exists():
+        try:
+            with open(report_path) as f:
+                zap_results = json.load(f)
+            if not isinstance(zap_results,dict) or not isinstance(zap_results.get("site"),list) or not zap_results["site"] or any(not isinstance(site,dict) or not isinstance(site.get("alerts"),list) for site in zap_results["site"]):
+                raise ValueError("invalid ZAP report")
+        except (OSError,ValueError,TypeError):
+            zap_results = {"error":"INCOMPLETE: missing or invalid ZAP report"}
+    else:
+        zap_results = {"error": "No report generated", "stderr": result.stderr}
+
+    return {
+        "status": "REVIEW" if result.returncode in (0,2) and "error" not in zap_results else "INCOMPLETE",
+        "warnings": ["Automation Framework warning exit; review plan and job outcomes"] if result.returncode == 2 else [],
+        "coverage": "partial",
+        "results": zap_results,
+        "exit_code": result.returncode,
+        "elapsed_seconds": round(elapsed, 1),
+        "stdout_summary": result.stdout[-500:] if result.stdout else "",
+    }

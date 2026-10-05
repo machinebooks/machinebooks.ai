@@ -1,0 +1,51 @@
+    def validate_excel(self, file_path: Path) -> tuple[pd.DataFrame, list[str]]:
+        """Validates the Excel file before attempting to upload it.
+
+        Returns:
+            Tuple of (valid DataFrame, error list). If there are errors,
+            the DataFrame may be empty.
+        """
+        errors = []
+        if file_path.stat().st_size>10_000_000:
+            return pd.DataFrame(),["Input file size limit exceeded"]
+        try:
+            df = pd.read_excel(file_path,dtype=str,nrows=10001)
+        except Exception as e:
+            return pd.DataFrame(),["Excel input could not be read"]
+
+        if len(df)>10000:return pd.DataFrame(),["Input row limit exceeded"]
+        # Verify required columns
+        missing_cols = self.REQUIRED_COLUMNS - set(df.columns)
+        if missing_cols:
+            errors.append(f"Missing required columns: {missing_cols}")
+            return df, errors
+
+        # Validate that there are no empty rows in critical fields
+        for col in ["service_code", "base_price"]:
+            empty_rows = df[df[col].isna() | (df[col].str.strip() == "")].index.tolist()
+            if empty_rows:
+                errors.append(
+                    f"Column '{col}' empty in rows: {[r+2 for r in empty_rows]}"  # +2 for header and 0-index
+                )
+
+        # Validate price format
+        df_valid = df[df["base_price"].notna()].copy()
+        invalid_prices = df_valid[
+            ~df_valid["base_price"].str.match(r"^\d+(\.\d{1,2})?$")
+        ].index.tolist()
+        if invalid_prices:
+            errors.append(
+                f"Invalid price format in rows: {[r+2 for r in invalid_prices]}"
+            )
+
+        for row_number,row in df.iterrows():
+            try:
+                price=Decimal(str(row["base_price"]))
+                discount=Decimal(str(row["max_discount"]))
+                validity=date.fromisoformat(str(row["validity"]))
+                if not price.is_finite() or price<0 or not discount.is_finite() or not 0<=discount<=100:
+                    raise ValueError("Numeric range")
+                if validity<datetime.now(timezone.utc).date():raise ValueError("Expired validity")
+            except (ValueError,InvalidOperation):errors.append(f"Invalid price/discount/validity at row {row_number+2}")
+        return df,errors
+

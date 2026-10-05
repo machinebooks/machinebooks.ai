@@ -1,0 +1,5 @@
+# Accounting relationships using amounts in the same verified currency.
+# Illustrative inputs are supplied by the caller; hours are estimates.
+estimated_gross_value_eur = sum(estimated_hours * hourly_rate_eur for estimated_hours in activity_hours)
+estimated_net_value_eur = estimated_gross_value_eur - total_cost_eur
+benefit_cost_ratio = estimated_gross_value_eur / total_cost_eur if total_cost_eur > 0 else None

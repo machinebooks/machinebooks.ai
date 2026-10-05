@@ -1,0 +1,15 @@
+# Heuristic, not a calibrated probability. Missing evidence remains unknown.
+import math
+
+def calculate_opportunity_score(cosine_similarity,taxonomy_match,historical_win_rate):
+    if any(x is None for x in (cosine_similarity,taxonomy_match,historical_win_rate)):
+        return None
+    if any(type(x) not in (int,float) or not math.isfinite(x) for x in
+           (cosine_similarity,taxonomy_match,historical_win_rate)):
+        raise ValueError("Finite numeric signals required")
+    if not -1<=cosine_similarity<=1 or taxonomy_match not in (0,1) or not 0<=historical_win_rate<=1:
+        raise ValueError("Signal outside its stated range")
+    # Negative cosine is clamped, not described as semantic opposition.
+    semantic=max(0.0,cosine_similarity)*10
+    return round(semantic*.5+taxonomy_match*10*.3+historical_win_rate*10*.2,2)
+# Repositories resolve current authorized signals and record sample/version.

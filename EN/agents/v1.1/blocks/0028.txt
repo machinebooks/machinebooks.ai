@@ -1,0 +1,15 @@
+stateDiagram-v2
+    [*] --> Streaming
+    Streaming --> Normal: recognized normal terminal
+    Streaming --> Tools: complete calls
+    Streaming --> Limit: truncated output
+    Streaming --> Interrupted: error, rejection, filter, or unknown terminal
+    Normal --> Final: host-validated output
+    Tools --> ToolExec: valid schema and authorization
+    Tools --> Interrupted: invalid or unauthorized call
+    ToolExec --> Streaming: correlated results
+    Limit --> Recovery: policy and budget allow recovery
+    Limit --> Interrupted: no permitted recovery
+    Recovery --> Streaming: endpoint-supported continuation
+    Final --> [*]
+    Interrupted --> [*]

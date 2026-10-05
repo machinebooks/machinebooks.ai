@@ -1,0 +1,16 @@
+# Simulate interactive shell in container (should trigger rule)
+docker exec -it inference-service /bin/bash
+
+# Simulate write to system directory
+docker exec inference-service \
+    touch /usr/bin/backdoor 2>/dev/null
+
+# Simulate connection to non-standard port
+docker exec inference-service \
+    python3 -c "import socket; s=socket.socket(); \
+    s.connect(('10.0.0.1', 4444))" 2>/dev/null
+
+# Verify that alerts were generated
+curl -s http://localhost:8765/healthz
+# Review Falco logs to confirm alerts
+docker logs falco --since 60s | grep -c "Warning\|Critical"

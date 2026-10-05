@@ -1,0 +1,13 @@
+<context>                            <- Optional: documentary RAG
+  [retrieved chunks]
+</context>
+
+<memories>                           <- Optional: episodic memory
+  [relevant facts found]
+</memories>
+
+[user text, as-is]
+
+<task-notification>                  <- Optional: task notifications
+  [status of background tasks]
+</task-notification>

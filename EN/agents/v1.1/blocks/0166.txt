@@ -1,0 +1,10 @@
+flowchart LR
+    subgraph Workflow
+        WA[developer<br>defines the step sequence]
+        WB[model<br>proposes within each step]
+    end
+    subgraph Agent
+        AA[host<br>defines scope and controls]
+        AB[model<br>proposes steps and tools]
+    end
+    Workflow -.invokes.-> Agent

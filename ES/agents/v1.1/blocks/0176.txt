@@ -1,0 +1,27 @@
+type Decision = { behavior: 'allow' | 'deny' | 'ask'; reason: string };
+type PermissionHost = {
+  check(command: string): Decision;
+  recordDenial(command: string): void;
+};
+
+function inspectCommand(host: PermissionHost, command: string) {
+  if (typeof command !== 'string' || command.length > 4096) {
+    throw new Error('Invalid command input');
+  }
+  const decision = host.check(command);
+  if (decision.behavior === 'deny') {
+    host.recordDenial(command);
+    return { type: 'denied', reason: decision.reason };
+  }
+  if (decision.behavior === 'ask') {
+    return { type: 'pending', reason: decision.reason };
+  }
+  return { type: 'admitted', reason: decision.reason };
+}
+
+const fixture: PermissionHost = {
+  check: () => ({ behavior: 'deny', reason: 'Fixture rejects execution' }),
+  recordDenial: () => {}
+};
+const result = inspectCommand(fixture, 'fixture-command');
+if (result.type !== 'denied') throw new Error('Expected denial');

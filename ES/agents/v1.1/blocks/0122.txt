@@ -1,0 +1,21 @@
+sequenceDiagram
+    autonumber
+    participant L as AgentLoop
+    participant A as AutoCompact
+    participant G as Gateway/Provider
+    participant FS as Artefactos propios
+    participant U as UI
+    L->>A: compactIfNeeded(messages)
+    A->>A: estimar entrada y comprobar pares
+    alt entrada dentro del umbral
+        A-->>L: compacted: false
+    else reducción necesaria
+        A->>A: separar instrucciones y bloques completos
+        A->>G: petición de resumen según API
+        G-->>A: resumen candidato
+        A->>A: validar resultado y presupuesto restante
+        A-->>L: mensajes reducidos y conteos estimados
+        L->>U: evento compact
+        L->>FS: limpiar sólo objetos autorizados sin consumidores
+    end
+    L->>G: petición del turno si cabe en el límite

@@ -1,0 +1,64 @@
+from datetime import datetime,timezone
+def generar_informe_auditoria(resultados_controles: dict,
+                               client: anthropic.Anthropic):
+    """Generates a partial ENS draft in Markdown format
+    readable by non-technical auditors."""
+
+    prompt = f"""Generate a partial technical ENS draft; retain REVIEW/INCOMPLETE
+from the following control evaluation results.
+
+{json.dumps(resultados_controles, indent=2, ensure_ascii=False)}
+
+The report should follow this structure:
+1. Executive summary: REVIEW / INCOMPLETE states and coverage
+2. Operational framework: table with each control, state, and evidence
+3. Protection framework: table with each control, state, and evidence
+4. Findings and pending actions: proposals and omissions pending review
+5. Open items for competent review; no conformity determination
+
+Tone: technical but accessible for a security auditor
+who is not a developer. Reference artifacts by name
+and date. DO NOT invent evidence or findings not present
+in the provided data."""
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return "REVIEW: partial ENS draft; no conformity determination\n" + message.content[0].text
+
+
+def ejecutar_compliance_completo(bucket_path: str):
+    """Orchestrates four mapped controls; retains partial coverage."""
+    client = anthropic.Anthropic()
+
+    # 1. Collect evidence from the last 90 days
+    evidencias = recopilar_evidencias(bucket_path, periodo_dias=90)
+
+    # 2. Evaluate each control
+    resultados = {}
+    for control_id, control_def in ENS_CONTROL_MAP.items():
+        resultados[control_id] = evaluar_control(
+            control_id, control_def, evidencias, client
+        )
+
+    if not resultados or any(not isinstance(row,dict) or row.get("status") not in {"REVIEW","INCOMPLETE"} for row in resultados.values()):
+        raise ValueError("INCOMPLETE: missing or invalid mapped-control results")
+
+    # 3. Generate report
+    informe = generar_informe_auditoria(resultados, client)
+
+    # 4. Save with metadata
+    fecha = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    Path(f"informes/compliance-ens-{fecha}.md").write_text(
+        informe, encoding="utf-8"
+    )
+
+    # 5. Partial technical summary, without a conformity determination
+    review_count = sum(r.get("status")=="REVIEW" for r in resultados.values())
+    incomplete_count = sum(r.get("status")=="INCOMPLETE" for r in resultados.values())
+    return {"status":"INCOMPLETE" if incomplete_count else "REVIEW",
+            "coverage":"partial","mapped_controls":len(resultados),
+            "review_count":review_count,"incomplete_count":incomplete_count,
+            "report":informe}

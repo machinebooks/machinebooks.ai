@@ -1,0 +1,35 @@
+frontend/
+├── app-principal/          # Operations app
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── stores/         # Zustand stores
+│   │   ├── hooks/          # Custom hooks + React Query
+│   │   ├── api/            # Axios client per module
+│   │   └── types/
+│   ├── vite.config.ts
+│   └── package.json
+├── app-analytics/          # Analytics app
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── stores/
+│   │   ├── charts/         # Recharts components
+│   │   └── types/
+│   ├── vite.config.ts
+│   └── package.json
+├── app-admin/              # Administration app
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── stores/
+│   │   └── types/
+│   ├── vite.config.ts
+│   └── package.json
+└── shared/                 # Shared types and utilities
+    ├── types/
+    │   ├── user.ts
+    │   ├── auth.ts
+    │   └── api.ts
+    └── utils/
+        └── formatters.ts

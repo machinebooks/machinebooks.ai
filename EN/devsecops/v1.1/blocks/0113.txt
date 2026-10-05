@@ -1,0 +1,27 @@
+┌────────────────────────┐
+│   Action plan          │
+│   (Chapter 9)          │
+│   ┌─────────────────┐  │
+│   │ immediate_action│  │
+│   │ planned_action  │  │
+│   └────────┬────────┘  │
+└────────────┼────────────┘
+             │
+     ┌───────▼───────┐
+     │  Fix           │     Auto-fixable?
+     │  classifier    │     Excluded by policy?
+     └───────┬───────┘
+             │
+     ┌───────┴───────────────┐
+     │                       │
+┌────▼────┐          ┌──────▼──────┐
+│  Plan   │          │  Advisory   │
+│  fix    │          │  task only  │
+│ (agent) │          │ (context)   │
+└────┬────┘          └──────┬──────┘
+     │                      │
+┌────▼────────────────┐  ┌──▼───────────────┐
+│ Proposed diff       │  │ Task/comment     │
+│ + explanation       │  │ + suggestion     │
+│ + tests proposed    │  │ + analysis       │
+└─────────────────────┘  └──────────────────┘

@@ -1,0 +1,35 @@
+sequenceDiagram
+    autonumber
+    participant U as Usuario (frontend)
+    participant R as routes/chat.ts
+    participant G as GatewayClient
+    participant AL as AgentLoop
+    participant SC as StreamCallbacks
+    participant Anth as anthropic.ts
+    participant OAI as openai-compat.ts
+    participant Az as azure.ts
+
+    alt Camino interactivo (route /api/chat)
+        U->>R: POST /api/chat
+        R->>R: leer serverState.llmProvider
+        alt anthropic
+            R->>Anth: streamAnthropicCall(callbacks)
+            Anth-->>R: onContent/onThinking/onToolCall...
+            R->>U: SSE events
+        else azure
+            R->>Az: streamAzureCall(callbacks)
+            Az->>OAI: streamOpenAICompatCall(callbacks, azure)
+            OAI-->>Az: callbacks
+            Az-->>R: callbacks
+            R->>U: SSE events
+        else openai/lmstudio/ollama
+            R->>OAI: fetch directo + SSE parse
+            OAI-->>R: callbacks
+            R->>U: SSE events
+        end
+    else Camino del agente (AgentLoop interno)
+        AL->>G: GatewayClient.streamChatEvents()
+        G->>OAI: streamOpenAICompatCall(callbacks → queue)
+        OAI-->>G: queue.push({ type, ... })
+        G-->>AL: yield { type: 'text'|'thinking'|'tool_call_delta'|'finish' }
+    end

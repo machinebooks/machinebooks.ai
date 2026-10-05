@@ -1,0 +1,28 @@
+// Educational derivative of the snapshot policy.
+// The default retains state; the host checks endpoint preservation rules.
+export function pruneThinkingBlocks(
+  messages: Message[],
+  mayRemove: (message: Message, index: number) => boolean = () => false,
+): Message[] {
+  const result: Message[] = [];
+  for (let i = 0; i < messages.length; i++) {
+    const msg = messages[i];
+    if (msg.role !== 'assistant' || !Array.isArray(msg.content)) {
+      result.push(msg);
+      continue;
+    }
+    const blocks = msg.content as ContentBlock[];
+    const hasThinking = blocks.some(b => b.type === 'thinking');
+    if (!hasThinking) { result.push(msg); continue; }
+    const hasToolUse = blocks.some(b => b.type === 'tool_use');
+    const isLastAssistant = !messages.slice(i + 1).some(m => m.role === 'assistant');
+    if (hasToolUse || isLastAssistant || !mayRemove(msg, i)) {
+      result.push(msg);
+    } else {
+      // Remove only state that the checked endpoint contract permits.
+      const filtered = blocks.filter(b => b.type !== 'thinking');
+      if (filtered.length > 0) result.push({ ...msg, content: filtered });
+    }
+  }
+  return result;
+}

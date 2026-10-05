@@ -1,0 +1,50 @@
+import re
+
+# Input validation before reaching the agent
+def sanitize_alert_data(alert: dict) -> dict:
+    """Removes potentially malicious content from alerts."""
+    sanitized = {}
+
+    # Only allow known alert schema fields
+    allowed_fields = {
+        "source", "timestamp", "severity", "description",
+        "container_id", "service_name", "cve_id", "rule_name",
+        "namespace", "process_name", "network_destination"
+    }
+
+    for key, value in alert.items():
+        if key not in allowed_fields:
+            continue
+        if isinstance(value, str):
+            # Remove suspicious injection patterns
+            cleaned = re.sub(
+                r'(ignore previous|system prompt|you are now|'
+                r'forget your instructions|new role)',
+                '[FILTERED]', value, flags=re.IGNORECASE
+            )
+            # Limit length to prevent prompt stuffing
+            sanitized[key] = cleaned[:500]
+        else:
+            sanitized[key] = value
+
+    return sanitized
+
+# Action budget per incident
+MAX_CONTAINMENT_ACTIONS = 10
+MAX_API_CALLS_PER_INCIDENT = 50
+
+def check_action_budget(incident_id: str) -> bool:
+    """Verifies the agent does not exceed the action budget."""
+    actions_taken = sum(
+        1 for a in action_log
+        if a["incident_id"] == incident_id and a["status"] == "executed"
+    )
+    if actions_taken >= MAX_CONTAINMENT_ACTIONS:
+        notify_team(
+            channel="#incident-response",
+            summary=f"ALERT: Incident {incident_id} reached the limit "
+                    f"of {MAX_CONTAINMENT_ACTIONS} containment actions. "
+                    f"Manual intervention required."
+        )
+        return False
+    return True

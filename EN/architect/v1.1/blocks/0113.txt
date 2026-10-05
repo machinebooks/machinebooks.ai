@@ -1,0 +1,59 @@
+import hashlib
+import json
+from redis.exceptions import RedisError
+
+class LLMRateLimiter:
+    SCRIPT = '''local t = redis.call('TIME')
+local now = tonumber(t[1]) * 1000 + math.floor(tonumber(t[2]) / 1000)
+local window = math.floor(now / 60000)
+local previous = tonumber(redis.call('HGET', KEYS[1], 'window') or '-1')
+local rpm = 0
+local tpm = 0
+if previous == window then
+  rpm = tonumber(redis.call('HGET', KEYS[1], 'rpm') or '0')
+  tpm = tonumber(redis.call('HGET', KEYS[1], 'tpm') or '0')
+end
+local maxrpm = tonumber(ARGV[1])
+local maxtpm = tonumber(ARGV[2])
+local tokens = tonumber(ARGV[3])
+local remaining = 60000 - (now % 60000)
+if rpm + 1 > maxrpm or (maxtpm > 0 and tpm + tokens > maxtpm) then
+  return {0, rpm, tpm, remaining}
+end
+redis.call('HSET', KEYS[1], 'window', window, 'rpm', rpm + 1, 'tpm', tpm + tokens)
+if previous ~= window then redis.call('PEXPIRE', KEYS[1], 120000) end
+return {1, rpm + 1, tpm + tokens, remaining}
+'''
+
+    def __init__(self, redis_client, load_authorized_limits):
+        self._redis = redis_client
+        self._limits = load_authorized_limits
+
+    def check_and_consume(self, security_context, deployment_id, estimated_tokens):
+        if type(estimated_tokens) is not int or not 0 <= estimated_tokens <= 10**9:
+            raise ValueError("Invalid token reservation")
+        limits = self._limits(security_context, deployment_id)
+        if not isinstance(limits, dict):
+            raise PermissionError("No authorized quota configuration")
+        rpm, tpm = limits.get("rpm"), limits.get("tpm")
+        scope = limits.get("quota_scope")
+        if (type(rpm) is not int or not 1 <= rpm <= 10**6
+                or (tpm is not None and (type(tpm) is not int or not 1 <= tpm <= 10**12))
+                or not isinstance(scope, list) or not scope
+                or any(not isinstance(x, str) or not x for x in scope)):
+            raise ValueError("Invalid registered quota configuration")
+        digest = hashlib.sha256(json.dumps(scope, separators=(",", ":")).encode()).hexdigest()
+        try:
+            result = self._redis.eval(self.SCRIPT, 1, "llm_rate:{" + digest + "}",
+                                      rpm, tpm or 0, estimated_tokens)
+        except RedisError:
+            raise RuntimeError("Quota storage is unavailable") from None
+        return {"accepted": result[0] == 1, "requests": result[1],
+                "reserved_tokens": result[2], "window_remaining_ms": result[3]}
+
+# Atomic FIXED one-minute window using Redis TIME, not a sliding window.
+# The server supplies current authorized account/deployment scopes and real quotas.
+# TPM reserves an estimate; actual usage reconciliation and financial budgets are
+# separate. This limiter is not idempotent: each check is a new admission attempt.
+# tpm=None disables this example's token quota; it does not imply unlimited capacity.
+# Example bounds keep per-window integer sums exact in Redis Lua arithmetic.

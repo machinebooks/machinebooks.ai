@@ -1,0 +1,6 @@
+// Independent event-shape examples; fields are supplied by the host.
+const started = { type: 'batch_started', batchId, total: items.length };
+const itemStarted = { type: 'item_started', batchId, itemPath, runId };
+const itemCompleted = { type: 'item_completed', batchId, itemPath, runId };
+const completed = { type: 'batch_completed', batchId, result };
+// Events need owner routing, validated status and a terminal/recovery contract.

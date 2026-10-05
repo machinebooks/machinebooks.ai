@@ -1,0 +1,14 @@
+flowchart LR
+    subgraph Host
+        H1[D:\projects\app]
+        H2[D:\datasets\eval]
+        H3[~/.sylvarsec/memories]
+    end
+    subgraph VM["VM: /sessions/sess-a3f2"]
+        V1["/sessions/sess-a3f2/mnt/<br/>app-7c4e9d2a"]
+        V2["/sessions/sess-a3f2/mnt/<br/>eval-9ba1c702"]
+        V3["/sessions/sess-a3f2/mnt/<br/>memories-3041abf8"]
+    end
+    H1 -- rw --> V1
+    H2 -- ro --> V2
+    H3 -- rwd --> V3

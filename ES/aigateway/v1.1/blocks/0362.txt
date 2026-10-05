@@ -1,0 +1,12 @@
+admin-panel/src/
+  main.tsx                       # Entry: Admin
+  user-portal-main.tsx           # Entry: Portal usuario
+  compliance-main.tsx            # Entry: Compliance
+  App.tsx                        # Componente raíz del admin (routing)
+  UserPortalApp.tsx              # Componente raíz del portal
+  CompliancePortalApp.tsx        # Componente raíz de compliance
+  components/  (layout, ui)       # Compartidos
+  context/    (Auth, Branding)    # Compartidos (singular)
+  hooks/      (useRealtime…)      # Compartidos
+  i18n/       (index.ts, es.ts…)  # Compartidos
+  services/   (api.ts)            # Cliente API compartido

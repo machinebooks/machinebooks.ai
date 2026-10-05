@@ -1,0 +1,15 @@
+---
+name: pdf
+description: "Use this skill to create, edit, merge, split, watermark, encrypt PDFs..."
+pack_slug: devsecops
+category: devsecops
+---
+
+# PDF — Creation and manipulation
+
+## Quick summary
+
+| Task          | Tool                |
+|---------------|---------------------|
+| Merge PDFs    | `pypdf.PdfWriter`   |
+...

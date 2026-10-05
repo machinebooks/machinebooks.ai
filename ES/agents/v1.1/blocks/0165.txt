@@ -1,0 +1,15 @@
+stateDiagram-v2
+    [*] --> pending
+    pending --> running: solicitud validada y autorizada
+    running --> completed: estado terminal y salida requerida guardada
+    running --> failed: fallo de ejecución
+    running --> timeout: límite de espera alcanzado
+    running --> cancelled: cancelación solicitada
+    running --> failed_save: salida generada; guardado falló
+    pending --> skipped: dependencia fallida o cancelación
+    completed --> [*]
+    failed --> [*]
+    timeout --> [*]
+    cancelled --> [*]
+    failed_save --> [*]
+    skipped --> [*]

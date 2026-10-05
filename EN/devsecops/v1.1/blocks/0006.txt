@@ -1,0 +1,7 @@
+{
+  "is_true_positive": true,
+  "confidence": "high",
+  "risk_score": 8,
+  "explanation": "True positive. Although manual sanitization exists (replacement of quotes and semicolons), it is insufficient. An attacker can use Unicode encoding or escape sequences to bypass the filter. The query is built by f-string interpolation, not with prepared parameters. The endpoint is public (no authentication decorator visible in the context).",
+  "suggested_fix": "Use prepared parameters: db.execute(text('SELECT id, name FROM items WHERE name LIKE :q'), {'q': f'%{sanitized_q}%'}). Remove the manual sanitization, which gives a false sense of security."
+}

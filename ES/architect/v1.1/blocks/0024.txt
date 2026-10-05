@@ -1,0 +1,14 @@
+Prompt para detección de inconsistencias en requisitos:
+
+"Estos son los pasos del proceso de negocio que quiero automatizar:
+[lista de pasos]
+
+Actúa como arquitecto de sistemas. Identifica:
+1. Dependencias entre pasos que pueden crear cuellos de botella
+2. Pasos que pueden fallar y bloquear el flujo completo
+3. Datos que se necesitan en múltiples pasos — ¿se pueden compartir?
+4. Pasos con características técnicas muy diferentes (latencia, concurrencia, seguridad)
+5. Asunciones implícitas que pueden ser falsas en producción
+
+No me des soluciones todavía. Solo identifica los problemas para que
+yo pueda decidir cómo abordarlos."

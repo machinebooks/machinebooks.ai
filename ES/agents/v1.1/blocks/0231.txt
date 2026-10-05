@@ -1,0 +1,12 @@
+---
+description: "Revisar código dentro del alcance autorizado"
+model: inherit
+when_to_use: |
+  Cuando el usuario solicita una revisión de código con alcance definido.
+allowed-tools: Read,Grep,Glob
+disallowed-tools: Write,Edit,Bash
+max-turns: 30
+permission-mode: plan
+---
+
+Revisa el código autorizado y devuelve hallazgos sustentados en evidencia.

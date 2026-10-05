@@ -1,0 +1,13 @@
+# Illustrative broker priority; verify priority_steps and consuming worker
+analyze_document.apply_async(
+    args=[document_id],
+    kwargs={"user_id": current_user.id},
+    priority=3,  # Interactive example: Redis maps 3 to priority level 3
+)
+
+# Scheduled batch example; server authorization remains mandatory
+analyze_document.apply_async(
+    args=[document_id],
+    kwargs={"source": "batch_scheduled"},
+    priority=7,  # Redis maps 7 to level 6 with the configured priority_steps
+)

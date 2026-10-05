@@ -1,0 +1,6 @@
+# Historical naming example; the shown exact hash omits device and is not a complete authorization key.
+# Cache exacto: SHA-256(modelo + mensajes + device + org + skill)
+exact_cache:{sha256_key}
+
+# Cache semántico: embedding + org_id
+semantic_cache:{org_id}:{embedding_hash}

@@ -1,0 +1,32 @@
+# tests/test_health_checks.py - added to the integration test block
+
+class TestHealthCheckConfiguration:
+    """
+    Tests that verify correct environment configuration through the
+    health check. Must run in the deployment pipeline against the
+    real environment, not against the in-memory testing DB.
+    """
+
+    @pytest.mark.integration
+    def test_all_databases_respond(self, client, auth_headers_by_role):
+        """All three databases must be configured and available."""
+        response = client.get("/api/health/full", headers=auth_headers_by_role["admin"])
+        data = response.json
+        services = {s["name"]: s for s in data.get("services", [])}
+
+        for db_name in ["database_operations", "database_platform", "database_analytics"]:
+            assert db_name in services, f"DB '{db_name}' not configured"
+            assert services[db_name]["status"] == "healthy", \
+                f"DB '{db_name}' reports status: {services[db_name]['status']}"
+
+    @pytest.mark.integration
+    def test_ai_service_accessible_from_backend(self, client, auth_headers_by_role):
+        """The AI service must be accessible from the backend."""
+        response = client.get("/api/health/full", headers=auth_headers_by_role["admin"])
+        data = response.json
+        services = {s["name"]: s for s in data.get("services", [])}
+
+        assert "ai_service" in services, "The AI service is not configured"
+        # In staging it may be degraded if models are not available
+        # but must be registered as a service
+        assert services["ai_service"]["status"] in ["healthy", "degraded"]

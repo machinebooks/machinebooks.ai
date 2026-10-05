@@ -1,0 +1,12 @@
+flowchart TD
+    A[App startup] --> B{seeded?}
+    B -- already done --> Z[continue]
+    B -- first time --> C[read ai_prompts]
+    C --> D{collection empty?}
+    D -- yes --> E[write all PROMPT_SEED]
+    D -- no --> F[compute key diff]
+    F --> G{new keys in SEED?}
+    G -- no --> Z
+    G -- yes --> H[append only the new keys]
+    H --> Z
+    E --> Z

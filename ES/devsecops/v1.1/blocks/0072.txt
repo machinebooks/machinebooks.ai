@@ -1,0 +1,96 @@
+# scripts/weekly_security_report.py
+"""
+Agente Claude que genera un informe semanal de seguridad
+a partir de los resultados acumulados del pipeline.
+"""
+import json
+import anthropic
+from datetime import datetime, timezone, timedelta
+
+def collect_weekly_findings() -> list[dict]:
+    """Omitted collector: returns no evidence; the consumer retains INCOMPLETE."""
+    # Simplificado: en producción usar
+    # gh api /repos/{owner}/{repo}/actions/artifacts
+    findings_dir = "reports/weekly/"
+    # ... lógica de recopilación ...
+    return []  # Placeholder: retorna hallazgos agregados
+
+def generate_report(findings: list[dict]) -> str:
+    """Genera el informe semanal con Claude."""
+    if not isinstance(findings, list) or not findings:
+        return "INCOMPLETE: collector or weekly evidence missing"
+    if any(not isinstance(f, dict) or not isinstance(f.get("source"), str) for f in findings):
+        return "INCOMPLETE: invalid finding schema"
+    client = anthropic.Anthropic()
+
+    # Prepara el contexto para Claude
+    summary = {
+        "period": (
+            f"{(datetime.now(timezone.utc) - timedelta(days=7)).strftime('%Y-%m-%d')}"
+            f" a {datetime.now(timezone.utc).strftime('%Y-%m-%d')}"
+        ),
+        "total_findings": len(findings),
+        "status": "REVIEW",
+        "coverage": "partial",
+        "origin_verified": False,
+        "block_labeled_findings": sum(
+            1 for f in findings if f.get("gate") == "block"
+        ),
+        "warn_labeled_findings": sum(
+            1 for f in findings if f.get("gate") == "warn"
+        ),
+        "pass_labeled_findings": sum(
+            1 for f in findings if f.get("gate") == "pass"
+        ),
+        "top_cves": _extract_top_cves(findings),
+        "recurring_patterns": _extract_patterns(findings),
+    }
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=2048,
+        system=(
+            "Eres un analista de seguridad DevSecOps. Genera un informe "
+            "semanal conciso en español para el security lead. "
+            "Estructura: resumen ejecutivo (3 líneas), métricas clave "
+            "(tabla), hallazgos que requieren atención (lista priorizada), "
+            "tendencias respecto a semanas anteriores, recomendaciones "
+            "accionables (máximo 3). Tono: directo, sin alarmismo."
+        ),
+        messages=[{
+            "role": "user",
+            "content": (
+                f"Datos del pipeline de seguridad:\n"
+                f"```json\n{json.dumps(summary, indent=2)}\n```\n"
+                f"Genera el informe semanal."
+            ),
+        }],
+    )
+
+    return "REVIEW: partial weekly draft; finding counts are not PR counts.\n" + message.content[0].text
+
+
+def _extract_top_cves(findings: list[dict]) -> list[dict]:
+    """Extrae las CVEs más frecuentes o severas."""
+    cve_counts: dict[str, int] = {}
+    for f in findings:
+        cve = f.get("cve_id", "")
+        if cve:
+            cve_counts[cve] = cve_counts.get(cve, 0) + 1
+    return sorted(
+        [{"cve": k, "count": v} for k, v in cve_counts.items()],
+        key=lambda x: x["count"], reverse=True,
+    )[:10]
+
+
+def _extract_patterns(findings: list[dict]) -> list[dict]:
+    """Identifica patrones recurrentes en hallazgos SAST."""
+    rule_counts: dict[str, int] = {}
+    for f in findings:
+        if f.get("source") == "sast":
+            rule = f.get("title", "unknown")
+            rule_counts[rule] = rule_counts.get(rule, 0) + 1
+    return sorted(
+        [{"rule": k, "count": v} for k, v in rule_counts.items()],
+        key=lambda x: x["count"], reverse=True,
+    )[:5]

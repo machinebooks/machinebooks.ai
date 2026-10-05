@@ -1,0 +1,45 @@
+import math
+from datetime import datetime,timezone
+import json
+import time
+import hashlib
+import hmac
+
+# Record of all actions for auditing
+action_log: list[dict] = []
+
+def execute_containment(action: dict, incident_id: str, approval_verifier=None) -> dict:
+    """Executes a containment action after human approval."""
+
+    if not isinstance(action, dict) or action.get("type") not in {"isolate_container", "revoke_credentials", "block_ip_range", "scale_down_service"} or not isinstance(action.get("description"), str) or not action["description"].strip():
+        return {"status": "INCOMPLETE", "reason": "unknown action"}
+    action_hash = hashlib.sha256(json.dumps(action, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    approval = send_slack_approval_request(channel="#incident-response",
+                                         message=action_hash, timeout_seconds=300)
+    if not isinstance(approval, dict) or approval.get("approved") is not True or approval.get("authority_verified") is not True or approval.get("incident_id") != incident_id or approval.get("action_hash") != action_hash:
+        return {"status": "REVIEW", "reason": "no bound authorized approval"}
+    if not callable(approval_verifier) or approval_verifier(approval,incident_id,action_hash) is not True:
+        return {"status":"REVIEW", "reason":"Protected approval verifier adapter required"}
+    starts = approval.get("starts_at_epoch")
+    expires = approval.get("expires_at_epoch")
+    if type(starts) not in (int,float) or not math.isfinite(starts) or starts > time.time():
+        return {"status":"REVIEW", "reason":"Invalid approval start time"}
+    if type(expires) not in (int,float) or not math.isfinite(expires) or not starts <= time.time() < expires:
+        return {"status": "REVIEW", "reason": "expired approval"}
+    result = _dispatch_action(action)
+    status = "executed" if isinstance(result, dict) and result.get("success") is True else "FAILED"
+    log_action(incident_id, action, status, json.dumps(result))
+    return {"status": status, "result": result}
+
+def log_action(incident_id: str, action: dict, status: str, detail: str):
+    """Records supplied action metadata in memory; persistent traceability is omitted."""
+    entry = {
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "incident_id": incident_id,
+        "action_type": action["type"],
+        "description": action["description"],
+        "status": status,
+        "detail": detail,
+        "operator": action.get("approved_by", "system")
+    }
+    action_log.append(entry)

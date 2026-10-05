@@ -1,0 +1,36 @@
+# docker-compose.incident-agent.yml
+services:
+  incident-agent:
+    build: ./incident-agent
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - FALCO_GRPC_ENDPOINT=unix:///run/falco/falco.sock
+      - SBOM_API_URL=http://sbom-service:8080
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
+      - PROMETHEUS_URL=http://prometheus:9090
+      - MAX_ACTIONS_PER_INCIDENT=10
+      - APPROVAL_TIMEOUT_SECONDS=300
+      - MODEL=claude-sonnet-4-6
+    volumes:
+      - falco-runtime:/run/falco:ro
+      - ./runbooks:/app/runbooks:ro  # Runbooks as code, read-only
+      - incident-logs:/app/logs      # Persistent logs for auditing
+    networks:
+      - security-net
+    deploy:
+      resources:
+        limits:
+          memory: 512M  # Limit agent resources
+    restart: unless-stopped
+    depends_on:
+      - falco
+      - sbom-service
+      - prometheus
+
+volumes:
+  falco-runtime: {}  # Overlay must use the producer Compose project
+  incident-logs:
+
+networks:
+  security-net:
+    external: true

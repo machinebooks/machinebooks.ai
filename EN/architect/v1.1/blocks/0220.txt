@@ -1,0 +1,81 @@
+import pytest
+import anthropic
+from quality_scorer import LLMQualityScorer, QUALITY_PROFILES
+
+# Marker to indicate these tests require a real API key
+pytestmark = pytest.mark.real_api
+
+
+class TestDocumentAnalysisQuality:
+    """
+    Quality evaluation tests with the real model.
+    Run in the periodic evaluation pipeline, not in standard CI.
+    """
+
+    scorer = LLMQualityScorer()
+    client = anthropic.Anthropic()
+
+    # Test document: anonymized real requirements
+    TEST_DOCUMENT = """
+    PROJECT REQUIREMENTS — Incident Management Platform
+
+    1. The system must process a maximum of 500 simultaneous incidents.
+    2. Response time < 2 seconds for status queries.
+    3. Integration with existing ticket system via REST API.
+    4. Data retention per GDPR: maximum 24 months.
+    5. Availability: SLA 99.5% monthly.
+    6. Authentication: SSO with corporate provider.
+    Indicative budget: 180,000 EUR.
+    Delivery timeline: 8 months from contract signing.
+    """
+
+    def test_analysis_meets_rag_quality_profile(self):
+        """
+        Verifies that document analysis produces outputs that meet
+        the quality profile defined for the 'analysis' category.
+        """
+        # Real model call
+        response = self.client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=1024,
+            messages=[{
+                "role": "user",
+                "content": f"""Analyze the following requirements document and provide:
+1. Executive summary (3-5 lines)
+2. GO/NO-GO recommendation with justification
+3. Main risk factors
+4. Key requirements identified
+
+Document:
+{self.TEST_DOCUMENT}"""
+            }]
+        )
+
+        output = response.content[0].text
+
+        # Evaluate with Quality Scorer
+        evaluation = self.scorer.evaluate(
+            prompt="Analyze the requirements document...",
+            response=output,
+            context=self.TEST_DOCUMENT,
+            service_category="analysis",
+        )
+
+        profile = QUALITY_PROFILES["analysis"]
+
+        # Verify that profile thresholds are met
+        assert evaluation["scores"]["hallucination_score"] <= profile.hallucination_threshold, \
+            f"Hallucination score {evaluation['scores']['hallucination_score']:.2f} " \
+            f"exceeds threshold {profile.hallucination_threshold}"
+
+        assert evaluation["scores"]["groundedness_score"] >= profile.groundedness_threshold, \
+            f"Groundedness score {evaluation['scores']['groundedness_score']:.2f} " \
+            f"below threshold {profile.groundedness_threshold}"
+
+        assert evaluation["scores"]["coherence_score"] >= profile.coherence_threshold, \
+            f"Coherence score {evaluation['scores']['coherence_score']:.2f} " \
+            f"below threshold {profile.coherence_threshold}"
+
+        # Verify output structure (semantic, not literal)
+        assert any(term in output.lower() for term in ["go", "no-go", "recommendation"]), \
+            "The output does not contain an explicit recommendation"

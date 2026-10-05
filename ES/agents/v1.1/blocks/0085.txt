@@ -1,0 +1,34 @@
+@startuml
+!theme plain
+skinparam backgroundColor transparent
+skinparam component {
+  BackgroundColor #142038
+  BorderColor #7dd8e8
+  FontColor #f5efe0
+}
+
+package "Cancelación: tres orígenes" {
+  [Usuario pulsa cancelar] as U
+  [Bash hermano falla] as B
+  [Padre (subagente) aborta] as P
+}
+
+package "StreamingToolExecutor" {
+  [cancel(reason)] as CX
+  [siblingAbortController] as SAC
+  [parentSignal listener] as PSL
+}
+
+package "Por tool en vuelo" {
+  [AbortController propio] as AC
+  [interruptBehavior\n(cancel | block)] as IB
+}
+
+U --> CX
+B --> SAC
+P --> PSL
+CX --> AC : abort si\ninterruptBehavior=cancel
+SAC --> AC : abort si\ninterruptBehavior=cancel
+PSL --> AC : abort si\ninterruptBehavior=cancel
+IB ..> AC : decide si\nse propaga
+@enduml

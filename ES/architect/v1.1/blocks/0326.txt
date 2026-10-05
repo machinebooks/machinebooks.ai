@@ -1,0 +1,26 @@
+docs/
+├── arquitectura/          ← Guías de arquitectura del sistema completo
+│   ├── vision-general.md
+│   ├── stack-tecnologico.md
+│   ├── decisiones-adr/    ← Registros de decisiones arquitectónicas
+│   └── integraciones.md
+├── api/                   ← Documentación de endpoints por módulo
+│   ├── autenticacion.md
+│   ├── operaciones.md
+│   └── ia-copilot.md
+├── manuales/              ← Manuales de usuario por aplicación y módulo
+│   ├── app-principal/
+│   ├── app-analytics/
+│   └── app-admin/
+├── operaciones/           ← Runbooks para operadores y administradores
+│   ├── despliegue.md
+│   ├── monitoreo.md
+│   └── incidencias.md
+├── desarrollo/            ← Guías para desarrolladores que trabajan en el proyecto
+│   ├── configuracion-entorno.md
+│   ├── convenciones.md
+│   └── flujo-trabajo.md
+└── compliance/            ← Documentación de cumplimiento normativo
+    ├── gdpr.md
+    ├── marco-gobernanza-ia.md
+    └── auditoria.md

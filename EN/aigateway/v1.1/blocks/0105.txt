@@ -1,0 +1,18 @@
+# Partial text-stream example for the historical Python SDK.
+# Dependencies: native_request, StreamChunk and STOP_MAP.
+async def stream_chat(self, request) -> AsyncIterator[StreamChunk]:
+    native_request = self.to_native_request(request)
+    async with self._client.messages.stream(**native_request) as stream:
+        async for event in stream:
+            if (event.type == "content_block_delta"
+                    and event.delta.type == "text_delta"):
+                yield StreamChunk(delta=event.delta.text)
+        message = await stream.get_final_message()
+        usage = message.usage
+        yield StreamChunk(
+            delta="",
+            finish_reason=STOP_MAP.get(message.stop_reason),
+            prompt_tokens=usage.input_tokens,
+            completion_tokens=usage.output_tokens,
+            cached_tokens=getattr(usage, "cache_read_input_tokens", None),
+        )

@@ -1,0 +1,29 @@
+# scripts/explain_policy.py
+import anthropic
+
+client = anthropic.Anthropic()
+
+def explain_policy_violation(
+    policy_code: str,
+    violation_message: str,
+    input_data: dict
+) -> str:
+    """Explica una violación de política en lenguaje natural."""
+    message = client.messages.create(
+        model="claude-haiku-4-5",
+        max_tokens=1024,
+        messages=[{
+            "role": "user",
+            "content": (
+                f"Política Rego:\n```rego\n{policy_code}\n```\n\n"
+                f"Mensaje de violación: {violation_message}\n\n"
+                f"Input que causó la violación:\n```json\n"
+                f"{input_data}\n```\n\n"
+                "Explica en español técnico:\n"
+                "1. Qué regla se violó y por qué\n"
+                "2. Qué debe cambiar el desarrollador para cumplir la política\n"
+                "3. Por qué existe esta política (contexto de seguridad)"
+            )
+        }]
+    )
+    return "REVIEW: partial unverified draft; human decision pending\n" + message.content[0].text

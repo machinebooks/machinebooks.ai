@@ -1,0 +1,5 @@
+flowchart TB
+    Padre[AgentLoop padre<br/>clave local = abc123]
+    Padre -->|spawn: configuración distinta| SpawnKey[clave local = def456<br/>comprobar segmentos comunes]
+    Padre -->|fork: mismo prefijo local| ForkKey[clave local = abc123<br/>candidato a reutilización]
+    Padre -->|fork con modelo distinto| ForkOverride[clave local = xyz789<br/>ámbito de modelo distinto]

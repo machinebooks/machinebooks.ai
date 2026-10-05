@@ -1,0 +1,17 @@
+const options: ForkOptions = {
+  directive: 'Read src/server/agent/AgentLoop.ts and summarize the ReAct loop',
+  name: 'loop-researcher',
+};
+
+const { messages, config: childConfig } = buildForkedContext(
+  parent.getMessages(),
+  parent.getConfig(),
+  options,
+);
+const child = new AgentLoop(childConfig, registry);
+// Ensure the constructor consumes the inherited messages in its real contract.
+const childKey = child.getCacheKey();
+if (!isCacheCompatible(parentKey, childKey)) {
+  throw new Error('Different local prefix representations');
+}
+// Equal keys do not establish a remote cache hit.

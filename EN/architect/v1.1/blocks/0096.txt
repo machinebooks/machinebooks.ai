@@ -1,0 +1,141 @@
+# Partial pricing adapter. Quarantine and bounded safe Excel parsing are external.
+# upload_pricing_data accepts only the reviewed output of validate_excel with no errors.
+# Didactic example: patterns/automation/bots/pricing_bot.py
+
+import time
+import pandas as pd
+from pathlib import Path
+from decimal import Decimal,InvalidOperation
+from datetime import date,datetime,timezone
+from selenium.webdriver.common.by import By
+from dataclasses import dataclass, field
+
+@dataclass
+class UploadResult:
+    """Result of a bulk upload operation."""
+    total_rows: int = 0
+    successful: int = 0
+    failed: int = 0
+    errors: list[str] = field(default_factory=list)
+
+    @property
+    def success_rate(self) -> float:
+        if self.total_rows == 0:
+            return 0.0
+        return self.successful / self.total_rows
+
+class PricingBot(BaseBot):
+    """Automation bot for the corporate pricing configurator."""
+
+    REQUIRED_COLUMNS = {"service_code", "base_price", "max_discount", "validity"}
+    MAX_BATCH_SIZE = 50  # Process in batches to avoid external system timeouts
+
+
+    def validate_excel(self, file_path: Path) -> tuple[pd.DataFrame, list[str]]:
+        """Validates the Excel file before attempting to upload it.
+
+        Returns:
+            Tuple of (valid DataFrame, error list). If there are errors,
+            the DataFrame may be empty.
+        """
+        errors = []
+        if file_path.stat().st_size>10_000_000:
+            return pd.DataFrame(),["Input file size limit exceeded"]
+        try:
+            df = pd.read_excel(file_path,dtype=str,nrows=10001)
+        except Exception as e:
+            return pd.DataFrame(),["Excel input could not be read"]
+
+        if len(df)>10000:return pd.DataFrame(),["Input row limit exceeded"]
+        # Verify required columns
+        missing_cols = self.REQUIRED_COLUMNS - set(df.columns)
+        if missing_cols:
+            errors.append(f"Missing required columns: {missing_cols}")
+            return df, errors
+
+        # Validate that there are no empty rows in critical fields
+        for col in ["service_code", "base_price"]:
+            empty_rows = df[df[col].isna() | (df[col].str.strip() == "")].index.tolist()
+            if empty_rows:
+                errors.append(
+                    f"Column '{col}' empty in rows: {[r+2 for r in empty_rows]}"  # +2 for header and 0-index
+                )
+
+        # Validate price format
+        df_valid = df[df["base_price"].notna()].copy()
+        invalid_prices = df_valid[
+            ~df_valid["base_price"].str.match(r"^\d+(\.\d{1,2})?$")
+        ].index.tolist()
+        if invalid_prices:
+            errors.append(
+                f"Invalid price format in rows: {[r+2 for r in invalid_prices]}"
+            )
+
+        for row_number,row in df.iterrows():
+            try:
+                price=Decimal(str(row["base_price"]))
+                discount=Decimal(str(row["max_discount"]))
+                validity=date.fromisoformat(str(row["validity"]))
+                if not price.is_finite() or price<0 or not discount.is_finite() or not 0<=discount<=100:
+                    raise ValueError("Numeric range")
+                if validity<datetime.now(timezone.utc).date():raise ValueError("Expired validity")
+            except (ValueError,InvalidOperation):errors.append(f"Invalid price/discount/validity at row {row_number+2}")
+        return df,errors
+
+
+    def upload_pricing_data(self, df: pd.DataFrame) -> UploadResult:
+        """Uploads the DataFrame data to the pricing configurator in batches."""
+        # Server adapter resolves current actor/tenant/job scope and validates rows.
+        if authorize_pricing_upload(self.task_id,df) is not True:
+            raise PermissionError("Pricing upload denied")
+        result = UploadResult(total_rows=len(df))
+
+        # Split into batches
+        batches = [df[i:i+self.MAX_BATCH_SIZE] for i in range(0, len(df), self.MAX_BATCH_SIZE)]
+
+        for batch_num, batch in enumerate(batches, 1):
+            self._log(f"Processing batch {batch_num}/{len(batches)} ({len(batch)} rows)")
+
+            for _, row in batch.iterrows():
+                try:
+                    self._upload_single_row(row)
+                    result.successful += 1
+                except Exception as e:
+                    result.failed += 1
+                    result.errors.append(
+                        f"Row {row.name + 2}: {type(e).__name__}"
+                    )
+
+            # Pause between batches to avoid overloading the external system
+            if batch_num < len(batches):
+                time.sleep(2)
+
+        return result
+
+    def _upload_single_row(self, row: pd.Series):
+        """Uploads an individual row to the configurator form."""
+        # Navigate to the add form
+        add_btn = self.wait_for_element((By.CSS_SELECTOR, "button.btn-add-service"))
+        add_btn.click()
+
+        # Fill form — wait for each field to be ready
+        self.wait_for_element((By.ID, "service-code")).send_keys(row["service_code"])
+        self.driver.find_element(By.ID, "base-price").send_keys(row["base_price"])
+
+        if pd.notna(row.get("max_discount")):
+            self.driver.find_element(By.ID, "max-discount").send_keys(row["max_discount"])
+
+        self.driver.find_element(By.ID,"validity").send_keys(row["validity"])
+        # Save and verify confirmation
+        save_btn = self.driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
+        save_btn.click()
+
+        # Provider adapter confirms this exact row/version, not a stale toast.
+        if self.confirm_saved_row(dict(row)) is not True:
+            raise RuntimeError("Row effect unconfirmed; reconcile before retry")
+    # confirm_saved_row and authorization/reconciliation are mandatory adapters.
+
+    def _log(self, message: str):
+        import logging
+        logging.getLogger(__name__).info(f"[{self.task_id}] {message}")
+# authorize_pricing_upload and confirm_saved_row are mandatory server/provider adapters.

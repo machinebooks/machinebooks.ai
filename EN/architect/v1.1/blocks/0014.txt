@@ -1,0 +1,38 @@
+# Partial Messages API example; no Agent SDK or complete loop.
+import anthropic
+
+client = anthropic.Anthropic()
+
+# Define tools available to the agent
+tools = [
+    {
+        "name": "search_documents",
+        "description": "Searches for relevant documents in the knowledge base",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "Search query"},
+                "max_results": {"type": "integer", "default": 5}
+            },
+            "required": ["query"]
+        }
+    }
+]
+
+# Request a response that can contain tool_use blocks.
+response = client.messages.create(
+    model="claude-sonnet-4-6",
+    max_tokens=4096,
+    tools=tools,
+    messages=[{
+        "role": "user",
+        "content": "What are the technical requirements of this project?"
+    }]
+)
+
+# A tool_use response requires an authorized server-side executor.
+if response.stop_reason == "tool_use":
+    # Executor contract: validate schema, identity, resource and action.
+    tool_use = next(b for b in response.content if b.type == "tool_use")
+    tool_result = execute_tool(tool_use.name, tool_use.input)
+    # Continuation with tool_result is not implemented in this excerpt.

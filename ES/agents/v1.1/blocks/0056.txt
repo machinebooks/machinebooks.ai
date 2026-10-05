@@ -1,0 +1,36 @@
+// 1. Historical private Messages adapter; dependencies are omitted.
+if (llmProvider === 'anthropic') {
+  const { streamAnthropicCall } = await import('../providers/anthropic.js');
+  const result = await streamAnthropicCall(
+    llmApiKey,
+    model || llmModel,
+    callMessages,                 // Historical subset conversion; native blocks may be lost.
+    withTools ? AGENT_TOOLS : undefined,
+    callbacks,                    // Common callback shape does not imply identical capabilities.
+    { maxTokens: 8192, thinking: true, thinkingBudget: 4096 },
+  );
+  return result;
+}
+
+// 2. Historical deployment URL and API-key adapter.
+if (llmProvider === 'azure') {
+  const { streamAzureCall } = await import('../providers/azure.js');
+  const deployment = serverState.azureDeployment || model || llmModel;
+  const result = await streamAzureCall(
+    {
+      endpoint: llmBaseUrl,
+      deployment,
+      apiVersion: serverState.azureApiVersion,
+      apiKey: llmApiKey,
+    },
+    callMessages,
+    withTools ? AGENT_TOOLS : undefined,
+    callbacks,
+    { maxTokens: 8192 },
+  );
+  return result;
+}
+
+// 3. Compatible endpoint with explicit host-verified capabilities.
+const includeUsage = capabilities.includeUsage === true;
+// Configure authentication and endpoint explicitly; port 1234 is not identity.

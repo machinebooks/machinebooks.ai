@@ -1,0 +1,6 @@
+// Request — OpenAI-compatible
+{
+    "model": "text-embedding-3-large",
+    "input": ["documento confidencial Q3 2025"],
+    "encoding_format": "float"
+}

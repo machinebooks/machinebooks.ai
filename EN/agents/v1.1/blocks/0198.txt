@@ -1,0 +1,5 @@
+const line = JSON.stringify(fullEvent) + '\n';
+// Historical excerpt: write() may buffer and fail asynchronously.
+if (this.writeStream) this.writeStream.write(line);
+this.buffer.push(fullEvent);
+// The host must bound storage and handle drain, error and close.

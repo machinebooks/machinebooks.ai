@@ -1,0 +1,46 @@
+    def _load_pdf(self, content, metadata):
+            result = []
+            total = 0
+            deadline = time.monotonic() + 120
+            with fitz.open(stream=content, filetype="pdf") as pdf:
+                if pdf.needs_pass or not 1 <= len(pdf) <= self.MAX_PAGES:
+                    raise ValueError("Unsupported protected or oversized PDF")
+                for index, page in enumerate(pdf):
+                    if time.monotonic() >= deadline:
+                        raise TimeoutError("PDF extraction deadline reached")
+                    text = page.get_text()
+                    use_ocr = self._needs_ocr(page, text)
+                    if type(use_ocr) is not bool:
+                        raise TypeError("OCR decision must be boolean")
+                    if use_ocr:
+                        area = page.rect.width * page.rect.height
+                        if not math.isfinite(area) or area <= 0:
+                            raise ValueError("Invalid PDF page geometry")
+                        zoom = min(300 / 72, math.sqrt((self.MAX_PIXELS - 10_000) / area))
+                        pixmap = page.get_pixmap(matrix=fitz.Matrix(zoom, zoom),
+                                                colorspace=fitz.csRGB, alpha=False)
+                        if pixmap.width * pixmap.height > self.MAX_PIXELS:
+                            raise ValueError("OCR raster exceeds the example limit")
+                        with Image.frombytes("RGB", (pixmap.width, pixmap.height),
+                                             pixmap.samples) as image:
+                            ocr_text = self._ocr(image, lang="spa+eng", timeout=30)
+                        if not isinstance(ocr_text, str):
+                            raise TypeError("OCR adapter must return text")
+                        # Retain selectable text in mixed pages; OCR may duplicate it.
+                        text = "\n".join(p for p in (text.strip(), ocr_text.strip()) if p)
+                    if time.monotonic() >= deadline:
+                        raise TimeoutError("PDF extraction deadline reached")
+                    total += len(text)
+                    if total > self.MAX_TEXT_CHARS:
+                        raise ValueError("Extracted text exceeds the example limit")
+                    if text.strip():
+                        result.append(LangChainDocument(
+                            page_content=text, metadata={**metadata, "page": index + 1,
+                                                         "ocr": use_ocr}))
+            return result
+
+    # load_authorized_blob, Office parsers and OCR are required adapters.
+    # A pytesseract.image_to_string adapter can enforce timeout=30 per page.
+    # Signature/length checks are not malware screening or a parser sandbox.
+    # Native rendering needs an isolated runner with CPU/memory limits; the cooperative
+    # deadline cannot interrupt a native call. The page heuristic cannot prove completeness.

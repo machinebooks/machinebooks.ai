@@ -1,0 +1,58 @@
+# champion-toolkit.yaml
+# Checklist the champion executes each sprint
+
+sprint_checklist:
+  - id: review_findings
+    description: "Review prioritized sprint findings"
+    frequency: "sprint start"
+    action: |
+      1. Open team findings dashboard
+      2. Review those marked CRITICAL and HIGH
+      3. For each: validate the suggested fix is correct
+      4. Assign to the developer of the affected code
+      5. Set deadline (CRITICAL: 48h, HIGH: 1 week)
+
+  - id: check_exceptions
+    description: "Review current security exceptions"
+    frequency: "sprint start"
+    action: |
+      1. Query team's active exceptions (see Ch. 23)
+      2. Verify expiration dates
+      3. Escalate those expiring in the next 14 days
+
+  - id: training_review
+    description: "Complete pending training modules"
+    frequency: "weekly"
+    action: |
+      Review modules generated from the week's findings.
+      Estimated time: 15-20 minutes.
+
+  - id: team_awareness
+    description: "Share a security learning with the team"
+    frequency: "biweekly"
+    action: |
+      In the retro or standup, share an interesting finding
+      from the sprint: what was found, why it mattered, how it was resolved.
+      Maximum 5 minutes.
+
+# Escalation map
+escalation_paths:
+  - trigger: "CRITICAL finding without suggested fix"
+    action: "Escalate to security team in #security-escalation channel"
+    sla: "4 hours"
+
+  - trigger: "Suspected secret exposed in production"
+    action: "Immediate rotation + security lead notification"
+    sla: "1 hour"
+
+  - trigger: "Finding in dependency without available patch"
+    action: "Open temporary exception with risk analysis"
+    sla: "24 hours"
+
+  - trigger: "Technical question the bot cannot resolve"
+    action: "Schedule 1:1 session with security engineer"
+    sla: "48 hours"
+
+  - trigger: "Finding related to prompt injection or AI security"
+    action: "Escalate to security team - requires specialized review"
+    sla: "24 hours"

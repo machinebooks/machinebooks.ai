@@ -1,0 +1,4 @@
+if count == 1:
+    # Expires from first creation, including while requests remain active.
+    # Late release requires the original reservation generation.
+    await redis.expire(key_par, 600)

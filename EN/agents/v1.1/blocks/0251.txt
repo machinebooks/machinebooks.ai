@@ -1,0 +1,22 @@
+mindmap
+  root((Agentic<br/>observability))
+    Cost
+      pricing per model
+      cloud vs local
+      per session
+      per purpose
+    Rate
+      LLM calls/min
+      tool calls/min
+      tokens/hour
+      cooldown
+    Telemetry
+      session trace
+      turn span
+      tool span
+      plugin usage
+    Audit
+      append-only
+      user events
+      AI disclosure
+      export HTML/Excel

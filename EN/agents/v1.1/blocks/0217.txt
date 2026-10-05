@@ -1,0 +1,11 @@
+// Wiring excerpt: commands and context are supplied by the host.
+const cmd = commands.find(c =>
+  c.name === commandName || c.aliases?.includes(commandName)
+);
+if (!cmd) return null;
+try {
+  return await cmd.execute(args, context);
+} catch {
+  return { type: 'message', content: 'The command could not be executed.' };
+}
+// The host records a redacted, correlated error separately.

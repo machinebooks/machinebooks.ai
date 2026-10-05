@@ -1,0 +1,20 @@
+# Phase 1: generation
+draft = generate_documentation(context, generation_prompt)
+
+# Phase 2: review with Claude (different instance)
+review_prompt = f"""Review this technical documentation draft:
+
+{draft}
+
+Verify:
+1. Are there technical claims that could be incorrect or ambiguous?
+2. Are there guide steps that a user could execute incorrectly?
+3. Is there information that appears sensitive and should not be in public documentation?
+4. Which sections are incomplete or underdeveloped?
+
+Provide a list of specific observations, not the corrected text."""
+
+observations = client.messages.create(
+    model="claude-sonnet-4-6",
+    messages=[{"role": "user", "content": review_prompt}]
+)

@@ -1,0 +1,60 @@
+import anthropic
+from typing import Any
+
+# RAG system search tool
+def search_documents(
+    query: str,
+    collection: str = "operations_general",
+    max_results: int = 5
+) -> dict[str, Any]:
+    """
+    Searches for relevant documents in the Platform's RAG system.
+
+    Args:
+        query: Natural language query
+        collection: Qdrant collection to query (default: operations_general)
+        max_results: Maximum number of results to return (1-10)
+
+    Returns:
+        Dict with fragment list and metadata
+    """
+    # The actual implementation queries the Qdrant service
+    results = rag_service.search(
+        query=query,
+        collection=collection,
+        limit=max_results
+    )
+    return {
+        "fragments": [r.to_dict() for r in results],
+        "total_found": len(results),
+        "collection": collection
+    }
+
+# Meilisearch textual search tool
+def search_opportunities(
+    keywords: str,
+    budget_min: float = None,
+    budget_max: float = None,
+    category: str = None
+) -> dict[str, Any]:
+    """
+    Searches opportunities in the Meilisearch index with optional filters.
+    """
+    # Whitelist of valid categories — prevents filter injection in Meilisearch
+    VALID_CATEGORIES = {"energy", "industry", "services", "technology", "infrastructure"}
+
+    filters = []
+    if budget_min:
+        filters.append(f"budget_amount >= {budget_min}")
+    if category:
+        if category.lower() not in VALID_CATEGORIES:
+            raise ValueError(f"Category not allowed: {category}")
+        filters.append(f"category = '{category}'")
+
+    results = meilisearch_service.search(
+        index="opportunities",
+        query=keywords,
+        filters=" AND ".join(filters) if filters else None,
+        limit=10
+    )
+    return {"opportunities": results, "total": results.total}

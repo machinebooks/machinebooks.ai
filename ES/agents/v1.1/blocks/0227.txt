@@ -1,0 +1,10 @@
+---
+description: "Pentester y red teamer experto..."
+model: sonnet
+when_to_use: |
+  Cuando el usuario necesita realizar un test de penetracion...
+allowed-tools: Read,Write,Bash,Grep,Glob
+disallowed-tools: Edit
+max-turns: 30
+permission-mode: plan
+---

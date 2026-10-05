@@ -1,0 +1,14 @@
+// src/server/services/LocalSkillIndexService.ts:182-195
+await (this.indexer as any).indexVirtualDocument({
+  docId,
+  filePath: virtualPath,
+  fileName: skillName,
+  text: content,
+  metadata: {
+    source: 'skills_local',
+    name: skillName,
+    pack_slug: packSlug,
+    category,
+    originalPath: filePath,
+  },
+});

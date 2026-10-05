@@ -1,0 +1,99 @@
+import anthropic
+from datetime import datetime, timezone
+from typing import Any
+
+client = anthropic.Anthropic()
+
+# Tool definitions for the incident response agent
+incident_tools = [
+    {
+        "name": "correlate_alerts",
+        "description": (
+            "Correlates security alerts from multiple sources "
+            "(Falco, pipeline, WAF) within a given time period. "
+            "Returns alerts grouped by probable attack vector."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "time_window_minutes": {
+                    "type": "integer",
+                    "description": "Time window in minutes for correlation"
+                },
+                "sources": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Alert sources: falco, pipeline, waf, ids"
+                }
+            },
+            "required": ["time_window_minutes", "sources"]
+        }
+    },
+    {
+        "name": "query_sbom",
+        "description": (
+            "Queries the SBOM of the affected service to identify "
+            "vulnerable dependencies related to the incident."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "service_name": {"type": "string"},
+                "cve_id": {"type": "string", "description": "Specific CVE to search, optional"}
+            },
+            "required": ["service_name"]
+        }
+    },
+    {
+        "name": "isolate_container",
+        "description": (
+            "Isolates a container from the network, applying network policy "
+            "blocking all traffic except monitoring. "
+            "REQUIRES human approval."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "container_id": {"type": "string"},
+                "namespace": {"type": "string"},
+                "reason": {"type": "string"}
+            },
+            "required": ["container_id", "namespace", "reason"]
+        }
+    },
+    {
+        "name": "request_human_approval",
+        "description": (
+            "Sends an approval request to the incident channel "
+            "with proposed action details. Blocks until "
+            "approval or rejection is received."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "action_summary": {"type": "string"},
+                "impact_description": {"type": "string"},
+                "urgency": {
+                    "type": "string",
+                    "enum": ["critical", "high", "medium"]
+                }
+            },
+            "required": ["action_summary", "impact_description", "urgency"]
+        }
+    },
+    {
+        "name": "generate_postmortem",
+        "description": (
+            "Generates a structured post-mortem draft from "
+            "the incident timeline, actions taken, and metrics."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "incident_id": {"type": "string"},
+                "include_metrics": {"type": "boolean", "default": True}
+            },
+            "required": ["incident_id"]
+        }
+    }
+]

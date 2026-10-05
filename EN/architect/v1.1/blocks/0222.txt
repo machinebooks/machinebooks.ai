@@ -1,0 +1,179 @@
+from sqlalchemy import func
+from models.llm_quality_score import LLMQualityScore
+from models.llm_usage_log import LLMUsageLog
+from datetime import datetime, timedelta
+
+
+class QualityFeedbackAnalyzer:
+    """
+    Analyzes the quality feedback loop to detect degradations
+    and calculate the correlation between automatic and human evaluation.
+    """
+
+    def get_service_quality_trend(
+        self,
+        service_type: str,
+        days: int = 7,
+        db_session=None
+    ) -> dict:
+        """
+        Returns the quality trend for a service over the last N days.
+        Groups by day to detect sharp changes (indicative of
+        model or prompt changes).
+        """
+        cutoff = datetime.utcnow() - timedelta(days=days)
+
+        # Join with LLMUsageLog to filter by service
+        results = db_session.query(
+            func.date(LLMQualityScore.created_at).label("date"),
+            func.avg(LLMQualityScore.hallucination_score).label("avg_hallucination"),
+            func.avg(LLMQualityScore.groundedness_score).label("avg_groundedness"),
+            func.avg(LLMQualityScore.relevance_score).label("avg_relevance"),
+            func.avg(LLMQualityScore.coherence_score).label("avg_coherence"),
+            func.count(LLMQualityScore.id).label("total_evaluations"),
+        ).join(
+            LLMUsageLog, LLMQualityScore.usage_log_id == LLMUsageLog.id
+        ).filter(
+            LLMUsageLog.service_type == service_type,
+            LLMQualityScore.created_at >= cutoff,
+        ).group_by(
+            func.date(LLMQualityScore.created_at)
+        ).order_by("date").all()
+
+        return {
+            "service": service_type,
+            "period_days": days,
+            "daily_metrics": [
+                {
+                    "date": str(r.date),
+                    "avg_hallucination": round(float(r.avg_hallucination or 0), 3),
+                    "avg_groundedness": round(float(r.avg_groundedness or 0), 3),
+                    "avg_relevance": round(float(r.avg_relevance or 0), 3),
+                    "avg_coherence": round(float(r.avg_coherence or 0), 3),
+                    "total_evaluations": r.total_evaluations,
+                }
+                for r in results
+            ],
+        }
+
+    def detect_quality_regression(
+        self,
+        service_type: str,
+        baseline_days: int = 7,
+        comparison_days: int = 1,
+        regression_threshold: float = 0.15,
+        db_session=None,
+    ) -> dict:
+        """
+        Detects quality regressions by comparing the current period
+        with the historical baseline. A >15% change in any
+        critical metric triggers an alert.
+        """
+        # Baseline period: previous week
+        baseline_cutoff = datetime.utcnow() - timedelta(days=baseline_days + comparison_days)
+        comparison_cutoff = datetime.utcnow() - timedelta(days=comparison_days)
+
+        def get_avg_metrics(start, end):
+            return db_session.query(
+                func.avg(LLMQualityScore.hallucination_score),
+                func.avg(LLMQualityScore.groundedness_score),
+                func.avg(LLMQualityScore.coherence_score),
+            ).join(LLMUsageLog).filter(
+                LLMUsageLog.service_type == service_type,
+                LLMQualityScore.created_at.between(start, end),
+            ).first()
+
+        baseline = get_avg_metrics(baseline_cutoff, comparison_cutoff)
+        current = get_avg_metrics(comparison_cutoff, datetime.utcnow())
+
+        regressions = []
+
+        # Check hallucination regression (increase = worse)
+        if baseline[0] and current[0]:
+            change = (float(current[0]) - float(baseline[0])) / max(float(baseline[0]), 0.001)
+            if change > regression_threshold:
+                regressions.append({
+                    "metric": "hallucination_score",
+                    "baseline": round(float(baseline[0]), 3),
+                    "current": round(float(current[0]), 3),
+                    "change_pct": round(change * 100, 1),
+                    "direction": "increase",
+                    "severity": "high" if change > 0.30 else "medium",
+                })
+
+        # Check groundedness regression (decrease = worse)
+        if baseline[1] and current[1]:
+            change = (float(baseline[1]) - float(current[1])) / max(float(baseline[1]), 0.001)
+            if change > regression_threshold:
+                regressions.append({
+                    "metric": "groundedness_score",
+                    "baseline": round(float(baseline[1]), 3),
+                    "current": round(float(current[1]), 3),
+                    "change_pct": round(change * 100, 1),
+                    "direction": "decrease",
+                    "severity": "high" if change > 0.30 else "medium",
+                })
+
+        return {
+            "service": service_type,
+            "regressions_detected": len(regressions) > 0,
+            "regressions": regressions,
+            "recommendation": (
+                "Review recent model or prompt changes" if regressions
+                else "No anomalies detected"
+            ),
+        }
+
+    def calculate_human_auto_correlation(
+        self,
+        service_type: str,
+        days: int = 30,
+        db_session=None,
+    ) -> dict:
+        """
+        Calculates the correlation between the aggregated automatic score
+        and human rating for the indicated period.
+        A correlation < 0.65 indicates automatic evaluator deviation.
+        """
+        cutoff = datetime.utcnow() - timedelta(days=days)
+
+        # Only interactions that have human rating
+        results = db_session.query(
+            LLMQualityScore.overall_score,
+            LLMQualityScore.human_rating,
+        ).join(LLMUsageLog).filter(
+            LLMUsageLog.service_type == service_type,
+            LLMQualityScore.human_rating.isnot(None),
+            LLMQualityScore.created_at >= cutoff,
+        ).all()
+
+        if len(results) < 30:
+            return {
+                "service": service_type,
+                "correlation": None,
+                "sample_size": len(results),
+                "warning": "Insufficient sample for calibration (minimum 30 interactions with human rating)",
+            }
+
+        # Pearson correlation calculation
+        # Manual implementation to avoid dependency; in production, use scipy.stats.pearsonr
+        auto_scores = [float(r.overall_score) for r in results]
+        human_scores = [float(r.human_rating) / 5.0 for r in results]  # Normalize 1-5 to 0-1
+
+        n = len(auto_scores)
+        mean_auto = sum(auto_scores) / n
+        mean_human = sum(human_scores) / n
+
+        numerator = sum((a - mean_auto) * (h - mean_human) for a, h in zip(auto_scores, human_scores))
+        denom_auto = sum((a - mean_auto) ** 2 for a in auto_scores) ** 0.5
+        denom_human = sum((h - mean_human) ** 2 for h in human_scores) ** 0.5
+
+        correlation = numerator / (denom_auto * denom_human) if denom_auto * denom_human > 0 else 0.0
+
+        return {
+            "service": service_type,
+            "correlation": round(correlation, 3),
+            "sample_size": n,
+            "calibration_needed": correlation < 0.65,
+            "period_days": days,
+        }

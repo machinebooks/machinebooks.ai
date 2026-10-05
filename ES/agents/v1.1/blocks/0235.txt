@@ -1,0 +1,3 @@
+// Catalogue filtering is not a substitute for execution authorization.
+const requiredPack = handler.definition.requiredPack;
+if (requiredPack && requiredPack !== activePackSlug) continue;

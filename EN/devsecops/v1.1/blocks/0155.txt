@@ -1,0 +1,48 @@
+from enum import Enum
+from dataclasses import dataclass, field
+from typing import Callable, Any
+
+class RiskLevel(Enum):
+    """Risk classification for agent tools."""
+    READ = "read"           # Data reading, no side effect
+    ANALYZE = "analyze"     # Running scans, querying APIs
+    MODIFY = "modify"       # Creating branches, PRs, files
+    DESTRUCTIVE = "destruct"  # Merge, deploy, revocation, deletion
+
+@dataclass
+class SecureTool:
+    """Tool wrapper with security metadata."""
+    name: str
+    func: Callable
+    risk_level: RiskLevel
+    description: str
+    max_calls_per_run: int = 50    # Invocation limit per execution
+    requires_approval: bool = False # Mandatory human gate
+    allowed_args: dict = field(default_factory=dict)  # Argument restriction
+
+@dataclass
+class AgentPermissions:
+    """Permission profile for a pipeline agent."""
+    agent_name: str
+    allowed_risk_levels: list[RiskLevel]
+    max_total_tool_calls: int = 100
+    max_tokens_budget: int = 50_000
+    max_execution_seconds: int = 300
+    human_approval_channel: str = "slack://security-approvals"
+
+# Predefined profiles for pipeline agents
+TRIAGE_AGENT_PERMS = AgentPermissions(
+    agent_name="triage-agent",
+    allowed_risk_levels=[RiskLevel.READ, RiskLevel.ANALYZE],
+    max_total_tool_calls=200,
+    max_tokens_budget=100_000,
+    max_execution_seconds=600,
+)
+
+REMEDIATION_AGENT_PERMS = AgentPermissions(
+    agent_name="remediation-agent",
+    allowed_risk_levels=[RiskLevel.READ, RiskLevel.ANALYZE, RiskLevel.MODIFY],
+    max_total_tool_calls=50,
+    max_tokens_budget=80_000,
+    max_execution_seconds=300,
+)

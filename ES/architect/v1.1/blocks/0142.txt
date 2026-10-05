@@ -1,0 +1,26 @@
+    def format_docs_with_sources(docs):
+        if not isinstance(docs, list) or len(docs) > 50:
+            raise ValueError("invalid_retrieval_result")
+        fragments = []
+        for doc in docs:
+            document_id = doc.metadata.get("document_id")
+            version_id = doc.metadata.get("version_id")
+            if type(document_id) is not int or document_id < 1 or not version_id:
+                raise ValueError("missing_source_identity")
+            if not isinstance(doc.page_content, str):
+                raise ValueError("invalid_fragment_text")
+            fragments.append({"document_id": document_id,
+                              "version_id": version_id, "text": doc.page_content})
+        import json
+        context = json.dumps(fragments, ensure_ascii=False)
+        if len(context) > 100000:
+            raise ValueError("retrieved_context_too_large")
+        return context
+
+    # The return value is a runnable producing text, not a dict with verified
+    # citations or a context_sufficient flag. Validate citations downstream.
+    return (
+        {"context": authorized_retriever | RunnableLambda(format_docs_with_sources),
+         "question": RunnablePassthrough()}
+        | rag_prompt | authorized_chat_llm | StrOutputParser()
+    )

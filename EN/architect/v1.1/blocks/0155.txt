@@ -1,0 +1,99 @@
+import redis
+import json
+from dataclasses import dataclass
+from typing import Optional
+
+@dataclass
+class WorkflowStep:
+    step_id: str
+    name: str
+    tool_name: str                   # Tool to execute at this step
+    input_mappings: dict             # How to get inputs from context or previous steps
+    timeout_seconds: int = 60
+    is_blocking: bool = True         # If True, waits for human confirmation
+
+@dataclass
+class WorkflowDefinition:
+    workflow_id: str
+    name: str
+    steps: list[WorkflowStep]
+    total_timeout: int               # Global workflow timeout
+    trigger_patterns: list[str]      # Regex for auto-detecting activation
+
+class WorkflowEngine:
+    """
+    Workflow execution engine with state persistence in Redis.
+    State is saved with a 24h TTL to allow resumption.
+    """
+
+    STATE_TTL = 86400  # 24 hours in seconds
+
+    def __init__(self, redis_client: redis.Redis):
+        self.redis = redis_client
+        self.workflows = self._load_workflow_definitions()
+
+    def detect_workflow(self, user_message: str) -> Optional[str]:
+        """Detects if the message activates any predefined workflow."""
+        for wf_id, wf_def in self.workflows.items():
+            for pattern in wf_def.trigger_patterns:
+                if re.search(pattern, user_message, re.IGNORECASE):
+                    return wf_id
+        return None
+
+    def start_workflow(
+        self,
+        workflow_id: str,
+        session_id: str,
+        initial_context: dict
+    ) -> str:
+        """Starts a workflow and persists initial state in Redis."""
+        execution_id = f"wf:{workflow_id}:{session_id}:{uuid4().hex[:8]}"
+        state = {
+            "workflow_id": workflow_id,
+            "execution_id": execution_id,
+            "current_step": 0,
+            "context": initial_context,
+            "step_results": {},
+            "status": "running",
+            "started_at": datetime.utcnow().isoformat()
+        }
+        self.redis.setex(
+            f"workflow_state:{execution_id}",
+            self.STATE_TTL,
+            json.dumps(state)
+        )
+        return execution_id
+
+    def advance_step(self, execution_id: str, step_result: dict) -> dict:
+        """
+        Advances the workflow to the next step, saving the current step's result.
+        Returns updated state with instructions for the next step.
+        """
+        state_key = f"workflow_state:{execution_id}"
+        state = json.loads(self.redis.get(state_key))
+
+        wf_def = self.workflows[state["workflow_id"]]
+        current_step = wf_def.steps[state["current_step"]]
+
+        # Save current step result
+        state["step_results"][current_step.step_id] = step_result
+        state["current_step"] += 1
+
+        # Check if workflow has finished
+        if state["current_step"] >= len(wf_def.steps):
+            state["status"] = "completed"
+            self.redis.setex(state_key, self.STATE_TTL, json.dumps(state))
+            return {"status": "completed", "final_results": state["step_results"]}
+
+        # Prepare inputs for next step
+        next_step = wf_def.steps[state["current_step"]]
+        next_inputs = self._resolve_input_mappings(next_step.input_mappings, state)
+
+        self.redis.setex(state_key, self.STATE_TTL, json.dumps(state))
+        return {
+            "status": "next_step",
+            "step_name": next_step.name,
+            "tool_to_execute": next_step.tool_name,
+            "inputs": next_inputs,
+            "requires_human_approval": next_step.is_blocking
+        }

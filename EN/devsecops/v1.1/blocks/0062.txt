@@ -1,0 +1,8 @@
+# Sign the image (keyless, linked to GitHub Actions OIDC identity)
+cosign sign --yes ghcr.io/org/my-app:${SHA}
+
+# Verify the signature (before deploying)
+cosign verify \
+  --certificate-identity "https://github.com/org/my-app/.github/workflows/build.yml@refs/heads/main" \
+  --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+  ghcr.io/org/my-app:${SHA}

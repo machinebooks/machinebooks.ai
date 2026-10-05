@@ -1,0 +1,17 @@
+sequenceDiagram
+    autonumber
+    participant P as Parent agent
+    participant SM as SendMessage tool
+    participant L as preservedContexts (LRU)
+    participant AL as new AgentLoop()
+    participant Pr as Provider
+    P->>SM: SendMessage({ to: "ship-audit", message: "expand sec 3" })
+    SM->>L: getPreservedContext("ship-audit")
+    L-->>SM: { config, messages, finalMessage, completedAt }
+    Note over SM: messages = [...ctx.messages,<br/>{ role:'user', content: message }]
+    SM->>AL: new AgentLoop({ config, initialMessages: messages, toolRegistry })
+    AL->>Pr: stream with available history
+    Pr-->>AL: new-turn deltas
+    AL-->>SM: agent_complete { finalMessage }
+    SM->>L: preserveAgentContext(agentId, config, msgs+resp, finalMessage)
+    SM-->>P: tool_result { content: finalMessage }

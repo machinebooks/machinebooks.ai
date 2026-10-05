@@ -1,0 +1,85 @@
+import threading
+import time
+import uuid
+from collections import deque
+
+class ProviderCircuitBreaker:
+    FAILURE_THRESHOLD = 5
+    FAILURE_WINDOW_S = 30
+    RECOVERY_TIMEOUT_S = 120
+    SUCCESS_THRESHOLD = 2
+    PERMIT_TIMEOUT_S = 120
+
+    def __init__(self, clock=time.monotonic):
+        self._clock = clock
+        self._lock = threading.Lock()
+        self._states = {}
+
+    def acquire(self, scope):
+        if not isinstance(scope, str) or not scope:
+            raise ValueError("Invalid registered provider scope")
+        with self._lock:
+            now = self._clock()
+            state = self._states.setdefault(scope, {
+                "state": "closed", "generation": 0, "failures": deque(),
+                "open_until": 0, "successes": 0, "permits": {}})
+            expired = [key for key, value in state["permits"].items()
+                       if now - value[0] >= self.PERMIT_TIMEOUT_S]
+            if expired and state["state"] == "half_open":
+                self._open(state, now)
+            else:
+                for key in expired:
+                    del state["permits"][key]
+            if state["state"] == "open":
+                if now < state["open_until"]:
+                    return None
+                state["state"] = "half_open"
+            if state["state"] == "half_open" and state["permits"]:
+                return None
+            token = uuid.uuid4().hex
+            state["permits"][token] = (now, state["generation"])
+            return (scope, state["generation"], token)
+
+    def _open(self, state, now):
+        state.update(state="open", open_until=now + self.RECOVERY_TIMEOUT_S,
+                     generation=state["generation"] + 1, successes=0)
+        state["permits"].clear()
+        state["failures"].clear()
+
+    def record_result(self, permit, success):
+        if type(success) is not bool:
+            raise ValueError("Outcome must be a boolean")
+        if not isinstance(permit, tuple) or len(permit) != 3:
+            raise ValueError("Invalid circuit permit")
+        scope, generation, token = permit
+        with self._lock:
+            state = self._states.get(scope)
+            if not state or generation != state["generation"] or token not in state["permits"]:
+                return False
+            started, _ = state["permits"].pop(token)
+            now = self._clock()
+            if now - started >= self.PERMIT_TIMEOUT_S:
+                if state["state"] == "half_open":
+                    self._open(state, now)
+                return False
+            if state["state"] == "half_open":
+                if not success:
+                    self._open(state, now)
+                else:
+                    state["successes"] += 1
+                    if state["successes"] >= self.SUCCESS_THRESHOLD:
+                        state.update(state="closed", successes=0)
+                        state["failures"].clear()
+                return True
+            while state["failures"] and now - state["failures"][0] >= self.FAILURE_WINDOW_S:
+                state["failures"].popleft()
+            if not success:
+                state["failures"].append(now)
+                if len(state["failures"]) >= self.FAILURE_THRESHOLD:
+                    self._open(state, now)
+            return True
+
+# Thread-safe PROCESS-LOCAL example: five failures within 30 s open for 120 s.
+# Recovery permits one probe at a time and requires two successful probes.
+# Duplicate/stale outcomes cannot close a newer generation. A distributed deployment
+# needs its own atomic shared-state adapter, bounded I/O and crash/restart policy.

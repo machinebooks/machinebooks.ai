@@ -1,0 +1,6 @@
+POST /v1/chat/completions HTTP/1.1
+Host: gateway.ejemplo.com
+Authorization: Bearer eyJhbGci...
+X-Device-ID: a3f2e1b4c5d6...  (SHA-256 del fingerprint)
+X-Upstream-User-ID: 42
+X-N7x-Purpose: code-review

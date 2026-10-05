@@ -1,0 +1,20 @@
+# falco/rules/ai-vector-store.yaml
+- rule: Access to vector store from unauthorized container
+  desc: >
+    Only inference and indexing containers should
+    connect to the Qdrant service (port 6333).
+    An API gateway or frontend container accessing
+    the vector store directly is an indicator
+    of lateral movement or RAG data exfiltration.
+  condition: >
+    outbound
+    and container
+    and fd.sport = 6333
+    and not container.name in (inference-service,
+         indexer-service, rag-worker)
+  output: >
+    Access to vector store from unauthorized container
+    (container=%container.name image=%container.image.repository
+    destination=%fd.sip:%fd.sport process=%proc.name)
+  priority: CRITICAL
+  tags: [ai_workload, data_exfiltration, rag_security]

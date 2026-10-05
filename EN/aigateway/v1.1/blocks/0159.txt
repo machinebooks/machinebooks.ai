@@ -1,0 +1,12 @@
+// Normalized response — same structure regardless of provider
+{
+    "data": {
+        "provider": "brave",
+        "query": "API gateway FastAPI 2025",
+        "count": 5,
+        "results": [
+            {"title": "...", "url": "https://...", "snippet": "..."}
+        ],
+        "elapsed_ms": 820
+    }
+}

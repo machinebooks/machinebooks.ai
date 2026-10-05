@@ -1,0 +1,53 @@
+# scripts/rescan_all_sboms.py
+"""
+Rescans supplied SBOM files; artifact downloading and inventory coverage are omitted.
+"""
+import subprocess
+import json
+import os
+import anthropic
+
+def rescan_sbom(sbom_path: str) -> dict:
+    """Run Grype against an SBOM with updated database."""
+    # Update Grype database
+    subprocess.run(["grype", "db", "update"], check=True)
+
+    result = subprocess.run(
+        ["grype", f"sbom:{sbom_path}", "-o", "json"],
+        capture_output=True, text=True
+    )
+    if result.returncode != 0:
+        raise ValueError("INCOMPLETE: Grype execution failed")
+    parsed = json.loads(result.stdout)
+    if not isinstance(parsed,dict) or not isinstance(parsed.get("matches"),list):
+        raise ValueError("INCOMPLETE: invalid Grype schema")
+    parsed["status"] = "REVIEW"
+    parsed["coverage"] = "partial"
+    return parsed
+
+def check_new_cve(vulns: dict, cve_id: str) -> list:
+    """Filter findings matching the new CVE."""
+    return [
+        m for m in vulns.get("matches", [])
+        if m["vulnerability"]["id"] == cve_id
+    ]
+
+def notify_affected_services(affected: list, cve_id: str):
+    """Generate impact report with Claude and notify."""
+    if not affected:
+        print(f"CVE {cve_id}: no services affected.")
+        return
+
+    client = anthropic.Anthropic()
+    context = json.dumps(affected, indent=2, ensure_ascii=False)
+
+    message = client.messages.create(
+        model="claude-haiku-4-5",  # Haiku for quick notifications
+        max_tokens=512,
+        system="Summarize the impact of this CVE on affected services. "
+               "Include: services, versions, and recommended action. Markdown format.",
+        messages=[{"role": "user", "content": f"CVE: {cve_id}\n\nAffected services:\n{context}"}]
+    )
+
+    print(f"## Impact of {cve_id}\n")
+    print("REVIEW: unverified impact draft\n" + message.content[0].text)

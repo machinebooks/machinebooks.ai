@@ -1,0 +1,17 @@
+type ToolUse = { id: string; name: string; input: unknown };
+type ContentBlock = { type: 'text'; text: string } |
+  ({ type: 'tool_use' } & ToolUse) |
+  { type: 'tool_result'; tool_use_id: string; content: string };
+type Message = { role: 'user' | 'assistant'; content: ContentBlock[] };
+type ToolSchema = { name: string; inputSchema: unknown };
+type Usage = { input: number; output: number };
+type StreamCallbacks = {
+  onTextDelta?: (text: string) => void | Promise<void>;
+  onToolUse?: (tool: ToolUse) => void | Promise<void>;
+  onMessageStop?: (usage: Usage) => void | Promise<void>;
+};
+interface Provider {
+  call(messages: Message[], tools: ToolSchema[], callbacks: StreamCallbacks):
+    Promise<{ finalMessage: Message; usage: Usage; finishReason: string }>;
+}
+// Reduced fixture contract, not a complete provider API or private SDK.

@@ -1,0 +1,11 @@
+// src/server/agent/tools/SkillSearchTool.ts:341-350
+const actual = createHash('sha256').update(sf.content, 'utf-8').digest('hex');
+if (actual.toLowerCase() !== expected.toLowerCase()) {
+  results.push({
+    file: sf.filename,
+    exitCode: 1,
+    stdout: '',
+    stderr: `sha256 mismatch (expected ${expected.slice(0,16)}…, got ${actual.slice(0,16)}…). Aborting.`,
+  });
+  continue;
+}

@@ -1,0 +1,11 @@
+flowchart TB
+    A[Compaction completed] --> B[Owned-artifact inventory]
+    B --> C[References from every consumer]
+    C --> D{Eligible under retention and ownership?}
+    D -- No --> G[Retain]
+    D -- Yes --> E{Active reference or lease?}
+    E -- Yes --> G
+    E -- No --> F{Age exceeds configured margin?}
+    F -- No --> G
+    F -- Yes --> I[Check identity and delete authorized object]
+    I --> J[Record result without sensitive data]

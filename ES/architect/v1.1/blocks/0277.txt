@@ -1,0 +1,55 @@
+# Ejemplo didáctico: patrones/nginx/nginx.conf
+# Upstream: las tres aplicaciones React servidas desde sus contenedores Nginx
+upstream frontend_ops {
+    server nginx_ops:80;
+}
+upstream frontend_analytics {
+    server nginx_analytics:80;
+}
+upstream frontend_admin {
+    server nginx_admin:80;
+}
+
+# Upstream: los servicios de backend
+upstream backend_api {
+    server backend:5000;
+}
+upstream ai_service_api {
+    server ai_service:8001;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name plataforma.ejemplo.com;
+
+    ssl_certificate     /etc/nginx/certs/fullchain.pem;
+    ssl_certificate_key /etc/nginx/certs/privkey.pem;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_ciphers         ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;
+
+    # Límite de carga para documentos PDF y ficheros Excel
+    client_max_body_size 100M;
+    client_body_timeout  120s;
+
+    # Compresión gzip para respuestas JSON y assets estáticos
+    gzip on;
+    gzip_types application/json text/html application/javascript text/css;
+    gzip_min_length 1024;
+
+    # App Principal en raíz
+    location / {
+        proxy_pass http://frontend_ops;
+        proxy_set_header Host $host;
+    }
+
+    # App Analytics en /analytics
+    location /analytics {
+        proxy_pass http://frontend_analytics;
+        rewrite ^/analytics(/.*)$ $1 break;
+    }
+
+    # App Admin en /admin
+    location /admin {
+        proxy_pass http://frontend_admin;
+        rewrite ^/admin(/.*)$ $1 break;
+    }

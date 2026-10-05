@@ -1,0 +1,182 @@
+@startuml
+!theme plain
+skinparam backgroundColor transparent
+skinparam componentStyle uml2
+skinparam shadowing false
+skinparam defaultFontName "Helvetica"
+skinparam defaultFontSize 11
+skinparam ArrowColor #555555
+skinparam ArrowFontSize 9
+
+skinparam package {
+  BorderColor #888
+  BackgroundColor #FAFAFA
+}
+
+actor "User" as User #lightyellow
+
+package "Frontend (Electron)" #E8F0FF {
+  [React UI] as UI
+  [NdjsonStream client] as NdjsonClient
+}
+
+package "Loop and execution" #E0F5E0 {
+  [AgentLoop\n(ch 4)] as Loop
+  [ToolRegistry\n(ch 12)] as Registry
+  [StreamingToolExecutor\n(ch 13)] as Executor
+  [ToolOrchestrator\n(ch 13)] as Orchestrator
+}
+
+package "LLM providers" #FFF1E0 {
+  interface "StreamCallbacks\n(ch 8)" as SC
+  [providers/anthropic.ts\n(ch 9)] as PAnthropic
+  [providers/openai-compat.ts\n(ch 10)] as POAI
+  [providers/azure.ts\n(ch 9)] as PAzure
+  cloud "Anthropic API" as LLMA
+  cloud "OpenAI-compat\n(LM Studio,\nOllama, vLLM)" as LLMO
+  cloud "Azure OpenAI\n(reasoning)" as LLMAz
+}
+
+package "Memory (5 layers)" #FBE0FF {
+  [Active messages\n(ch 15)] as Msgs
+  [Prompt cache\n(ch 16)] as Cache
+  [Compact / MicroCompact\n(ch 17)] as Compact
+  [SnapshotManager\n(ch 7 / 18)] as Snap
+  [MemoryManager\npersistent\n(ch 18)] as PersistMem
+}
+
+package "Agent team" #FFE6E6 {
+  [SubAgentManager\n(ch 19)] as SubAgent
+  [Spawn\n(forkSubagent.ts:spawn)\n(ch 19)] as Spawn
+  [Fork\n(forkSubagent.ts)\n(ch 19)] as Fork
+  [InProcessTeammate\n(ch 19)] as InProc
+  [Handoff / HandoffRegistry\n(ch 19)] as Handoff
+  [swarm/swarmManager\n(ch 20)] as Swarm
+  [TaskManager\ntaskFramework\n(ch 20)] as Tasks
+}
+
+package "Control and security" #FFFFE0 {
+  [PermissionEngine\n(ch 22)] as Perm
+  [bashClassifier\n(ch 22)] as BashCls
+  [HookManager\n(ch 23)] as Hooks
+  [Guardrails\n(ch 23)] as Guard
+  [planModeV2\n(ch 23)] as Plan
+  [A2AGovernance\n(ch 20)] as A2A
+  [MCPGovernance\n(ch 14)] as MCPG
+}
+
+package "MCP and plugins" #E0FFFF {
+  [MCPClient\n(ch 14)] as MCP
+  [stdio transport\n(ch 14)] as MStdio
+  [SSE transport\n(ch 14)] as MSSE
+  [HTTP transport\n(ch 14)] as MHTTP
+  [Plugin SDK / packs\n(ch 27)] as PluginSDK
+  [SlashCommands /\nSkillDiscovery\n(ch 26)] as Slash
+}
+
+package "Sandbox and isolation" #F0E0FF {
+  [VmBundleManager\n(ch 25)] as VmBundle
+  [VmSpawnProvider\n(ch 25)] as VmSpawn
+  [ShellRuntimeService\n(ch 25)] as Shell
+}
+
+package "Observability" #E8E8E8 {
+  [NdjsonStream server\n(ch 24)] as NDJSON
+  [Telemetry\n(ch 29)] as Telem
+  [cost-tracker\n(ch 29)] as Cost
+  [rate-limiter\n(ch 29)] as Rate
+  [AuditService\n(ch 22 / 29)] as Audit
+  [AuditSyncService\n(ch 22 / 29)] as AuditSync
+  [AuditHtmlExporter\n(ch 22 / 29)] as AuditHtml
+}
+
+' Main flow
+User --> UI : question
+UI --> NdjsonClient : sends message
+NdjsonClient --> NDJSON : educational POST /api/agent/stream
+NDJSON --> Loop : invokes run()
+
+Loop --> SC : delegates stream
+SC <|.. PAnthropic
+SC <|.. POAI
+SC <|.. PAzure
+PAnthropic --> LLMA : HTTPS
+POAI --> LLMO : local HTTP or remote HTTPS
+PAzure --> LLMAz : HTTPS
+
+Loop --> Registry : requests schemas
+Loop --> Orchestrator : requests tool_use
+Orchestrator --> Executor : executes during stream
+Executor --> Registry : resolves handler
+
+' Memory
+Loop --> Msgs : append
+Loop --> Cache : marks boundary
+Loop --> Compact : token threshold
+Compact --> Snap : before compaction
+Loop --> PersistMem : /memory write
+
+' Control and security
+Executor --> Perm : ask(toolName,input)
+Perm --> BashCls : if Bash
+Executor --> Hooks : PreToolUse / PostToolUse
+Hooks --> Guard : tripwires
+Loop --> Plan : plan mode
+A2A --> SubAgent : audits handoffs
+MCPG --> MCP : audits calls
+
+' MCP and plugins
+Executor --> MCP : invoke tool MCP
+MCP --> MStdio : local transport
+MCP --> MSSE : remote transport
+MCP --> MHTTP : HTTP transport
+Registry <-- PluginSDK : registers tools
+Registry <-- Slash : registers commands
+
+' Sandbox
+Executor --> Shell : Bash sandboxed
+Shell --> VmSpawn : if vm-mode
+VmSpawn --> VmBundle : active bundle
+
+' Agent team
+Loop --> SubAgent : task / agent tool
+SubAgent --> Spawn : clean
+SubAgent --> Fork : copied context; contingent cache
+SubAgent --> InProc : in-process
+SubAgent --> Handoff : transfer
+SubAgent --> Swarm : multi-agent
+SubAgent --> Tasks : background tasks
+
+' Observability
+Loop --> NDJSON : events
+Executor --> NDJSON : events
+Loop --> Telem : spans
+PAnthropic --> Cost : usage
+POAI --> Cost : usage
+PAzure --> Cost : usage
+Loop --> Rate : check budget
+Hooks --> Audit : decisions
+Perm --> Audit : decisions
+Audit --> AuditSync : replicates
+Audit --> AuditHtml : exports
+
+note right of Loop
+  StreamCallbacks normalizes selected events.
+  Provider capabilities and errors remain distinct.
+  Arrows describe the nominal historical case.
+end note
+
+note bottom of NDJSON
+  Events: message_delta,
+  tool_use_delta, tool_result,
+  thinking_delta, permission_request,
+  finish_reason, cost_update.
+end note
+
+note left of PersistMem
+  MemoryManager describes persistent memory.
+  Retention and access depend on the backend.
+  MemoryStore and autoDream are proposals.
+end note
+
+@enduml

@@ -1,0 +1,98 @@
+import anthropic
+import json
+from pathlib import Path
+from dataclasses import dataclass
+from typing import List, Optional
+
+@dataclass
+class ManualSection:
+    title: str
+    features: List[str]
+    user_flows: List[dict]
+    common_use_cases: List[str]
+    role_restrictions: dict
+    screenshot_descriptions: List[str]
+
+def build_section_context(section: ManualSection) -> str:
+    """
+    Builds the structured context for generating a section
+    of the user manual. The quality of the context determines
+    the quality of the generated manual.
+    """
+    return f"""
+## Section: {section.title}
+
+### Available features
+{chr(10).join(f'- {f}' for f in section.features)}
+
+### Documented user flows
+{json.dumps(section.user_flows, ensure_ascii=False, indent=2)}
+
+### Common use cases identified in production
+{chr(10).join(f'- {c}' for c in section.common_use_cases)}
+
+### Access control by role
+{json.dumps(section.role_restrictions, ensure_ascii=False, indent=2)}
+
+### Screen descriptions
+{chr(10).join(section.screenshot_descriptions)}
+"""
+
+def generate_manual_section(
+    section: ManualSection,
+    tone: str = "professional-accessible"
+) -> str:
+    """
+    Generates a complete section of the user manual.
+    Each section is generated independently to manage the model's context limit.
+    """
+    client = anthropic.Anthropic()
+    context = build_section_context(section)
+
+    prompt = f"""Generate the '{section.title}' section of a user manual for
+a B2B business analytics platform.
+
+Module context:
+{context}
+
+Writing instructions:
+- Tone: {tone} — clear, without unnecessary technical jargon
+- Structure: general description, step-by-step guide, use cases, frequently asked questions
+- Include warning notes where the user might make common mistakes
+- Do not mention file names, server paths, or implementation details
+- Use "the Platform" to refer to the system, never proprietary names
+- Format: Markdown with h2 and h3 headings, lists and tables where they add clarity
+
+The manual should be useful for a business analyst with average experience in digital
+tools, not for a developer."""
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    return message.content[0].text
+
+
+def assemble_complete_manual(
+    sections: List[ManualSection],
+    output_path: str
+) -> None:
+    """
+    Generates all sections and assembles the complete manual.
+    Adds cover page, table of contents, and glossary section.
+    """
+    parts = []
+    parts.append(generate_cover_page())
+
+    for section in sections:
+        print(f"Generating section: {section.title}...")
+        content = generate_manual_section(section)
+        parts.append(content)
+
+    parts.append(generate_glossary(sections))
+
+    complete_manual = "\n\n---\n\n".join(parts)
+    Path(output_path).write_text(complete_manual, encoding="utf-8")
+    print(f"Manual generated: {output_path}")

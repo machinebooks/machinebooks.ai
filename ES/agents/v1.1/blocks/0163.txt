@@ -1,0 +1,23 @@
+sequenceDiagram
+    autonumber
+    participant U as Usuario
+    participant R as WorkflowRunner
+    participant S as substitute()
+    participant A as AgentLoop
+    participant FS as Salidas autorizadas
+    U->>R: solicitar workflow y variables
+    R->>R: validar alcance, dependencias y destinos
+    R-->>U: runId si se admite
+    loop por cada paso admitido
+        R->>S: sustituir datos de variables y resultados válidos
+        S-->>R: prompt compuesto
+        R->>A: iniciar con alcance del host
+        A-->>R: eventos y estado terminal
+        R-->>U: progreso atribuido al paso
+        R->>R: registrar resultado y efectos pendientes
+        opt guardar salida
+            R->>FS: escribir destino propio reservado
+            FS-->>R: éxito o failed_save
+        end
+    end
+    R-->>U: estado final, con límites y errores

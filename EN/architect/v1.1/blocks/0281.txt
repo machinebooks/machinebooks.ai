@@ -1,0 +1,21 @@
+# Generic prompt (insufficient)
+"Write a user manual for the document analysis module."
+
+# Context-engineered prompt (effective)
+"Generate the 'Document Analysis' section of the Platform user manual,
+aimed at a business analyst with average experience in digital tools.
+
+Reader profile: non-technical, works with client requirements documents,
+needs to extract key information from lengthy documents (50-200 pages) to
+prepare commercial proposals. Their goal is not to understand how the AI works but
+to complete their task faster.
+
+Main user flow:
+1. Uploads a PDF or Word document from the 'Analysis' tab
+2. The system automatically extracts requirements, deadlines, and evaluation criteria
+3. The user reviews the results, corrects if necessary, and exports
+
+Include: step-by-step guide with textually described screenshots, common errors
+and how to resolve them, frequently asked questions based on real support tickets.
+DO NOT use technical jargon. Refer to the system as 'the Platform'.
+Tone: professional and accessible, without condescension."

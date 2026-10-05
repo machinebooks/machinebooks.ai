@@ -1,0 +1,50 @@
+# scripts/publish_metrics.py
+"""
+Publica métricas del pipeline de seguridad
+en formato Prometheus pushgateway.
+"""
+import json
+import sys
+from urllib.request import Request, urlopen
+
+PUSHGATEWAY_URL = "https://pushgateway.ejemplo.com"
+
+def publish(report_path: str, run_id: str):
+    """Publica métricas del gate report al Pushgateway."""
+    report = json.loads(open(report_path).read())
+
+    # Métricas en formato Prometheus exposition
+    metrics = []
+    metrics.append(
+        f'security_gate_decision'
+        f'{{result="{report["gate_decision"]}"}} 1'
+    )
+    metrics.append(
+        f'security_findings_total {report["summary"]["total"]}'
+    )
+
+    for sev, count in report["summary"].get("by_severity", {}).items():
+        metrics.append(
+            f'security_findings_by_severity{{severity="{sev}"}} {count}'
+        )
+
+    for source, count in report["summary"].get("by_source", {}).items():
+        metrics.append(
+            f'security_findings_by_source{{source="{source}"}} {count}'
+        )
+
+    # Envía al Pushgateway
+    body = "\n".join(metrics) + "\n"
+    req = Request(
+        f"{PUSHGATEWAY_URL}/metrics/job/security_pipeline"
+        f"/run/{run_id}",
+        data=body.encode(),
+        method="POST",
+    )
+    req.add_header("Content-Type", "text/plain")
+    urlopen(req)
+    print(f"Published {len(metrics)} metrics to Pushgateway")
+
+
+if __name__ == "__main__":
+    publish(sys.argv[1], sys.argv[2])

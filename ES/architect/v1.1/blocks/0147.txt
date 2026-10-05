@@ -1,0 +1,21 @@
+def parsear_feed_atom(url_feed, fuente_id, fetch_authorized_feed,
+                      normalize_source_entry):
+    # Registered-source adapter enforces allowlisted URLs, redirects, time/byte
+    # limits and XML safety before returning at most 10000 parsed entries.
+    entries = fetch_authorized_feed(fuente_id, url_feed)
+    if not isinstance(entries, list) or len(entries) > 10000:
+        raise ValueError("invalid_feed_result")
+    opportunities = []
+    for entry in entries:
+        # Adapter knows this source's date, decimal, currency, CPV and status schema.
+        # It returns unknown deadline/budget/status as None/unknown, never invented.
+        normalized = normalize_source_entry(fuente_id, entry)
+        source_id = normalized.pop("source_id", None)
+        if not isinstance(source_id, str) or not source_id:
+            raise ValueError("missing_source_identity")
+        identity = json.dumps([fuente_id, source_id], ensure_ascii=False)
+        normalized["id"] = hashlib.sha256(identity.encode()).hexdigest()
+        normalized["fuente"] = fuente_id
+        normalized["source_id"] = source_id
+        opportunities.append(OportunidadNormalizada(**normalized))
+    return opportunities

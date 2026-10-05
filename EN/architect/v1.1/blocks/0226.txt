@@ -1,0 +1,45 @@
+# Didactic example: patterns/docker/mysql-multi-instance.yml
+services:
+  mysql_ops:
+    image: mysql:8.0
+    container_name: plataforma_mysql_ops
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: operations_db
+      MYSQL_USER: ${MYSQL_OPS_USER}
+      MYSQL_PASSWORD: ${MYSQL_OPS_PASSWORD}
+    volumes:
+      - mysql_ops_data:/var/lib/mysql
+      - ./config/mysql/ops.cnf:/etc/mysql/conf.d/custom.cnf:ro
+    networks:
+      - plataforma_backend
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost",
+             "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  mysql_analytics:
+    image: mysql:8.0
+    container_name: plataforma_mysql_analytics
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: analytics_db
+    volumes:
+      - mysql_analytics_data:/var/lib/mysql
+      # Specific configuration: more buffer pool for analytical queries
+      - ./config/mysql/analytics.cnf:/etc/mysql/conf.d/custom.cnf:ro
+    deploy:
+      resources:
+        limits:
+          memory: 3G   # More RAM because it runs complex analytical queries
+          cpus: '1.5'

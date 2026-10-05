@@ -1,0 +1,22 @@
+# Prompt genérico (insuficiente)
+"Documenta el módulo de análisis de documentos desde la perspectiva de privacidad."
+
+# Prompt con ingeniería de contexto (efectivo)
+"Genera el borrador de la sección de tratamiento de datos personales para la evaluación
+de impacto en privacidad del módulo de análisis documental.
+
+Contexto normativo: RGPD, Artículo 35. El módulo procesa documentos que pueden contener
+datos de contacto de personas físicas (nombres, emails, teléfonos) en el contexto de
+propuestas comerciales B2B.
+
+Datos técnicos del tratamiento:
+- Los documentos se procesan con Claude claude-sonnet-4-6 para extracción de requisitos
+- El texto se vectoriza con sentence-transformers y se almacena en Qdrant
+- Los vectores se retienen durante la vida útil de la oportunidad comercial + 12 meses
+- No se envían datos a servicios externos distintos de la API de Anthropic
+- El acceso está restringido por IAM con aislamiento por organización
+
+Estructura requerida: descripción del tratamiento, base legal, categorías de datos,
+periodo de retención, medidas de seguridad, evaluación de riesgo residual.
+Marcar con [REVISAR-LEGAL] cualquier afirmación sobre cumplimiento que requiera
+validación del responsable de privacidad."

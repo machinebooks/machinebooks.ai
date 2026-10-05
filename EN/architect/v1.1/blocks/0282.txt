@@ -1,0 +1,33 @@
+# Example of automatic API reference validation
+def validate_documented_routes(
+    doc_path: str,
+    backend_code_path: str
+) -> List[dict]:
+    """
+    Extracts API routes mentioned in the documentation and verifies
+    that they exist in the backend code.
+    Returns a list of divergences for review.
+    """
+    documented_routes = extract_routes_from_markdown(doc_path)
+    code_routes = extract_routes_from_flask(backend_code_path)
+
+    divergences = []
+    for route in documented_routes:
+        if route["path"] not in code_routes:
+            divergences.append({
+                "type": "documented_route_does_not_exist",
+                "route": route["path"],
+                "method": route["method"],
+                "doc_line": route["line"],
+                "required_action": "remove_from_docs_or_re-implement"
+            })
+
+    for route in code_routes:
+        if route not in [r["path"] for r in documented_routes]:
+            divergences.append({
+                "type": "undocumented_route",
+                "route": route,
+                "required_action": "document_or_mark_as_internal"
+            })
+
+    return divergences

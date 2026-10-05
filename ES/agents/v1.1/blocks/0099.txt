@@ -1,0 +1,9 @@
+const ROLE_HIJACK_PATTERN = /<\/?(system|instructions?|user|assistant|tool|important)[^>]*>|\[(?:INST|SYSTEM|IMPORTANT|OVERRIDE)\]/gi;
+
+// Partial text cleanup only; this does not remove semantic prompt injection.
+function sanitizeMcpDescription(raw: unknown, serverName: string): string {
+  if (typeof raw !== 'string') return `[from MCP "${serverName}"] (no description)`;
+  const truncated = raw.slice(0, MCP_DESCRIPTION_MAX);
+  const stripped = truncated.replace(ROLE_HIJACK_PATTERN, '');
+  return `[from MCP "${serverName}"]\n${stripped}`;
+}

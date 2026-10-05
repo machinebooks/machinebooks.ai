@@ -1,0 +1,4 @@
+# nginx.conf — ocultar versión
+server_tokens off;
+more_clear_headers 'Server';
+more_set_headers 'Server: CloudService';

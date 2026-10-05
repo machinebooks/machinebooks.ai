@@ -1,0 +1,54 @@
+# Ejemplo didáctico: patrones/models/llm_governance.py
+# Las cuatro tablas que toda aplicación con LLM necesita
+
+class LLMServiceConfig(db.Model):
+    """Qué modelo usar para cada tipo de tarea."""
+    __bind_key__ = 'platform_core'
+    service_type = db.Column(db.String(50), primary_key=True)
+    # Ej: 'document_analysis', 'proposal_generation', 'chat_rag'
+    provider = db.Column(db.String(30))        # anthropic, azure_openai, openai
+    model_name = db.Column(db.String(100))     # claude-sonnet-4-6
+    fallback_provider = db.Column(db.String(30))
+    fallback_model = db.Column(db.String(100))
+    max_tokens = db.Column(db.Integer, default=4096)
+    temperature = db.Column(db.Float, default=0.3)
+    is_active = db.Column(db.Boolean, default=True)
+
+class LLMUsageLog(db.Model):
+    """Registro de cada invocación a un LLM."""
+    __bind_key__ = 'platform_core'
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    service_type = db.Column(db.String(50), index=True)
+    provider = db.Column(db.String(30))
+    model_name = db.Column(db.String(100))
+    input_tokens = db.Column(db.Integer)
+    output_tokens = db.Column(db.Integer)
+    cost_eur = db.Column(db.Numeric(10, 6))    # Coste calculado automáticamente
+    latency_ms = db.Column(db.Integer)
+    prompt_hash = db.Column(db.String(64))     # SHA-256 para trazabilidad
+    user_id = db.Column(db.Integer)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), index=True)
+
+class LLMModelPricing(db.Model):
+    """Precios por token, editables desde Admin."""
+    __bind_key__ = 'platform_core'
+    provider = db.Column(db.String(30), primary_key=True)
+    model_name = db.Column(db.String(100), primary_key=True)
+    input_price_per_1k = db.Column(db.Numeric(10, 6))   # EUR por 1K tokens input
+    output_price_per_1k = db.Column(db.Numeric(10, 6))  # EUR por 1K tokens output
+    effective_date = db.Column(db.Date)
+    # Cache de pricing con invalidación cada 5 minutos
+
+class LLMQualityScore(db.Model):
+    """Puntuaciones de calidad por respuesta."""
+    __bind_key__ = 'platform_core'
+    id = db.Column(db.Integer, primary_key=True)
+    usage_log_id = db.Column(db.BigInteger, db.ForeignKey('llm_usage_log.id'))
+    hallucination_score = db.Column(db.Float)   # 0.0 (ninguna) → 1.0 (total)
+    groundedness_score = db.Column(db.Float)     # Anclaje en fuentes proporcionadas
+    relevance_score = db.Column(db.Float)
+    coherence_score = db.Column(db.Float)
+    bias_score = db.Column(db.Float)
+    toxicity_score = db.Column(db.Float)
+    pii_detected = db.Column(db.Boolean, default=False)
+    reviewer_type = db.Column(db.String(20))    # 'human' | 'automated'

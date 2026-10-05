@@ -1,0 +1,23 @@
+def apply_gate(findings: list[Finding]) -> GateReport:
+    if not isinstance(findings,list) or any(not isinstance(item,Finding) for item in findings):
+        raise ValueError("INCOMPLETE: invalid normalized findings")
+    report = GateReport(findings=findings)
+    report.summary = {"total":len(findings),"by_severity":{},"by_source":{}}
+    for finding in findings:
+        for name,value in (("by_severity",finding.severity),("by_source",finding.source)):
+            report.summary[name][value] = report.summary[name].get(value,0)+1
+    blockers = [finding for finding in findings if finding.source == "secrets" or finding.severity == "critical"]
+    if blockers:
+        report.gate_decision = "block"
+        report.block_reason = "Local blocking findings; directness and patch availability do not remove critical severity"
+    return report
+
+def generate_pr_comment(report: GateReport) -> str:
+    import html
+    lines = ["Security Gate: "+report.gate_decision.upper(),
+             "Partial scanner inventory. Protected run, commit, coverage and artifact verification are omitted; this report cannot authorize merging."]
+    for finding in report.findings:
+        lines.append(html.escape(f"REVIEW {finding.source} {finding.severity} {finding.title} {finding.location}"))
+    if report.block_reason:
+        lines.append(html.escape(report.block_reason))
+    return "\n".join(lines)

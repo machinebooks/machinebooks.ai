@@ -1,0 +1,15 @@
+// Educational registration excerpt; authorization and transition rules are omitted.
+class TaskRegistryImpl {
+  private tasks = new Map<string, ManagedTask>();
+  private listeners: TaskStateChangeCallback[] = [];
+  register(task, caller): ManagedTask {
+    assertAuthorizedTaskRegistration(task, caller);
+    if (this.tasks.has(task.id)) throw new Error('Task ID already registered');
+    const managed = { ...task, updatedAt: task.updatedAt ?? Date.now() };
+    this.tasks.set(managed.id, managed);
+    this.emit(managed, 'pending');
+    return managed;
+  }
+  // Nested references, access control and lifecycle limits require host handling.
+}
+export const TaskRegistry = new TaskRegistryImpl();

@@ -1,0 +1,12 @@
+class AnthropicOpenAIAdapter:
+    """Adapts Anthropic's native client to the OpenAI interface
+    to unify the tool calling pattern across the entire application."""
+
+    def __init__(self, anthropic_client):
+        self._anthropic = anthropic_client
+        self.chat = _SyncChatNS(anthropic_client)
+        self.messages = anthropic_client.messages
+
+    def __getattr__(self, name):
+        # Any undefined attribute is delegated to the native client
+        return getattr(self._anthropic, name)

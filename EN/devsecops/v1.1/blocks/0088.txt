@@ -1,0 +1,24 @@
+from itertools import groupby
+from operator import itemgetter
+
+def batch_findings(findings: list[dict]) -> list[list[dict]]:
+    """Groups findings by service and source for batch
+    triage. Call savings require measurement; coverage remains partial."""
+    # Sort by service and source
+    sorted_findings = sorted(
+        findings,
+        key=lambda f: (f.get("service_name", ""), f["source"])
+    )
+
+    batches = []
+    for key, group in groupby(
+        sorted_findings,
+        key=lambda f: (f.get("service_name", ""), f["source"])
+    ):
+        batch = list(group)
+        # Batches of maximum 15 findings to maintain quality
+        while batch:
+            batches.append(batch[:15])
+            batch = batch[15:]
+
+    return batches

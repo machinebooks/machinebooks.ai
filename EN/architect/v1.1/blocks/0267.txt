@@ -1,0 +1,65 @@
+class ExcelImportPipeline:
+    """
+    Multi-sheet import pipeline with validation, reconciliation,
+    and audit logging. Designed to run as a Celery background task
+    since large files can take minutes.
+    """
+
+    EXPECTED_SHEETS = {
+        'competitors': CompetitorImportValidator,
+        'initiatives': InitiativeImportValidator,
+        'okr_targets': OKRTargetImportValidator,
+        'budget': BudgetImportValidator
+    }
+
+    def process(self, file_path: str, user_id: int) -> ImportResult:
+        try:
+            # NOTE: MIME type and maximum file size validation is performed
+            # at the receiving endpoint, before reaching this pipeline
+            workbook = pd.read_excel(file_path, sheet_name=None,
+                                     engine='openpyxl')
+        except Exception as e:
+            return ImportResult(success=False,
+                               error=f'Error reading file: {str(e)}')
+
+        results = {}
+        errors = []
+
+        for sheet_name, validator_class in self.EXPECTED_SHEETS.items():
+            if sheet_name not in workbook:
+                # Optional sheet: not an error, recorded as skipped
+                results[sheet_name] = SheetResult(status='skipped')
+                continue
+
+            df = workbook[sheet_name]
+            validator = validator_class(df)
+
+            if not validator.is_valid():
+                errors.extend(validator.get_errors())
+                results[sheet_name] = SheetResult(
+                    status='validation_failed',
+                    errors=validator.get_errors()
+                )
+                continue
+
+            # Reconciliation: identify new vs modified
+            reconciled = self._reconcile(sheet_name, validator.get_records())
+
+            # Only insert/update records with actual changes
+            inserted = self._bulk_upsert(sheet_name, reconciled.changed)
+
+            # Record change audit
+            _log_import_audit(sheet_name, reconciled, user_id)
+
+            results[sheet_name] = SheetResult(
+                status='success',
+                inserted=len(reconciled.new_records),
+                updated=len(reconciled.updated_records),
+                unchanged=len(reconciled.unchanged_records)
+            )
+
+        return ImportResult(
+            success=len(errors) == 0,
+            sheet_results=results,
+            errors=errors
+        )

@@ -1,0 +1,37 @@
+import json
+import struct
+from pathlib import Path
+
+def analyze_model_format(filepath: str) -> dict:
+    path = Path(filepath)
+    size = path.stat().st_size
+    detected = "unknown"
+    with path.open("rb") as stream:
+        prefix = stream.read(8)
+        if prefix[:2] in (b"\x80\x02", b"\x80\x03", b"\x80\x04", b"\x80\x05"):
+            detected = "pickle"
+        elif prefix[:4] == b"PK\x03\x04":
+            detected = "zip"
+        elif len(prefix) == 8:
+            header_size = struct.unpack("<Q", prefix)[0]
+            if 2 <= header_size <= min(100_000_000, size - 8):
+                try:
+                    header = json.loads(stream.read(header_size))
+                    payload_size = size - 8 - header_size
+                    if isinstance(header, dict) and header:
+                        tensors = [value for key, value in header.items() if key != "__metadata__"]
+                        valid = bool(tensors)
+                        for tensor in tensors:
+                            offsets = tensor.get("data_offsets") if isinstance(tensor, dict) else None
+                            valid = valid and isinstance(offsets, list) and len(offsets) == 2
+                            if not valid:
+                                break
+                            valid = all(type(offset) is int for offset in offsets) and 0 <= offsets[0] <= offsets[1] <= payload_size
+                            if not valid:
+                                break
+                        if valid:
+                            detected = "safetensors_candidate"
+                except (ValueError, UnicodeDecodeError):
+                    pass
+    # Header recognition does not authorize loading or establish complete format validity.
+    return {"file": path.name, "detected_format": detected, "status": "REVIEW"}

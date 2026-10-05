@@ -1,0 +1,19 @@
+# Deployment user configuration on the server
+# (run once manually, not part of the pipeline)
+
+# Create user with restricted shell
+useradd -m -s /bin/bash deploy
+
+# Give user access to the docker group (to run docker compose)
+usermod -aG docker deploy
+
+# Create project directory with correct permissions
+mkdir -p /opt/plataforma
+chown deploy:deploy /opt/plataforma
+
+# Configure authorized SSH key
+mkdir -p /home/deploy/.ssh
+echo "DEPLOY_SSH_PUBLIC_KEY" >> /home/deploy/.ssh/authorized_keys
+chmod 700 /home/deploy/.ssh
+chmod 600 /home/deploy/.ssh/authorized_keys
+chown -R deploy:deploy /home/deploy/.ssh

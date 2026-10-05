@@ -1,0 +1,35 @@
+class CompetitorProfile(db.Model):
+    """
+    Competitor profile with SWOT analysis and typological classification.
+    Profiles are updated manually or via Excel import.
+    """
+    __tablename__ = 'competitor_profiles'
+    __bind_key__ = 'analytics'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False, unique=True)
+
+    # Competition type
+    competitor_type = db.Column(
+        db.Enum('direct', 'indirect', 'substitute', name='competitor_type'),
+        nullable=False
+    )
+
+    # SWOT as structured JSON for easy frontend rendering
+    strengths = db.Column(db.JSON, default=list)    # List of strings
+    weaknesses = db.Column(db.JSON, default=list)
+    opportunities = db.Column(db.JSON, default=list)
+    threats = db.Column(db.JSON, default=list)
+
+    # Areas of overlap with our portfolio
+    overlap_service_lines = db.Column(db.JSON, default=list)
+    overlap_sectors = db.Column(db.JSON, default=list)
+
+    # Relative price positioning (-1=cheaper, 0=similar, 1=more expensive)
+    price_positioning = db.Column(db.Integer, default=0)
+
+    # Intelligence data (unstructured, for search)
+    notes = db.Column(db.Text)
+    last_updated_by = db.Column(db.Integer, db.ForeignKey('users.id'))
+    updated_at = db.Column(db.DateTime, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)

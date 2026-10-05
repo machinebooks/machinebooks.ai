@@ -1,0 +1,35 @@
+flowchart LR
+    subgraph LM["LM Studio (default SylvarSec)"]
+        LM1["localhost:1234/v1"]
+        LM2["Auth según configuración<br/>(token real si está activa)"]
+        LM3["Motor según plataforma y versión"]
+        LM4["GUI desktop con<br/>catálogo de modelos"]
+    end
+
+    subgraph OL["Ollama"]
+        OL1["localhost:11434/v1"]
+        OL2["Servidor local del caso:<br/>key ignorada; revisar despliegue"]
+        OL3["Motor según plataforma y versión"]
+        OL4["CLI + servidor<br/>(Modelfile)"]
+    end
+
+    subgraph VL["vLLM"]
+        VL1["host:port/v1<br/>(configurable)"]
+        VL2["API key: opcional"]
+        VL3["Backend: paged attention"]
+        VL4["Servidor Python<br/>orientado a producción"]
+    end
+
+    AG["Provider router<br/>(chat.ts)"]
+    OAI["streamOpenAICompatCall()"]
+    AG --> OAI
+    OAI -.->|baseUrl=':1234/v1'| LM1
+    OAI -.->|baseUrl=':11434/v1'| OL1
+    OAI -.->|baseUrl=host:port/v1| VL1
+
+    classDef lm fill:#0a1224,stroke:#7dd8e8,color:#f5efe0
+    classDef ol fill:#142038,stroke:#ffb347,color:#f5efe0
+    classDef vl fill:#0a1224,stroke:#a78bfa,color:#f5efe0
+    class LM1,LM2,LM3,LM4 lm
+    class OL1,OL2,OL3,OL4 ol
+    class VL1,VL2,VL3,VL4 vl

@@ -1,0 +1,12 @@
+// Educational complete call; host checks and API wrapping are omitted.
+const toolCall = {
+  id: 'rag-demo-1', name: 'RagSearch',
+  input: { query: '¿Qué referencias sobre logging contiene el índice?', top_k: 5 },
+};
+await validateAndAuthorizeRagSearch(toolCall);
+const results = await ragIndexer.search(toolCall.input.query, toolCall.input.top_k);
+const formatted = results.map((result, index) =>
+  `[${index + 1}] ${result.chunk.docId}, página ${result.chunk.page ?? 'no registrada'}\n${result.chunk.text}`
+).join('\n---\n');
+return { tool_use_id: toolCall.id, content: formatted, is_error: false };
+// Retrieved text is untrusted data; score is not truth or compliance evidence.

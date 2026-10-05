@@ -1,0 +1,2 @@
+const raw = await gw.get<unknown>('/api/v1/skills/effective?headless=1');
+// Manually filtered: extractEntitledSkills(raw)

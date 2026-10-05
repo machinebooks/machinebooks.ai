@@ -1,0 +1,28 @@
+const toolName = (schema: any): string => {
+  const direct = schema?.name;
+  const nested = schema?.function?.name;
+  if (direct !== undefined && nested !== undefined && direct !== nested) {
+    throw new Error('Conflicting tool names');
+  }
+  const name = direct ?? nested;
+  if (typeof name !== 'string' || name.length === 0) {
+    throw new Error('Missing tool name');
+  }
+  return name;
+};
+const names = params.toolSchemas.map(toolName);
+if (new Set(names).size !== names.length) {
+  throw new Error('Duplicate tool name');
+}
+const sortedSchemas = [...params.toolSchemas].sort((a: any, b: any) => {
+  const nameA = toolName(a);
+  const nameB = toolName(b);
+  return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
+});
+// Nested schema key order is preserved; this is not JSON canonicalization.
+const staticBlock = {
+  model: params.modelName,
+  system: params.systemPrompt,
+  tools: sortedSchemas,
+};
+return JSON.stringify(staticBlock);

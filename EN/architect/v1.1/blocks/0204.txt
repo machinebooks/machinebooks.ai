@@ -1,0 +1,26 @@
+// Example of differentiated handling in an extended useApiCall
+const handleError = (error: AxiosError<ApiError>) => {
+  const status = error.response?.status;
+  const data = error.response?.data;
+
+  if (status === 422 && data?.details) {
+    // Validation errors: return them for the form to distribute
+    return { type: 'validation', details: data.details };
+  }
+
+  if (status === 403) {
+    toast('You do not have permissions to perform this action.', {
+      icon: '⚠️',
+      style: { background: '#FEF3C7', color: '#92400E' },
+    });
+    return { type: 'forbidden' };
+  }
+
+  if (status && status >= 500) {
+    toast.error('The service is unavailable. Please try later.');
+    return { type: 'server' };
+  }
+
+  toast.error(data?.message || 'An unexpected error occurred.');
+  return { type: 'unknown' };
+};

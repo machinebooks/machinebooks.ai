@@ -1,0 +1,49 @@
+package devsecops_book.pipeline_gate
+import rego.v1
+
+default allow := false
+
+allow if {
+    is_object(input)
+    is_string(input.run_id)
+    is_string(input.commit_sha)
+    is_number(input.now_ns)
+    input.now_ns == data.clock.now_ns
+    run := data.authorized_runs[input.run_id]
+    run.commit_sha == input.commit_sha
+    run.status == "VERIFIED"
+    run.coverage_complete == true
+    run.starts_ns <= input.now_ns
+    input.now_ns < run.expires_ns
+    every scanner in ["sast", "sca", "secrets", "container"] {
+        scan := input.scans[scanner]
+        is_object(scan)
+        is_array(scan.findings)
+        scan.status == "PASS"
+        scan.artifact_sha256 == run.scans[scanner].artifact_sha256
+        crypto.sha256(json.marshal(scan.findings)) == scan.artifact_sha256
+        every finding in scan.findings {
+            is_string(finding.id)
+            finding.id != ""
+            finding.severity in {"CRITICAL","HIGH","MEDIUM","LOW","INFO"}
+        }
+    }
+    not unexcepted_critical
+}
+
+unexcepted_critical if {
+    some scanner in ["sast","sca","secrets","container"]
+    some finding in input.scans[scanner].findings
+    finding.severity == "CRITICAL"
+    not is_excepted(finding)
+}
+
+is_excepted(finding) if {
+    exception := data.approved_exceptions[finding.id]
+    exception.status == "approved"
+    exception.commit_sha == input.commit_sha
+    is_number(exception.starts_ns)
+    is_number(exception.expires_ns)
+    exception.starts_ns <= input.now_ns
+    input.now_ns < exception.expires_ns
+}

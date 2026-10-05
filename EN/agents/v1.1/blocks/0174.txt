@@ -1,0 +1,18 @@
+flowchart TD
+    Start([Complete validated invocation]) --> Host{Mandatory policy, identity, and scope}
+    Host -- denies --> Deny[deny]
+    Host -- admits --> Mode{Case mode and rules}
+    Mode --> Effects{Arguments and effects authorized}
+    Effects -- no --> Deny
+    Effects -- confirmation required --> Ask[ask with correlated invocation]
+    Effects -- yes --> Allow[allow for this invocation]
+    Ask --> Grant{Authentic current response}
+    Grant -- no --> Deny
+    Grant -- yes --> Recheck[Revalidate scope before execution]
+    Recheck --> Effects
+    classDef deny fill:#fee2e2,stroke:#b91c1c
+    classDef allow fill:#dcfce7,stroke:#15803d
+    classDef ask fill:#fef3c7,stroke:#b45309
+    class Deny deny
+    class Allow allow
+    class Ask ask

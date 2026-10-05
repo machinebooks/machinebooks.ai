@@ -1,0 +1,9 @@
+{
+  "model": "gpt-4o",
+  "messages": [
+    {"role": "system", "content": "You are a corporate assistant."},
+    {"role": "user", "content": "Q4 2025 summary."}
+  ],
+  "temperature": 0.3,
+  "stream": false
+}

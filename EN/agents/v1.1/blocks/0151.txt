@@ -1,0 +1,35 @@
+@startuml
+!theme plain
+skinparam backgroundColor transparent
+skinparam componentStyle uml2
+package "Child pool" {
+  [SubAgentManager] as Mgr
+  [CoordinatorSession] as Sess
+  [SubAgentConfig (1..n)] as Cfg
+}
+package "Internal register" {
+  [A2AGovernance singleton] as Gov
+  [Volatile buffer (5000)] as Ring
+}
+package "Task framework" {
+  [TaskRegistry singleton] as Reg
+  [ManagedTask] as MT
+  [TaskNotificationManager] as Notif
+}
+[Parent AgentLoop] as Loop
+[Authorized window] as UI
+Loop --> Mgr : request work
+Mgr --> Sess : owning session
+Sess --> Cfg : registered children
+Mgr --> Gov : instrumented closure
+Gov --> Ring : record with rotation loss
+Mgr --> Notif : enqueue for recipient
+Loop --> Notif : deliver only owned notifications
+Mgr --> Reg : validated transitions
+Reg --> UI : IPC to authorized destination
+note right of Gov
+  Process-global state:
+  requires attribution and access control.
+  Not inherently durable evidence.
+end note
+@enduml

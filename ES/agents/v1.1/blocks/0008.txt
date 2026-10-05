@@ -1,0 +1,63 @@
+// Pseudocode: the host supplies the omitted implementations.
+import type { Express } from 'express';
+import { executeHooks } from '../hooks.js';
+import { parseSlashCommand, executeSlashCommand } from '../slash-commands.js';
+import { buildSystemPrompt } from '../context.js';
+import { trackUsage } from '../cost-tracker.js';
+import { sendSSE, MAX_TOOL_ITERATIONS } from './chatHelpers.js';
+
+export function registerChatRoute(app: Express): void {
+  app.post('/api/chat', async (req, res) => {
+    const { message, history = [], mode = 'autopilot' } = req.body;
+    if (typeof message !== 'string' || !message.trim()) return res.status(400).json({ error: 'message required' });
+
+    // Fixed replies bypass the model; prompt commands expand its input.
+    const slash = parseSlashCommand(message);
+    const cmd = slash ? await executeSlashCommand(slash.command, slash.args) : null;
+    if (cmd && cmd.type !== 'prompt') {
+      res.json({ content: cmd.content });
+      return;
+    }
+    const actualMessage = cmd?.type === 'prompt' ? cmd.content : message;
+
+    // Optional observation: this call ignores the hook decision.
+    await executeHooks({ event: 'UserPromptSubmit', userMessage: actualMessage });
+
+    // Prepare the initial request and open the historical SSE contract.
+    const systemPrompt = await buildSystemPrompt({ maxChars: 8000 });
+    const messages = [
+      { role: 'system', content: systemPrompt + modeBlock(mode) },
+      ...history,
+      { role: 'user', content: actualMessage },
+    ];
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.flushHeaders();
+
+    // This example requires normalized stop/tool_calls finish reasons.
+    let completed = false;
+    for (let turn = 0; turn < MAX_TOOL_ITERATIONS; turn++) {
+      const reply = await streamLLMCall(messages, true, turn);   // provider adapter
+      trackUsage(reply.model, reply.tokensIn, reply.tokensOut);  // final usage for this call
+      if (!['stop', 'tool_calls'].includes(reply.finishReason)) {
+        throw new Error('Model turn did not terminate normally.');
+      }
+      messages.push({ role: 'assistant', content: reply.content, tool_calls: reply.toolCalls });
+      if (!reply.toolCalls?.length) {
+        if (reply.finishReason !== 'stop') throw new Error('Missing tool calls.');
+        completed = true;
+        break;
+      }
+      for (const tc of reply.toolCalls) {
+        // executeToolCall must validate and authorize in the host.
+        const result = await executeToolCall(tc.function.name, JSON.parse(tc.function.arguments));
+        sendSSE(res, 'tool_result', { id: tc.id, result });
+        messages.push({ role: 'tool', content: result, tool_call_id: tc.id });
+      }
+    }
+
+    if (!completed) throw new Error('Maximum iterations reached.');
+    // The real route must also handle errors, disconnects and cancellation.
+    sendSSE(res, 'done', { /* final totals */ });
+    res.end();
+  });
+}

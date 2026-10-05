@@ -1,0 +1,43 @@
+# SQLAlchemy models for the analytics_db schema
+# Each model declares __bind_key__ = 'analytics' so that
+# SQLAlchemy knows which connection schema it belongs to
+# 'analytics' is the SQLAlchemy bind_key that maps to the analytics_db schema
+
+class HeatmapScore(db.Model):
+    """
+    Stores the pre-calculated multidimensional scoring
+    for the Sector x Service Line matrix.
+    Scores are recalculated by Celery workers according to configuration.
+    """
+    __tablename__ = 'heatmap_scores'
+    __bind_key__ = 'analytics'
+
+    id = db.Column(db.Integer, primary_key=True)
+    sector_id = db.Column(db.Integer, nullable=False, index=True)
+    service_line_id = db.Column(db.Integer, nullable=False, index=True)
+
+    # Final weighted score (0-100)
+    total_score = db.Column(db.Float, nullable=False)
+
+    # Subscores by dimension (0-100 each)
+    score_demand = db.Column(db.Float, default=0.0)       # Demand: 30%
+    score_traction = db.Column(db.Float, default=0.0)     # Traction: 20%
+    score_economic = db.Column(db.Float, default=0.0)     # Economic: 25%
+    score_right_to_win = db.Column(db.Float, default=0.0) # RTW: 25%
+
+    # Raw data that fed the calculation (for auditability)
+    opportunities_count = db.Column(db.Integer, default=0)
+    pipeline_volume = db.Column(db.Float, default=0.0)
+    installed_base_volume = db.Column(db.Float, default=0.0)
+    avg_margin_pct = db.Column(db.Float, default=0.0)
+    win_rate_pct = db.Column(db.Float, default=0.0)
+
+    # Calculation validity control
+    calculated_at = db.Column(db.DateTime, default=datetime.utcnow)
+    period = db.Column(db.String(7), nullable=False)  # 'YYYY-MM'
+
+    __table_args__ = (
+        db.UniqueConstraint('sector_id', 'service_line_id', 'period',
+                           name='uq_heatmap_sector_service_period'),
+        db.Index('ix_heatmap_period_score', 'period', 'total_score'),
+    )

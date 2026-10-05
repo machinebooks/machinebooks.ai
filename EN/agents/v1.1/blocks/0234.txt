@@ -1,0 +1,62 @@
+@startuml
+!theme plain
+skinparam backgroundColor transparent
+
+class PackBootstrapBundle {
+  + pack: PackHeader
+  + system_prompt: string
+  + model: string
+  + tools: ToolDecl[]
+  + skills: SkillDecl[]
+  + mcps: McpDecl[]
+  + rag_collections: RagDecl[]
+  + permissions: { read, write }
+}
+
+class PackHeader {
+  + slug: string
+  + name: string
+  + version: string
+  + is_active: boolean
+}
+
+class ToolDecl {
+  + name: string
+  + config_json: Record
+}
+
+class SkillDecl {
+  + id: number
+  + command: string
+  + system_prompt: string
+  + rag_collection?: string
+}
+
+class McpDecl {
+  + slug: string
+  + url?: string
+  + transport: stdio | sse | http
+  + scope?: string
+}
+
+class RagDecl {
+  + name: string
+  + display_name: string
+  + document_count: number
+  + is_protected: boolean
+}
+
+PackBootstrapBundle "1" *-- "1" PackHeader
+PackBootstrapBundle "1" *-- "0..n" ToolDecl
+PackBootstrapBundle "1" *-- "0..n" SkillDecl
+PackBootstrapBundle "1" *-- "0..n" McpDecl
+PackBootstrapBundle "1" *-- "0..n" RagDecl
+
+note right of PackBootstrapBundle
+The manifest declares
+WHAT the pack provides;
+PackBootstrap checks
+whether that WHAT is available
+in runtime.
+end note
+@enduml

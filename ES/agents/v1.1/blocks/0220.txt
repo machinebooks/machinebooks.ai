@@ -1,0 +1,11 @@
+// src/server/agent/tools/SkillSearchTool.ts:398-420
+inputSchema: {
+  type: 'object',
+  properties: {
+    query: { type: 'string', description: 'Que quieres hacer...' },
+    collection: { type: 'string', description: `Coleccion a consultar (default "cyber_skills")` },
+    execute: { type: 'boolean', description: 'Si true, ejecuta los scripts cacheados del skill. Default false.' },
+    params: { type: 'object', description: 'Parametros para los scripts...' },
+  },
+  required: ['query'],
+},

@@ -1,0 +1,14 @@
+flowchart LR
+    subgraph Composition[Composición local]
+        T[Tool schemas]
+        S[System prompt]
+        H[Historial disponible]
+    end
+    subgraph Edits[Colas privadas]
+        P1[Pinned: se conserva hasta retirar]
+        P2[Pending: estado de entrega por gestionar]
+    end
+    Composition --> M[Adaptador de la API]
+    P1 --> M
+    P2 --> M
+    M --> V[Validar contrato y contenido enviado]

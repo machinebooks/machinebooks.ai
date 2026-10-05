@@ -1,0 +1,64 @@
+# policies/ai/model_approval.rego
+package ai.model_approval
+
+import future.keywords.in
+import future.keywords.if
+import future.keywords.contains
+
+valid_input if {
+    is_string(input.model_id)
+    input.model_id != ""
+    input.data_classification in {"public","internal","confidential","restricted"}
+    input.llm_provider in {"local","external"}
+    is_number(input.estimated_tokens)
+    input.estimated_tokens >= 0
+    is_array(data.approved_models)
+    count(data.approved_models) > 0
+    count([m | m := data.approved_models[_]; is_string(m); m != ""]) == count(data.approved_models)
+}
+
+deny contains msg if {
+    not valid_input
+    msg := "INCOMPLETE: missing or invalid policy input/data"
+}
+
+# Models approved for production
+approved_models := data.approved_models
+
+# Data classifications allowing external LLM usage
+external_llm_allowed := ["public", "internal"]
+
+# Deny use of unapproved models
+deny contains msg if {
+    model := input.model_id
+    not model in approved_models
+    msg := sprintf(
+        "Model '%s' is not approved for production. Allowed models: %v",
+        [model, approved_models]
+    )
+}
+
+# Deny sending confidential data to external LLM
+deny contains msg if {
+    input.data_classification == "confidential"
+    input.llm_provider == "external"
+    msg := sprintf(
+        "Data with classification '%s' cannot be sent to external LLM. Use a local model (Ollama) or anonymize the data.",
+        [input.data_classification]
+    )
+}
+
+# Deny sending restricted data to any LLM
+deny contains msg if {
+    input.data_classification == "restricted"
+    msg := "Data with classification 'restricted' cannot be processed with LLM"
+}
+
+# Advisory: high token consumption
+warn contains msg if {
+    input.estimated_tokens > 50000
+    msg := sprintf(
+        "Operation with %d estimated tokens. Consider prompt caching or model routing to claude-haiku-4-5.",
+        [input.estimated_tokens]
+    )
+}

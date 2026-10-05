@@ -1,0 +1,21 @@
+flowchart LR
+    subgraph EXEC["Ejecución de la tool"]
+        E1[handler resuelve] --> E2[ToolResult content]
+    end
+    subgraph PERSIST["Persistencia condicional"]
+        P1{content.length<br/>> 10.000?}
+        P2[fs.writeFileSync<br/>tmp + tool_use_id]
+        P3[content = marker]
+        P4[state.entries.set]
+    end
+    subgraph CTX["Lo que ve el modelo"]
+        C1["persisted-output<br/>file=... preview=..."]
+    end
+    E2 --> P1
+    P1 -- "no" --> C2["Texto pequeño original"]
+    P1 -- "sí" --> P2 --> P3 --> P4 --> C1
+
+    classDef step fill:#0a1224,stroke:#7dd8e8,color:#f5efe0
+    classDef decision fill:#142038,stroke:#ffb347,color:#f5efe0
+    class E1,E2,P2,P3,P4,C1 step
+    class P1 decision

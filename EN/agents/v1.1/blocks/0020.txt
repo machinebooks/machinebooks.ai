@@ -1,0 +1,45 @@
+@startuml
+!theme plain
+skinparam backgroundColor transparent
+skinparam state {
+  BackgroundColor #0a1224
+  BorderColor #7dd8e8
+  FontColor #f5efe0
+  ArrowColor #ffb347
+}
+
+[*] --> WaitingForBlock
+
+state WaitingForBlock : no content_block_start\nhas been seen yet
+
+WaitingForBlock --> ToolUseDeclared : content_block_start\ntype = tool_use\n(id + name arrive)
+
+state ToolUseDeclared : id, name known\narguments = ""\nmap event.index to toolIndex\ncallbacks.onToolCall(idx, id, name, "")
+
+ToolUseDeclared --> ReceivingArgs : content_block_delta\ntype = input_json_delta
+
+state ReceivingArgs : arguments += partial_json\ncallbacks.onToolCall(idx, id, name, partial_json)\n\nJSON can be invalid\nuntil the final delta
+
+ReceivingArgs --> ReceivingArgs : next input_json_delta
+
+ReceivingArgs --> BlockClosed : content_block_stop
+
+state BlockClosed : JSON.parse(arguments)\ncallbacks.onToolCallDone(idx)\n\nThe host validates and authorizes\nbefore executing the tool
+
+BlockClosed --> WaitingForBlock : next stream block
+BlockClosed --> [*] : message_stop
+
+note right of ReceivingArgs
+  IMPORTANT: in OpenAI-compatible,
+  arguments can arrive as one
+  complete chunk or split
+  across N chunks. Accumulation
+  follows the same logic.
+end note
+
+note right of ToolUseDeclared
+  In OAI-compatible, id can
+  be null in later chunks;
+  the first delta sets it.
+end note
+@enduml

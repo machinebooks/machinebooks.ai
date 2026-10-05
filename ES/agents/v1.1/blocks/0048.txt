@@ -1,0 +1,29 @@
+flowchart TD
+    subgraph Anthropic
+        A1["ThinkingManager activa thinking"]
+        A2["thinking: { type:'enabled', budget_tokens:N }"]
+        A3["Stream emite bloques tipados:"]
+        A3A["content_block_start type:thinking"]
+        A3B["thinking_delta → onThinking()"]
+        A3C["content_block_stop"]
+        A3D["text_delta → onContent()"]
+        A1 --> A2 --> A3 --> A3A --> A3B --> A3C --> A3D
+    end
+
+    subgraph "Azure reasoning (gpt-5, o1, o3, o4)"
+        Z1["ThinkingManager detecta isReasoningModel"]
+        Z2["max_completion_tokens + reasoning_effort"]
+        Z3["Stream emite campo separado:"]
+        Z3A["Resumen disponible según endpoint → onThinking()"]
+        Z3B["delta.content → onContent()"]
+        Z1 --> Z2 --> Z3 --> Z3A
+        Z3 --> Z3B
+    end
+
+    subgraph "Modelos locales reasoning (DeepSeek R1, Qwen3)"
+    L1["Capacidades explícitas del modelo y motor"]
+    L2["Opción de razonamiento admitida por el endpoint"]
+    L3["Stream emite &lt;think&gt;/&lt;/think&gt; en delta.content"]
+    L3A["Split por tags → reasoning + content"]
+    L1 --> L2 --> L3 --> L3A
+    end

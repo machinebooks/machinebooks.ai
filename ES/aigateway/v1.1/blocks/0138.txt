@@ -1,0 +1,11 @@
+// Synthetic response shape; no provider execution.
+{
+    "object": "list",
+    "model": "example-embedding-model",
+    "data": [{
+        "object": "embedding",
+        "index": 0,
+        "embedding": [0.001, -0.003, 0.002]
+    }],
+    "usage": {"prompt_tokens": 6, "total_tokens": 6}
+}

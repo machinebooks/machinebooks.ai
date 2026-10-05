@@ -1,0 +1,9 @@
+# .github/CODEOWNERS
+# Security workflows require security team review
+.github/workflows/security-pipeline.yml  @org/security-team
+.github/workflows/weekly-security-report.yml  @org/security-team
+scripts/security_aggregator.py  @org/security-team
+scripts/weekly_security_report.py  @org/security-team
+
+# Semgrep rules also require security review
+.semgrep/  @org/security-team

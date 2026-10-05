@@ -1,0 +1,23 @@
+@dataclass
+class DocumentRequirement:
+    """Requirement extracted from a requirements document."""
+    id: str
+    name: str
+    category: str       # 'technical', 'functional', 'organizational', 'economic'
+    description: str
+    source_section: str  # Section of the original document
+    priority: str        # 'mandatory', 'valued', 'optional'
+    coverage_status: str # 'pending', 'covered', 'partial', 'gap'
+
+@dataclass
+class AnalysisResult:
+    """Complete analysis result."""
+    status: str          # 'extracting', 'matching', 'analyzing', 'completed'
+    progress: int        # 0-100
+    total_requirements: int
+    covered_count: int
+    partial_count: int
+    gap_count: int
+    coverage_percentage: float
+    go_decision: str     # 'GO', 'NO-GO', 'CONDITIONAL'
+    risk_level: str      # 'low', 'medium', 'high', 'critical'

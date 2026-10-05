@@ -1,0 +1,8 @@
+// chat.ts:324-330
+// Extended thinking — only enable for models that support it AND when NOT using tools.
+// Historical case workaround; scope and cause require a versioned reproduction.
+const modelName = String(requestBody.model).toLowerCase();
+const isThinkingModel = modelName.includes('deepseek') || modelName.includes('thinking') || modelName.includes('r1');
+if (isThinkingModel && !withTools) {
+  requestBody.reasoning_effort = 'high';
+}

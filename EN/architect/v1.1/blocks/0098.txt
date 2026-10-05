@@ -1,0 +1,66 @@
+# Partial Microsoft Graph delta adapter. Entra ID/token/drive permissions are external.
+from urllib.parse import urlsplit
+from datetime import datetime,timezone
+import time
+
+class OneDriveSyncBot:
+    def __init__(self,security_context,http_client,get_authorized_token,
+                 authorize_link,persist_delta_batch):
+        self.context=security_context
+        self.client=http_client
+        self.get_token=get_authorized_token
+        self.authorize_link=authorize_link
+        self.persist_batch=persist_delta_batch
+
+    def _validate_link(self,url):
+        parsed=urlsplit(url)
+        if parsed.scheme!="https" or parsed.hostname!="graph.microsoft.com" or parsed.port not in (None,443) or parsed.username is not None or parsed.password is not None:
+            raise ValueError("Allowed Microsoft Graph origin required")
+        if self.authorize_link(self.context,url) is not True:
+            raise PermissionError("Registered drive/cursor scope denied")
+
+    def list_changed_files(self,start_url):
+        self._validate_link(start_url)
+        token=self.get_token(self.context)
+        if not isinstance(token,str) or not token:raise PermissionError("Authorized token required")
+        url=start_url;changes=[];seen_links=set();deadline=time.monotonic()+120
+        for page in range(2000):
+            if url in seen_links or time.monotonic()>=deadline:
+                raise TimeoutError("Delta incomplete or cyclic")
+            self._validate_link(url);seen_links.add(url)
+            response=self.client.get(url,headers={"Authorization":"Bearer "+token},
+                                     timeout=10,follow_redirects=False)
+            response.raise_for_status();data=response.json()
+            if not isinstance(data,dict) or not isinstance(data.get("value"),list):
+                raise ValueError("Delta page required")
+            for item in data["value"]:
+                if not isinstance(item,dict) or not isinstance(item.get("id"),str) or not item["id"]:
+                    raise ValueError("Delta identifier required")
+                if "deleted" in item or "@removed" in item:
+                    changes.append({"id":item["id"],"deleted":True})
+                elif "file" in item:
+                    modified=datetime.fromisoformat(item["lastModifiedDateTime"].replace("Z","+00:00"))
+                    if modified.tzinfo is None:raise ValueError("Aware modification time required")
+                    changes.append({"id":item["id"],"name":item.get("name"),
+                      "modified_at":modified.astimezone(timezone.utc).isoformat().replace("+00:00","Z"),
+                      "size":item.get("size"),"deleted":False})
+                if len(changes)>100000:raise ValueError("Delta change limit exceeded")
+            next_link=data.get("@odata.nextLink");delta_link=data.get("@odata.deltaLink")
+            if next_link and delta_link:raise ValueError("Ambiguous delta cursor")
+            if next_link:
+                if not isinstance(next_link,str):raise ValueError("Next link required")
+                url=next_link;continue
+            if not isinstance(delta_link,str) or not delta_link:raise ValueError("Terminal delta link required")
+            self._validate_link(delta_link)
+            return {"changes":changes,"delta_link":delta_link}
+        raise TimeoutError("Delta page limit exceeded")
+
+def sync_onedrive_documents(syncer,stored_delta_or_initial_link):
+    batch=syncer.list_changed_files(stored_delta_or_initial_link)
+    # Transaction CASes the saved cursor and stores change/delete intents together.
+    # Deleted items invalidate indexes and retrieval permissions, not just DB rows.
+    if syncer.persist_batch(syncer.context,batch) is not True:
+        raise RuntimeError("Durable delta/outbox acknowledgement required")
+    return {"status":"indexing_requested","changes":len(batch["changes"])}
+# This is accepted work, not successful indexing. Workers record per-item outcomes;
+# cursors recover through replay/reset policy. Service-token refresh is external.

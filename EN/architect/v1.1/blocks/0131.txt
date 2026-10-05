@@ -1,0 +1,12 @@
+# Partial chat_rag handler: ctx and inputs are resolved by the server.
+# resolve_rag_scope rechecks membership, registered collections and conversation.
+scope = resolve_rag_scope(ctx, conversation_id)
+rag_query = await rewrite_query_for_rag(message, scope.history, authorized_chat_llm)
+rag_context = await rag_service.get_multi_collection_context(
+    query=rag_query, ctx=ctx,
+    collection_names=scope.collection_names,
+    max_chunks=scope.max_chunks,
+)
+# The service rechecks each current document/version before returning fragments.
+# Synthesis uses the original question and an approved, audited adapter.
+# Reauthorize sources before delivery; citation validation is an external gate.

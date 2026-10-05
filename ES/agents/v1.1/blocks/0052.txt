@@ -1,0 +1,5 @@
+const REASONING_PREFIX_RE = /^(o1|o3|o4|gpt-5)/i;
+
+export function isAzureReasoningModel(deploymentOrModel: string): boolean {
+  return REASONING_PREFIX_RE.test(deploymentOrModel);
+}

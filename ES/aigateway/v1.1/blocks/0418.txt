@@ -1,0 +1,10 @@
+# Partial deployment option: verify Settings aliases and service resolvers.
+services:
+  gateway:
+    environment:
+      - N7X_ENV=production
+      - DB_HOST=mysql-privado.mysql.database.azure.com
+      - DB_PORT=3306
+      - REDIS_URL=rediss://cache-privado.redis.cache.azure.net:6380/0
+      - KEY_VAULT_URL=https://kv-privado.vault.azure.net/
+# Historical Azure Cache reference; migration and credentials are separate.

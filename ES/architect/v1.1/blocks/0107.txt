@@ -1,0 +1,9 @@
+def sync_onedrive_documents(syncer,stored_delta_or_initial_link):
+    batch=syncer.list_changed_files(stored_delta_or_initial_link)
+    # Transaction CASes the saved cursor and stores change/delete intents together.
+    # Deleted items invalidate indexes and retrieval permissions, not just DB rows.
+    if syncer.persist_batch(syncer.context,batch) is not True:
+        raise RuntimeError("Durable delta/outbox acknowledgement required")
+    return {"status":"indexing_requested","changes":len(batch["changes"])}
+# This is accepted work, not successful indexing. Workers record per-item outcomes;
+# cursors recover through replay/reset policy. Service-token refresh is external.

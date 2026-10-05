@@ -1,0 +1,15 @@
+# Didactic example: patterns/chat/context_budget.py
+# Token budget per context layer
+
+TOKEN_BUDGET = {
+    "system_prompt": 800,        # Base instructions — never truncated
+    "user_memories": 600,        # Top 10 memories by relevance
+    "rag_context": 4_000,        # Chunks retrieved from Qdrant
+    "conversation_history": 6_000,  # Session history
+    "reserved_for_response": 2_000,  # Space for Claude's response
+}
+# Total: ~13,400 tokens out of a ~200K limit
+# In practice the actual limit depends on the model:
+# Haiku: 200K, Sonnet: 200K, Opus: 200K
+
+MAX_CONTEXT = 180_000  # 10% safety margin

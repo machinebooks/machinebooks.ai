@@ -1,0 +1,29 @@
+import re
+import anthropic
+
+SENSITIVE_PATTERNS = [
+    r"api[_-]?key\s*[:=]",
+    r"password\s*[:=]",
+    r"secret\s*[:=]",
+    r"(?:RULES|INSTRUCTIONS)\s+(?:OF|FOR)\s+SECURITY",
+    r"NON.NEGOTIABLE",
+    r"Bearer\s+[A-Za-z0-9\-._~+/]+=*",
+]
+
+def filter_output(response_text: str) -> tuple[str, list[str]]:
+    """Filters LLM response and detects information leaks."""
+    violations = []
+
+    for pattern in SENSITIVE_PATTERNS:
+        if re.search(pattern, response_text, re.IGNORECASE):
+            violations.append(f"output_leak: {pattern}")
+
+    if violations:
+        # Generic response when leak detected
+        return (
+            "I cannot complete this request. If you need "
+            "assistance, please rephrase your query.",
+            violations
+        )
+
+    return response_text, []

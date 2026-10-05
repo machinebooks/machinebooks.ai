@@ -1,0 +1,18 @@
+import anthropic
+
+client = anthropic.Anthropic()
+
+def request_tool_plan_with_mcp(user_message: str, internal_tools: list[dict],
+                               mcp_servers: list[dict], *, security_ctx,
+                               load_authorized_mcp_schemas):
+    if security_ctx is None or type(security_ctx.user_id) is not int or security_ctx.user_id < 1 or not callable(load_authorized_mcp_schemas):
+        raise PermissionError("Acceso denegado")
+    external_tools = load_authorized_mcp_schemas(security_ctx, mcp_servers)
+    if not isinstance(external_tools, list):
+        raise ValueError("Catálogo MCP no válido")
+    return client.messages.create(
+        model="claude-sonnet-4-6", max_tokens=4096,
+        system="Propón herramientas para la tarea dentro del ámbito permitido.",
+        messages=[{"role": "user", "content": user_message}],
+        tools=internal_tools + external_tools)
+# The response is a plan. Execution requires an authorized connector and tool_result loop.

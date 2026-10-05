@@ -1,0 +1,4 @@
+drift_pct = (
+    (actual_tokens - estimated_tokens) / actual_tokens * 100
+    if actual_tokens > 0 else None
+)

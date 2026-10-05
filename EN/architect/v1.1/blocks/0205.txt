@@ -1,0 +1,89 @@
+# nginx.conf — Multi-app router for the Platform's three frontends
+events {
+    worker_connections 1024;
+}
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    # Gzip compression for static assets
+    gzip on;
+    gzip_types text/plain text/css application/json
+               application/javascript text/xml application/xml
+               image/svg+xml;
+
+    # SSE buffer: disable buffering on streaming responses
+    # so fragments reach the client without delay
+    proxy_buffering off;
+
+    server {
+        listen 80;
+        server_name _;
+
+        # Maximum upload size: 100MB for heavy documents
+        client_max_body_size 100M;
+
+        # --- Main App (/) ---
+        # Serves the operations application build
+        location / {
+            root /var/www/app-principal;
+            try_files $uri $uri/ /index.html;
+            # try_files with /index.html is essential for React Router:
+            # any route that is not a static file returns
+            # index.html and React Router handles client-side routing
+        }
+
+        # --- Analytics App (/analytics) ---
+        location /analytics {
+            alias /var/www/app-analytics;
+            try_files $uri $uri/ /analytics/index.html;
+        }
+
+        location /analytics/ {
+            alias /var/www/app-analytics/;
+            try_files $uri $uri/ /analytics/index.html;
+        }
+
+        # --- Admin App (/admin) ---
+        location /admin {
+            alias /var/www/app-admin;
+            try_files $uri $uri/ /admin/index.html;
+        }
+
+        location /admin/ {
+            alias /var/www/app-admin/;
+            try_files $uri $uri/ /admin/index.html;
+        }
+
+        # --- Backend API ---
+        location /api/ {
+            proxy_pass http://backend:5000/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+            # Headers for SSE: disable buffering and extended timeout
+            proxy_read_timeout 300s;
+            proxy_send_timeout 300s;
+            proxy_cache_bypass $http_upgrade;
+        }
+
+        # --- AI Service (SSE and agents) ---
+        location /ai/ {
+            proxy_pass http://ai_service:8000/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+
+            # SSE requires Nginx to not buffer the response
+            proxy_buffering off;
+            proxy_cache off;
+            # Generous timeout for long-running AI analysis
+            proxy_read_timeout 300s;
+
+            # SSE headers
+            proxy_set_header Cache-Control no-cache;
+            proxy_set_header X-Accel-Buffering no;
+        }
+    }
+}

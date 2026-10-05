@@ -1,0 +1,100 @@
+import json
+import anthropic
+from illustrative_host import Agent, tool
+from dataclasses import asdict
+
+# Initialize Anthropic client
+client = anthropic.Anthropic()
+
+TRIAGE_SYSTEM_PROMPT = """You are a security triage agent.
+Your function is to analyze scan findings (SAST, SCA, containers)
+and generate a prioritized action plan.
+
+For each finding:
+1. Use query_cve_database if it has a CVE to verify exploitability.
+2. Use check_service_exposure to determine service exposure.
+3. Use get_business_context to evaluate business impact.
+4. Use estimate_fix_complexity to estimate remediation effort.
+5. Use correlate_findings to detect patterns and clusters.
+
+Prioritization criteria (weights):
+- Exploitability: 35% (public exploit, EPSS, attack vector)
+- Exposure: 25% (internet-facing, authentication, WAF)
+- Business impact: 25% (sensitive data, criticality, compliance)
+- Remediation effort: 15% (inversely — easy first when equal)
+
+Generate a 0-100 score per finding.
+> 70: immediate action. 40-70: planned action. < 40: backlog.
+
+ALWAYS respond with structured JSON."""
+
+def run_triage_agent(findings: list[dict]) -> dict:
+    """Runs the triage agent on a list of normalized
+    findings and returns the prioritized action plan."""
+
+    if not isinstance(findings,list) or not findings or any(not isinstance(f,dict) or not isinstance(f.get("id"),str) for f in findings):
+        raise ValueError("INCOMPLETE: finding identity missing")
+    original_ids = [f["id"] for f in findings]
+    if len(set(original_ids)) != len(original_ids):
+        raise ValueError("INCOMPLETE: duplicate input identity")
+    # Build the message with findings
+    findings_text = "\n".join(
+        f"- [{f['id']}] {f['source']}: {f['title']} "
+        f"(severity={f['severity']}, service={f.get('service_name', 'unknown')})"
+        for f in findings
+    )
+
+    agent = Agent(
+        model="claude-haiku-4-5",  # Cost-efficient for triage
+        system=TRIAGE_SYSTEM_PROMPT,
+        tools=[
+            query_cve_database,
+            check_service_exposure,
+            estimate_fix_complexity,
+            correlate_findings,
+            get_business_context,
+        ],
+        max_tool_calls=50,  # Limit to control cost
+    )
+
+    response = agent.run(
+        messages=[{
+            "role": "user",
+            "content": f"""Analyze and prioritize these {len(findings)}
+security findings:
+
+{findings_text}
+
+Generate the prioritized action plan in JSON format:
+{{
+  "total_findings": N,
+  "immediate_action": [{{"finding_id":"original id", "priority_score":0}}],
+  "planned_action": [...],
+  "backlog": [...],
+  "systemic_issues": [...],
+  "summary": "..."
+}}"""
+        }]
+    )
+
+    proposal = json.loads(response) if isinstance(response,str) else response
+    if not isinstance(proposal,dict):
+        raise ValueError("INCOMPLETE: invalid triage plan")
+    if type(proposal.get("total_findings")) is not int or proposal["total_findings"] != len(findings):
+        raise ValueError("INCOMPLETE: plan count mismatch")
+    groups = [proposal.get(key) for key in ("immediate_action","planned_action","backlog")]
+    if any(not isinstance(group,list) for group in groups):
+        raise ValueError("INCOMPLETE: missing triage groups")
+    retained = [item for group in groups for item in group]
+    if any(not isinstance(item,dict) or item.get("finding_id") not in original_ids for item in retained):
+        raise ValueError("INCOMPLETE: unknown plan identity")
+    ids = [item["finding_id"] for item in retained]
+    if len(ids) != len(original_ids) or set(ids) != set(original_ids):
+        raise ValueError("INCOMPLETE: duplicate or omitted finding")
+    for item in retained:
+        score = item.get("priority_score")
+        if type(score) not in (int,float) or not 0 <= score <= 100:
+            raise ValueError("INCOMPLETE: invalid priority score")
+        item["status"] = "REVIEW"
+    proposal.update(status="REVIEW", coverage="partial", original_findings=findings)
+    return proposal

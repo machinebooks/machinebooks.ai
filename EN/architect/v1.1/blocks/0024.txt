@@ -1,0 +1,17 @@
+Initial prompt when starting the project with Claude Code:
+
+"I have a B2B business process that consumes 50-120 hours per proposal.
+I need to automate it with AI. Users are business operators,
+analysts, and administrators with different roles and permissions. Requirements:
+- Analysis of complex documents (PDF 100-300 pages with OCR)
+- Generation of technical proposals with context from previous proposals
+- Semantic search across a document base of several million documents
+- Chat with RAG context over proprietary documentation
+- Automation of uploads to external systems via browser
+- Admin panel with AI governance and cost control
+
+The team knows Flask and React. The client infrastructure uses MySQL 8.0.
+The system must meet enterprise privacy and audit requirements.
+
+What stack do you recommend and why? Give me pros and cons of each option
+and the conditions under which you would change the recommendation."

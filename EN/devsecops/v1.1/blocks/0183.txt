@@ -1,0 +1,20 @@
+# falco/rules/network-anomaly.yaml
+- rule: Outbound connection to non-standard port from container
+  desc: >
+    Detects outbound TCP connections to ports other than
+    80, 443, 8080, 8443, 5432, 3306, 6379, 9200.
+    Unexpected ports may indicate reverse shell,
+    C2, or exfiltration.
+  condition: >
+    outbound
+    and container
+    and not (fd.sport in (80, 443, 8080, 8443, 5432,
+             3306, 6379, 9200, 6333, 9090, 9091))
+    and evt.type = connect
+  output: >
+    Outbound connection to non-standard port
+    (container=%container.name image=%container.image.repository
+    destination=%fd.sip:%fd.sport protocol=%fd.l4proto
+    process=%proc.name)
+  priority: WARNING
+  tags: [container, network, mitre_exfiltration]

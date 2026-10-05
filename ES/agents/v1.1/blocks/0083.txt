@@ -1,0 +1,18 @@
+@startuml
+!theme plain
+skinparam backgroundColor transparent
+skinparam state {
+  BackgroundColor #142038
+  BorderColor #7dd8e8
+  FontColor #f5efe0
+}
+
+[*] --> queued : addTool(block)
+queued --> executing : pumpQueue()\ncupo libre + canStartTool
+queued --> completed : cancelled / siblingAbort\n(con interruptBehavior=cancel)
+executing --> completed : handler resuelve
+executing --> cancelled : abortSignal\n(interruptBehavior=cancel)
+completed --> yielded : enqueueReadyResults()\npuede rebasar pendientes seguros
+cancelled --> yielded : enqueueReadyResults()
+yielded --> [*]
+@enduml

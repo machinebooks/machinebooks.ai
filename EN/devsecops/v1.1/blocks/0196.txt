@@ -1,0 +1,19 @@
+# prometheus.yml
+global:
+  scrape_interval: 30s
+  evaluation_interval: 30s
+
+scrape_configs:
+  - job_name: "security-metrics"
+    static_configs:
+      - targets: ["security-metrics:9110"]
+    scrape_interval: 15s
+
+  - job_name: "falco-exporter"
+    static_configs:
+      - targets: ["falco-exporter:9376"]
+
+  # CI/CD pipeline metrics
+  - job_name: "github-actions-exporter"
+    static_configs:
+      - targets: ["gha-exporter:9101"]

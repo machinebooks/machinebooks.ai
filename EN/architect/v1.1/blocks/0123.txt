@@ -1,0 +1,44 @@
+import hashlib
+import json
+
+def get_prompt_variant(prompt_id, security_context, resolve_authorized_experiment,
+                       load_authorized_active_prompt, persist_assignment):
+    if not isinstance(security_context, dict):
+        raise ValueError("Invalid experiment context")
+    tenant = security_context.get("tenant_id")
+    user = security_context.get("user_id")
+    if (not isinstance(prompt_id, str) or not prompt_id
+            or not isinstance(tenant, str) or not tenant
+            or type(user) not in (str, int) or str(user) == ""
+            or (type(user) is int and user <= 0)):
+        raise ValueError("Invalid experiment scope")
+    experiment = resolve_authorized_experiment(security_context, prompt_id)
+    if experiment is None:
+        return load_authorized_active_prompt(security_context, prompt_id)
+    if not isinstance(experiment, dict):
+        raise ValueError("Invalid experiment")
+    eid, revision = experiment.get("id"), experiment.get("revision")
+    variants = experiment.get("variants")
+    if (not isinstance(eid, str) or not eid or not isinstance(revision, str) or not revision
+            or not isinstance(variants, list) or not variants):
+        raise ValueError("Invalid experiment revision")
+    by_id = {}
+    for variant in variants:
+        if (not isinstance(variant, dict)
+                or not isinstance(variant.get("version_id"), str)
+                or not variant["version_id"] or variant["version_id"] in by_id):
+            raise ValueError("Invalid variant identity")
+        by_id[variant["version_id"]] = dict(variant)
+    ids = sorted(by_id)
+    identity = json.dumps([tenant, str(user), prompt_id, eid, revision],
+                          ensure_ascii=False, separators=(",", ":"))
+    index = int(hashlib.sha256(identity.encode()).hexdigest(), 16) % len(ids)
+    chosen = persist_assignment(
+        security_context, eid, revision, str(user), ids[index])
+    if chosen not in by_id:
+        raise RuntimeError("Assignment was not durably confirmed")
+    return by_id[chosen]
+
+# The repository atomically inserts/reuses one assignment per tenant/user/revision.
+# Current authorization and experiment approval are external. SHA-256 is stable
+# across processes and variant reordering; small cohorts need not be balanced.

@@ -1,0 +1,10 @@
+function interpolate(template: string, vars: Record<string, unknown>): string {
+  if (!vars || Object.keys(vars).length === 0) return template;
+  // Replacer is a function (not string): values with $1, $&, $$
+  // would be interpreted as backreferences and corrupt the prompt.
+  return template.replace(/\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g, (full, name: string) => {
+    const v = vars[name];
+    if (v === undefined || v === null) return '';
+    return String(v);
+  });
+}

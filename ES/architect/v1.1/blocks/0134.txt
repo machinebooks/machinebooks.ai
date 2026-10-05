@@ -1,0 +1,35 @@
+    def load_document(self, document_id, security_context):
+        if type(document_id) is not int or document_id <= 0:
+            raise ValueError("Invalid document identifier")
+        # Callback authorizes current actor/document/version and reads a bounded,
+        # immutable upload; MIME is server-verified, not trusted from a request.
+        record = self._load(security_context, document_id, self.MAX_FILE_BYTES)
+        if (not isinstance(record, dict) or not isinstance(record.get("content"), bytes)
+                or not isinstance(record.get("version_id"), str) or not record["version_id"]
+                or not isinstance(record.get("tenant_id"), str) or not record["tenant_id"]):
+            raise ValueError("Invalid authorized document snapshot")
+        content = record["content"]
+        if not content or len(content) > self.MAX_FILE_BYTES:
+            raise ValueError("Document exceeds the example size limit")
+        base = {"document_id": document_id, "version_id": record["version_id"],
+                "tenant_id": record["tenant_id"], "file_hash": self.compute_hash(content)}
+        mime = record.get("mime_type")
+        if mime == "application/pdf":
+            if not content.startswith(b"%PDF-"):
+                raise ValueError("PDF signature mismatch")
+            return self._load_pdf(content, base)
+        loader = self._office.get(mime)
+        if not callable(loader):
+            raise ValueError("No authorized parser for this MIME type")
+        documents = loader(content, max_characters=self.MAX_TEXT_CHARS, timeout=60)
+        if not isinstance(documents, list) or len(documents) > 5000:
+            raise ValueError("Invalid parser output")
+        total = 0
+        for document in documents:
+            if not isinstance(document, LangChainDocument):
+                raise TypeError("Parser must return LangChain documents")
+            total += len(document.page_content)
+            if total > self.MAX_TEXT_CHARS:
+                raise ValueError("Extracted text exceeds the example limit")
+            document.metadata = {**document.metadata, **base}
+        return documents

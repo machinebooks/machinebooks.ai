@@ -1,0 +1,17 @@
+---
+paths:
+  - "backend/models/**"
+  - "backend/migrations/**"
+---
+
+# Rules for Models and Migrations
+
+- Register models and review generated Alembic revisions.
+- Never edit an already-applied revision.
+- Validate categories, identifiers, ownership and tenant scope at boundaries.
+- Logical deactivation retains data; it is not GDPR erasure.
+- Define lawful retention and actual deletion procedures separately.
+- New password storage uses an evaluated Argon2id configuration.
+- Legacy bcrypt requires a measured work factor and its 72-byte limit.
+- Serializers never return password hashes, tokens or MFA secrets.
+- Cross-bind joins and migrations require verified metadata and access rules.

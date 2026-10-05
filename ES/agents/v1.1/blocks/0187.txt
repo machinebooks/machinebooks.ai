@@ -1,0 +1,15 @@
+import { createOutputGuardrail } from './guardrails/index.js';
+
+const internalUrlGuardrail = createOutputGuardrail({
+  name: 'internal-url-leak',
+  check: (output) => {
+    const re = /https?:\/\/[a-z0-9-]+\.corp\.example\.local\b/i;
+    if (re.test(output)) {
+      return {
+        tripwireTriggered: true,
+        message: 'Salida bloqueada: URL interna detectada en la respuesta.',
+      };
+    }
+    return { tripwireTriggered: false };
+  },
+});

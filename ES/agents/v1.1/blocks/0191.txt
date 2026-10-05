@@ -1,0 +1,16 @@
+sequenceDiagram
+    autonumber
+    participant Loop as AgentLoop (productor)
+    participant Stream as AsyncStream<AgentStreamEvent>
+    participant Route as chat route (consumidor)
+    participant UI as Cliente
+    Loop->>Stream: enqueue text_delta "Hola"
+    Loop->>Stream: enqueue text_delta " mundo"
+    Stream-->>Route: yield text_delta "Hola"
+    Route->>UI: data: {"type":"text_delta",...}\n\n
+    Stream-->>Route: yield text_delta " mundo"
+    Route->>UI: data: {"type":"text_delta",...}\n\n
+    Loop->>Stream: enqueue tool_use_start "Read"
+    Stream-->>Route: yield tool_use_start
+    Route->>UI: data: {"type":"tool_use_start",...}\n\n
+    Note over Stream: si UI lee despacio, queue crece;<br/>si LLM emite despacio, Route espera<br/>en promesa pendiente (readResolve)

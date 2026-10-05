@@ -1,0 +1,19 @@
+import math
+import random
+
+
+def exponential_backoff_with_jitter(retry_number, base_delay=60,
+                                    max_delay=3600, jitter_factor=0.25):
+    # retry_number=0 is the first retry. Apply the ceiling AFTER jitter too.
+    if type(retry_number) is not int or retry_number < 0:
+        raise ValueError("Nonnegative integer retry count required")
+    if type(base_delay) is not int or base_delay < 1:
+        raise ValueError("Positive integer base delay required")
+    if type(max_delay) is not int or max_delay < base_delay:
+        raise ValueError("Maximum delay must be at least the base delay")
+    if type(jitter_factor) not in (int,float) or not math.isfinite(jitter_factor) or not 0 <= jitter_factor <= 1:
+        raise ValueError("Finite jitter between zero and one required")
+    cutoff = (max_delay//base_delay).bit_length()
+    base = max_delay if retry_number >= cutoff else min(base_delay*(1 << retry_number),max_delay)
+    delay = base*(1+random.uniform(-jitter_factor,jitter_factor))
+    return min(max_delay,max(1,int(delay)))

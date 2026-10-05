@@ -1,0 +1,12 @@
+# .semgrep-ignore.yml — Supresiones confirmadas
+# Cada entrada requiere justificación y fecha de revisión
+supresiones:
+  - regla: command-injection-fastapi
+    fichero: src/admin/backup.py
+    linea: 34
+    justificacion: >
+      El comando se construye con valores de un enum interno,
+      no con input del usuario. Verificado el 2026-03-15.
+    revisado_por: jmontes
+    fecha_revision: "2026-03-15"
+    fecha_expiracion: "2026-09-15"

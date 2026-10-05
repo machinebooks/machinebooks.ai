@@ -1,0 +1,35 @@
+# nginx.conf — Router multi-app para los tres frontales de la Plataforma
+events {
+    worker_connections 1024;
+}
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    # Compresión gzip para assets estáticos
+    gzip on;
+    gzip_types text/plain text/css application/json
+               application/javascript text/xml application/xml
+               image/svg+xml;
+
+    # Buffer para SSE: desactivamos el buffering en las respuestas de streaming
+    # para que los fragmentos lleguen al cliente sin demora
+    proxy_buffering off;
+
+    server {
+        listen 80;
+        server_name _;
+
+        # Tamaño máximo de subida: 100MB para documentos pesados
+        client_max_body_size 100M;
+
+        # --- App Principal (/) ---
+        # Sirve el build de la aplicación de operaciones
+        location / {
+            root /var/www/app-principal;
+            try_files $uri $uri/ /index.html;
+            # try_files con /index.html es esencial para React Router:
+            # cualquier ruta que no sea un fichero estático devuelve el
+            # index.html y React Router gestiona el routing del lado del cliente
+        }

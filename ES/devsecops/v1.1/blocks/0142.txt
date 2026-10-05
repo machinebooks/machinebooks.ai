@@ -1,0 +1,33 @@
+def build_sandwiched_messages(
+    user_input: str,
+    context: str = ""
+) -> list[dict]:
+    """Construye la secuencia de mensajes con defensa sandwich."""
+    # Capa superior: instrucciones del sistema (ya en system prompt)
+    # Capa media: el input del usuario con contexto
+    # Capa inferior: recordatorio de instrucciones
+
+    messages = []
+
+    # Si hay contexto RAG, se inyecta como mensaje del asistente previo
+    if context:
+        messages.append({
+            "role": "user",
+            "content": f"Documentación de referencia:\n{context}"
+        })
+        messages.append({
+            "role": "assistant",
+            "content": "Entendido. Usaré esa documentación como referencia "
+                       "para responder la siguiente pregunta del usuario, "
+                       "manteniendo mis reglas de seguridad."
+        })
+
+    # Input del usuario (zona no confiable)
+    messages.append({
+        "role": "user",
+        "content": user_input
+    })
+
+    # Historical function name: this fragment supplies no assistant prefill.
+    # Context remains untrusted; host permissions enforce the actual boundary.
+    return messages

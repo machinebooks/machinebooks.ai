@@ -1,0 +1,24 @@
+sequenceDiagram
+    autonumber
+    participant U as Usuario
+    participant C as Cliente
+    participant L as AgentLoop
+    participant SC as slash-commands.ts
+    participant PF as PromptFetcher
+    participant DB as DatabaseService
+    participant M as Modelo
+    participant S as Subagente
+    U->>C: /sast src/server
+    C->>SC: parseSlashCommand("/sast src/server")
+    SC-->>C: { type: prompt, content: "Use spawn_agent with agent_type=security_reviewer..." }
+    C->>L: user message expandido
+    L->>M: messages + tools
+    M-->>L: tool_use spawn_agent type=security_reviewer
+    L->>PF: fetch("agent.security_reviewer")
+    PF->>PF: cache miss
+    PF->>DB: getCollection("ai_prompts")
+    DB-->>PF: rows incluida la edicion del usuario
+    PF-->>L: system prompt con la edicion preservada
+    L->>S: spawn con system prompt + allowed-tools
+    S-->>L: findings JSON
+    L-->>U: respuesta final

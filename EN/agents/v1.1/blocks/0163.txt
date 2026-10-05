@@ -1,0 +1,23 @@
+sequenceDiagram
+    autonumber
+    participant U as User
+    participant R as WorkflowRunner
+    participant S as substitute()
+    participant A as AgentLoop
+    participant FS as Authorized outputs
+    U->>R: request workflow and variables
+    R->>R: validate scope, dependencies, and destinations
+    R-->>U: runId if admitted
+    loop for each admitted step
+        R->>S: substitute variable data and valid results
+        S-->>R: composed prompt
+        R->>A: start with host scope
+        A-->>R: events and terminal state
+        R-->>U: progress attributed to the step
+        R->>R: record result and pending effects
+        opt save output
+            R->>FS: write reserved owned destination
+            FS-->>R: success or failed_save
+        end
+    end
+    R-->>U: final state, with limits and errors

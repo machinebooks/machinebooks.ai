@@ -1,0 +1,18 @@
+sequenceDiagram
+    autonumber
+    participant L as AgentLoop
+    participant T as Estado de sesión
+    participant D as DreamManager propuesto
+    participant M as MemoryStore propuesto
+    L->>T: registrar actividad
+    L->>D: shouldDream(turnCount, lastActivity)?
+    D-->>L: decisión según configuración
+    L->>D: ejecutar tarea con cancelación cooperativa
+    activate D
+    D->>D: orientation: candidatos por heurística
+    D->>D: gather: menciones y resultados
+    D->>D: consolidate: verificar candidatos
+    D->>M: guardar datos autorizados
+    D->>D: prune según retención y propiedad
+    deactivate D
+    Note over L,M: Integración propuesta; registrar éxito, fallo o cancelación

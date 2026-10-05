@@ -1,0 +1,16 @@
+flowchart TD
+    L1["NIVEL 1 — Máquinas<br/>max_tokens recovery · QuotaTracker · AbortController<br/>(contratos del turno)"]
+    L2["NIVEL 2 — Agentes<br/>agentMemorySnapshot · sendMessage · resumeAgent<br/>(resumen y contexto son objetos distintos)"]
+    L3["NIVEL 3 — Conversaciones<br/>session-resume · buildResumeHistory · buildResumeSummary<br/>(historial con pérdida y revalidación)"]
+    F["AgentLoop<br/>(integra los tres niveles)"]
+
+    L3 --> L2 --> L1 --> F
+
+    classDef base fill:#0a1224,stroke:#7dd8e8,color:#f5efe0
+    classDef mid fill:#142038,stroke:#ffb347,color:#f5efe0
+    classDef top fill:#1c2a4a,stroke:#ff7ab6,color:#f5efe0
+    classDef core fill:#0a1224,stroke:#a8e6a3,color:#f5efe0
+    class L1 base
+    class L2 mid
+    class L3 top
+    class F core

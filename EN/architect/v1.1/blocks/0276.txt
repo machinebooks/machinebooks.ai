@@ -1,0 +1,46 @@
+def generate_privacy_impact_assessment(
+    component: str,
+    data_processed: List[str],
+    legal_basis: str,
+    implemented_controls: List[dict],
+    identified_risks: List[dict]
+) -> str:
+    """
+    Generates a draft Privacy Impact Assessment (DPIA)
+    for an AI component that processes personal data.
+    Mandatory review by the privacy officer required before publishing.
+    """
+    client = anthropic.Anthropic()
+
+    context = {
+        "component": component,
+        "data_processed": data_processed,
+        "legal_basis": legal_basis,
+        "controls": implemented_controls,
+        "prior_risks": identified_risks
+    }
+
+    prompt = f"""Generate the draft of a Privacy Impact Assessment (DPIA)
+for the AI component '{component}'.
+
+Technical context of the component:
+{json.dumps(context, ensure_ascii=False, indent=2)}
+
+The assessment must follow the GDPR structure (Article 35):
+1. Systematic description of the processing and its purposes
+2. Assessment of necessity and proportionality
+3. Assessment of risks to the rights and freedoms of data subjects
+4. Measures to address the risks, including safeguards and security mechanisms
+5. Conclusion on the level of residual risk
+
+IMPORTANT: This is a draft for legal and technical review.
+Mark with [LEGAL-REVIEW] any statement that requires legal confirmation.
+Do not include definitive language about regulatory compliance without expert review."""
+
+    message = client.messages.create(
+        model="claude-opus-4-6",  # Maximum capability for compliance documents
+        max_tokens=6144,
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    return message.content[0].text

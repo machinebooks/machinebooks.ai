@@ -1,0 +1,80 @@
+# .github/workflows/build.yml
+# Docker image building and publishing
+
+name: Image Building
+
+on:
+  push:
+    branches: [main]
+
+env:
+  REGISTRY: ghcr.io  # GitHub Container Registry
+  IMAGE_PREFIX: ${{ github.repository_owner }}/plataforma
+
+jobs:
+  build-backend:
+    name: Build backend image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate to container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}  # Automatic GitHub Actions token
+
+      - name: Extract image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-backend
+          tags: |
+            type=sha,prefix=,suffix=,format=short
+            type=ref,event=branch
+            latest
+
+      - name: Configure Docker layer cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-backend-${{ hashFiles('backend/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-backend-
+
+      - name: Build and publish backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: backend/
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+          build-args: |
+            PYTHON_VERSION=3.11
+
+  build-ai-service:
+    name: Build AI service image
+    runs-on: ubuntu-latest
+    # Analogous structure to backend, with ai_service/ context
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate to registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and publish ai_service image
+        uses: docker/build-push-action@v5
+        with:
+          context: ai_service/
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-ai:${{ github.sha }}

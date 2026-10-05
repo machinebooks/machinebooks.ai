@@ -1,0 +1,9 @@
+Analiza el blueprint `clients.py` y genera una suite de tests pytest que cubra:
+1. Autenticación: endpoints sin token deben devolver 401
+2. Autorización: rol `viewer` puede hacer GET pero no POST/PUT/DELETE (403)
+3. Validación: campos requeridos ausentes deben devolver 400 con mensaje descriptivo
+4. Lógica de negocio: [descripción específica del comportamiento esperado]
+5. Casos límite: [lista de casos límite específicos del dominio]
+
+Usa las fixtures existentes en conftest.py para usuarios de cada rol.
+Cada test debe tener docstring explicando qué comportamiento verifica.

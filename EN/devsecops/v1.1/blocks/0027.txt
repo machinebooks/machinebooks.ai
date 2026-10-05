@@ -1,0 +1,41 @@
+def tiered_triage(findings: list[dict]) -> list[dict]:
+    """Two-phase triage pipeline: Haiku filters, Sonnet analyzes."""
+    results = []
+
+    # Phase 1: quick classification with Haiku
+    for h in findings:
+        context = read_surrounding_code(h["path"], h["start"]["line"])
+        response = client.messages.create(
+            model="claude-haiku-4-5",
+            max_tokens=256,
+            temperature=0,
+            messages=[{
+                "role": "user",
+                "content": f"""Classify this SAST finding as
+"probable_true" or "probable_false". Only respond with JSON:
+{{"classification": "...", "reason": "..."}}
+
+Rule: {h["check_id"]}
+Code:\n```\n{context}\n```""",
+            }],
+        )
+        try:
+            haiku_result = json.loads(response.content[0].text)
+            if not isinstance(haiku_result,dict) or haiku_result.get("classification") not in {"probable_verdadero","probable_falso","likely_true","likely_false","probable_true","probable_false"}:
+                raise ValueError("invalid first-stage classification")
+            h["status"] = "REVIEW"
+        except (ValueError,TypeError,IndexError,AttributeError):
+            haiku_result = {"status":"INCOMPLETE"}
+            h["status"] = "INCOMPLETE"
+        h["coverage"] = "partial"
+
+        h["triage_haiku"] = haiku_result
+
+        # Only escalate to Sonnet if Haiku says probable true
+        if haiku_result.get("classification") == "probable_true":
+            sonnet_result = triage_finding(h)
+            h["triage_sonnet"] = sonnet_result
+        h.setdefault("triage_sonnet", {"status":"REVIEW", "classification":"not_escalated"})
+        results.append(h)
+
+    return results

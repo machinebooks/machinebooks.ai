@@ -1,0 +1,10 @@
+# Partial post-call hook: session ownership, pending storage and reservations are omitted.
+try:
+    from app.services.session_limiters import increment_session_budget
+    sess = getattr(ctx, "conversation_id", None)
+    if ctx.cost_usd is None:
+        logger.warning("session_budget:usage_unknown_requires_reconciliation")
+    else:
+        await increment_session_budget(sess, float(ctx.cost_usd))
+except Exception:
+    logger.warning("session_budget:incr_post_call_failed")

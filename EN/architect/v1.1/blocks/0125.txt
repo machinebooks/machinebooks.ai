@@ -1,0 +1,19 @@
+from langchain_classic.retrievers import ParentDocumentRetriever
+from langchain_classic.storage import InMemoryStore
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+def create_hierarchical_retriever(vectorstore, docstore=None):
+    child_splitter = RecursiveCharacterTextSplitter(chunk_size=400, chunk_overlap=50)
+    parent_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200)
+    if docstore is None:
+        docstore = InMemoryStore()
+    return ParentDocumentRetriever(
+        vectorstore=vectorstore, docstore=docstore,
+        child_splitter=child_splitter, parent_splitter=parent_splitter,
+        search_kwargs={"k": 6})
+
+# k selects child hits; duplicate parents can yield fewer than six parent segments.
+# Parent segments are up to 2000 characters here, not necessarily a full document.
+# This bare retriever does not enforce ACL or tenant scope. Use only inside an
+# authorized retrieval adapter with current source checks before model/delivery.
+# InMemoryStore is process-local and loses data on restart; production storage is external.

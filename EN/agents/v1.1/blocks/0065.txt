@@ -1,0 +1,12 @@
+flowchart LR
+    subgraph TOOL["A tool = schema + handler"]
+        direction TB
+        S["Schema<br/>(what the model sees)<br/>name + description + JSON Schema"]
+        H["Handler<br/>(what code executes)<br/>validate + execute + serialize"]
+    end
+    M["LLM<br/>(provider)"] -->|"reads schema<br/>each turn"| S
+    M -->|"proposes complete call"| V["Host validates schema,<br/>scope, and authorization"]
+    V --> H
+    H -->|"returns<br/>tool_result"| M
+    style S fill:#0ea5e9,color:#fff
+    style H fill:#f59e0b,color:#fff

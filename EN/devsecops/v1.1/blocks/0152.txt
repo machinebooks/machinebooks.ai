@@ -1,0 +1,137 @@
+import re
+from datetime import timezone
+import anthropic
+import yaml
+from datetime import datetime, timedelta
+
+client = anthropic.Anthropic()
+
+def load_ml_bom(path: str = "ml-bom.yaml") -> dict:
+    """Loads the ML-BOM inventory from file."""
+    with open(path) as f:
+        return yaml.safe_load(f)
+
+def audit_model_compliance(bom: dict) -> list[dict]:
+    """Audits each model against the policy defined in the BOM."""
+    if not isinstance(bom,dict) or not isinstance(bom.get("models"),list) or not bom["models"] or not isinstance(bom.get("policy"),dict):
+        raise ValueError("INCOMPLETE: model inventory or policy missing")
+    for model in bom["models"]:
+        if not isinstance(model,dict) or not isinstance(model.get("id"),str) or not model["id"]:
+            raise ValueError("INCOMPLETE: model identity missing")
+        if not isinstance(model.get("verified_date"),str):
+            raise ValueError("INCOMPLETE: verification date missing")
+        stamp = datetime.fromisoformat(model["verified_date"].replace("Z","+00:00"))
+        if stamp.utcoffset() != timedelta(0) or stamp > datetime.now(timezone.utc):
+            raise ValueError("INCOMPLETE: invalid UTC verification date")
+        for flag in ("model_card_reviewed","license_reviewed"):
+            if flag in model and type(model[flag]) is not bool:
+                raise ValueError("INCOMPLETE: invalid review flag")
+    if len({model["id"] for model in bom["models"]}) != len(bom["models"]):
+        raise ValueError("INCOMPLETE: duplicate model identity")
+    policy = bom.get("policy", {})
+    for flag in ("require_model_card","require_hash_verification","require_license_review"):
+        if flag in policy and type(policy[flag]) is not bool:
+            raise ValueError("INCOMPLETE: invalid policy flag")
+    for key in ("allowed_formats","blocked_formats"):
+        if not isinstance(policy.get(key),list) or any(not isinstance(value,str) for value in policy[key]):
+            raise ValueError("INCOMPLETE: invalid format policy")
+    max_age = policy.get("max_age_days", 90)
+    allowed = set(policy.get("allowed_formats", []))
+    blocked = set(policy.get("blocked_formats", []))
+    if type(max_age) is not int or max_age < 1 or any(not isinstance(value,str) for value in allowed | blocked):
+        raise ValueError("INCOMPLETE: invalid model policy")
+    findings = []
+
+    for model in bom.get("models", []):
+        model_id = model["id"]
+
+        # Verify format
+        fmt = model.get("format", "unknown")
+        if fmt in blocked:
+            findings.append({
+                "model": model_id,
+                "severity": "critical",
+                "finding": f"Blocked format: {fmt}",
+                "recommendation": "Migrate to SafeTensors or ONNX"
+            })
+        elif fmt not in allowed and fmt != "api":
+            findings.append({
+                "model": model_id,
+                "severity": "high",
+                "finding": f"Unapproved format: {fmt}",
+                "recommendation": "Review format and add to list"
+            })
+
+        # Verify age
+        verified = model.get("verified_date")
+        if verified:
+            age = (datetime.now(timezone.utc) - datetime.fromisoformat(verified.replace("Z","+00:00"))).days
+            if age > max_age:
+                findings.append({
+                    "model": model_id,
+                    "severity": "medium",
+                    "finding": f"Expired verification ({age} days)",
+                    "recommendation": "Reverify integrity and model"
+                })
+
+        # Verify model card
+        if policy.get("require_model_card") and not model.get("model_card_reviewed"):
+            findings.append({
+                "model": model_id,
+                "severity": "medium",
+                "finding": "Model card not reviewed",
+                "recommendation": "Review model card before production"
+            })
+
+        # Verify hash
+        if policy.get("require_hash_verification"):
+            if model.get("format") != "api" and (not isinstance(model.get("sha256"),str) or not re.fullmatch(r"[a-fA-F0-9]{64}",model["sha256"])):
+                findings.append({
+                    "model": model_id,
+                    "severity": "high",
+                    "finding": "No hash verification",
+                    "recommendation": "Calculate and register SHA-256"
+                })
+
+    for model in bom["models"]:
+        if policy.get("require_license_review") is True and model.get("license_reviewed") is not True:
+            findings.append({"model":model["id"],"severity":"medium","finding":"License review missing","recommendation":"REVIEW"})
+    findings.append({"model":"inventory","severity":"medium","status":"REVIEW",
+                     "finding":"Metadata checks do not verify protected origin or model safety","recommendation":"Host evidence review required"})
+    return findings
+
+def generate_audit_report(findings: list[dict], bom: dict) -> str:
+    """Generates a narrative report with a Claude agent."""
+    findings_text = yaml.dump(findings, default_flow_style=False)
+    model_count = len(bom.get("models", []))
+    critical = sum(1 for f in findings if f["severity"] == "critical")
+    high = sum(1 for f in findings if f["severity"] == "high")
+
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=2048,
+        system=(
+            "You are a security auditor specialized in AI model supply chain. "
+            "Generate concise reports in technical English. "
+            "Prioritize critical findings and offer actionable recommendations."
+        ),
+        messages=[{
+            "role": "user",
+            "content": (
+                f"Generate a model supply chain audit report.\n\n"
+                f"Total models inventoried: {model_count}\n"
+                f"Critical findings: {critical}\n"
+                f"High findings: {high}\n\n"
+                f"Finding details:\n{findings_text}\n\n"
+                f"Include: executive summary, prioritized findings, "
+                f"immediate actions, and medium-term recommendations."
+            )
+        }]
+    )
+    return "REVIEW: partial model audit draft\n" + response.content[0].text
+
+# Audit pipeline execution
+bom = load_ml_bom()
+findings = audit_model_compliance(bom)
+report = generate_audit_report(findings, bom)
+print(report)

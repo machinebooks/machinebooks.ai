@@ -1,0 +1,7 @@
+child.stdin!.on('error', (err: NodeJS.ErrnoException) => {
+  if (err.code === 'EPIPE') {
+    console.warn(`MCP [${config.name}] stdin EPIPE — servidor cerro el pipe`);
+  } else {
+    console.error(`MCP [${config.name}] stdin error:`, err.message);
+  }
+});

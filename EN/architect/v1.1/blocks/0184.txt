@@ -1,0 +1,36 @@
+// app-analytics/vite.config.ts
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import path from 'path'
+
+export default defineConfig({
+  plugins: [react()],
+  base: '/analytics/',          // Base path in Nginx
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+      '@shared': path.resolve(__dirname, '../shared'),
+    },
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: false,           // Disabled in production
+    rollupOptions: {
+      output: {
+        // Manual chunk separation to avoid a single huge bundle
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'charts': ['recharts'],
+          'query': ['@tanstack/react-query'],
+        },
+      },
+    },
+  },
+  server: {
+    port: 3001,                 // Different port per app in dev
+    proxy: {
+      '/api': 'http://localhost:5000',
+      '/analytics-api': 'http://localhost:5000',
+    },
+  },
+})

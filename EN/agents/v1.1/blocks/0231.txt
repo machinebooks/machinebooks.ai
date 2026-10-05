@@ -1,0 +1,12 @@
+---
+description: "Review code within authorized scope"
+model: inherit
+when_to_use: |
+  When the user requests code review with defined scope.
+allowed-tools: Read,Grep,Glob
+disallowed-tools: Write,Edit,Bash
+max-turns: 30
+permission-mode: plan
+---
+
+Review authorized code and return evidence-supported findings.

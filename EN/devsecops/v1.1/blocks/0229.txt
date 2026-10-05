@@ -1,0 +1,94 @@
+# agents/policy_aware_agent.py
+import anthropic
+import httpx
+import json
+
+OPA_URL = "http://localhost:8181/v1/data"
+
+def check_ai_policy(
+    model_id: str,
+    data_classification: str,
+    estimated_tokens: int,
+    llm_provider: str = "external",
+    log_retention_days: int = 30
+) -> dict:
+    """Queries OPA before invoking an LLM."""
+    if (llm_provider not in {"external","local"} or type(estimated_tokens) is not int
+            or estimated_tokens <= 0 or type(log_retention_days) is not int or log_retention_days < 1):
+        raise ValueError("INCOMPLETE: policy input schema")
+    input_data = {
+        "input": {
+            "model_id": model_id,
+            "data_classification": data_classification,
+            "estimated_tokens": estimated_tokens,
+            "llm_provider": llm_provider,
+            "log_retention_days": log_retention_days,
+        }
+    }
+
+    # Verify model approval
+    model_resp = httpx.post(
+        f"{OPA_URL}/ai/model_approval/deny",
+        json=input_data
+    )
+    model_resp.raise_for_status()
+    model_denials = model_resp.json()["result"]
+
+    # Verify data classification
+    data_resp = httpx.post(
+        f"{OPA_URL}/ai/data_classification/deny",
+        json=input_data
+    )
+    data_resp.raise_for_status()
+    data_denials = data_resp.json()["result"]
+
+    # Collect warnings
+    warn_resp = httpx.post(
+        f"{OPA_URL}/ai/model_approval/warn",
+        json=input_data
+    )
+    warn_resp.raise_for_status()
+    warnings = warn_resp.json()["result"]
+
+    if not all(isinstance(value,list) and all(isinstance(item,str) for item in value) for value in (model_denials,data_denials,warnings)):
+        raise ValueError("INCOMPLETE: invalid OPA result")
+    all_denials = model_denials + data_denials
+    return {
+        "allowed": len(all_denials) == 0 and not warnings,
+        "denials": all_denials,
+        "warnings": warnings,
+    }
+
+
+def invoke_llm_with_policy(prompt: str, context: dict) -> str:
+    """Invokes an LLM only if the policy allows it."""
+    # Verify policy before the call
+    # This adapter invokes an external provider; a caller cannot label it local.
+    if context.get("provider") != "external":
+        raise PermissionError("INCOMPLETE: no local adapter implemented; external transfer denied")
+    policy_result = check_ai_policy(
+        model_id=context["model"],
+        data_classification=context["classification"],
+        estimated_tokens=context.get("estimated_tokens", 1000),
+        llm_provider="external",
+        log_retention_days=context["log_retention_days"],
+    )
+
+    if not policy_result["allowed"]:
+        denial_msgs = "; ".join(policy_result["denials"])
+        raise PermissionError(
+            f"AI policy denies the operation: {denial_msgs}"
+        )
+
+    # Log warnings if any
+    for warning in policy_result["warnings"]:
+        print(f"[POLICY WARNING] {warning}")
+
+    # Policy approved: invoke the LLM
+    client = anthropic.Anthropic()
+    message = client.messages.create(
+        model=context["model"],
+        max_tokens=context.get("max_tokens", 1024),
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return message.content[0].text

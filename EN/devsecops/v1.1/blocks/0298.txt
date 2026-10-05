@@ -1,0 +1,38 @@
+# future_ready_pipeline.yaml — Architectural principles for 2028+
+pipeline_principles:
+  decoupling:
+    description: >
+      Each pipeline component (scanner, triage, remediation,
+      verification) communicates through standard interfaces.
+      Changing model or tool requires contract, capability and
+      test review; avoiding reconstruction is not guaranteed.
+    implementation: "REST APIs + asynchronous events + SARIF"
+
+  policy_governance:
+    description: >
+      Implemented policies and consumers govern decisions.
+      Policy changes require version, contract and test verification.
+    implementation: "OPA + Git for policy versioning"
+
+  complete_observability:
+    description: >
+      Every decision of every agent is logged with context,
+      timestamp, model used, and justification.
+      Records are partial; custody, origin and storage require
+      dedicated controls for forensic assessment.
+    implementation: "OpenTelemetry + Prometheus + structured logging"
+
+  engine_diversity:
+    description: >
+      Do not depend on a single AI model or a single
+      security tooling provider.
+      Fallback retains scope and status; missing mandatory
+      controls cause the consumer to halt progression.
+    implementation: "Fallback chain: Claude agent -> static rules"
+
+  scalable_human_in_the_loop:
+    description: >
+      The human loop is not a bottleneck but an
+      appeal and calibration mechanism.
+      Human review is required according to impact and policy.
+    implementation: "Contextual notification + approval with timeout"

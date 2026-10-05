@@ -1,0 +1,14 @@
+.semgrep/
+├── injection/
+│   ├── sql-injection-orm.yml
+│   ├── command-injection-fastapi.yml
+│   └── ssrf-requests.yml
+├── auth/
+│   ├── jwt-weak-secret.yml
+│   └── missing-auth-decorator.yml
+├── crypto/
+│   ├── weak-hash-md5-sha1.yml
+│   └── hardcoded-secrets.yml
+└── react/
+    ├── xss-dangerous-html.yml
+    └── unsafe-eval.yml

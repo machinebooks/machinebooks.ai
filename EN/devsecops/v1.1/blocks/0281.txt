@@ -1,0 +1,30 @@
+# model-policy.yaml — Approved model policy
+approved_models:
+  cloud:
+    - provider: anthropic
+      models:
+        - claude-sonnet-4-6
+        - claude-haiku-4-5
+      verification: api_key_rotation_90d
+      last_audit: "2026-03-01"
+
+  local:
+    - name: "nomic-embed-text"
+      version: "1.5"
+      sha256: "REPLACE_WITH_PROTECTED_64_HEX_SHA256" # Placeholder; not verified
+      source: "ollama.com/library"
+      purpose: "embeddings"
+      last_audit: "2026-03-01"
+
+    - name: "llama3.1:8b"
+      version: "8b-instruct-q4_0"
+      sha256: "REPLACE_WITH_PROTECTED_64_HEX_SHA256" # Placeholder; not verified
+      source: "ollama.com/library"
+      purpose: "classification"
+      last_audit: "2026-03-01"
+
+policy:
+  unapproved_model_action: "block"
+  hash_verification: "required_before_load"
+  audit_frequency: "quarterly"
+  ml_bom_generation: "on_change"

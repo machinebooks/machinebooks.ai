@@ -1,0 +1,23 @@
+def extraer_presupuesto(entrada, decimal_separator, group_separator):
+    # The source adapter supplies a verified number format and currency.
+    # A missing value stays unknown; no +/-20% range is synthesized.
+    raw = next((entrada.get(key) for key in
+                ("presupuesto_base", "valor_estimado", "importe_contrato")
+                if entrada.get(key) is not None), None)
+    if raw is None:
+        return None
+    if decimal_separator not in (".", ",") or group_separator == decimal_separator:
+        raise ValueError("invalid_source_number_format")
+    if group_separator not in (None, ".", ",", " "):
+        raise ValueError("invalid_source_group_separator")
+    text = str(raw).strip()
+    if group_separator:
+        text = text.replace(group_separator, "")
+    amount = Decimal(text.replace(decimal_separator, "."))
+    if not amount.is_finite() or amount < 0:
+        raise ValueError("invalid_source_budget")
+    return amount
+
+# Title cleaning, category policy, deadline extraction, CPV/currency and
+# write/index acknowledgement are source-specific adapters, not implemented here.
+# Atom updated is not a procurement deadline. Keep raw source identity/provenance.

@@ -1,0 +1,10 @@
+// src/server/services/PromptFetcher.ts:88-97
+static async fetch(key: string): Promise<string | null> {
+  const hit = cache.get(key);
+  if (hit && hit.expires > Date.now()) return hit.content;
+  ensureSeeded();
+  const row = findInStore(key) ?? findInSeed(key);
+  if (!row) return null;
+  cache.set(key, { content: row.content, expires: Date.now() + CACHE_TTL_MS });
+  return row.content;
+}

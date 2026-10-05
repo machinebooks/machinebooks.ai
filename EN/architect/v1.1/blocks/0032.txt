@@ -1,0 +1,23 @@
+class Client(db.Model):
+    """Platform client. Entry point for the business domain."""
+    __tablename__ = 'clients'
+    # No __bind_key__ -> goes to operations_db (default bind)
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False, index=True)
+    sector = db.Column(db.String(100))
+    # Sector as free string for flexibility; enum when the catalog
+    # is stabilized and validated with the business
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = db.Column(db.DateTime, onupdate=lambda: datetime.now(timezone.utc))
+
+    # Relationships — a client has multiple projects
+    projects = db.relationship('Project', backref='client', lazy='dynamic')
+
+    # Soft delete: we never delete a client, we deactivate it
+    # The field is nullable: NULL means "active", datetime means "deleted"
+    deleted_at = db.Column(db.DateTime, nullable=True)
+
+    def __repr__(self):
+        return f'<Client id={self.id} name={self.name!r}>'

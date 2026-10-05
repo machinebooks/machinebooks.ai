@@ -1,0 +1,9 @@
+# Historical namespaces; the alert omits organization scope.
+# Namespace de alerta de cuota (throttle por user+bucket)
+quota_alert:sent:{user_id}:{bucket}
+
+# Namespace de token bucket por deployment
+token_bucket:{org_id}:{deployment_id}:count
+
+# Semaphore de concurrencia por org
+semaphore:{org_id}:max_concurrent

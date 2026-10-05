@@ -1,0 +1,67 @@
+# policies/kubernetes/network_policy.rego
+package kubernetes.network_policy
+
+import future.keywords.in
+import future.keywords.if
+import future.keywords.contains
+
+valid_input if {
+    input.kind in {"Namespace","Service"}
+    is_string(input.metadata.name)
+    input.metadata.name != ""
+    is_array(data.network_policies)
+    valid_service_shape
+}
+valid_service_shape if {
+    input.kind == "Namespace"
+}
+valid_service_shape if {
+    input.kind == "Service"
+    input.spec.type in {"ClusterIP","NodePort","ExternalName","LoadBalancer"}
+}
+
+deny contains msg if {
+    not valid_input
+    msg := "INCOMPLETE: missing or invalid policy input/data"
+}
+
+# Deny LoadBalancer services without approval in protected data
+deny contains msg if {
+    input.kind == "Service"
+    input.spec.type == "LoadBalancer"
+    not approved_external
+    msg := sprintf(
+        "Service '%s' uses LoadBalancer without explicit approval. Approval must come from protected policy data.",
+        [input.metadata.name]
+    )
+}
+
+# Deny namespaces without default-deny NetworkPolicy
+deny contains msg if {
+    input.kind == "Namespace"
+    namespace_name := input.metadata.name
+    not has_default_deny_policy(namespace_name)
+    msg := sprintf(
+        "Namespace '%s' does not have an associated default-deny NetworkPolicy",
+        [namespace_name]
+    )
+}
+
+has_default_deny_policy(ns) if {
+    some policy in data.network_policies
+    policy.metadata.namespace == ns
+    policy.spec.podSelector == {}
+    policy.spec.policyTypes[_] == "Ingress"
+    count(policy.spec.ingress) == 0
+    policy.spec.policyTypes[_] == "Egress"
+    count(policy.spec.egress) == 0
+}
+
+approved_external if {
+    input.metadata.namespace != ""
+    is_array(data.approved_external_services)
+    some service in data.approved_external_services
+    service.namespace == input.metadata.namespace
+    service.name == input.metadata.name
+    service.type == input.spec.type
+}

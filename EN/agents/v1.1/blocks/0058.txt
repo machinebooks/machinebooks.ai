@@ -1,0 +1,21 @@
+flowchart TD
+    subgraph COMP["What all three runtimes share"]
+        C1["Endpoint /v1/chat/completions"]
+        C2["Body: model, messages, stream, tools"]
+        C3["SSE: data + blank line; endpoint terminal"]
+        C4["Delta: choices[0].delta.content"]
+        C5["Authentication: check contract and configuration"]
+    end
+
+    subgraph DIF["What they do not share"]
+        D1["stream_options: verified capability and version"]
+        D2["tool_calls: validate fragments,<br/>template, model, and engine"]
+        D3["reasoning_content: only if emitted by the model"]
+        D4["&lt;think&gt; tags: DeepSeek, Qwen3, R1"]
+        D5["Actual max context: depends on how<br/>the model was loaded in LM Studio"]
+        D6["Vision: check model,<br/>engine, endpoint, and limits"]
+    end
+
+    COMP -.->|"Explicit promise"| AG["streamOpenAICompatCall()"]
+    DIF -.->|"Implicit trap"| AG
+    AG --> NOW["Explicit capabilities; unknown usage when missing<br/>Reasoning kept separate; never promoted to an answer"]

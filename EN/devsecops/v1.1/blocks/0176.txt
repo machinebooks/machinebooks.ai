@@ -1,0 +1,131 @@
+# .github/workflows/ai-act-compliance.yml
+name: AI Act Compliance Gate
+
+on:
+  pull_request:
+    paths:
+      - 'ai-systems/**'
+      - 'ai-system-manifest.yaml'
+      - 'agents/**'
+
+jobs:
+  ai-act-compliance:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install anthropic pyyaml
+
+      - name: Classify AI system risk
+        id: classify
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python scripts/ai_act_classify.py \
+            --manifest ai-system-manifest.yaml \
+            --output classification.json
+
+          # Extract risk level for the gate
+          RISK_LEVEL=$(python -c "import json; print(json.load(open('classification.json'))['risk_level'])")
+          echo "risk_level=$RISK_LEVEL" >> "$GITHUB_OUTPUT"
+
+      - name: Run compliance checklist
+        if: steps.classify.outputs.risk_level == 'high'
+        id: checklist
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python scripts/ai_act_checklist.py \
+            --classification classification.json \
+            --artifacts-dir pipeline-artifacts/ \
+            --output compliance-report.json
+
+          # Count failed checks
+          FAILED=$(python -c "
+          import json
+          checks = json.load(open('compliance-report.json'))['checks']
+          print(sum(1 for c in checks if c.get('status') != 'passed'))
+          ")
+          echo "failed_checks=$FAILED" >> "$GITHUB_OUTPUT"
+
+      - name: Generate technical documentation
+        if: steps.classify.outputs.risk_level == 'high'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python scripts/ai_act_doc_generator.py \
+            --manifest ai-system-manifest.yaml \
+            --classification classification.json \
+            --checklist compliance-report.json \
+            --output docs/ai-act-technical-doc.md
+
+      - name: Upload compliance artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-act-compliance
+          path: |
+            classification.json
+            compliance-report.json
+            docs/ai-act-technical-doc.md
+
+      - name: Comment PR with compliance summary
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let body = '## AI Act technical evidence draft — REVIEW\n\n';
+            try {
+              const classification = JSON.parse(fs.readFileSync('classification.json', 'utf8'));
+              if (!classification || typeof classification.risk_level !== 'string') throw Error('invalid classification');
+              body += `Proposed risk level: ${classification.risk_level}\n`;
+              if (!fs.existsSync('compliance-report.json')) throw Error('checklist missing');
+              const report = JSON.parse(fs.readFileSync('compliance-report.json', 'utf8'));
+              if (!report || !Array.isArray(report.checks) || !report.checks.length) throw Error('checklist missing');
+              const checks = report.checks;
+              if (checks.some(c => !c || !['passed','failed','warning'].includes(c.status) || typeof c.article !== 'string' || typeof c.requirement !== 'string')) throw Error('invalid technical checks');
+              body += '| Technical label | Article reference | Proposed requirement |\n|---|---|---|\n';
+              checks.forEach(c => { body += `| ${c.status} | ${c.article} | ${c.requirement} |\n`; });
+              body += '\nREVIEW: technical labels do not establish legal conformity. Coverage and authorized review remain pending.';
+            } catch (error) {
+              body += '\nINCOMPLETE: missing or malformed technical evidence; no conformity verdict.';
+            }
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });
+
+      - name: Enforce compliance gate
+        if: always()
+        run: |
+          python - <<'PY'
+          import json, sys
+          try:
+              classification = json.load(open('classification.json'))
+              level = classification['risk_level']
+              if level not in {'unacceptable', 'high', 'limited', 'minimal'}:
+                  raise ValueError('unknown risk level')
+              if classification.get('requires_human_review') is not False:
+                  sys.exit('REVIEW: classification needs authorized review')
+              checks = json.load(open('compliance-report.json'))['checks']
+              if not isinstance(checks, list) or not checks:
+                  raise ValueError('empty checklist')
+              if any(not isinstance(c, dict) or c.get('status') != 'passed' for c in checks):
+                  sys.exit('REVIEW: unresolved checklist')
+          except (OSError, ValueError, KeyError, TypeError):
+              sys.exit('INCOMPLETE: invalid compliance evidence')
+          sys.exit('REVIEW: host conformity review receipt required')
+          PY

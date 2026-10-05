@@ -1,0 +1,38 @@
+# future_ready_pipeline.yaml — Principios arquitectónicos para 2028+
+pipeline_principles:
+  desacoplamiento:
+    description: >
+      Cada componente del pipeline (scanner, triaje, remediación,
+      verificación) se comunica por interfaces estándar.
+      Cambiar modelo o herramienta requiere revisar contratos,
+      capacidades y pruebas; no se garantiza evitar reconstrucción.
+    implementation: "APIs REST + eventos asincrónicos + SARIF"
+
+  gobernanza_por_politicas:
+    description: >
+      Políticas y consumidores implementados gobiernan decisiones.
+      Cambiar la política exige verificar versión, contrato y pruebas.
+    implementation: "OPA + Git para versionado de políticas"
+
+  observabilidad_completa:
+    description: >
+      Se propone registrar decisiones dentro de la cobertura,
+      con contexto, timestamp, modelo y justificación.
+      El registro es parcial; custodia, origen y almacenamiento
+      necesitan controles propios para evaluación forense.
+    implementation: "OpenTelemetry + Prometheus + log estructurado"
+
+  diversidad_de_motores:
+    description: >
+      No depender de un solo modelo de IA ni de un solo proveedor
+      de herramientas de seguridad.
+      Un fallback conserva alcance y estado; si faltan controles
+      obligatorios, el consumidor detiene el avance.
+    implementation: "Fallback chain: agente Claude → reglas estáticas"
+
+  human_in_the_loop_escalable:
+    description: >
+      El circuito humano no es un cuello de botella sino un
+      mecanismo de apelación y calibración.
+      La revisión humana se exige según impacto y política.
+    implementation: "Notificación contextual + approval con timeout"

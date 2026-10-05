@@ -1,0 +1,18 @@
+flowchart TD
+    Start([Invocación completa y validada]) --> Host{Política obligatoria, identidad y alcance}
+    Host -- deniega --> Deny[deny]
+    Host -- admite --> Mode{Modo y reglas del caso}
+    Mode --> Effects{Argumentos y efectos autorizados}
+    Effects -- no --> Deny
+    Effects -- requiere confirmación --> Ask[ask con invocación correlacionada]
+    Effects -- sí --> Allow[allow para esta invocación]
+    Ask --> Grant{Respuesta auténtica y vigente}
+    Grant -- no --> Deny
+    Grant -- sí --> Recheck[Revalidar alcance antes de ejecutar]
+    Recheck --> Effects
+    classDef deny fill:#fee2e2,stroke:#b91c1c
+    classDef allow fill:#dcfce7,stroke:#15803d
+    classDef ask fill:#fef3c7,stroke:#b45309
+    class Deny deny
+    class Allow allow
+    class Ask ask

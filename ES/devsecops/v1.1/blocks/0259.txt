@@ -1,0 +1,66 @@
+def calculate_gamification_score(
+    champion: ChampionMetrics,
+    findings_detail: list[dict]
+) -> dict:
+    """Proposed gamification score; correct behavior and commitment are not established."""
+
+    # Métrica 1: Ratio de resolución ponderada por severidad
+    if not isinstance(findings_detail,list) or not findings_detail:
+        raise ValueError("INCOMPLETE: missing finding detail")
+    seen = set()
+    for finding in findings_detail:
+        if not isinstance(finding,dict) or not isinstance(finding.get("id"),str) or not finding["id"] or finding["id"] in seen or finding.get("severity") not in {"critical","high","medium"} or finding.get("status") not in {"resolved","open"}:
+            raise ValueError("INCOMPLETE: invalid or duplicate finding")
+        seen.add(finding["id"])
+        if finding["status"] == "resolved" and (type(finding.get("resolution_hours")) not in (int,float) or not 0 <= finding["resolution_hours"] < float("inf")):
+            raise ValueError("INCOMPLETE: invalid resolution duration")
+    if len(findings_detail) != champion.findings_assigned or sum(f["status"]=="resolved" for f in findings_detail) != champion.findings_resolved:
+        raise ValueError("INCOMPLETE: finding cohort mismatch")
+    severity_weights = {"critical": 5, "high": 3, "medium": 1}
+    weighted_resolved = sum(
+        severity_weights.get(f["severity"], 1)
+        for f in findings_detail
+        if f["status"] == "resolved"
+    )
+    weighted_total = sum(
+        severity_weights.get(f["severity"], 1)
+        for f in findings_detail
+    )
+    resolution_score = (
+        weighted_resolved / weighted_total * 40
+        if weighted_total > 0 else 0
+    )
+
+    # Métrica 2: Velocidad de resolución (bonificación por resolver rápido)
+    fast_resolutions = sum(
+        1 for f in findings_detail
+        if f["status"] == "resolved"
+        and f["resolution_hours"] < 48
+    )
+    speed_score = min(30, fast_resolutions * 3)
+
+    # Métrica 3: Actividad formativa (demuestra compromiso continuo)
+    training_score = min(30, (
+        champion.training_modules_completed * 2 +
+        min(champion.qa_bot_queries, 20) * 1  # Cap para evitar gaming
+    ))
+
+    total = resolution_score + speed_score + training_score
+
+    return {
+        "status":"REVIEW",
+        "coverage":"partial",
+        "champion": champion.champion_name,
+        "total_score": round(total, 1),
+        "breakdown": {
+            "resolution_weighted": round(resolution_score, 1),
+            "speed_bonus": round(speed_score, 1),
+            "training_engagement": round(training_score, 1)
+        },
+        "tier": (
+            "Gold" if total >= 75
+            else "Silver" if total >= 50
+            else "Bronze" if total >= 25
+            else "Starter"
+        )
+    }

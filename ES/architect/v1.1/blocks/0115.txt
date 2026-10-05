@@ -1,0 +1,53 @@
+import hashlib
+import json
+from datetime import datetime, timezone
+
+class PromptManager:
+    CACHE_TTL = 300
+
+    def __init__(self, cache, resolve_authorized_prompt, load_version,
+                 publish_version_atomically):
+        self._cache = cache
+        self._resolve = resolve_authorized_prompt
+        self._load = load_version
+        self._publish = publish_version_atomically
+
+    def get_prompt(self, security_context, prompt_key, selector="active"):
+        # Current authorization resolves an immutable version before cache lookup.
+        metadata = self._resolve(security_context, prompt_key, selector)
+        required = ("tenant_id", "version_id", "content_hash")
+        if not isinstance(metadata, dict) or any(
+                not isinstance(metadata.get(k), str) or not metadata[k] for k in required):
+            raise ValueError("Invalid prompt metadata")
+        identity = json.dumps([metadata[k] for k in required], separators=(",", ":"))
+        cache_key = "prompt:" + hashlib.sha256(identity.encode()).hexdigest()
+        cached = self._cache.get(cache_key)
+        content = self._load(metadata["version_id"]) if cached is None else cached
+        if isinstance(content, bytes):
+            content = content.decode("utf-8")
+        if not isinstance(content, str) or len(content) > 100_000:
+            raise ValueError("Invalid prompt content")
+        if hashlib.sha256(content.encode()).hexdigest() != metadata["content_hash"]:
+            raise ValueError("Prompt content differs from the authorized version")
+        if cached is None:
+            self._cache.setex(cache_key, self.CACHE_TTL, content)
+        return content
+
+    def publish_version(self, security_context, prompt_key, content,
+                        expected_version, notes):
+        if not isinstance(content, str) or not content or len(content) > 100_000:
+            raise ValueError("Invalid prompt content")
+        if not isinstance(notes, str) or len(notes) > 4000:
+            raise ValueError("Invalid change notes")
+        result = self._publish(
+            security_context, prompt_key, content, expected_version, notes,
+            hashlib.sha256(content.encode()).hexdigest(), datetime.now(timezone.utc))
+        if (not isinstance(result, dict)
+                or not isinstance(result.get("version_id"), str)
+                or not result["version_id"]):
+            raise RuntimeError("Prompt publication was not confirmed")
+        return result
+
+# The publisher authorizes the actor from the server context and atomically checks
+# expected_version, assigns a unique version and updates the active pointer/audit.
+# Those transactions are external. A matching adjacent hash is not authenticity.

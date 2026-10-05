@@ -1,0 +1,8 @@
+// Manual thinking only; model capabilities and output cap are checked by the host.
+const budget = options.thinkingBudget ?? 4096;
+if (!Number.isInteger(budget) || budget < 1024 ||
+    !Number.isInteger(requestParams.max_tokens) ||
+    budget >= requestParams.max_tokens) {
+  throw new Error('Invalid manual thinking budget');
+}
+requestParams.thinking = { type: 'enabled', budget_tokens: budget };

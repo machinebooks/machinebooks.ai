@@ -1,0 +1,38 @@
+class AppRole(db.Model):
+    """Per-application role — same user can be admin in one app
+    and viewer in another. Granular JSON permissions per module."""
+    __tablename__ = 'app_roles'
+    __bind_key__ = 'platform_core'
+
+    id = db.Column(db.Integer, primary_key=True)
+    app_id = db.Column(db.Integer, db.ForeignKey('apps.id'), nullable=False)
+    name = db.Column(db.String(50), nullable=False)  # admin, manager, analyst, viewer...
+    display_name = db.Column(db.String(100), nullable=True)
+    permissions = db.Column(db.JSON, nullable=False)
+    # Example: {"clients": ["read","write"], "proposals": ["read","write","delete"]}
+    ai_modules_access = db.Column(db.JSON, nullable=True)
+    # Example: ["document_analyzer", "proposal_generator", "cv_analyzer"]
+    is_admin = db.Column(db.Boolean, default=False)
+    description = db.Column(db.Text, nullable=True)
+
+    __table_args__ = (
+        db.UniqueConstraint('app_id', 'name', name='uq_app_role'),
+    )
+
+class UserAppMembership(db.Model):
+    """Assignment of user to application with specific role.
+    A user can be in multiple apps with different roles."""
+    __tablename__ = 'user_app_memberships'
+    __bind_key__ = 'platform_core'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    app_id = db.Column(db.Integer, db.ForeignKey('apps.id'), nullable=False)
+    role_id = db.Column(db.Integer, db.ForeignKey('app_roles.id'), nullable=False)
+    is_active = db.Column(db.Boolean, default=True)
+    granted_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    granted_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'app_id', name='uq_user_app'),
+    )

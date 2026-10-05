@@ -1,0 +1,14 @@
+// Private teammate excerpt; resource and scope checks are omitted.
+import { InProcessTeammateManager } from '@/server/agent/inProcessTeammate';
+const manager = new InProcessTeammateManager();
+const files = ['src/a.ts', 'src/b.ts', 'src/c.ts', 'src/d.ts', 'src/e.ts'];
+for (const file of files) {
+  manager.spawn(
+    `review-${file}`,
+    { tools: ['read_file', 'grep'], systemPrompt: 'You are a code reviewer.' },
+    [{ role: 'user', content: `Review ${file} and report any issues.` }],
+    toolRegistry,
+  );
+}
+const results = await manager.waitForAll(60_000);
+// A wait timeout does not prove the children or their tools have stopped.

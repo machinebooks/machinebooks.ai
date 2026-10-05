@@ -1,0 +1,2 @@
+return { content: '', reasoning: '', toolCalls: undefined,
+         streamError: 'LLM request timed out (5 min). Model may be loading — try again.' };

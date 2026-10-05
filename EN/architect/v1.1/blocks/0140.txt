@@ -1,0 +1,26 @@
+class AgentLoader:
+    """Loads and caches agent definitions from the database."""
+
+    CACHE_TTL = 60  # seconds
+
+    def __init__(self, db_session, redis_client):
+        self.db = db_session
+        self.redis = redis_client
+
+    def load_agent(self, slug: str) -> Optional[AgentDefinition]:
+        # Try from cache first
+        cache_key = f"agent_def:{slug}"
+        cached = self.redis.get(cache_key)
+        if cached:
+            return AgentDefinition.from_dict(json.loads(cached))
+
+        # Fallback to database
+        agent = self.db.query(AgentDefinition).filter_by(
+            slug=slug, status="active"
+        ).first()
+
+        if agent:
+            # Serialization methods (omitted for brevity)
+            self.redis.setex(cache_key, self.CACHE_TTL, json.dumps(agent.to_dict()))
+
+        return agent

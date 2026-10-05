@@ -1,0 +1,12 @@
+{
+  "risk_score": 35,
+  "exploitability_analysis": "SYN-EXC-001 requires internal network access and a specific deserialization payload. The service is protected by mTLS and the API gateway rejects payloads larger than 256 KB, limiting known attack vectors for this illustrative scenario.",
+  "compensating_controls": [
+    "Add WAF rule blocking payloads with known Java deserialization signatures",
+    "Configure Falco alert for anomalous syscalls from the affected service process",
+    "Limit service session TTL to 15 minutes to reduce post-compromise exploitation window"
+  ],
+  "recommendation": "approve_with_controls",
+  "suggested_expiry_days": 60,
+  "reasoning": "Residual risk is low given network isolation and mTLS authentication. Suggested compensating controls reduce exploitation probability and improve detection upon attempt. A 60-day period is recommended, coinciding with the next dependency update window for the service."
+}

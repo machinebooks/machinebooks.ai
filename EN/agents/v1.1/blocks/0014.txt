@@ -1,0 +1,31 @@
+flowchart TD
+    Start([turn N: messages, tools])
+    P0["0. Flush task notifications<br/>(background subagents)"]
+    P1["1. Prune thinking blocks<br/>(past turns)"]
+    P2["2. Compact if over budget<br/>(autoCompact)"]
+    P3["3. Call LLM<br/>(provider router, streaming)"]
+    P4["4. Consume stream events<br/>(text, thinking, tool_use deltas)"]
+    P5["5. Execute tools<br/>(StreamingToolExecutor)"]
+    P6["6. Append tool_results<br/>(messages.push)"]
+    Q{"7. Any tool_use<br/>in response?"}
+    Cont(["8a. continue loop<br/>(turn N+1)"])
+    End(["8b. agent_complete<br/>auto-extract memories"])
+
+    Start --> P0
+    P0 --> P1
+    P1 --> P2
+    P2 --> P3
+    P3 --> P4
+    P4 --> P5
+    P5 --> P6
+    P6 --> Q
+    Q -- "yes" --> Cont
+    Q -- "no" --> End
+    Cont -. "messages grows" .-> P0
+
+    classDef phase fill:#0a1224,stroke:#7dd8e8,color:#f5efe0
+    classDef decision fill:#142038,stroke:#ffb347,color:#f5efe0
+    classDef terminal fill:#142038,stroke:#7dd8e8,color:#f5efe0
+    class P0,P1,P2,P3,P4,P5,P6 phase
+    class Q decision
+    class Start,Cont,End terminal

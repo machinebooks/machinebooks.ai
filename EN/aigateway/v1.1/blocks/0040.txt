@@ -1,0 +1,11 @@
+{
+  "id": "chatcmpl-n7x",
+  "object": "chat.completion.chunk",
+  "model": "gpt-4o",
+  "choices": [{
+    "index": 0,
+    "delta": {},
+    "finish_reason": "error"
+  }],
+  "error": "upstream_timeout"
+}

@@ -1,0 +1,22 @@
+# falco/rules/filesystem-integrity.yaml
+- rule: Write to system directory from container
+  desc: >
+    No application container should write to /bin,
+    /sbin, /usr/bin, /usr/sbin, /etc/passwd, or /etc/shadow.
+    This event needs review of permissions, purpose, and possible privilege
+    escalation.
+  condition: >
+    open_write
+    and container
+    and (fd.name startswith /bin/
+      or fd.name startswith /sbin/
+      or fd.name startswith /usr/bin/
+      or fd.name startswith /usr/sbin/
+      or fd.name = /etc/passwd
+      or fd.name = /etc/shadow)
+  output: >
+    Write to system directory from container
+    (user=%user.name container=%container.name
+    file=%fd.name image=%container.image.repository)
+  priority: CRITICAL
+  tags: [container, filesystem, mitre_persistence]

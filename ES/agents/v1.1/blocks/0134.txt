@@ -1,0 +1,26 @@
+sequenceDiagram
+    autonumber
+    participant U as Usuario
+    participant L as AgentLoop
+    participant R as RagIndexer
+    participant E as DocumentExtractor
+    participant G as Gateway /embeddings
+    participant V as VectorStore
+    U->>L: "indexa este PDF"
+    L->>R: RagIndex.execute({file_path})
+    R->>E: extract(filePath)
+    E-->>R: {text, pages, format}
+    R->>R: chunkText(text) — chunks de 2000 chars
+    R->>G: POST /embeddings (batch de 20)
+    G-->>R: 20 x Float32[768]
+    R->>V: add(chunkId, vector)
+    R->>R: save() — index.bin + chunks.json
+    Note over U,L: mas tarde, en otra pregunta
+    U->>L: "que dice la normativa sobre logs?"
+    L->>R: RagSearch.execute({query, top_k:5})
+    R->>G: POST /embeddings (1 vector de la query)
+    G-->>R: 1 x Float32[768]
+    R->>V: search(queryVec, 5)
+    V-->>R: 5 ids con score coseno
+    R-->>L: 5 chunks con texto + pagina
+    L-->>U: respuesta citando paginas

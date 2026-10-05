@@ -1,0 +1,10 @@
+type UsageSnapshot = {
+  callId: string;
+  phase: 'partial' | 'final';
+  uncachedInput: number;
+  cacheReadInput: number;
+  cacheWriteInput: number;
+  outputTokens: number;
+};
+// The adapter must normalize provider-specific fields without overlap.
+// Missing usage is unknown; it must not become an all-zero snapshot.

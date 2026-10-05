@@ -1,0 +1,59 @@
+import re
+from dataclasses import dataclass
+from enum import Enum
+
+class RiskLevel(Enum):
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    BLOCKED = "blocked"
+
+@dataclass
+class InputAnalysis:
+    risk_level: RiskLevel
+    flags: list[str]
+    sanitized_input: str
+
+# Patrones conocidos de inyección directa
+INJECTION_PATTERNS = [
+    r"ignor[ae]\s+(tus|las|todas)\s+instrucciones",
+    r"olvida\s+(tus|las)\s+(reglas|instrucciones)",
+    r"act[uú]a\s+como\s+(si|un)",
+    r"system\s*prompt",
+    r"(eres|ahora\s+eres)\s+un",
+    r"<\|?(system|endoftext|im_start)\|?>",
+    r"```\s*(system|instruction)",
+]
+
+def analyze_input(user_input: str) -> InputAnalysis:
+    """Analiza el input del usuario en busca de patrones de inyección."""
+    if not isinstance(user_input,str):
+        raise ValueError("INCOMPLETE: input must be text")
+    if len(user_input) > 4000:
+        return InputAnalysis(RiskLevel.BLOCKED,["excessive_length"],"")
+    flags = []
+    text_lower = user_input.lower()
+
+    for pattern in INJECTION_PATTERNS:
+        if re.search(pattern, text_lower):
+            flags.append(f"injection_pattern: {pattern}")
+
+    # Heurísticas adicionales
+    if len(user_input) > 4000:
+        flags.append("excessive_length")
+    if user_input.count("\n") > 50:
+        flags.append("excessive_newlines")
+
+    # Clasificación por número y tipo de flags
+    if any("injection_pattern" in f for f in flags):
+        risk = RiskLevel.HIGH
+    elif flags:
+        risk = RiskLevel.MEDIUM
+    else:
+        risk = RiskLevel.LOW
+
+    return InputAnalysis(
+        risk_level=risk,
+        flags=flags,
+        sanitized_input=user_input  # Truncar como defensa de DoS
+    )

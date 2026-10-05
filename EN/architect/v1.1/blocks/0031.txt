@@ -1,0 +1,19 @@
+# Excerpt for a Flask-Migrate repository initialized with: flask db init --multidb
+# Generated revision functions must accept the engine_name used by that template.
+from alembic import context
+from flask import current_app
+
+
+def run_migrations_online():
+    db = current_app.extensions["sqlalchemy"]
+    for bind_name, engine in db.engines.items():
+        # None is the default bind; the multidb template names it the empty string.
+        engine_name = bind_name or ""
+        with engine.connect() as connection:
+            context.configure(connection=connection,
+                              target_metadata=db.metadatas[bind_name],
+                              upgrade_token=f"{engine_name}_upgrades",
+                              downgrade_token=f"{engine_name}_downgrades")
+            with context.begin_transaction():
+                context.run_migrations(engine_name=engine_name)
+# This loop alone is not the complete generated env.py or a recovery plan.

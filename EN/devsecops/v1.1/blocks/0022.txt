@@ -1,0 +1,7 @@
+VALID_COLUMNS = {"name", "email", "department"}
+
+def sort_results(column):
+    if column not in VALID_COLUMNS:
+        column = "name"
+    query = f"SELECT * FROM users ORDER BY {column}"
+    cursor.execute(query)

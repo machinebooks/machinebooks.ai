@@ -1,0 +1,72 @@
+# Mapping ISO 42001 <-> AI Act <-> Pipeline artifact
+ISO_AIACT_MAPPING = [
+    {
+        "iso_control": "A.6.2.2",
+        "iso_description": "AI risk assessment",
+        "aiact_article": "Art. 9",
+        "aiact_requirement": "Risk management system",
+        "pipeline_evidence": "risk_assessment.json",
+        "verification": "automated"
+    },
+    {
+        "iso_control": "A.7.2",
+        "iso_description": "Data for AI systems",
+        "aiact_article": "Art. 10",
+        "aiact_requirement": "Data and data governance",
+        "pipeline_evidence": "data_card.yaml",
+        "verification": "agent"
+    },
+    {
+        "iso_control": "A.6.2.4",
+        "iso_description": "Documentation of AI system",
+        "aiact_article": "Art. 11 + Anexo IV",
+        "aiact_requirement": "Technical documentation",
+        "pipeline_evidence": "ai-act-technical-doc.md",
+        "verification": "agent"
+    },
+    {
+        "iso_control": "A.8.2",
+        "iso_description": "Logging of AI system operation",
+        "aiact_article": "Art. 12",
+        "aiact_requirement": "Event logging",
+        "pipeline_evidence": "llm_usage_logs/",
+        "verification": "automated"
+    },
+    {
+        "iso_control": "A.8.4",
+        "iso_description": "Human oversight of AI systems",
+        "aiact_article": "Art. 14",
+        "aiact_requirement": "Human oversight",
+        "pipeline_evidence": "autonomy_level in manifest",
+        "verification": "automated"
+    },
+    {
+        "iso_control": "A.6.2.6",
+        "iso_description": "AI system security",
+        "aiact_article": "Art. 15",
+        "aiact_requirement": "Cybersecurity",
+        "pipeline_evidence": "sast_results.json + sbom.json + prompt_injection_results.json",
+        "verification": "automated"
+    },
+]
+
+def verify_iso_mapping(
+    mapping: list[dict],
+    pipeline_artifacts: dict
+) -> list[dict]:
+    """Verify each ISO 42001 control against pipeline artifacts."""
+    results = []
+    for control in mapping:
+        evidence_keys = [key.strip() for key in control["pipeline_evidence"].split("+")]
+        has_evidence = all(pipeline_artifacts.get(key) is not None for key in evidence_keys)
+
+        results.append({
+            "status_authority":"REVIEW","coverage":"partial",
+            "iso_control": control["iso_control"],
+            "aiact_article": control["aiact_article"],
+            "status": "evidence_available" if has_evidence else "evidence_pending",
+            "evidence_path": control["pipeline_evidence"],
+            "verification_type": control["verification"]
+        })
+
+    return results

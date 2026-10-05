@@ -1,0 +1,162 @@
+# Didactic example: patterns/monitoring/health_check_service.py
+import time
+import redis
+import requests
+from sqlalchemy import text
+from celery.app.control import Control
+
+class HealthCheckService:
+    """
+    Platform-wide health verification service.
+    Implements two modes: quick (DB + Redis, <200ms) and full (11 services, <3s).
+    """
+
+    def __init__(self, db_sessions: dict, redis_client, celery_app):
+        self.dbs = db_sessions        # {'ops': session, 'core': session, 'analytics': session}
+        self.redis = redis_client
+        self.celery = celery_app
+
+    def quick_check(self) -> dict:
+        """
+        Quick verification for Docker readiness probe and load balancer.
+        Only checks main DB and Redis: the two critical services that
+        every HTTP request to the backend depends on.
+        """
+        results = {}
+        overall = "healthy"
+
+        # Main MySQL verification (operations_db)
+        start = time.monotonic()
+        try:
+            self.dbs['ops'].execute(text("SELECT 1"))
+            results['mysql_ops'] = {
+                "status": "healthy",
+                "latency_ms": round((time.monotonic() - start) * 1000, 2)
+            }
+        except Exception as e:
+            results['mysql_ops'] = {"status": "unhealthy", "error": str(e)}
+            overall = "unhealthy"
+
+        # Redis verification
+        start = time.monotonic()
+        try:
+            self.redis.ping()
+            results['redis'] = {
+                "status": "healthy",
+                "latency_ms": round((time.monotonic() - start) * 1000, 2)
+            }
+        except Exception as e:
+            results['redis'] = {"status": "unhealthy", "error": str(e)}
+            overall = "unhealthy"
+
+        return {"status": overall, "checks": results, "mode": "quick"}
+
+    def full_check(self) -> dict:
+        """
+        Full verification of all 11 platform services.
+        Designed for manual use (operations), not as a readiness probe.
+        Runs verifications in parallel to reduce total latency.
+        """
+        import concurrent.futures
+
+        checks = {}
+
+        def check_mysql(name: str, session) -> tuple:
+            start = time.monotonic()
+            try:
+                session.execute(text("SELECT 1"))
+                return name, {"status": "healthy",
+                              "latency_ms": round((time.monotonic() - start) * 1000, 2)}
+            except Exception as e:
+                return name, {"status": "unhealthy", "error": str(e)}
+
+        def check_http_service(name: str, url: str, timeout: int = 5) -> tuple:
+            start = time.monotonic()
+            try:
+                resp = requests.get(url, timeout=timeout)
+                resp.raise_for_status()
+                return name, {
+                    "status": "healthy",
+                    "latency_ms": round((time.monotonic() - start) * 1000, 2)
+                }
+            except Exception as e:
+                return name, {"status": "unhealthy", "error": str(e)}
+
+        def check_celery_workers(name: str) -> tuple:
+            """
+            Verifies that Celery workers are responding via ping.
+            A worker that doesn't respond to ping is dead or blocked.
+            """
+            start = time.monotonic()
+            try:
+                control = Control(self.celery)
+                # Ping with 2s timeout: if no response, it's inactive
+                response = control.ping(timeout=2.0)
+                active_workers = len(response) if response else 0
+                status = "healthy" if active_workers >= 3 else "degraded"
+                return name, {
+                    "status": status,
+                    "active_workers": active_workers,
+                    "latency_ms": round((time.monotonic() - start) * 1000, 2)
+                }
+            except Exception as e:
+                return name, {"status": "unhealthy", "error": str(e)}
+
+        # Run all verifications in parallel
+        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
+            futures = [
+                # The three MySQLs
+                executor.submit(check_mysql, 'mysql_ops', self.dbs['ops']),
+                executor.submit(check_mysql, 'mysql_core', self.dbs['core']),
+                executor.submit(check_mysql, 'mysql_analytics', self.dbs['analytics']),
+                # Redis
+                executor.submit(lambda: ('redis', self._check_redis())),
+                # HTTP services external to the backend
+                executor.submit(check_http_service, 'ai_service',
+                                'http://ai_service:8001/health'),
+                executor.submit(check_http_service, 'meilisearch',
+                                'http://meilisearch:7700/health'),
+                executor.submit(check_http_service, 'qdrant',
+                                'http://qdrant:6333/healthz'),
+                # Celery (workers + beat)
+                executor.submit(check_celery_workers, 'celery_workers'),
+                # The three frontend Nginx instances
+                executor.submit(check_http_service, 'frontend_ops',
+                                'http://nginx_ops:80/health'),
+                executor.submit(check_http_service, 'frontend_analytics',
+                                'http://nginx_analytics:80/health'),
+                executor.submit(check_http_service, 'frontend_admin',
+                                'http://nginx_admin:80/health'),
+            ]
+            for future in concurrent.futures.as_completed(futures):
+                name, result = future.result()
+                checks[name] = result
+
+        # Calculate overall status
+        statuses = [c['status'] for c in checks.values()]
+        if all(s == 'healthy' for s in statuses):
+            overall = "healthy"
+        elif any(s == 'unhealthy' for s in statuses):
+            overall = "unhealthy"
+        else:
+            overall = "degraded"
+
+        return {
+            "status": overall,
+            "checks": checks,
+            "mode": "full",
+            "timestamp": time.time()
+        }
+
+    def _check_redis(self) -> dict:
+        start = time.monotonic()
+        try:
+            info = self.redis.info()
+            return {
+                "status": "healthy",
+                "latency_ms": round((time.monotonic() - start) * 1000, 2),
+                "used_memory_mb": round(info['used_memory'] / 1024 / 1024, 1),
+                "connected_clients": info['connected_clients']
+            }
+        except Exception as e:
+            return {"status": "unhealthy", "error": str(e)}

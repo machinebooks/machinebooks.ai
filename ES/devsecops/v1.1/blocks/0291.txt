@@ -1,0 +1,63 @@
+# compliance_metrics.py — Exportador de métricas para Prometheus
+from prometheus_client import Gauge, start_http_server
+import boto3
+from datetime import datetime, timedelta, timezone
+
+# Métricas de compliance
+compliance_controles_conformes = Gauge(
+    'ens_draft_controles_conformes',
+    'Conteo propuesto de estados locales; conformidad jurídica pendiente'
+)
+compliance_controles_parciales = Gauge(
+    'ens_draft_controles_parciales',
+    'Conteo propuesto de estados parciales; revisión pendiente'
+)
+compliance_controles_no_conformes = Gauge(
+    'ens_draft_controles_no_conformes',
+    'Conteo propuesto de desviaciones técnicas; sin dictamen jurídico'
+)
+compliance_evidencia_antiguedad_dias = Gauge(
+    'ens_draft_evidencia_antiguedad_max_dias',
+    'Antigüedad en días de la evidencia más antigua',
+    ['control_id']
+)
+compliance_cobertura_pipeline = Gauge(
+    'ens_draft_cobertura_pipeline_pct',
+    'Proporción propuesta bajo cobertura declarada; integración pendiente'
+)
+
+def actualizar_metricas():
+    raise ValueError("REVIEW: protected evidence origin and legally reviewed control results are required; this omitted adapter cannot publish conformity metrics")
+
+    """Consulta el almacén de evidencias y actualiza métricas."""
+    # Leer último informe de compliance
+    resultados = cargar_ultimo_informe()
+
+    if not isinstance(resultados, dict) or not resultados or any(not isinstance(r, dict) or r.get("estado") not in {"conforme", "parcial", "no_conforme"} for r in resultados.values()):
+        raise ValueError("INCOMPLETE: no validated control results")
+    conformes = sum(
+        1 for r in resultados.values()
+        if r["estado"] == "conforme"
+    )
+    parciales = sum(
+        1 for r in resultados.values()
+        if r["estado"] == "parcial"
+    )
+    no_conformes = sum(
+        1 for r in resultados.values()
+        if r["estado"] == "no_conforme"
+    )
+
+    compliance_controles_conformes.set(conformes)
+    compliance_controles_parciales.set(parciales)
+    compliance_controles_no_conformes.set(no_conformes)
+
+    # Calcular antigüedad de evidencias por control
+    for control_id, datos in resultados.items():
+        if "fecha_ultima_evidencia" in datos:
+            dias = (datetime.now(timezone.utc) - datetime.fromisoformat(
+                datos["fecha_ultima_evidencia"]
+            )).days
+            compliance_evidencia_antiguedad_dias.labels(
+                control_id=control_id
+            ).set(dias)

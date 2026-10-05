@@ -1,0 +1,6 @@
+// Wiring excerpt: the host supplies PromptFetcher and agentType.
+const systemPrompt = await PromptFetcher.fetch(`agent.${agentType}`);
+if (!systemPrompt?.trim()) {
+  throw new Error('Required specialist prompt is unavailable');
+}
+// A prompt does not grant permissions; the host applies its policy.

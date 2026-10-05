@@ -1,0 +1,16 @@
+flowchart LR
+    subgraph T1["Turno 1 (cold)"]
+        TA["AGENT_TOOLS<br/>(27 herramientas del snapshot)"]
+        TA --> SEND1["Petición al modelo:<br/>cuerpo completo"]
+    end
+
+    subgraph T2["Turno 2 (warm)"]
+        TB["usedToolNames + coreTools<br/>(8 core: read, write, edit,<br/>bash, ls, grep, glob, todo)<br/>+ las que el modelo ya usó"]
+        TB --> SEND2["Petición al modelo:<br/>cuerpo reducido"]
+    end
+
+    SEND1 -->|"Respuesta + tool calls"| Acc["allToolCalls<br/>(historial del turno)"]
+    Acc --> TB
+
+    note["Medir tokens, latencia y cobertura.<br/>El filtro puede retirar herramientas necesarias."]
+    T2 -.- note

@@ -1,0 +1,24 @@
+# Partial authorized portal adapter: DOM selectors and business data are illustrative.
+# Didactic example: patterns/automation/bots/portal_bot.py
+
+from selenium.common.exceptions import NoSuchElementException,TimeoutException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+import pandas as pd
+import time
+
+class PortalBot(BaseBot, MFAWaitMixin):
+    """Automation bot for the corporate portal.
+
+    Manages login with MFA, navigation, and data extraction
+    of projects and resources from the portal.
+    """
+
+    PORTAL_URL = "https://portal.example.com"  # In production: load from os.environ or CredentialVault
+
+    def __init__(self,task_id,credentials,challenge_store,user_id,security_context):
+        BaseBot.__init__(self, task_id)
+        MFAWaitMixin.__init__(self,challenge_store,security_context)
+        self.credentials = credentials
+        self.user_id = user_id
+

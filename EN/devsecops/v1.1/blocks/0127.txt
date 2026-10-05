@@ -1,0 +1,54 @@
+import anthropic
+import json
+
+client = anthropic.Anthropic()
+
+def generate_scan_plan(api_surface: dict) -> dict:
+    """Generates a directed DAST scan plan with Claude."""
+    prompt = f"""Analyze the following attack surface of a REST API
+and generate a DAST scan plan. For each endpoint, indicate:
+1. Vulnerabilities to test (from OWASP Top 10 and API Security Top 10)
+2. Specific payloads for each parameter based on its type and context
+3. Scan priority (high/medium/low) based on exposure and risk
+4. Expected responses that would indicate a real vulnerability
+
+Security rules:
+- Do NOT generate destructive payloads (DROP TABLE, mass DELETE)
+- Do NOT generate payloads for real data exfiltration
+- Limit injections to detection, not full exploitation
+
+Attack surface:
+{json.dumps(api_surface, indent=2)}
+
+Respond in JSON with the structure:
+{{
+  "scan_plan": [
+    {{
+      "endpoint": "/api/...",
+      "method": "POST",
+      "priority": "high",
+      "tests": [
+        {{
+          "category": "sql_injection",
+          "parameter": "email",
+          "payloads": ["..."],
+          "expected_vulnerable_response": "...",
+          "expected_safe_response": "..."
+        }}
+      ]
+    }}
+  ]
+}}"""
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    proposal = json.loads(message.content[0].text)
+    if not isinstance(proposal, dict):
+        raise ValueError("INCOMPLETE: invalid proposal schema")
+    proposal["status"] = "REVIEW"
+    proposal["coverage"] = "partial"
+    proposal["origin_verified"] = False
+    return proposal

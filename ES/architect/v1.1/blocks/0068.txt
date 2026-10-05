@@ -1,0 +1,30 @@
+# Illustrative Celery 5.6 configuration, using current lowercase setting names.
+import os
+from kombu import Queue, Exchange
+
+task_queues = tuple(Queue(name, Exchange(name,type="direct"), routing_key=name) for name in
+                    ("default","priority","ai","documents","sync","crm","automation"))
+task_default_queue = "default"
+task_default_exchange = "default"
+task_default_routing_key = "default"
+# Exact registered task names. These are starts per worker, not model calls or concurrency.
+task_annotations = {
+    "tasks.ai.analyze_document": {"rate_limit":"30/m"},
+    "tasks.automation.portal_bot": {"rate_limit":"5/m"},
+    "tasks.documents.process_upload": {"rate_limit":"10/m"},
+}
+result_backend = os.environ["CELERY_RESULT_BACKEND"]
+broker_url = os.environ["CELERY_BROKER_URL"]
+result_expires = 3600
+accept_content = ["json"]
+task_serializer = "json"
+result_serializer = "json"
+enable_utc = True
+timezone = "UTC"
+task_acks_late = True
+task_reject_on_worker_lost = True
+worker_prefetch_multiplier = 1  # Reduces reservation; does not preempt running work.
+broker_transport_options = {"queue_order_strategy":"priority",
+                            "priority_steps":[0,3,6,9]}
+# Tune all relevant visibility_timeout settings to workload and redelivery policy.
+# These flags do not establish exactly-once effects or a job-wide deadline.

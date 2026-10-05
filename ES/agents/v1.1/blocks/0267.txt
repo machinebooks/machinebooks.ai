@@ -1,0 +1,15 @@
+it('requests one bounded continuation after length', async () => {
+  const provider = makeProviderMock([
+    { events: [{ type: 'text_delta', text: 'Inicio, ' }],
+      finalMessage: { role: 'assistant', content: [{ type: 'text', text: 'Inicio, ' }] },
+      usage: { input: 10, output: 3 }, finishReason: 'length' },
+    { events: [{ type: 'text_delta', text: 'fin.' }],
+      finalMessage: { role: 'assistant', content: [{ type: 'text', text: 'fin.' }] },
+      usage: { input: 15, output: 2 }, finishReason: 'end_turn' },
+  ]);
+  const loop = createLoop({ provider, registry: emptyRegistry, maxContinuations: 1 });
+  const out = await loop.run([{ role: 'user', content: [{ type: 'text', text: 'fixture' }] }]);
+  expect(out.iterations).toBe(2);
+  expect(out.finishReason).toBe('end_turn');
+  expect(out.finalText).toBe('Inicio, fin.');
+});

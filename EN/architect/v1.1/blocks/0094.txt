@@ -1,0 +1,41 @@
+# Blocking pedagogical adapter: this occupies a worker slot while waiting.
+import time
+from datetime import datetime,timedelta,timezone
+
+class MFAWaitMixin:
+    MFA_TIMEOUT_SECONDS=300
+    MFA_POLL_INTERVAL=2
+
+    def __init__(self,challenge_store,security_context):
+        self.challenge_store=challenge_store
+        self.security_context=security_context
+
+    def request_mfa_code(self,task_id,system_name,user_id):
+        if type(user_id) is not int or user_id<1 or not isinstance(task_id,str) or not task_id:
+            raise PermissionError("Current actor/task scope required")
+        if self.challenge_store.authorize(self.security_context,user_id,task_id,system_name) is not True:
+            raise PermissionError("MFA challenge denied")
+        expires_at=datetime.now(timezone.utc)+timedelta(seconds=self.MFA_TIMEOUT_SECONDS)
+        # Atomically create a unique challenge and durable notification intent.
+        challenge_id=self.challenge_store.create(self.security_context,user_id,
+                         task_id,system_name,expires_at)
+        if not isinstance(challenge_id,str) or not challenge_id:
+            raise RuntimeError("Protected challenge acknowledgement required")
+        deadline=time.monotonic()+self.MFA_TIMEOUT_SECONDS
+
+        try:
+            while time.monotonic()<deadline:
+                # Recheck actor/task/purpose/expiry and atomically consume once.
+                code=self.challenge_store.consume(self.security_context,challenge_id,
+                                                  datetime.now(timezone.utc))
+                if code is not None:
+                    if not isinstance(code,str) or not 1<=len(code)<=128:
+                        raise ValueError("Validated provider-specific OTP required")
+                    return code
+                time.sleep(self.MFA_POLL_INTERVAL)
+            return None
+        finally:
+            self.challenge_store.close(self.security_context,challenge_id)
+# Store/endpoint contracts: authenticated user, task/purpose binding, attempts,
+# protected short-lived OTP, exact expiration, one-use consumption and no OTP logs.
+# The repository and submission endpoint are dependencies, not implemented here.

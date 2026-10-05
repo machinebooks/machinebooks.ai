@@ -1,0 +1,24 @@
+# Educational resolver. The caller supplies authorized image-capable configurations.
+async def _resolve_image_config(db, model_row, *, approved_config_ids,
+                                default_azure_config_id=None):
+    allowed_ids = set(approved_config_ids)
+    if model_row.upstream_config_id in allowed_ids:
+        config = await db.get(LLMConfig, model_row.upstream_config_id)
+        if config is not None and config.is_active:
+            return config
+    for config_purpose in ("image_generation", "images_generation", "image"):
+        result = await db.execute(
+            select(LLMConfig).where(
+                LLMConfig.id.in_(allowed_ids),
+                LLMConfig.purpose == config_purpose,
+                LLMConfig.is_active,
+            )
+        )
+        config = result.scalar_one_or_none()
+        if config is not None:
+            return config
+    if default_azure_config_id in allowed_ids:
+        config = await db.get(LLMConfig, default_azure_config_id)
+        if config is not None and config.is_active:
+            return config
+    return None

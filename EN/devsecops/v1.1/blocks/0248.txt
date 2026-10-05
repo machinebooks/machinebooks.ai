@@ -1,0 +1,60 @@
+REVIEW_PROMPT = """You are a security analyst reviewing active exceptions.
+
+## Active exception
+- ID: {exception_id}
+- Finding: {finding_id} ({severity})
+- CVE: {cve_id}
+- Approved on: {approved_at}
+- Expires on: {expires_at}
+- Original risk score: {risk_score}
+- Compensating controls: {controls}
+
+## Changes since last review
+{changes_context}
+
+## Instructions
+1. Evaluate whether changes alter the residual risk.
+2. Verify whether the vulnerability now has an available patch.
+3. Verify whether public exploits have appeared.
+4. Recommend: maintain, escalate, or resolve.
+
+Respond in JSON:
+{{
+  "conditions_changed": true|false,
+  "new_risk_score": <int>,
+  "recommendation": "renew|escalate|resolve",
+  "reasoning": "<text>"
+}}"""
+
+
+def review_exception_with_agent(
+    exception: SecurityException,
+    changes_context: str
+) -> dict:
+    """Reviews an active exception with updated context."""
+
+    prompt = REVIEW_PROMPT.format(
+        exception_id=exception.id,
+        finding_id=exception.finding_id,
+        severity=exception.severity.value,
+        cve_id=exception.cve_id or "N/A",
+        approved_at=exception.approved_at.isoformat(),
+        expires_at=exception.expires_at.isoformat(),
+        risk_score=exception.agent_risk_score,
+        controls=json.dumps(exception.compensating_controls),
+        changes_context=changes_context
+    )
+
+    message = client.messages.create(
+        model="claude-haiku-4-5",  # Routine review: Haiku suffices
+        max_tokens=1024,
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    proposal = json.loads(message.content[0].text)
+    if not isinstance(proposal, dict):
+        raise ValueError("INCOMPLETE: invalid proposal schema")
+    proposal["status"] = "REVIEW"
+    proposal["coverage"] = "partial"
+    proposal["origin_verified"] = False
+    return proposal

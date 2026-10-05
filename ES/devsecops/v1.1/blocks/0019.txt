@@ -1,0 +1,44 @@
+# .github/workflows/surface-discovery.yml
+name: Attack Surface Discovery
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 6 * * 1"   # Lunes a las 06:00 UTC como respaldo
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependencias
+        run: pip install anthropic pyyaml claude-agent-sdk
+
+      - name: Ejecutar inventario de activos
+        run: python pipeline_inventory.py > inventory.json
+        env:
+          PYTHONPATH: .
+
+      - name: Ejecutar análisis STRIDE
+        run: python stride_classifier.py
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Verificar cambios en superficie
+        run: python surface_discovery_agent.py
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Subir artefactos de seguridad
+        uses: actions/upload-artifact@v4
+        with:
+          name: attack-surface-report
+          path: |
+            inventory.json
+            threat_model.json

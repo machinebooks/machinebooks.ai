@@ -1,0 +1,67 @@
+@startuml
+!theme plain
+skinparam backgroundColor transparent
+skinparam ActivityBackgroundColor #142038
+skinparam ActivityBorderColor #7DD8E8
+skinparam ActivityFontColor #F5EFE0
+skinparam ArrowColor #7DD8E8
+skinparam PartitionBackgroundColor transparent
+skinparam PartitionBorderColor #A07840
+skinparam NoteBackgroundColor #1A1308
+skinparam NoteFontColor #F5EFE0
+
+start
+:POST /api/chat;
+
+partition "Middleware (transport)" {
+  :sessionAuthMiddleware
+  ""auth/sessionAuth.ts:75"";
+  :rateLimitMiddleware
+  ""middleware/rateLimit.ts:26"";
+}
+
+partition "Wrapper — pre-loop" {
+  :registerChatRoute
+  ""routes/chat.ts:54"";
+  :parseSlashCommand
+  ""routes/chat.ts:94"";
+  :executeHooks(UserPromptSubmit)
+  ""routes/chat.ts:128"";
+  :buildSystemPrompt
+  ""routes/chat.ts:148"";
+  :modeInstruction (auto/inter/plan)
+  ""routes/chat.ts:154"";
+  :SSE headers + flushHeaders
+  ""routes/chat.ts:131"";
+  :heartbeat 3s
+  ""routes/chat.ts:202"";
+}
+
+partition "Loop: for turn in 1..MAX_TOOL_ITERATIONS — ""routes/chat.ts:597""" {
+  :streamLLMCall (provider router)
+  ""routes/chat.ts:215"";
+
+  if (provider) then (Anthropic)
+    :""providers/anthropic.ts"";
+  else (OpenAI-compat)
+    :""routes/chat.ts:270"";
+  endif
+
+  while (is there tool_call in the response?) is (yes)
+    :checkPermission
+    ""permissions.ts"";
+    :shouldBlockTool (PreToolUse)
+    ""hooks.ts"";
+    :executeToolCall
+    ""tools.ts"";
+    :executeHooks(PostToolUse)
+    ""hooks.ts:855"";
+    :trackUsage
+    ""cost-tracker.ts"";
+  endwhile (no)
+}
+
+:sendSSE(done, { cost, tasks, ... })
+""routes/chat.ts:959"";
+stop
+@enduml

@@ -1,0 +1,43 @@
+# Educational SSE core. The HTTP adapter resolves identity from trusted headers.
+# authorize_document and load_document enforce current tenant/object permissions.
+import asyncio
+import json
+
+async def prepare_analysis_stream(doc_id, security_context, client, model,
+                                  authorize_document, load_document,
+                                  minimize_for_provider, load_system_prompt):
+    if isinstance(doc_id, bool) or not isinstance(doc_id, int) or doc_id < 1:
+        raise ValueError("doc_id must be a positive integer")
+    if security_context is None:
+        raise PermissionError("Authenticated context required")
+    if await authorize_document(security_context, doc_id) is not True:
+        raise PermissionError("Document analysis not authorized")
+    text = await load_document(security_context, doc_id)
+    if not isinstance(text, str) or not text.strip():
+        raise ValueError("Authorized document text required")
+    safe_text = minimize_for_provider(security_context, text)
+    if not isinstance(safe_text, str) or not safe_text.strip():
+        raise ValueError("Minimized document text required")
+    system_prompt = load_system_prompt(security_context)
+    if not isinstance(system_prompt, str) or not system_prompt.strip():
+        raise ValueError("Server-controlled system prompt required")
+
+    async def events():
+        async with asyncio.timeout(120):
+            async with client.messages.stream(
+                model=model, max_tokens=4096, system=system_prompt,
+                messages=[{"role": "user", "content": safe_text}],
+            ) as stream:
+                async for chunk in stream.text_stream:
+                    if not isinstance(chunk, str):
+                        raise TypeError("Unexpected stream fragment")
+                    payload = json.dumps({"text": chunk}, ensure_ascii=False)
+                    yield f"data: {payload}\n\n"
+        # Exceptions and cancellation propagate; no success marker follows failure.
+        yield "data: [DONE]\n\n"
+
+    return events()
+
+# An authenticated FastAPI adapter can wrap these events in StreamingResponse.
+# It must not accept caller-supplied authorization context or system prompts.
+# Disconnect handling, concurrency limits and final usage audit require testing.

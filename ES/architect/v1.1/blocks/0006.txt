@@ -1,0 +1,22 @@
+# /project:review
+
+Revisa el código modificado antes de hacer commit.
+Ejecuta `git diff --staged` y analiza cada fichero modificado.
+
+## Checklist de seguridad (obligatorio)
+- [ ] Sin secrets hardcodeados (API keys, passwords, tokens, IDs fijos)
+- [ ] Endpoints nuevos tienen `@jwt_required()` y verificación de permiso
+- [ ] Queries que devuelven listas filtran por `user_id` del token actual
+- [ ] Input de usuario validado antes de usar en queries o prompts IA
+- [ ] Sin vulnerabilidades OWASP Top 10 evidentes (SQLi, XSS, IDOR[^c02-7]...)
+- [ ] PII no se envía a LLM sin redacción previa (`redact_pii_for_llm()`)
+
+## Checklist de base de datos
+- [ ] Modelos nuevos registrados en `__init__.py`
+- [ ] Migración generada con `flask db migrate -m "descripción"` y revisada
+- [ ] Sin ALTER TABLE manual en el código
+
+## Checklist de frontend
+- [ ] Sin `console.log` en código de producción
+- [ ] Tipos TypeScript completos (sin `any` sin justificación)
+- [ ] Errores de API manejados con `toast.error()` o equivalente

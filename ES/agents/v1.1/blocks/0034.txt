@@ -1,0 +1,18 @@
+sequenceDiagram
+    autonumber
+    participant L as AgentLoop
+    participant G as Gateway / Provider
+    participant M as MaxTokensRecoveryManager
+    L->>G: stream con max_tokens=16_000
+    G-->>L: deltas (texto incompleto)
+    G-->>L: finish_reason: "length"
+    L->>M: shouldRecover("length") ?
+    M-->>L: política, límite y presupuesto lo permiten
+    L->>M: recordAttempt()
+    L->>M: getAdjustedParams(16_000)
+    M-->>L: maxTokens dentro de límites verificados
+    Note over L: messages mantiene el<br/>fragmento parcial como<br/>assistant; no se descarta
+    L->>G: nuevo stream con max_tokens=32_000
+    G-->>L: deltas según continuación soportada
+    G-->>L: finish_reason: "end_turn"
+    L->>M: reset()

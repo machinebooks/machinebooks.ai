@@ -1,0 +1,73 @@
+from intent_classifier import classify_intent, IntentType
+from opportunities_search import search_opportunities
+
+def process_user_query(
+    query: str,
+    user_context: dict,
+    rag_engine,         # Injected by the dependency container
+    workflow_engine,    # Injected by the dependency container
+) -> dict:
+    """
+    Main query router.
+    Classifies intent and delegates to the appropriate engine.
+    """
+    intent = classify_intent(query)
+
+    # Record classification for quality analysis
+    log_intent_classification(
+        query=query,
+        intent=intent.type.value,
+        confidence=intent.confidence,
+        layer_used="layer1" if intent.reasoning == "" else "layer2",
+        user_id=user_context.get("user_id"),
+    )
+
+    if intent.type == IntentType.AGENT_TOOLS and intent.subtype == "search_opportunities":
+        # Extract search parameters from query text
+        # In production this is enriched with an entity extractor
+        params = extract_search_parameters(query)
+        results = search_opportunities(**params)
+        return {
+            "type": "search_results",
+            "engine": "meilisearch",
+            "intent_confidence": intent.confidence,
+            "data": results,
+        }
+
+    elif intent.type == IntentType.CHAT_RAG:
+        rag_response = rag_engine.query(
+            query,
+            collections=["proposals", "history", "catalog"],
+            user_id=user_context.get("user_id"),
+        )
+        return {
+            "type": "rag_response",
+            "engine": "qdrant+claude",
+            "intent_confidence": intent.confidence,
+            "data": rag_response,
+        }
+
+    elif intent.type == IntentType.WORKFLOW:
+        task = workflow_engine.trigger(
+            type=intent.subtype,
+            original_query=query,
+            context=user_context,
+        )
+        return {
+            "type": "workflow_triggered",
+            "engine": "workflow_engine",
+            "intent_confidence": intent.confidence,
+            "data": {"task_id": task.id, "status": "started"},
+        }
+
+    else:  # OFF_TOPIC
+        return {
+            "type": "off_topic",
+            "engine": "none",
+            "intent_confidence": intent.confidence,
+            "data": {
+                "message": "This query is outside the platform's scope. "
+                           "You can search opportunities, analyze documents, or "
+                           "generate proposals. How can I help you?",
+            },
+        }

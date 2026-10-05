@@ -1,0 +1,45 @@
+# backend/error_handlers.py
+from flask import jsonify, g
+import structlog
+
+logger = structlog.get_logger()
+
+def register_error_handlers(app):
+    """Registers global error handlers for consistent JSON responses."""
+
+    @app.errorhandler(400)
+    def bad_request(error):
+        # Do not expose str(error) to the client — it may leak internal details
+        app.logger.warning("Bad request: %s", error)
+        return jsonify({'error': 'Bad request'}), 400
+
+    @app.errorhandler(401)
+    def unauthorized(error):
+        return jsonify({'error': 'Authentication required'}), 401
+
+    @app.errorhandler(403)
+    def forbidden(error):
+        return jsonify({'error': 'Access denied'}), 403
+
+    @app.errorhandler(404)
+    def not_found(error):
+        return jsonify({'error': 'Resource not found'}), 404
+
+    @app.errorhandler(429)
+    def too_many_requests(error):
+        return jsonify({'error': 'Too many requests. Try again later.'}), 429
+
+    @app.errorhandler(500)
+    def internal_error(error):
+        # The internal error is logged but never exposed to the client
+        request_id = getattr(g, 'request_id', 'unknown')
+        logger.error("unhandled_exception",
+                     request_id=request_id,
+                     error=str(error),
+                     error_type=type(error).__name__)
+        return jsonify({'error': 'Internal server error'}), 500
+
+    @app.errorhandler(ValidationError)
+    def validation_error(error):
+        # Domain ValidationErrors have messages safe to display to the client
+        return jsonify({'error': str(error), 'type': 'validation'}), 422

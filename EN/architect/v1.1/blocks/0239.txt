@@ -1,0 +1,100 @@
+# .github/workflows/deploy.yml
+# Deployment to production with manual approval
+
+name: Production Deployment
+
+on:
+  workflow_dispatch:  # Manual deployment from the GitHub interface
+    inputs:
+      environment:
+        description: "Deployment environment"
+        required: true
+        default: "production"
+        type: choice
+        options: [production, staging]
+      services:
+        description: "Services to deploy (empty = all)"
+        required: false
+        type: string
+
+jobs:
+  deploy:
+    name: Deploy to ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}  # Requires approval configured in GitHub
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Prepare SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.PROD_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          # Add host to known_hosts to avoid interactive confirmation
+          ssh-keyscan -H ${{ secrets.PROD_HOST }} >> ~/.ssh/known_hosts
+          # NOTE: In production, verify previously known host fingerprint
+
+      - name: Copy Docker Compose configuration file
+        run: |
+          scp -i ~/.ssh/deploy_key \
+            docker-compose.prod.yml \
+            deploy@${{ secrets.PROD_HOST }}:/opt/plataforma/
+
+      - name: Execute deployment on server
+        run: |
+          ssh -i ~/.ssh/deploy_key deploy@${{ secrets.PROD_HOST }} << 'ENDSSH'
+            set -e  # Exit if any command fails
+
+            cd /opt/plataforma
+
+            # Pull new images
+            docker compose -f docker-compose.prod.yml pull
+
+            # Apply database migrations before updating the service
+            # (expand-contract pattern for backward-compatible migrations)
+            docker compose -f docker-compose.prod.yml run --rm backend \
+              flask db upgrade
+
+            # Update services with zero downtime where possible
+            docker compose -f docker-compose.prod.yml up -d \
+              --no-deps \
+              --remove-orphans \
+              backend ai_service celery_worker celery_beat
+
+            # Update frontend with zero downtime (Nginx serves during update)
+            docker compose -f docker-compose.prod.yml up -d --no-deps \
+              frontend_ops frontend_analytics frontend_admin nginx
+
+            # Verify critical services are healthy
+            sleep 15
+            docker compose -f docker-compose.prod.yml ps
+          ENDSSH
+
+      - name: Verify deployment
+        run: |
+          ssh -i ~/.ssh/deploy_key deploy@${{ secrets.PROD_HOST }} << 'ENDSSH'
+            # Check that the platform health check responds
+            response=$(curl -s -o /dev/null -w "%{http_code}" \
+              http://localhost/api/health/quick)
+
+            if [ "$response" != "200" ]; then
+              echo "ERROR: Health check returns $response. Initiating rollback."
+              exit 1
+            fi
+
+            echo "Deployment verified successfully."
+          ENDSSH
+
+      - name: Automatic rollback if deployment fails
+        if: failure()
+        run: |
+          echo "Deployment failed. Initiating rollback to previous version."
+          ssh -i ~/.ssh/deploy_key deploy@${{ secrets.PROD_HOST }} << 'ENDSSH'
+            cd /opt/plataforma
+            # Restore last known working configuration
+            git stash
+            docker compose -f docker-compose.prod.yml up -d
+          ENDSSH

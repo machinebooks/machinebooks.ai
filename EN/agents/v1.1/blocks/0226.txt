@@ -1,0 +1,5 @@
+// src/server/services/PromptFetcher.ts:130-134
+static invalidate(key?: string): void {
+  if (key) cache.delete(key);
+  else cache.clear();
+}

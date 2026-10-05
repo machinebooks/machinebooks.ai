@@ -1,0 +1,36 @@
+// Educational pseudocode; private dependencies and host checks are omitted.
+async function runTurn(loop: AgentLoop): Promise<void> {
+  // 1. Read a consistent registry view.
+  const registry = loop.toolRegistry;
+  const deferred = loop.deferredToolManager;
+
+  // 2. Apply the four catalog filters; execution permission is checked separately.
+  const active = deferred.getActiveToolNames();                // Deferred.
+  let allowed = loop.config.tools.includes('*')                // Agent allowlist.
+    ? active
+    : active.filter(n => loop.config.tools.includes(n));
+  allowed = allowed.filter(passesPack);                        // Pack catalog.
+  const finalNames = filterToolsForPermissionMode(             // Mode catalog.
+    allowed, loop.config, loop.effectiveMode,
+  );
+
+  // 3. Serialize the supported provider subset.
+  const tools = registry.getToolSchemas(finalNames);
+  const reminder = deferred.generateDeferredToolsReminder();
+
+  // 4. The provider adapter translates trusted host instructions.
+  const messages = [...loop.messages, { role: 'system', content: reminder }];
+  const stream = provider.streamChat({ messages, tools });
+
+  // 5. Load only a complete, validated and host-authorized discovery request.
+  for await (const block of stream) {
+    if (block.type === 'tool_call_complete' && block.name === 'ToolSearch') {
+      assertCompleteAndAuthorizedToolSearch(block); // Host implementation omitted.
+      if (typeof block.input.query !== 'string' || !block.input.query.trim()) {
+        throw new Error('ToolSearch query must be a non-empty string');
+      }
+      const matches = deferred.searchDeferredTools(block.input.query);
+      for (const m of matches) deferred.loadTool(m.name);
+    }
+  }
+}

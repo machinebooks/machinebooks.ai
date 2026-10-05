@@ -1,0 +1,12 @@
+sequenceDiagram
+    autonumber
+    participant L as AgentLoop
+    participant T as Tool (Bash)
+    participant P as VmSpawnProvider
+    participant V as VM
+    L->>T: execute({ cwd: "D:\\projects\\app", cmd: "npm test" })
+    T->>P: translatePath("D:\\projects\\app")
+    P-->>T: "/sessions/sess-a3f2/mnt/app-7c4e9d2a"
+    T->>V: run cmd, cwd=vmCwd
+    V-->>T: stdout / stderr / exit
+    T-->>L: tool_result

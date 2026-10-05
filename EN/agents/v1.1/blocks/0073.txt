@@ -1,0 +1,25 @@
+flowchart TB
+    subgraph Boot[Backend process boot]
+        B1[index.ts: getRegistry]
+        B2[ALL_BUILTIN_TOOLS<br/>~22 tools]
+        B3[Packs: cloud-sysops, dfir,<br/>grc, legal, finance, pentest]
+        B4[Task, team,<br/>worktree, cron, MCP, GitHub tools]
+        B1 --> B2 --> R[(ToolRegistry<br/>singleton)]
+        B1 --> B3 --> R
+        B1 --> B4 --> R
+    end
+
+    subgraph Runtime[Every agent turn]
+        T1[AgentLoop.runStep]
+        F1[Filter 1<br/>deferred tools]
+        F2[Filter 2<br/>agent allowlist]
+        F3[Filter 3<br/>pack whitelist]
+        F4[Filter 4<br/>permission mode]
+        OUT[toolSchemas sent<br/>to provider]
+        T1 --> F1 --> F2 --> F3 --> F4 --> OUT
+    end
+
+    R -.read.-> F1
+    R -.read.-> F2
+    R -.read.-> F3
+    R -.read.-> F4

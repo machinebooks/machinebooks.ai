@@ -1,0 +1,153 @@
+import pytest
+from dataclasses import dataclass
+from typing import List, Optional
+
+@dataclass
+class AgentExecutionTrace:
+    """Agent execution trace for evaluation."""
+    steps: List[dict]           # Each step: {action, tool_used, input, output}
+    final_response: str
+    total_tool_calls: int
+    total_tokens: int
+    execution_time_ms: int
+
+class AgentQualityEvaluator:
+    """
+    Evaluates the quality of agent execution traces.
+    Focuses on efficiency and process correctness, not just the result.
+    """
+
+    def evaluate_tool_selection(self, trace: AgentExecutionTrace, expected_tools: List[str]) -> dict:
+        """
+        Verifies that the agent used the appropriate tools.
+        An agent that uses 'search_documents' for a system configuration
+        question is making an incorrect decision even if it finds something useful.
+        """
+        tools_used = [step["tool_used"] for step in trace.steps if step.get("tool_used")]
+
+        # Tools used that were not expected
+        unexpected_tools = set(tools_used) - set(expected_tools)
+        # Expected tools that were not used
+        missing_tools = set(expected_tools) - set(tools_used)
+
+        return {
+            "tools_used": tools_used,
+            "unexpected_tools": list(unexpected_tools),
+            "missing_tools": list(missing_tools),
+            "tool_selection_correct": len(unexpected_tools) == 0 and len(missing_tools) == 0,
+            "total_calls": trace.total_tool_calls,
+        }
+
+    def evaluate_efficiency(
+        self,
+        trace: AgentExecutionTrace,
+        max_expected_calls: int,
+        max_tokens: int
+    ) -> dict:
+        """
+        Evaluates execution efficiency.
+        An agent that makes ten calls to answer a simple question
+        has a reasoning problem or a tool definition problem.
+        """
+        return {
+            "calls_within_limit": trace.total_tool_calls <= max_expected_calls,
+            "tokens_within_limit": trace.total_tokens <= max_tokens,
+            "calls_used": trace.total_tool_calls,
+            "tokens_used": trace.total_tokens,
+            "efficiency_ratio": max_expected_calls / max(trace.total_tool_calls, 1),
+        }
+
+    def evaluate_reasoning_consistency(self, trace: AgentExecutionTrace) -> dict:
+        """
+        Verifies that the agent's reasoning is consistent between steps.
+        Detects if the agent retrieved information in one step but did not use
+        it in later steps where it was relevant.
+        """
+        # Build map of information retrieved by search tools
+        retrieved_info_steps = [
+            i for i, step in enumerate(trace.steps)
+            if step.get("tool_used") in ("search_documents", "get_portfolio_coverage")
+            and step.get("output")
+        ]
+
+        # Verify that conclusion steps reference retrieved information
+        conclusion_steps = [
+            step for step in trace.steps
+            if step.get("action") == "generate_conclusion"
+        ]
+
+        return {
+            "info_retrieval_steps": len(retrieved_info_steps),
+            "conclusion_steps": len(conclusion_steps),
+            "has_unused_retrieval": len(retrieved_info_steps) > 0 and len(conclusion_steps) == 0,
+        }
+
+
+class TestOpportunityAnalysisAgent:
+    """
+    Quality tests for the opportunity analysis agent.
+    Verifies that reasoning and tool selection are correct.
+    """
+
+    evaluator = AgentQualityEvaluator()
+
+    def test_agent_uses_correct_tools_for_opportunity_analysis(self, agent_runner):
+        """
+        For an opportunity analysis, the agent must use:
+        - search_documents (to search for similar proposals)
+        - get_portfolio_coverage (to verify capabilities)
+        - calculate_relevance_score (to score the opportunity)
+        It must NOT use CRM tools or proposal generation in this flow.
+        """
+        trace = agent_runner.execute(
+            agent_slug="opportunity-analyzer",
+            user_input="Analyze the cloud migration opportunity with 200K budget",
+            context={"opportunity_id": "opp-test-001"}
+        )
+
+        result = self.evaluator.evaluate_tool_selection(
+            trace=trace,
+            expected_tools=["search_documents", "get_portfolio_coverage", "calculate_relevance_score"]
+        )
+
+        assert result["tool_selection_correct"], \
+            f"Unexpected tools: {result['unexpected_tools']}. " \
+            f"Missing tools: {result['missing_tools']}"
+
+    def test_agent_does_not_exceed_call_budget(self, agent_runner):
+        """
+        A standard opportunity analysis should not require more than 5 tool
+        calls. If the agent needs more, reasoning or tools are poorly defined.
+        """
+        trace = agent_runner.execute(
+            agent_slug="opportunity-analyzer",
+            user_input="Analyze the cloud migration opportunity with 200K budget",
+            context={"opportunity_id": "opp-test-001"}
+        )
+
+        result = self.evaluator.evaluate_efficiency(
+            trace=trace,
+            max_expected_calls=5,
+            max_tokens=4000
+        )
+
+        assert result["calls_within_limit"], \
+            f"The agent made {result['calls_used']} calls (expected maximum: 5). " \
+            "Review tool definitions and system prompt."
+
+    def test_agent_reasoning_is_consistent(self, agent_runner):
+        """
+        The agent must not retrieve information and then ignore it.
+        If it searches for similar proposals, that information must influence the conclusion.
+        """
+        trace = agent_runner.execute(
+            agent_slug="opportunity-analyzer",
+            user_input="Analyze the cloud migration opportunity with 200K budget",
+            context={"opportunity_id": "opp-test-001"}
+        )
+
+        result = self.evaluator.evaluate_reasoning_consistency(trace)
+
+        assert not result["has_unused_retrieval"], \
+            "The agent retrieved information but produced no conclusion. " \
+            "Possible reasoning loop or conclusion tool not invoked."

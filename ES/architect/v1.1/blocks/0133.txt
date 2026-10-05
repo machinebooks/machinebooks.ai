@@ -1,0 +1,31 @@
+import hashlib
+import math
+import time
+import pymupdf as fitz
+from PIL import Image
+from langchain_core.documents import Document as LangChainDocument
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+class DocumentProcessor:
+    MAX_FILE_BYTES = 20_000_000
+    MAX_PAGES = 500
+    MAX_TEXT_CHARS = 1_000_000
+    MAX_PIXELS = 8_000_000
+
+    def __init__(self, load_authorized_blob, ocr_page, office_loaders,
+                 needs_ocr=None):
+        self._load = load_authorized_blob
+        self._ocr = ocr_page
+        self._office = dict(office_loaders)
+        self._needs_ocr = needs_ocr or (
+            lambda page, text: not text.strip()
+            or (len(text.strip()) < 50 and bool(page.get_images())))
+        # Units are CHARACTERS here. Token budgeting is a separate adapter step.
+        self.text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=800, chunk_overlap=150,
+            separators=["\n\n", "\n", ". ", " ", ""])
+
+    def compute_hash(self, content):
+        if not isinstance(content, bytes) or len(content) > self.MAX_FILE_BYTES:
+            raise ValueError("Invalid bounded file content")
+        return hashlib.sha256(content).hexdigest()

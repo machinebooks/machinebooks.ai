@@ -1,0 +1,37 @@
+@startuml
+!theme plain
+skinparam backgroundColor transparent
+skinparam state {
+  BackgroundColor #142038
+  BorderColor #7dd8e8
+  FontColor #f5efe0
+}
+
+[*] --> Waiting
+
+state Waiting : receives user message
+state Compacting : autoCompact if over budget
+state CallingLLM : streamChatEvents()
+state Streaming : text/thinking/tool_use deltas
+state ExecutingTools : StreamingToolExecutor
+state Recovering : finish_reason=length → 2x maxTokens
+state CheckingStop : tool_use in response?
+state Completed : agent_complete + memories
+state Cancelled : cancelToken / maxTurns
+
+Waiting --> Compacting : turn++
+Compacting --> CallingLLM : ok
+CallingLLM --> Streaming : stream opened
+Streaming --> Recovering : finish_reason=length
+Recovering --> CallingLLM : retry attempts<3
+Recovering --> Cancelled : attempts>=3
+Streaming --> ExecutingTools : complete, valid, authorized call
+ExecutingTools --> Streaming : tool_result yielded
+Streaming --> CheckingStop : stream done
+CheckingStop --> Waiting : yes (continue loop)
+CheckingStop --> Completed : no
+Waiting --> Cancelled : cancelToken
+CheckingStop --> Cancelled : turnCount>=maxTurns
+Completed --> [*]
+Cancelled --> [*]
+@enduml

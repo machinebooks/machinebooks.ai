@@ -1,0 +1,8 @@
+┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+│   OpenAPI    │───>│   Agent      │───>│  OWASP ZAP   │───>│   Agent      │
+│   Spec       │    │  Plan Gen    │    │  Automation   │    │  Analysis    │
+│              │    │              │    │  Framework    │    │              │
+└──────────────┘    └──────────────┘    └──────────────┘    └──────────────┘
+                           │                   │                    │
+                    YAML plan           JSON alerts          Prioritized report
+                    + payloads         (raw)                + recommendations

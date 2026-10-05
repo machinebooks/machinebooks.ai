@@ -1,0 +1,8 @@
+# Prioritization of document sections by criteria density
+CRITICAL_WINDOW = (200, 2500)   # Only the criterion definition
+HIGH_WINDOW = (500, 2000)       # Scoring context
+LOW_WINDOW = (300, 1000)        # General context
+MAX_SECTION_SIZE = 15_000       # Limit per section
+
+# Sections with patterns like "Criterion No. X: ... points"
+# receive CRITICAL priority and are sent first

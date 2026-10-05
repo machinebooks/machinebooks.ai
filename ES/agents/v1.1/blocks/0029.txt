@@ -1,0 +1,33 @@
+flowchart TD
+    Start([userMessage + modelName]) --> Trigger{¿THINK_KEYWORDS<br/>en el mensaje?}
+    Trigger -- "no" --> Adaptive{¿forceEnabled?}
+    Trigger -- "sí" --> Reasoning{¿modelo<br/>reasoning?<br/>gpt-5 / o-series}
+    Adaptive -- "no" --> Skip([sin thinking])
+    Adaptive -- "sí" --> Reasoning
+    Reasoning -- "sí" --> Effort[reasoning_effort: medium]
+    Reasoning -- "no" --> Anthropic{¿modelo<br/>Anthropic?<br/>getConfig != null}
+    Effort --> EffortHigh{¿>2000 chars<br/>o keyword arch?}
+    EffortHigh -- "sí" --> EffortH[reasoning_effort: high]
+    EffortHigh -- "no" --> EffortKeep[reasoning_effort: medium]
+    EffortH --> EffortXhigh{¿XHIGH_KEYWORDS?<br/>ultrathink / xhigh}
+    EffortKeep --> EffortXhigh
+    EffortXhigh -- "sí" --> EffortX[reasoning_effort: xhigh]
+    EffortXhigh -- "no" --> EffortFinal[fin]
+    EffortX --> EffortFinal
+    EffortFinal --> Anthropic
+    Anthropic -- "no" --> Done([params])
+    Anthropic -- "sí" --> Budget[budget = defaultBudget<br/>Opus 10K / Sonnet 5K / 3K]
+    Budget --> Long{¿userMsg<br/>>2000 chars?}
+    Long -- "sí" --> Mult2[budget × 2]
+    Long -- "no" --> Verylong{¿>5000 chars?}
+    Mult2 --> Verylong
+    Verylong -- "sí" --> Mult3[budget × 3]
+    Verylong -- "no" --> Cap[budget ≤ maxThinking]
+    Mult3 --> Cap
+    Cap --> ThinkField[thinking: type=enabled,<br/>budget_tokens]
+    ThinkField --> Done
+
+    classDef decision fill:#142038,stroke:#ffb347,color:#f5efe0
+    classDef action fill:#0a1224,stroke:#7dd8e8,color:#f5efe0
+    class Trigger,Adaptive,Reasoning,EffortHigh,EffortXhigh,Anthropic,Long,Verylong decision
+    class Effort,EffortH,EffortKeep,EffortX,EffortFinal,Budget,Mult2,Mult3,Cap,ThinkField action

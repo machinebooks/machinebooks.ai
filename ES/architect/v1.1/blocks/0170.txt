@@ -1,0 +1,51 @@
+class TeamExecutor:
+    """Ejecuta un DAG de tareas con paralelismo en tareas independientes."""
+
+    async def execute_team(self, config: TeamConfig) -> AsyncGenerator[str, None]:
+        from graphlib import TopologicalSorter, CycleError
+        ids = [task.task_id for task in config.tasks]
+        if any(not isinstance(task_id, str) or not task_id for task_id in ids) or len(ids) != len(set(ids)):
+            raise ValueError("IDs de tarea no válidos")
+        graph = {task.task_id: set(task.depends_on) for task in config.tasks}
+        if any(dependency not in graph for dependencies in graph.values() for dependency in dependencies):
+            raise ValueError("Dependencia desconocida")
+        try:
+            tuple(TopologicalSorter(graph).static_order())
+        except CycleError:
+            raise ValueError("El grafo contiene un ciclo") from None
+        task_states: Dict[str, TaskState] = {
+            t.task_id: TaskState(config=t) for t in config.tasks
+        }
+        completed: Set[str] = set()
+        failed: Set[str] = set()
+
+        while len(completed) + len(failed) < len(config.tasks):
+            # Encontrar tareas cuyas dependencias están completas
+            ready = self._find_ready_tasks(config.tasks, completed, failed)
+
+            if not ready:
+                # Deadlock: dependencias fallidas o circulares
+                for task in config.tasks:
+                    if task.task_id not in completed | failed:
+                        failed.add(task.task_id)
+                        task_states[task.task_id].status = "blocked"
+                        yield _sse("task_blocked", task_id=task.task_id, reason="Dependencia no completada")
+                break
+
+            # Lanzar todas las tareas listas en paralelo
+            results = await asyncio.gather(
+                *[self._execute_task_safe(t, task_states, config) for t in ready],
+                return_exceptions=True
+            )
+
+            for task_cfg, result in zip(ready, results):
+                if isinstance(result, BaseException) or not isinstance(result, dict) or result.get("success") is not True or "output" not in result:
+                    failed.add(task_cfg.task_id)
+                    task_states[task_cfg.task_id].status = "failed"
+                else:
+                    completed.add(task_cfg.task_id)
+                    task_states[task_cfg.task_id].status = "completed"
+                    task_states[task_cfg.task_id].output = result.get("output", {})
+
+                yield _sse("task_failed" if task_cfg.task_id in failed else "task_complete",
+                           task_id=task_cfg.task_id)

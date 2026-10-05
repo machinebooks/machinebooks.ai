@@ -1,0 +1,51 @@
+import structlog
+import uuid
+from flask import g, request
+
+def configure_logging(app):
+    """Configures structlog with JSON output in production,
+    formatted text in development."""
+
+    # Processors common to all environments
+    shared_processors = [
+        structlog.stdlib.add_log_level,
+        structlog.stdlib.add_logger_name,
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.StackInfoRenderer(),
+        # Adds request_id to each log if in request context
+        _add_request_id,
+    ]
+
+    if app.config.get("ENV") == "production":
+        # Structured JSON in production — parseable by analysis systems
+        processors = shared_processors + [
+            structlog.processors.dict_tracebacks,
+            structlog.processors.JSONRenderer()
+        ]
+    else:
+        # Colored text in development — human-readable
+        processors = shared_processors + [
+            structlog.dev.ConsoleRenderer(colors=True)
+        ]
+
+    structlog.configure(
+        processors=processors,
+        wrapper_class=structlog.make_filtering_bound_logger(logging.DEBUG),
+        context_class=dict,
+        logger_factory=structlog.stdlib.LoggerFactory(),
+        cache_logger_on_first_use=True,
+    )
+
+    # Suppress verbose werkzeug and sqlalchemy logs in production
+    logging.getLogger("werkzeug").setLevel(logging.ERROR)
+    logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
+
+    return structlog.get_logger()
+
+def _add_request_id(logger, method, event_dict):
+    """structlog processor: adds request_id to log if it exists in Flask context."""
+    try:
+        event_dict["request_id"] = g.request_id
+    except RuntimeError:
+        pass  # Outside request context (Celery tasks, startup)
+    return event_dict

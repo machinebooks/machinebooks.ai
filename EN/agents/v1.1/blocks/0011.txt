@@ -1,0 +1,17 @@
+flowchart TD
+    Start[I open a new block of code] --> Q1{Is there a string<br/>sent to the<br/>LLM as<br/>system or user?}
+    Q1 -->|No| Q3{Is there JSON<br/>schema with<br/>name +<br/>description<br/>+ input?}
+    Q1 -->|Yes, no gaps| R1[Register 1<br/>prompt-as-control-flow]
+    Q1 -->|Yes, with {{var}}| Q2{Is the gap<br/>filled by<br/>code?}
+    Q2 -->|Yes| R2[Register 2<br/>prompt-as-template]
+    Q2 -->|No, left by the<br/>user| R1
+    Q3 -->|Yes, and there is handler| R4[Register 4<br/>tool]
+    Q3 -->|No| Q4{Is it a for/while<br/>that calls the LLM<br/>at each step?}
+    Q4 -->|Yes| R5[Register 5<br/>orchestrator / workflow]
+    Q4 -->|No| R3[Register 3<br/>pure deterministic code]
+
+    style R1 fill:#0288d1,color:#fff
+    style R2 fill:#7b1fa2,color:#fff
+    style R3 fill:#388e3c,color:#fff
+    style R4 fill:#f57c00,color:#fff
+    style R5 fill:#5d4037,color:#fff

@@ -1,0 +1,22 @@
+flowchart TB
+    subgraph spawn["spawn — contexto nuevo"]
+        S1[Padre]
+        S2[Hijo: instrucciones + briefing]
+        S1 -->|lanzar; esperar o coordinar después| S2
+    end
+    subgraph fork["fork — contexto heredado"]
+        F1[Padre]
+        F2[Hijo: historial disponible + directiva]
+        F1 -->|construir contexto| F2
+    end
+    subgraph teammate["InProcessTeammate — mismo proceso"]
+        T1[Padre]
+        T2[Teammate: AgentLoop async]
+        T1 -->|coordinar promesa y resultado| T2
+    end
+    subgraph handoff["handoff privado — espera y retorno"]
+        H1[Padre espera]
+        H2[Target con contexto filtrado]
+        H1 -->|llamada completa autorizada| H2
+        H2 -->|resultado correlacionado| H1
+    end

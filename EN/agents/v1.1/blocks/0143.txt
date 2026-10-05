@@ -1,0 +1,31 @@
+@startuml
+!theme plain
+skinparam backgroundColor transparent
+skinparam componentStyle uml2
+
+package "Spawn pattern" {
+  [subagent.ts<.runSubagent>] as Spawn
+}
+
+package "Fork pattern" {
+  [forkSubagent.ts<.buildForkedContext>] as Fork
+  [AgentLoop] as LoopA
+  Fork --> LoopA : new loop with\ncloned messages
+}
+
+package "InProcessTeammate pattern" {
+  [inProcessTeammate.ts<.InProcessTeammateManager>] as Teammate
+  [AgentLoop] as LoopB
+  Teammate --> LoopB : agentLoop.run()\ninside async\nawait
+}
+
+package "Handoff pattern" {
+  [handoff/Handoff.ts] as Handoff
+  [handoff/HandoffRegistry.ts] as Registry
+  [handoff/executeHandoff.ts] as Exec
+  [AgentLoop] as LoopC
+  Registry --> Handoff : list\nschemas
+  Exec --> Handoff : filters,\nsanitizes
+  Exec --> LoopC : creates target\nloop
+}
+@enduml

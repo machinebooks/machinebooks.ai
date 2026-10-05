@@ -1,0 +1,79 @@
+Operations
+  -  Dashboard                  /
+  -  Licenses                  /licenses
+  -  Users                     /users
+  -  Teams                     /teams
+  -  Organizations             /organizations  (superOnly)
+
+Adoption
+  -  Overview
+     -  Cohorts dashboard     /adoption
+     -  League (ranking)      /adoption/leaderboard
+     -  NPS · Surveys         /adoption/nps
+  -  Catalogs
+     -  Use cases             /adoption/use-cases
+     -  Challenges            /adoption/challenges
+     -  Training              /adoption/training
+     -  Portal banners        /adoption/banners
+  -  Operations
+     -  Campaigns             /adoption/campaigns
+     -  Import employees      /users/import
+
+AI & Routing
+  -  Configuration
+     -  Prompts               /ai-prompts
+     -  Purposes              /llm-config
+     -  Orchestrators         /orchestrator-configs
+  -  Models & Cache
+     -  LLM Models            /llm-models
+     -  Cooldowns             /cooldowns
+     -  Semantic Cache        /semantic-cache
+  -  Control
+     -  Rate Limits           /rate-limits
+     -  Guardrails            /guardrails
+     -  Governance            /ai-governance
+  -  Observability
+     -  Quality               /ai-quality
+     -  Chat feedback         /chat-feedback
+     -  Debug                 /ai-debug
+
+Security
+  -  Compliance & Audit
+     -  Firewall              /firewall
+     -  Audit Log             /audit
+     -  Classification        /security/classification
+     -  CSE & Break-Glass     /security/cse
+  -  Policies
+     -  PII Policies          /policies
+     -  AI Notices (GIA)      /ai-disclosures
+     -  Hooks                 /hooks
+  -  Access
+     -  Enterprise            /enterprise
+
+Knowledge
+  -  Knowledge Base           /knowledge-base
+  -  Team Collections         /team-collections
+  -  Skills                   /skills
+  -  Capabilities             /capabilities
+
+Plans & Packs
+  -  Commercial
+     -  Proposal Templates    /template-assets  (superOnly)
+     -  White-label           /whitelabel
+
+Usage & Costs
+  -  Consumption              /usage
+  -  Budget & ROI             /ai-budget
+  -  Azure Billing            /admin/spending
+  -  Cache & tokens           /cache-metrics
+
+Extensibility
+  -  Org MCPs                /mcps
+  -  Applications            /applications
+  -  API Tokens              /api-tokens
+
+System
+  -  Health                  /health
+  -  Event webhooks          /event-webhooks
+  -  Email SMTP              /email-smtp
+  -  Guide                   /admin-help

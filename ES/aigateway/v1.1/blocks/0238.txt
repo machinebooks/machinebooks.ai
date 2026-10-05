@@ -1,0 +1,13 @@
+# Resolución de master key (gateway/app/core/crypto.py:43-69)
+def _get_master_key() -> bytes:
+    global _DEV_EPHEMERAL_KEY
+    key_hex = os.environ.get("N7X_MASTER_KEY", "")
+    if not key_hex:
+        # Clave efímera en dev — warning, NO usar en producción
+        if _DEV_EPHEMERAL_KEY is None:
+            _DEV_EPHEMERAL_KEY = secrets.token_bytes(32)
+            logger.warning("N7X_MASTER_KEY no configurada — clave EFIMERA")
+        return _DEV_EPHEMERAL_KEY
+    if len(key_hex) != 64:
+        raise ValueError(f"N7X_MASTER_KEY debe tener 64 chars hex (32 bytes)")
+    return bytes.fromhex(key_hex)

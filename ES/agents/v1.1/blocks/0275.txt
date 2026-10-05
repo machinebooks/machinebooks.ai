@@ -1,0 +1,5 @@
+// A trailing space changes the bytes and the local digest.
+const block1 = `Eres un agente... `;
+const block2 = `Reglas:\n- ...`;
+const systemPrompt = block1 + block2;
+// A digest change does not establish provider cache miss or total invalidation.

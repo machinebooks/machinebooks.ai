@@ -1,0 +1,5 @@
+// Do not promote reasoning or an incomplete thinking block to a final answer.
+if (!content.trim() && reasoning) {
+  return { content: '', reasoning, toolCalls: undefined,
+    streamError: 'No final response; reasoning is kept separate' };
+}

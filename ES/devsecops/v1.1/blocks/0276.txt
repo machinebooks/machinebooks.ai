@@ -1,0 +1,29 @@
+import re
+import anthropic
+
+SENSITIVE_PATTERNS = [
+    r"api[_-]?key\s*[:=]",
+    r"password\s*[:=]",
+    r"secret\s*[:=]",
+    r"(?:REGLAS|INSTRUCCIONES)\s+DE\s+SEGURIDAD",
+    r"NO\s+NEGOCIABLES",
+    r"Bearer\s+[A-Za-z0-9\-._~+/]+=*",
+]
+
+def filter_output(response_text: str) -> tuple[str, list[str]]:
+    """Filtra la respuesta del LLM y detecta fugas de información."""
+    violations = []
+
+    for pattern in SENSITIVE_PATTERNS:
+        if re.search(pattern, response_text, re.IGNORECASE):
+            violations.append(f"output_leak: {pattern}")
+
+    if violations:
+        # Respuesta genérica cuando se detecta fuga
+        return (
+            "No puedo completar esta solicitud. Si necesitas "
+            "asistencia, reformula tu consulta.",
+            violations
+        )
+
+    return response_text, []

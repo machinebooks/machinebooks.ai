@@ -1,0 +1,4 @@
+@abstractmethod
+def stream_chat(self, request: ChatRequest) -> AsyncIterator[StreamChunk]:
+    """SSE streaming call."""
+    ...

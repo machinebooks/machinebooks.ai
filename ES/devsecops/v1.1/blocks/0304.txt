@@ -1,0 +1,11 @@
+rules:
+  - id: devsecops-book.docker.privileged-container
+    pattern: 'privileged: true'
+    message: "Configuración privileged; revise necesidad y acceso efectivo al host."
+    severity: ERROR
+    languages: [yaml]
+    metadata:
+      category: security
+      cwe: "CWE-250: Execution with Unnecessary Privileges"
+      confidence: HIGH
+      chapter: 7

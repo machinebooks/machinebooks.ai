@@ -1,0 +1,39 @@
+class TestOrganizationIsolation:
+    """
+    Verifies that one organization's data is not accessible from another.
+    This type of test protects against the cross-tenant access vulnerability,
+    which is especially common in code generated without explicit
+    specification of organization-based filtering.
+    """
+
+    def test_user_cannot_access_client_from_another_organization(
+        self, client, auth_headers_org_a, client_id_org_b
+    ):
+        """
+        A user from organization A must not be able to see the data
+        of a client belonging to organization B, even if they have
+        the correct role within their own organization.
+        """
+        response = client.get(
+            f"/api/v1/clients/{client_id_org_b}",
+            headers=auth_headers_org_a["analyst"]
+        )
+        # Must return 404 (as if it did not exist) or 403 (access denied)
+        # Never 200 with the other organization's client data
+        assert response.status_code in [403, 404], \
+            f"Org A user accessed org B client: {response.status_code}"
+
+    def test_client_listing_filters_by_organization(
+        self, client, auth_headers_org_a, client_ids_org_b
+    ):
+        """
+        The client listing must only return those from the authenticated
+        user's organization. It must not filter by parameter — the filter
+        must be implicit in the query based on the user's context.
+        """
+        response = client.get("/api/v1/clients", headers=auth_headers_org_a["analyst"])
+        assert response.status_code == 200
+        returned_clients = [c["id"] for c in response.json.get("items", [])]
+        for foreign_id in client_ids_org_b:
+            assert foreign_id not in returned_clients, \
+                f"Client {foreign_id} from another organization appeared in results"

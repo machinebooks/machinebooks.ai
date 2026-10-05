@@ -1,0 +1,124 @@
+# Partial authorized portal adapter: DOM selectors and business data are illustrative.
+# Didactic example: patterns/automation/bots/portal_bot.py
+
+from selenium.common.exceptions import NoSuchElementException,TimeoutException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+import pandas as pd
+import time
+
+class PortalBot(BaseBot, MFAWaitMixin):
+    """Automation bot for the corporate portal.
+
+    Manages login with MFA, navigation, and data extraction
+    of projects and resources from the portal.
+    """
+
+    PORTAL_URL = "https://portal.example.com"  # In production: load from os.environ or CredentialVault
+
+    def __init__(self,task_id,credentials,challenge_store,user_id,security_context):
+        BaseBot.__init__(self, task_id)
+        MFAWaitMixin.__init__(self,challenge_store,security_context)
+        self.credentials = credentials
+        self.user_id = user_id
+
+
+    def login(self) -> bool:
+        """Performs the complete login process, including MFA if necessary."""
+        if self.challenge_store.authorize_portal(self.security_context,self.user_id,self.PORTAL_URL) is not True:
+            raise PermissionError("Portal access denied")
+        self.driver.get(self.PORTAL_URL)
+
+        # Credentials page
+        username_field = self.wait_for_element((By.ID, "username"))
+        username_field.send_keys(self.credentials["username"])
+
+        password_field = self.driver.find_element(By.ID, "password")
+        password_field.send_keys(self.credentials["password"])
+        password_field.submit()
+
+        # Determine if the MFA screen appears or goes straight to dashboard
+        time.sleep(2)  # Small pause for the redirect to resolve
+
+        if "mfa" in self.driver.current_url or self._is_mfa_screen():
+            mfa_code = self.request_mfa_code(
+                task_id=self.task_id,
+                system_name="Corporate Portal",
+                user_id=self.user_id
+            )
+            if mfa_code is None:
+                raise RuntimeError("Timeout waiting for user MFA code")
+
+            mfa_field = self.wait_for_element((By.ID, "otp-input"))
+            mfa_field.send_keys(mfa_code)
+            mfa_field.submit()
+
+        # Verify successful login by checking for dashboard element
+        try:
+            self.wait_for_element((By.CSS_SELECTOR, ".dashboard-header"), timeout=10)
+            return True
+        except TimeoutException:
+            return False
+
+    def _is_mfa_screen(self) -> bool:
+        """Detects if we are on the MFA screen by DOM elements."""
+        try:
+            self.driver.find_element(By.ID, "otp-input")
+            return True
+        except NoSuchElementException:
+            return False
+
+
+    def extract_project_list(self) -> list[dict]:
+        """Extracts the list of active projects from the portal."""
+        # Navigate to the projects section
+        projects_link = self.wait_for_element(
+            (By.LINK_TEXT, "Active Projects")
+        )
+        projects_link.click()
+
+        projects = []
+        page = 1
+        seen={}
+        deadline=time.monotonic()+120
+
+        while True:
+            if page>500 or time.monotonic()>=deadline:
+                raise TimeoutError("Extraction incomplete: page/deadline limit")
+            # Wait for the table to load
+            self.wait_for_element((By.CSS_SELECTOR, "table.projects-table tbody tr"))
+
+            rows = self.driver.find_elements(
+                By.CSS_SELECTOR, "table.projects-table tbody tr"
+            )
+
+            for row in rows:
+                cells = row.find_elements(By.TAG_NAME, "td")
+                if len(cells) >= 4:
+                    record={
+                        "id": cells[0].text.strip(),
+                        "name": cells[1].text.strip(),
+                        "status": cells[2].text.strip(),
+                        "team": cells[3].text.strip(),
+                    }
+                    if not record["id"]:raise ValueError("Project identifier required")
+                    if record["id"] in seen and seen[record["id"]]!=record:
+                        raise ValueError("Conflicting repeated project row")
+                    if record["id"] not in seen:
+                        seen[record["id"]]=record
+                        projects.append(record)
+                    if len(projects)>100000:raise ValueError("Extraction row limit")
+
+            # Check if there is a next page
+            try:
+                next_btn = self.driver.find_element(
+                    By.CSS_SELECTOR, "button.pagination-next:not([disabled])"
+                )
+            except NoSuchElementException:
+                break  # Only an absent enabled next control ends this example.
+            next_btn.click()
+            if not rows:raise ValueError("Page transition lacks a row witness")
+            WebDriverWait(self.driver,self.DEFAULT_WAIT).until(EC.staleness_of(rows[0]))
+            page += 1
+
+        return projects

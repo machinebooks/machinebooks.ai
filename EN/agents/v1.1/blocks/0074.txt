@@ -1,0 +1,25 @@
+sequenceDiagram
+    autonumber
+    participant L as AgentLoop
+    participant D as DeferredToolManager
+    participant R as ToolRegistry
+    participant P as Provider
+    participant M as Model
+
+    L->>D: getActiveToolNames()
+    D-->>L: ~15 names (no deferred)
+    L->>R: getToolSchemas(active)
+    R-->>L: 15 function schemas
+    L->>D: generateDeferredToolsReminder()
+    D-->>L: system text with 40+ names
+    L->>P: messages + tools[15] + reminder
+    P->>M: prompt + 15 schemas + reminder
+    M-->>P: tool_use ToolSearch query='cron'
+    P-->>L: ToolSearch invoked
+    L->>D: searchDeferredTools('cron')
+    D-->>L: [CronCreate, CronDelete, CronList]
+    L->>D: loadTool(CronCreate), loadTool(...)
+    Note over D: activeToolNames invalidated
+    L->>R: getToolSchemas([CronCreate, ...])
+    R-->>L: 3 extra function schemas
+    L->>P: next turn with 15+3 schemas

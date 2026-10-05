@@ -1,0 +1,24 @@
+import { ContextAnalyzer } from '../services/ContextAnalyzer.js';
+
+// Educational pseudocode: finalToolNames is the already filtered catalog.
+const breakdown = ContextAnalyzer.analyze(
+  this.messages.map(m => ({
+    role: m.role,
+    content: m.content,
+    tool_calls: extractToolUseBlocks(m),  // Supported text/tool subset only.
+  })),
+  this.toolRegistry.getToolSchemas(finalToolNames), // Actual selected schemas.
+  this.config.maxContextTokens ?? 200_000,
+);
+
+// 3. Emit an internal event; transport serialization is a separate contract.
+this.emit('context_breakdown', {
+  total_pct: breakdown.total.percentage,
+  tool_results_pct: breakdown.fileCache.percentage,
+  recommendations: breakdown.recommendations,
+});
+
+// 4. AutoCompact uses its own policy; preserve complete tool/result groups.
+if (this.compactor.shouldCompact(this.messages)) {
+  this.messages = await this.compactor.compact(this.messages);
+}

@@ -1,0 +1,39 @@
+# One Messages-compatible call, not an Agent SDK or tool loop.
+# Server adapters enforce current document permission, data minimization,
+# model/region/budget policy and durable usage recording before returning data.
+import json
+
+def analyze_requirements_document(document_text, analysis_config,
+        security_context, client, model, authorize_analysis,
+        minimize_for_provider, build_prompt, validate_analysis, record_usage):
+    if not isinstance(document_text,str) or not document_text.strip():
+        raise ValueError("Document text required")
+    if not isinstance(analysis_config,dict) or security_context is None:
+        raise PermissionError("Authorized configuration required")
+    if authorize_analysis(security_context,analysis_config) is not True:
+        raise PermissionError("Analysis denied")
+    safe=minimize_for_provider(document_text,security_context)
+    if not isinstance(safe,str) or not safe.strip():raise ValueError("Minimized text required")
+    prompt=build_prompt(analysis_config)
+    if not isinstance(prompt,str) or not prompt.strip():raise ValueError("Prompt required")
+    response=client.messages.create(model=model,max_tokens=4096,system=prompt,
+              messages=[{"role":"user","content":safe}])
+    if getattr(response,"stop_reason",None)!="end_turn":
+        raise ValueError("Complete text response required")
+    blocks=getattr(response,"content",None)
+    if not isinstance(blocks,list):raise ValueError("Response blocks required")
+    text="".join(b.text for b in blocks if getattr(b,"type",None)=="text"
+                 and isinstance(getattr(b,"text",None),str))
+    if not text or len(text)>100000:raise ValueError("Bounded JSON required")
+    result=json.loads(text)
+    # Adapter validates schema, quoted evidence, allowed decisions and unknowns.
+    if not isinstance(result,dict) or validate_analysis(result,security_context) is not True:
+        raise ValueError("Analysis validation failed")
+    usage=getattr(response,"usage",None)
+    record={"model":getattr(response,"model",model),
+            "input_tokens":getattr(usage,"input_tokens",None),
+            "output_tokens":getattr(usage,"output_tokens",None)}
+    if record_usage(security_context,record) is not True:
+        raise RuntimeError("Usage acknowledgement required")
+    return result
+# A recommendation is decision support. Human business/legal review is external.

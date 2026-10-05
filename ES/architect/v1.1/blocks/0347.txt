@@ -1,0 +1,43 @@
+# Didactic tool schema/dispatcher; no Agent SDK decorator is shown.
+import math
+
+search_documents_tool = {
+    "name": "search_documents",
+    "description": "Search currently authorized document fragments.",
+    "input_schema": {
+        "type": "object", "additionalProperties": False,
+        "properties": {
+            "query": {"type": "string", "minLength": 1, "maxLength": 10000},
+            "doc_type": {"type": "string", "enum": ["propuesta_tecnica",
+                "documento_requisitos", "cv_profile", "catalogo_servicio",
+                "acta_reunion", "all"]},
+            "max_results": {"type": "integer", "minimum": 1, "maximum": 20},
+            "min_score": {"type": "number", "minimum": -1, "maximum": 1},
+        }, "required": ["query"],
+    },
+}
+
+
+def execute_search_documents(query, security_context, resolve_authorized_search,
+                              search_current_sources, doc_type="all",
+                              max_results=5, min_score=0.6):
+    if (not isinstance(query, str) or not query.strip() or len(query) > 10000
+            or type(max_results) is not int or not 1 <= max_results <= 20
+            or doc_type not in search_documents_tool["input_schema"]
+                ["properties"]["doc_type"]["enum"]
+            or type(min_score) not in (int, float) or not math.isfinite(min_score)
+            or not -1 <= min_score <= 1):
+        raise ValueError("invalid_document_search")
+    scope = resolve_authorized_search(security_context, doc_type)
+    # Adapter resolves registered collections/embedding and current source ACL.
+    # Its Qdrant implementation uses query_points, as shown in Chapter12.
+    documents = search_current_sources(query, security_context, scope,
+                                        max_results=max_results,
+                                        score_threshold=min_score)
+    if not isinstance(documents, list) or len(documents) > max_results:
+        raise ValueError("invalid_document_search_result")
+    return {"documents": documents, "total_found": len(documents),
+            "search_type": "semantic"}
+
+# Schema defaults do not supply runtime defaults or authorize a request.
+# The two adapters are required; this excerpt does not implement object ACL.

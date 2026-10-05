@@ -1,0 +1,20 @@
+// Historical reducer excerpt; inputs must be validated and bounded.
+for (const ev of streamEvents) {
+  if (ev.type === 'text') {
+    const last = merged[merged.length - 1];
+    if (last && last.type === 'text') { last.text += ev.text; }
+    else { merged.push({ type: 'text', text: ev.text }); }
+  } else if (ev.type === 'thinking') {
+    // Thinking uses the same grouping rule.
+  } else if (ev.type === 'tool_start') {
+    merged.push({ type: 'tool', tool: ev.tool });
+  } else if (ev.type === 'tool_result') {
+    const existing = merged.find(m => m.type === 'tool' && m.tool.id === ev.id);
+    if (existing) existing.tool = { ...existing.tool, result: ev.result };
+  } else if (ev.type === 'tasks') {
+    // This contract treats tasks as a complete replacement snapshot.
+    const idx = merged.findIndex(m => m.type === 'tasks');
+    if (idx >= 0) merged.splice(idx, 1);
+    merged.push({ type: 'tasks', tasks: ev.tasks });
+  }
+}

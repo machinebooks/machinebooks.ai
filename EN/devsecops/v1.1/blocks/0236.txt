@@ -1,0 +1,156 @@
+import anthropic
+import json
+
+
+class ComplianceGapAnalyzer:
+    """Agent analyzing differences between framework versions."""
+
+    def __init__(self):
+        self.client = anthropic.Anthropic()
+        self.model = "claude-sonnet-4-6"
+
+    def analyze_framework_update(
+        self,
+        framework_name: str,
+        old_controls: list[dict],
+        new_controls: list[dict],
+        current_mappings: list[dict],
+    ) -> dict:
+        """Analyzes the impact of a framework update."""
+
+        prompt = f"""You are a compliance consultant with experience in \
+{framework_name}.
+
+Analyze the update between two framework versions.
+
+## Previous version controls
+{json.dumps(old_controls, indent=2, ensure_ascii=False)}
+
+## New version controls
+{json.dumps(new_controls, indent=2, ensure_ascii=False)}
+
+## Current automated evidence mappings
+{json.dumps(current_mappings, indent=2, ensure_ascii=False)}
+
+Generate a gap analysis with this JSON structure:
+{{
+  "new_controls": [
+    {{
+      "control_id": "new control id",
+      "title": "title",
+      "impact": "description of impact on the pipeline",
+      "suggested_evidence_sources": ["suggested sources"],
+      "automation_feasible": true/false,
+      "effort_estimate": "low/medium/high"
+    }}
+  ],
+  "modified_controls": [
+    {{
+      "old_id": "previous id",
+      "new_id": "new id",
+      "change_description": "what changed",
+      "mapping_impact": "how it affects the existing mapping",
+      "action_required": "what needs to be done"
+    }}
+  ],
+  "removed_controls": [
+    {{
+      "control_id": "removed id",
+      "replacement": "control that replaces it or null"
+    }}
+  ],
+  "summary": {{
+    "total_new": 0,
+    "total_modified": 0,
+    "total_removed": 0,
+    "estimated_effort_days": 0,
+    "risk_assessment": "free text"
+  }}
+}}
+
+Respond ONLY with the JSON, no additional text."""
+
+        response = self.client.messages.create(
+            model=self.model,
+            max_tokens=4096,
+            messages=[{"role": "user", "content": prompt}],
+        )
+
+        try:
+            result = json.loads(response.content[0].text)
+            if not isinstance(result,dict):
+                raise ValueError("invalid proposal schema")
+        except (ValueError,TypeError,KeyError,IndexError,AttributeError):
+            return {"status":"INCOMPLETE","coverage":"partial","proposal":None,"origin_verified":False}
+        result.update(status="REVIEW",coverage="partial",origin_verified=False)
+
+        # Log the agent's decision for auditing
+        self._log_agent_decision(
+            framework=framework_name,
+            input_controls_old=len(old_controls),
+            input_controls_new=len(new_controls),
+            result_summary=result.get("summary", {}),
+            model=self.model,
+            tokens_used=(
+                response.usage.input_tokens + response.usage.output_tokens
+            ),
+        )
+
+        return result
+
+    def suggest_control_mapping(
+        self,
+        control: dict,
+        available_evidence_sources: list[str],
+    ) -> dict:
+        """Suggests evidence mapping for a new control."""
+
+        prompt = f"""Given this normative control:
+{json.dumps(control, indent=2, ensure_ascii=False)}
+
+And these available evidence sources in the DevSecOps pipeline:
+{json.dumps(available_evidence_sources, indent=2)}
+
+Propose technical relationships for review; these sources do not independently establish conformity
+with this control. For each source, explain what acceptance
+criterion should be applied.
+
+Respond in JSON:
+{{
+  "control_id": "...",
+  "suggested_mappings": [
+    {{
+      "evidence_source": "...",
+      "pass_criteria": "...",
+      "confidence": "high/medium/low",
+      "reasoning": "..."
+    }}
+  ],
+  "manual_evidence_needed": ["non-automatable evidence"],
+  "notes": "relevant observations"
+}}"""
+
+        response = self.client.messages.create(
+            model=self.model,
+            max_tokens=2048,
+            messages=[{"role": "user", "content": prompt}],
+        )
+
+        proposal = json.loads(response.content[0].text)
+        if not isinstance(proposal, dict):
+            raise ValueError("INCOMPLETE: invalid proposal schema")
+        proposal["status"] = "REVIEW"
+        proposal["coverage"] = "partial"
+        proposal["origin_verified"] = False
+        return proposal
+    def _log_agent_decision(self, **kwargs) -> None:
+        """Logs each agent decision for traceability."""
+        log_entry = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "agent": "compliance-gap-analyzer",
+            **kwargs,
+        }
+        log_path = Path("logs/agent-decisions.jsonl")
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        with log_path.open("a") as f:
+            f.write(json.dumps(log_entry) + "\n")

@@ -1,0 +1,41 @@
+def triaje_escalonado(hallazgos: list[dict]) -> list[dict]:
+    """Pipeline de triaje en dos fases: Haiku filtra, Sonnet analiza."""
+    resultados = []
+
+    # Fase 1: clasificación rápida con Haiku
+    for h in hallazgos:
+        contexto = leer_codigo_circundante(h["path"], h["start"]["line"])
+        respuesta = client.messages.create(
+            model="claude-haiku-4-5",
+            max_tokens=256,
+            temperature=0,
+            messages=[{
+                "role": "user",
+                "content": f"""Clasifica este hallazgo SAST como
+"probable_verdadero" o "probable_falso". Solo responde con JSON:
+{{"clasificacion": "...", "motivo": "..."}}
+
+Regla: {h["check_id"]}
+Código:\n```\n{contexto}\n```""",
+            }],
+        )
+        try:
+            resultado_haiku = json.loads(respuesta.content[0].text)
+            if not isinstance(resultado_haiku,dict) or resultado_haiku.get("clasificacion") not in {"probable_verdadero","probable_falso","likely_true","likely_false","probable_true","probable_false"}:
+                raise ValueError("invalid first-stage classification")
+            h["status"] = "REVIEW"
+        except (ValueError,TypeError,IndexError,AttributeError):
+            resultado_haiku = {"status":"INCOMPLETE"}
+            h["status"] = "INCOMPLETE"
+        h["coverage"] = "partial"
+
+        h["triaje_haiku"] = resultado_haiku
+
+        # Solo escala a Sonnet si Haiku dice probable verdadero
+        if resultado_haiku.get("clasificacion") == "probable_verdadero":
+            resultado_sonnet = triaje_hallazgo(h)
+            h["triaje_sonnet"] = resultado_sonnet
+        h.setdefault("triaje_sonnet", {"status":"REVIEW", "classification":"not_escalated"})
+        resultados.append(h)
+
+    return resultados

@@ -1,0 +1,17 @@
+flowchart TD
+    Start[Abro un bloque de código nuevo] --> Q1{¿Hay un string<br/>que se manda<br/>al LLM como<br/>system o user?}
+    Q1 -->|No| Q3{¿Hay JSON<br/>schema con<br/>name +<br/>description<br/>+ input?}
+    Q1 -->|Sí, sin huecos| R1[Registro 1<br/>prompt-as-control-flow]
+    Q1 -->|Sí, con {{var}}| Q2{¿El hueco<br/>lo rellena<br/>código?}
+    Q2 -->|Sí| R2[Registro 2<br/>prompt-as-template]
+    Q2 -->|No, lo deja el<br/>usuario| R1
+    Q3 -->|Sí, y hay handler| R4[Registro 4<br/>tool]
+    Q3 -->|No| Q4{¿Es un for/while<br/>que llama al LLM<br/>en cada paso?}
+    Q4 -->|Sí| R5[Registro 5<br/>orquestador / workflow]
+    Q4 -->|No| R3[Registro 3<br/>código determinista puro]
+
+    style R1 fill:#0288d1,color:#fff
+    style R2 fill:#7b1fa2,color:#fff
+    style R3 fill:#388e3c,color:#fff
+    style R4 fill:#f57c00,color:#fff
+    style R5 fill:#5d4037,color:#fff

@@ -1,0 +1,5 @@
+.github/
+└── workflows/
+    ├── ci.yml          ← Integración continua: lint + test
+    ├── build.yml       ← Construcción de imágenes Docker
+    └── deploy.yml      ← Despliegue a producción

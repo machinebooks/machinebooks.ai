@@ -1,0 +1,18 @@
+sequenceDiagram
+    autonumber
+    participant U as User
+    participant C as Validated client
+    participant S as Agent host
+    participant R as Renderer
+    U->>C: message or reviewed transcription
+    C->>S: authenticated authorized request
+    loop run observation
+        S-->>C: event according to channel framing
+        C->>C: validate schema, identity, and state
+        C->>R: attributed text or state
+        R->>R: bounded grouping and safe rendering
+        R-->>U: accessible progress information
+    end
+    S-->>C: observed terminal run state
+    C->>R: success, failed, cancelled, or incomplete according to evidence
+    Note over C,S: model finish_reason does not establish closure of the whole run

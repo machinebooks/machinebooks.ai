@@ -1,0 +1,14 @@
+const llmProvider = serverState.llmProvider;
+
+if (llmProvider === 'anthropic') {
+  const { streamAnthropicCall } = await import('../providers/anthropic.js');
+  // Pseudocode: prepare callbacks, invoke this adapter and return its result.
+}
+
+if (llmProvider === 'azure') {
+  const { streamAzureCall } = await import('../providers/azure.js');
+  // Pseudocode: prepare callbacks, invoke this adapter and return its result.
+}
+
+// Default: OpenAI-compatible (LM Studio, Ollama, OpenAI)
+// ... fetch directo a {llmBaseUrl}/chat/completions

@@ -1,0 +1,60 @@
+def classify_with_agent(manifest: dict) -> ClassificationResult:
+    """Classification with Claude for cases requiring interpretation."""
+    client = anthropic.Anthropic()
+
+    prompt = f"""Analyze the following AI system and classify it according to
+Regulation (EU) 2024/1689 (AI Act).
+
+SYSTEM MANIFEST:
+{yaml.dump(manifest, default_flow_style=False)}
+
+CLASSIFICATION CRITERIA:
+- UNACCEPTABLE (Art. 5): social scoring, subliminal manipulation,
+  exploitation of vulnerabilities of specific groups, real-time remote
+  biometric identification in public spaces.
+- HIGH RISK (Annex III): systems in biometrics, critical
+  infrastructure, education, employment, essential services, justice,
+  migration, democratic processes.
+- LIMITED (Art. 50): chatbots, deepfakes, content generation
+  systems requiring transparency about AI nature.
+- MINIMAL: all others.
+
+RESPOND in JSON with this exact structure:
+{{
+  "risk_level": "unacceptable|high|limited|minimal",
+  "confidence": 0.0-1.0,
+  "rationale": "explanation in 2-3 sentences",
+  "applicable_articles": ["Art. X", ...],
+  "obligations": ["obligation 1", ...],
+  "requires_human_review": true/false
+}}
+
+Every proposal requires competent human review; confidence is not legal authority."""
+
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=1024,
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    # Parse JSON response and build ClassificationResult
+    import json
+    result_data = json.loads(response.content[0].text)
+    if not isinstance(result_data,dict) or result_data.get("risk_level") not in {level.value for level in RiskLevel}:
+        raise ValueError("INCOMPLETE: invalid risk category")
+    confidence = result_data.get("confidence")
+    if type(confidence) not in (int,float) or not 0 <= confidence <= 1:
+        raise ValueError("INCOMPLETE: invalid confidence")
+    if not isinstance(result_data.get("rationale"),str) or not result_data["rationale"].strip():
+        raise ValueError("INCOMPLETE: missing rationale")
+    for key in ("applicable_articles","obligations"):
+        if not isinstance(result_data.get(key),list) or any(not isinstance(value,str) or not value.strip() for value in result_data[key]):
+            raise ValueError("INCOMPLETE: invalid proposal list")
+    return ClassificationResult(
+        risk_level=RiskLevel(result_data["risk_level"]),
+        confidence=result_data["confidence"],
+        rationale=result_data["rationale"],
+        applicable_articles=result_data["applicable_articles"],
+        obligations=result_data["obligations"],
+        requires_human_review=True
+    )

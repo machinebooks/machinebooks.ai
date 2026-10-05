@@ -1,0 +1,23 @@
+it('correlates a tool result before the second request', async () => {
+  const registry = makeRegistryMock({ list_directory: async () => 'fixture.txt' });
+  const toolUse: ToolUse = { id: 'tu_1', name: 'list_directory', input: { path: '.' } };
+  const provider = makeProviderMock([
+    { events: [{ type: 'tool_use', toolUse }],
+      finalMessage: { role: 'assistant', content: [{ type: 'tool_use', ...toolUse }] },
+      usage: { input: 30, output: 12 }, finishReason: 'tool_use' },
+    { events: [{ type: 'text_delta', text: 'Una fixture.' }],
+      assertMessages: messages => {
+        const results = messages.flatMap(message => message.content)
+          .filter(block => block.type === 'tool_result');
+        expect(results).toContainEqual({ type: 'tool_result',
+          tool_use_id: 'tu_1', content: 'fixture.txt' });
+      },
+      finalMessage: { role: 'assistant', content: [{ type: 'text', text: 'Una fixture.' }] },
+      usage: { input: 60, output: 8 }, finishReason: 'end_turn' },
+  ]);
+  const loop = createLoop({ provider, registry });
+  const out = await loop.run([{ role: 'user', content: [{ type: 'text', text: 'lista la fixture' }] }]);
+  expect(out.iterations).toBe(2);
+  expect(out.toolCalls).toHaveLength(1);
+  expect(out.toolCalls[0].name).toBe('list_directory');
+});

@@ -1,0 +1,15 @@
+sequenceDiagram
+    participant U as Usuario
+    participant P as AgentLoop padre
+    participant H as Hijo
+    Note over P,H: spawn con coordinación diferida del ejemplo
+    U->>P: pregunta
+    P->>H: iniciar hijo autorizado
+    P-->>U: progreso independiente, si existe
+    H-->>P: resultado correlacionado al trabajo
+    Note over P,H: handoff privado con espera de resultado
+    U->>P: pregunta
+    P->>H: transfer_to_specialist(task)
+    Note over P: espera la promesa; Node puede atender otros eventos
+    H-->>P: tool_result correlacionado a la llamada
+    P-->>U: continúa con datos del especialista

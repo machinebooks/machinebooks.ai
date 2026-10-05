@@ -1,0 +1,59 @@
+def run_nuclei_checks(
+    target_url: str,
+    tech_stack: list[str],
+) -> dict:
+    """Ejecuta templates de Nuclei relevantes para el stack tecnológico."""
+    # Mapear stack a templates de Nuclei
+    template_map = {
+        "fastapi": ["http/technologies/fastapi-detect.yaml"],
+        "nginx": [
+            "http/misconfiguration/nginx/",
+            "http/cves/nginx/",
+        ],
+        "postgresql": ["network/cves/postgresql/"],
+        "redis": [
+            "network/exposed-redis.yaml",
+            "network/cves/redis/",
+        ],
+        "docker": ["http/exposures/configs/docker-compose-exposure.yaml"],
+    }
+
+    templates = []
+    for tech in tech_stack:
+        templates.extend(template_map.get(tech.lower(), []))
+
+    if not templates:
+        return {"status":"INCOMPLETE", "findings":[], "errors":["no templates for declared stack"]}
+
+    template_args = []
+    for t in templates:
+        template_args.extend(["-t", t])
+
+    cmd = [
+        "docker", "run", "--rm",
+        "--network", "host",
+        "projectdiscovery/nuclei:latest",
+        "-u", target_url,
+        "-json",
+        "-severity", "medium,high,critical",
+    ] + template_args
+
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+    except (OSError, subprocess.TimeoutExpired):
+        return {"status":"INCOMPLETE", "findings":[], "errors":["scanner failed or timed out"]}
+    errors = [] if result.returncode == 0 else ["scanner exit code " + str(result.returncode)]
+    findings = []
+    for line in result.stdout.splitlines():
+        if not line.strip():
+            continue
+        try:
+            value = json.loads(line)
+            if not isinstance(value, dict) or not isinstance(value.get("info"), dict):
+                raise ValueError("invalid finding schema")
+            findings.append(value)
+        except (ValueError, TypeError):
+            errors.append("invalid scanner output")
+    return {"status":"INCOMPLETE" if errors else "REVIEW",
+            "coverage":"partial", "findings":findings,
+            "total":len(findings), "errors":errors}

@@ -1,0 +1,22 @@
+// Historical registry rebuild; a stable versioned view is required at execution.
+for (const name of registry.listTools()) {
+  if (name.startsWith('mcp_')) registry.unregister(name);
+}
+
+for (const t of mcpClient.getAllTools()) {
+  const fullName = `mcp_${t.serverName}_${t.name}`;
+  registry.register({
+    definition: {
+      name: fullName,
+      description: `[MCP: ${t.serverName}] ${t.description || t.name}`,
+      inputSchema: schema,
+      isConcurrencySafe: false, // Unknown external effects: conservative default.
+      isReadOnly: false,
+      isDeferred: false,
+    },
+    async execute(input) {
+      const res = await mcpClient.executeFromAgent(fullName, input);
+      return { tool_use_id: '', content: (res.output || '').slice(0, 50000), is_error: !!res.error };
+    },
+  });
+}

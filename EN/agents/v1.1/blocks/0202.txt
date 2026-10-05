@@ -1,0 +1,39 @@
+// The host supplies authenticated request options and an event validator.
+async function consumeAgentStream(onEvent, validateEvent, signal, request) {
+  const response = await fetch('/api/agent/stream', { ...request, method: 'POST', signal });
+  const mediaType = response.headers.get('content-type')?.split(';')[0].trim();
+  if (!response.ok || !response.body || mediaType !== 'application/x-ndjson') {
+    throw new Error('Stream unavailable or unsupported');
+  }
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder('utf-8', { fatal: true });
+  const maxRecordChars = 1024 * 1024;
+  let pending = '';
+  let completed = false;
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      pending += done ? decoder.decode() : decoder.decode(value, { stream: true });
+      let boundary;
+      while ((boundary = pending.indexOf('\n')) >= 0) {
+        const line = pending.slice(0, boundary);
+        pending = pending.slice(boundary + 1);
+        if (line.length > maxRecordChars) throw new Error('Record limit exceeded');
+        if (!line.trim()) continue;
+        if (completed) throw new Error('Event after terminal record');
+        const event = validateEvent(JSON.parse(line));
+        await onEvent(event);
+        if (event.type === 'agent_complete') completed = true;
+      }
+      if (pending.length > maxRecordChars) throw new Error('Record limit exceeded');
+      if (done) {
+        if (pending.trim()) throw new Error('Incomplete NDJSON record');
+        if (!completed) throw new Error('Missing terminal record');
+        break;
+      }
+    }
+  } finally {
+    await reader.cancel().catch(() => {});
+    reader.releaseLock();
+  }
+}

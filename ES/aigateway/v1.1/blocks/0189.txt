@@ -1,0 +1,7 @@
+# Partial example; admission and reconciliation still require coordination.
+# q.used already includes the accepted amount in this illustrative context.
+if q.entitlement != Decimal("-1") and q.used > q.entitlement:
+    if not q.overage_permitted:
+        raise ValueError("overage is not permitted")
+    q.overage_count = (q.overage_count or 0) + 1
+await db.commit()

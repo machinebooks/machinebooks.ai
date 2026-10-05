@@ -1,0 +1,3 @@
+// Memory content can change; provenance and permissions remain explicit.
+const memories = await loadMemories();
+const systemPrompt = `${BLOCK_1}\n${BLOCK_2}\nMemories: ${memories.join('\n')}`;

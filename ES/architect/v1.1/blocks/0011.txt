@@ -1,0 +1,64 @@
+from dataclasses import dataclass
+from typing import Callable, Mapping
+import hmac
+import os
+
+@dataclass(frozen=True)
+class SecurityContext:
+    user_id: int = 0
+    app_code: str = "operations"
+    allowed_collections: tuple[str, ...] = ()
+    registered_collections: tuple[str, ...] = ()
+    is_internal: bool = False
+    is_admin: bool = False
+    project_id: int | None = None
+    client_id: int | None = None
+
+    def can_access_collection(self, collection: str) -> bool:
+        if collection not in self.registered_collections or collection not in self.allowed_collections:
+            return False
+        if collection in SYSTEM_ONLY_COLLECTIONS:
+            return self.is_internal
+        if collection in RESTRICTED_RAG_COLLECTIONS:
+            return self.is_internal or self.is_admin
+        return collection in self.allowed_collections
+
+    @classmethod
+    def from_headers(cls, headers: Mapping[str, str],
+                     resolve_principal: Callable) -> "SecurityContext":
+        expected = os.environ.get("INTERNAL_API_KEY", "")
+        supplied = headers.get("x-internal-api-key", "")
+        if not expected or not isinstance(supplied, str) or not hmac.compare_digest(expected.encode("utf-8"), supplied.encode("utf-8")):
+            raise PermissionError("Origen interno no autenticado")
+        raw_user_id = headers.get("x-user-id", "")
+        if not isinstance(raw_user_id, str) or not raw_user_id.isascii() or not raw_user_id.isdecimal():
+            raise PermissionError("Identidad no válida")
+        try:
+            user_id = int(raw_user_id)
+        except (TypeError, ValueError):
+            raise PermissionError("Identidad no válida") from None
+        if user_id < 1:
+            raise PermissionError("Identidad no válida")
+        principal = resolve_principal(user_id, headers.get("x-app-code", ""))
+        if not isinstance(principal, Mapping) or type(principal.get("user_id")) is not int or principal.get("user_id") != user_id or principal.get("active") is not True:
+            raise PermissionError("Identidad no autorizada")
+        if not isinstance(principal.get("app_code"), str) or not principal["app_code"]:
+            raise PermissionError("Aplicación no válida")
+        if type(principal.get("is_admin")) is not bool:
+            raise PermissionError("Rol no válido")
+        for key in ("project_id", "client_id"):
+            if principal.get(key) is not None and (type(principal[key]) is not int or principal[key] < 1):
+                raise PermissionError("ámbito no válido")
+        for key in ("registered_collections", "allowed_collections"):
+            if not isinstance(principal.get(key), (list, tuple)):
+                raise PermissionError("Catálogo no válido")
+        registered = tuple(principal["registered_collections"])
+        allowed = tuple(principal["allowed_collections"])
+        if not all(isinstance(value, str) and value for value in registered + allowed):
+            raise PermissionError("Catálogo no válido")
+        if not set(allowed).issubset(registered):
+            raise PermissionError("Colección no registrada")
+        return cls(user_id=user_id, app_code=principal["app_code"],
+                   allowed_collections=allowed, registered_collections=registered,
+                   is_internal=True, is_admin=principal["is_admin"] is True,
+                   project_id=principal.get("project_id"), client_id=principal.get("client_id"))

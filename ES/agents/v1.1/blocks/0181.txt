@@ -1,0 +1,8 @@
+flowchart LR
+    HOST[Output de hook autorizado] --> LEN{Tamaño dentro del límite}
+    LEN -->|no| FAIL[Rechazar o truncar según contrato]
+    LEN -->|sí| CHECK[Comprobaciones parciales de contenido]
+    CHECK -->|rechazo| DROP[Omitir y registrar metadatos mínimos]
+    CHECK -->|admite| DATA[Datos con procedencia, sin elevar autoridad]
+    DATA --> LLM[Contexto del modelo]
+    FAIL --> DROP

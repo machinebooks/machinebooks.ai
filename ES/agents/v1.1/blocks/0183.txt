@@ -1,0 +1,15 @@
+type HookGrant = {
+  canonicalRoot: string;
+  settingsDigest: string;
+  scriptDigest: string;
+  principal: string;
+};
+
+function matchesGrant(current: HookGrant, approved: HookGrant): boolean {
+  return current.canonicalRoot === approved.canonicalRoot
+    && current.settingsDigest === approved.settingsDigest
+    && current.scriptDigest === approved.scriptDigest
+    && current.principal === approved.principal;
+}
+// The host resolves paths, computes digests and authenticates the grant.
+// This comparison alone neither grants execution nor prevents file races.

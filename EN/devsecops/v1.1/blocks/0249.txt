@@ -1,0 +1,82 @@
+from datetime import timedelta
+from datetime import datetime, timezone
+from sqlalchemy.orm import Session
+from sqlalchemy import func, or_, and_
+
+
+# Severity weights for debt calculation
+SEVERITY_WEIGHTS = {
+    Severity.CRITICAL: 10,
+    Severity.HIGH: 5,
+    Severity.MEDIUM: 2,
+    Severity.LOW: 1
+}
+
+# Age factor: debt grows over time
+def age_factor(approved_at: datetime) -> float:
+    """Age penalty: grows 10% every 30 days."""
+    if not isinstance(approved_at,datetime) or approved_at.utcoffset() != timedelta(0) or approved_at > datetime.now(timezone.utc):
+        raise ValueError("INCOMPLETE: invalid approval UTC date")
+    days = (datetime.now(timezone.utc) - approved_at).days
+    return 1.0 + (days / 30) * 0.1
+
+
+def calculate_security_debt(db: Session) -> dict:
+    """Calculates aggregated security debt metrics."""
+
+    now = datetime.now(timezone.utc)
+    active = (
+        db.query(SecurityException)
+        .filter(SecurityException.status == ExceptionStatus.APPROVED, SecurityException.expires_at > now)
+        .all()
+    )
+
+    total_debt_score = 0
+    debt_by_severity = {s: 0 for s in Severity}
+    debt_by_service = {}
+
+    for exc in active:
+        weight = SEVERITY_WEIGHTS[exc.severity]
+        age = age_factor(exc.approved_at)
+        score = weight * age
+
+        total_debt_score += score
+        debt_by_severity[exc.severity] += score
+        debt_by_service.setdefault(exc.service_name, 0)
+        debt_by_service[exc.service_name] += score
+
+    # Additional metrics
+    avg_age_days = 0
+    if active:
+        ages = [(datetime.now(timezone.utc) - e.approved_at).days for e in active]
+        avg_age_days = sum(ages) / len(ages)
+
+    expired_unresolved = (
+        db.query(func.count(SecurityException.id))
+        .filter(or_(SecurityException.status == ExceptionStatus.EXPIRED, and_(SecurityException.status == ExceptionStatus.APPROVED, SecurityException.expires_at <= now)))
+        .scalar()
+    )
+
+    return {
+        "total_active_exceptions": len(active),
+        "total_debt_score": round(total_debt_score, 1),
+        "exception_counts_by_severity": {s.value:sum(e.severity == s for e in active) for s in Severity},
+        "debt_by_severity": {
+            s.value: round(v, 1) for s, v in debt_by_severity.items()
+        },
+        "debt_by_service": {
+            k: round(v, 1) for k, v in sorted(
+                debt_by_service.items(),
+                key=lambda x: x[1],
+                reverse=True
+            )
+        },
+        "average_exception_age_days": round(avg_age_days, 1),
+        "expired_unresolved": expired_unresolved,
+        "health": (
+            "critical" if expired_unresolved > 0 or any(
+                e.severity == Severity.CRITICAL for e in active
+            ) else "warning" if total_debt_score > 50
+            else "healthy"
+        )
+    }

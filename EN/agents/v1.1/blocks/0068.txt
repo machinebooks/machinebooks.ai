@@ -1,0 +1,20 @@
+flowchart TD
+    A[Model emits tool_use with input] --> B{Valid JSON object?}
+    B -- No --> ER1["is_error: true<br/>'arguments must be a JSON object'"]
+    B -- Yes --> C{Complies with JSON Schema?}
+    C -- No --> ER2["is_error: true<br/>validation error"]
+    C -- Yes --> P{Host scope and permission?}
+    P -- No --> ER4["Authorization error"]
+    P -- Yes --> D[Handler executes]
+    ER4 --> Z
+    D --> E{Exception thrown?}
+    E -- Yes --> ER3["is_error: true<br/>error message"]
+    E -- No --> F[Successful ToolResult]
+    ER1 --> Z[Return to model<br/>on the next turn]
+    ER2 --> Z
+    ER3 --> Z
+    F --> Z
+    style ER1 fill:#fca5a5
+    style ER2 fill:#fca5a5
+    style ER3 fill:#fca5a5
+    style F fill:#86efac

@@ -1,0 +1,65 @@
+from dataclasses import dataclass
+
+@dataclass
+class DeveloperMetrics:
+    name: str
+    team: str
+    # Security interaction
+    findings_reviewed: int        # Findings reviewed in 90 days
+    findings_resolved: int        # Findings resolved in 90 days
+    security_comments_on_prs: int # Security comments on PRs
+    # Code coverage
+    files_owned: int              # Files where they are primary contributor
+    critical_service_files: int   # Of those, how many in critical services
+    # Technical influence
+    reviews_given: int            # Code reviews performed in 90 days
+    reviews_accepted: int         # Reviews whose suggestions were adopted
+
+def calculate_champion_score(m: DeveloperMetrics) -> dict:
+    """Calculates the champion score with three dimensions."""
+
+    for field_name in ("findings_reviewed","findings_resolved","security_comments_on_prs","files_owned","critical_service_files","reviews_given","reviews_accepted"):
+        value = getattr(m,field_name)
+        if type(value) is not int or value < 0:
+            raise ValueError("INCOMPLETE: invalid champion count")
+    if m.critical_service_files > m.files_owned or m.reviews_accepted > m.reviews_given:
+        raise ValueError("INCOMPLETE: invalid champion denominator")
+    # Dimension 1: Security affinity (0-40 points)
+    security_affinity = min(40, (
+        m.findings_reviewed * 2 +
+        m.findings_resolved * 5 +
+        m.security_comments_on_prs * 3
+    ))
+
+    # Dimension 2: Attack surface coverage (0-30 points)
+    if m.files_owned > 0:
+        critical_ratio = m.critical_service_files / m.files_owned
+    else:
+        critical_ratio = 0
+    attack_surface = min(30, int(critical_ratio * 30) + min(10, m.files_owned))
+
+    # Dimension 3: Technical influence (0-30 points)
+    if m.reviews_given > 0:
+        acceptance_rate = m.reviews_accepted / m.reviews_given
+    else:
+        acceptance_rate = 0
+    influence = min(30, int(acceptance_rate * 20) + min(10, m.reviews_given // 5))
+
+    total = security_affinity + attack_surface + influence
+
+    return {
+        "status": "REVIEW",
+        "developer": m.name,
+        "team": m.team,
+        "total_score": total,
+        "breakdown": {
+            "security_affinity": security_affinity,
+            "attack_surface": attack_surface,
+            "technical_influence": influence
+        },
+        "recommendation": (
+            "Strong candidate" if total >= 65
+            else "Viable candidate" if total >= 40
+            else "Not recommended in this iteration"
+        )
+    }

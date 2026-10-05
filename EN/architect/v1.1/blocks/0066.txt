@@ -1,0 +1,33 @@
+# backend/middleware/security_headers.py
+
+def init_security_headers(app):
+    """Applies OWASP security headers to all responses.
+    Centralized to guarantee consistency across 190+ endpoints."""
+
+    @app.after_request
+    def add_security_headers(response):
+        # Restrictive CSP: only allows resources from the same origin
+        response.headers['Content-Security-Policy'] = (
+            "default-src 'self'; "
+            "script-src 'self'; "
+            "style-src 'self' 'unsafe-inline'; "
+            "img-src 'self' data: https:; "
+            "connect-src 'self'; "
+            "frame-ancestors 'none'"
+        )
+        # HSTS: forces HTTPS for 1 year, includes subdomains
+        response.headers['Strict-Transport-Security'] = (
+            'max-age=31536000; includeSubDomains; preload'
+        )
+        # Clickjacking prevention
+        response.headers['X-Frame-Options'] = 'DENY'
+        # MIME sniffing prevention
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        # Disable unused browser APIs
+        response.headers['Permissions-Policy'] = (
+            'geolocation=(), camera=(), microphone=(), '
+            'payment=(), usb=(), magnetometer=()'
+        )
+        # Remove header that reveals the web server
+        response.headers.pop('Server', None)
+        return response

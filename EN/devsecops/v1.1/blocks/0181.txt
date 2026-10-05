@@ -1,0 +1,22 @@
+# falco/rules/container-shells.yaml
+- rule: Interactive shell in production container
+  desc: >
+    Detects execution of bash, sh, zsh or other interactive
+    shells inside a non-debugging container.
+    An interactive shell in production is a strong indicator
+    of compromise or insecure operational practice.
+  condition: >
+    spawned_process
+    and container
+    and container.image.repository != "busybox"
+    and not container.name startswith "debug-"
+    and proc.name in (bash, sh, zsh, csh, ksh, dash)
+    and proc.tty != 0
+  output: >
+    Interactive shell detected in production container
+    (user=%user.name container=%container.name
+    image=%container.image.repository
+    process=%proc.name pid=%proc.pid
+    terminal=%proc.tty command=%proc.cmdline)
+  priority: WARNING
+  tags: [container, shell, mitre_execution]

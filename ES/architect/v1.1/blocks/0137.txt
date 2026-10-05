@@ -1,0 +1,81 @@
+import hashlib
+import json
+import math
+import uuid
+from qdrant_client.models import (
+    PointStruct, Filter, FieldCondition, MatchValue, MatchAny,
+    VectorParams, Distance, UpdateStatus)
+
+def index_document_chunks(chunks, document_id, version_id, collection_name,
+                          security_context, load_authorized_index_snapshot,
+                          qdrant_client, embeddings_model):
+    if (type(document_id) is not int or document_id <= 0
+            or not isinstance(version_id, str) or not version_id
+            or not isinstance(chunks, list) or not 1 <= len(chunks) <= 1000):
+        raise ValueError("Invalid document index input")
+    # Adapter checks current authorization, immutable source/job binding,
+    # allowed collection and external embedding policy BEFORE sending any text.
+    snapshot = load_authorized_index_snapshot(
+        security_context, document_id, version_id, collection_name, chunks)
+    required = ("tenant_id", "app_code", "embedding_id", "document_type")
+    if not isinstance(snapshot, dict) or any(
+            not isinstance(snapshot.get(k), str) or not snapshot[k] for k in required):
+        raise ValueError("Invalid authorized index snapshot")
+    owner = snapshot.get("owner_user_id")
+    roles = snapshot.get("allowed_roles")
+    dimension = snapshot.get("embedding_dimension")
+    if (type(owner) is not int or owner <= 0
+            or not isinstance(roles, list)
+            or any(not isinstance(role, str) or not role for role in roles)
+            or type(dimension) is not int or not 1 <= dimension <= 4096):
+        raise ValueError("Invalid index metadata")
+    params = qdrant_client.get_collection(collection_name).config.params.vectors
+    if (not isinstance(params, VectorParams) or params.size != dimension
+            or params.distance != Distance.COSINE):
+        raise ValueError("Registered embedding/collection configuration differs")
+    texts = []
+    for chunk in chunks:
+        if not isinstance(chunk.page_content, str) or not chunk.page_content:
+            raise ValueError("Empty or invalid chunk text")
+        texts.append(chunk.page_content)
+    if sum(map(len, texts)) > 1_000_000:
+        raise ValueError("Index text exceeds the example limit")
+    vectors = embeddings_model.embed_documents(texts)
+    if not isinstance(vectors, list) or len(vectors) != len(chunks):
+        raise ValueError("Embedding cardinality differs from chunks")
+    points = []
+    for index, (chunk, vector) in enumerate(zip(chunks, vectors)):
+        if (not isinstance(vector, list) or len(vector) != dimension
+                or any(type(v) not in (int, float) or not math.isfinite(v) for v in vector)):
+            raise ValueError("Invalid embedding dimension or values")
+        identity = json.dumps(
+            [collection_name, snapshot["tenant_id"], document_id, version_id,
+             snapshot["embedding_id"], index,
+             hashlib.sha256(chunk.page_content.encode()).hexdigest()],
+            ensure_ascii=False, separators=(",", ":"))
+        point_id = str(uuid.uuid5(uuid.NAMESPACE_URL, identity))
+        payload = {
+            "tenant_id": snapshot["tenant_id"], "app_code": snapshot["app_code"],
+            "document_id": document_id, "version_id": version_id,
+            "embedding_id": snapshot["embedding_id"],
+            "document_type": snapshot["document_type"], "chunk_index": index,
+            "total_chunks": len(chunks), "text": chunk.page_content,
+            "owner_user_id": owner, "allowed_roles": roles,
+            "is_current_version": True,  # Retrieval hint; authoritative version check below
+            "source_page": chunk.metadata.get("page"),
+            "ocr_extracted": chunk.metadata.get("ocr", False),
+        }
+        points.append(PointStruct(id=point_id, vector=vector, payload=payload))
+    for offset in range(0, len(points), 100):
+        result = qdrant_client.upsert(
+            collection_name=collection_name, points=points[offset:offset + 100], wait=True)
+        if result.status != UpdateStatus.COMPLETED:
+            raise RuntimeError("Vector write completion was not confirmed")
+    return {"point_ids": [str(point.id) for point in points],
+            "status": "upsert_completed_publication_pending"}
+
+# Stable point IDs make same-input replay replace points, rather than create duplicates.
+# This does not atomically publish document metadata in MySQL. Partial batches need
+# reconciliation; activate one authoritative current version only after all writes
+# are confirmed, and reconcile deletion/old-version points separately.
+# Clients/adapters need I/O timeouts, scoped credentials and tested server versions.

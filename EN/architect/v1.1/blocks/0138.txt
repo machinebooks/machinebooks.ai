@@ -1,0 +1,28 @@
+from celery import shared_task
+
+VECTOR_INDEXING_THRESHOLD = 7.0
+
+@shared_task(queue="sync", rate_limit="100/m")
+def index_opportunity(opportunity_dict: dict):
+    """
+    Celery task for dual indexing (Meilisearch + selective Qdrant).
+    The 'sync' queue limits to 100 indexing operations per minute
+    to avoid saturating the embedding model during ingestion peaks.
+    """
+    from search.meilisearch_setup import index_opportunities
+    from search.opportunity_normalizer import NormalizedOpportunity
+    import dataclasses
+
+    opportunity = NormalizedOpportunity(**opportunity_dict)
+
+    # Always index in Meilisearch (fast textual search)
+    index_opportunities([opportunity], get_meilisearch_client())
+
+    # Index in Qdrant only if it exceeds the relevance threshold
+    if opportunity.relevance_score >= VECTOR_INDEXING_THRESHOLD:
+        vectorize_and_index_qdrant(
+            id=opportunity.id,
+            text=f"{opportunity.title}. {opportunity.description}",
+            metadata=dataclasses.asdict(opportunity),
+            collection="opportunities",
+        )

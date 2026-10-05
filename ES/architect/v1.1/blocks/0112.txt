@@ -1,0 +1,76 @@
+import copy
+import hashlib
+import json
+import time
+from types import MappingProxyType
+
+class AuditedLLMClient:
+    def __init__(self, inner, deployment, budget_service, audit_service,
+                 request, security_context):
+        self._inner = inner
+        self._deployment = MappingProxyType(dict(deployment))
+        self._budget = budget_service
+        self._audit = audit_service
+        self._request = request
+        self._context = MappingProxyType(dict(security_context))
+        fields = ("user_id", "tenant_id", "app_code", "request_id", "entity_type", "entity_id")
+        if any(security_context.get(k) is not None
+               and type(security_context[k]) not in (str, int) for k in fields):
+            raise TypeError("Audit identifiers must be scalar")
+        self._audit_context = {k: security_context.get(k) for k in fields}
+
+    def complete(self, messages, prompt_id=None):
+        # Reauthorize and minimize BEFORE reserving capacity or invoking the adapter.
+        prepared = self._audit.prepare_messages(
+            dict(self._context), self._request.service_type, messages)
+        encoded = json.dumps(prepared, ensure_ascii=False, sort_keys=True,
+                             separators=(",", ":"), allow_nan=False).encode("utf-8")
+        if len(encoded) > 400_000:
+            raise ValueError("Prepared request exceeds the example limit")
+        reservation = self._budget.reserve(
+            dict(self._context), dict(self._deployment), prepared)
+        if (not isinstance(reservation, dict)
+                or not isinstance(reservation.get("reservation_id"), str)
+                or not reservation["reservation_id"]):
+            raise RuntimeError("Budget reservation was not confirmed")
+        start = time.perf_counter()
+        base = {**self._audit_context, "reservation_id": reservation["reservation_id"],
+                "service_type": self._request.service_type,
+                "provider": self._deployment["provider"],
+                "requested_model": self._deployment["model_id"],
+                "prompt_id": prompt_id, "prompt_hash": hashlib.sha256(encoded).hexdigest()}
+        try:
+            response = self._inner.complete(copy.deepcopy(prepared))
+            if not isinstance(response, dict) or not isinstance(response.get("text"), str):
+                raise TypeError("Adapter response must contain text")
+            actual_model = response.get("model_id")
+            if not isinstance(actual_model, str) or not actual_model:
+                raise TypeError("Adapter must report the observed model")
+            for name in ("input_tokens", "output_tokens"):
+                value = response.get(name)
+                if value is not None and (type(value) is not int or value < 0):
+                    raise ValueError("Invalid reported token count")
+        except Exception as error:
+            record = {**base, "success": False, "model_id": None,
+                      "input_tokens": None, "output_tokens": None,
+                      "error_type": type(error).__name__,
+                      "latency_ms": int((time.perf_counter() - start) * 1000)}
+            try:
+                if self._audit.record_and_settle(record) is not True:
+                    raise RuntimeError("Audit settlement was not confirmed")
+            except Exception:
+                error.add_note("Audit settlement also failed; reservation needs reconciliation")
+            raise
+        record = {**base, "success": True, "model_id": actual_model,
+                  "input_tokens": response.get("input_tokens"),
+                  "output_tokens": response.get("output_tokens"),
+                  "latency_ms": int((time.perf_counter() - start) * 1000)}
+        if self._audit.record_and_settle(record) is not True:
+            raise RuntimeError("Audit settlement was not confirmed")
+        return response["text"]
+
+# complete() is a synchronous normalized adapter protocol, not a vendor SDK method.
+# prepare_messages enforces current policy; reserve atomically checks all budgets.
+# record_and_settle persists a unique attempt and settles known usage, or marks
+# unknown usage for reconciliation. Storage, pricing and crash recovery are external.
+# No prompts, outputs or raw provider errors are placed in these audit records.

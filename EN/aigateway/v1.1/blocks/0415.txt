@@ -1,0 +1,8 @@
+# docker-compose.yml — persistent volumes
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
+  qdrant_data:
+    driver: local

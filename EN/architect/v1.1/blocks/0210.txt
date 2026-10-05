@@ -1,0 +1,70 @@
+# tests/conftest.py
+import pytest
+from app import create_app, db
+from app.models import User, App, AppRole, UserAppMembership
+
+@pytest.fixture(scope="session")
+def app():
+    """Flask application configured for testing with in-memory SQLite DB."""
+    application = create_app(config_name="testing")
+    with application.app_context():
+        db.create_all()
+        _seed_rbac_fixtures()  # Create apps, roles, and test users
+        yield application
+        db.drop_all()
+
+@pytest.fixture(scope="session")
+def client(app):
+    return app.test_client()
+
+@pytest.fixture(scope="session")
+def auth_headers_by_role(app, client):
+    """
+    Returns a dictionary with authentication headers per role.
+    Each entry is: {'Authorization': 'Bearer <jwt_token>'}
+    """
+    roles = ["admin", "manager", "analyst", "viewer", "editor", "readonly"]
+    headers = {}
+    for role in roles:
+        response = client.post("/api/auth/login", json={
+            "email": f"test_{role}@example.com",
+            "password": "Test1234!",
+            "app_code": "operations"
+        })
+        token = response.json["access_token"]
+        headers[role] = {"Authorization": f"Bearer {token}"}
+    return headers
+
+def _seed_rbac_fixtures():
+    """Creates the minimum RBAC structure needed for tests."""
+    # Operations app with its 6 roles
+    ops_app = App(name="Operations", code="operations")
+    db.session.add(ops_app)
+    db.session.flush()
+
+    roles_permissions = {
+        "admin":    {"clients": ["read","write","delete"], "exports": ["read","write"]},
+        "manager":  {"clients": ["read","write"], "exports": ["read","write"]},
+        "analyst":  {"clients": ["read"], "exports": ["read"]},
+        "viewer":   {"clients": ["read"], "exports": []},
+        "editor":   {"clients": ["read","write"], "exports": []},
+        "readonly": {"clients": ["read"], "exports": []},
+    }
+
+    for role_name, permissions in roles_permissions.items():
+        role = AppRole(
+            app_id=ops_app.id,
+            name=role_name,
+            permissions=permissions,
+            is_admin=(role_name == "admin")
+        )
+        db.session.add(role)
+        user = User(
+            email=f"test_{role_name}@example.com",
+            name=f"Test {role_name.capitalize()}"
+        )
+        user.set_password("Test1234!")
+        db.session.add(user)
+        # Associate user with role and app (UserAppMembership) — omitted for brevity
+
+    db.session.commit()

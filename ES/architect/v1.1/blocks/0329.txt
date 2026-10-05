@@ -1,0 +1,42 @@
+# ADR-042: Separación del servicio de IA en FastAPI independiente
+
+**Estado:** Aceptado
+**Fecha:** [fecha de la decisión]
+**Decisores:** Equipo de arquitectura
+
+## Contexto
+
+El proyecto requiere integrar capacidades de IA (RAG, agentes, LLMs) en una plataforma
+Flask existente con 22 blueprints y 190+ endpoints. Se presentan dos opciones
+de integración arquitectónica.
+
+## Opciones consideradas
+
+**Opción A — Integración directa en Flask**
+Añadir LangChain, Qdrant client y los clientes de LLM directamente al backend Flask.
+- Ventaja: un solo servicio a mantener y desplegar
+- Inconveniente: dependencias de ML (torch, sentence-transformers) aumentan el
+  tiempo de arranque del backend de 2s a 40s+
+- Inconveniente: el worker de IA comparte recursos con peticiones REST síncronas
+- Inconveniente: dificulta escalar el componente de IA independientemente
+
+**Opción B — Servicio FastAPI independiente (elegida)**
+FastAPI dedicado para toda la capa de IA, con comunicación HTTP interna.
+- Ventaja: arranque independiente, escalado independiente
+- Ventaja: FastAPI nativo para streaming SSE (respuestas Claude en tiempo real)
+- Ventaja: dependencias de ML aisladas, sin impacto en el backend principal
+- Inconveniente: latencia de red interna añadida (~2ms en Docker Compose)
+- Inconveniente: un servicio más a operar y monitorear
+
+## Decisión
+
+Servicio FastAPI independiente. La latencia de red interna de 2ms es irrelevante
+frente a las respuestas de LLM que toman entre 500ms y 30s. La separación de
+dependencias y la capacidad de streaming nativo justifican la complejidad operativa añadida.
+
+## Consecuencias
+
+- Servicio `ai_service` en Docker Compose con límite de memoria 4GB
+- Comunicación vía HTTP con autenticación por API key interna
+- Health check independiente incluido en el health check de plataforma
+- Documentación separada para desarrolladores del servicio de IA

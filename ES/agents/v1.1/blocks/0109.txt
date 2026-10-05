@@ -1,0 +1,24 @@
+flowchart TB
+    subgraph Estatica["Capa 2 — Cache estatica del prompt"]
+        SYS["system prompt + MEMORY.md context"]
+        SCH["tool_schemas[] (38 tools)"]
+    end
+    subgraph Viva["Capa 1 — Mensajes activos del turno"]
+        MSG["messages[] (user, assistant, tool_result)"]
+    end
+    subgraph Comp["Capa 3 — Compactacion"]
+        SUMMARY["resumen de turnos antiguos"]
+    end
+    subgraph Snap["Capa 4 — Snapshots de subagentes"]
+        SNAP["agent-snapshots/&lt;agentId&gt;.json"]
+    end
+    subgraph Persist["Capa 5 — Memoria persistente"]
+        MEM["~/.sylvarsec/memory.json + MEMORY.md"]
+    end
+
+    MEM -- "se inyecta como contexto" --> SYS
+    SNAP -- "el padre lee tras handoff" --> MSG
+    SUMMARY -- "sustituye turnos viejos" --> MSG
+    SYS --> PROV["provider.call(messages, tools)"]
+    SCH --> PROV
+    MSG --> PROV

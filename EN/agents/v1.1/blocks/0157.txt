@@ -1,0 +1,9 @@
+// Educational notification; ownership and persisted delivery are omitted.
+globalNotificationManager.enqueue({
+  ownerSessionId, parentAgentId, taskId: childConfig.agentId,
+  outputFile, status: finalStatus,
+  summary: 'Estado terminal comunicado por el ejecutor.',
+  result: finalContent.slice(0, 10_000),
+  usage: reconciledUsage ?? null,
+});
+// Truncation must be declared; terminal status does not prove all effects stopped.

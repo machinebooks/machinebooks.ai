@@ -1,0 +1,13 @@
+// Registry-entry excerpt; the host supplies ctx and command consumers.
+const sastCommand = {
+  name: 'sast',
+  aliases: ['secreview'],
+  description: 'Review code within the authorized scope',
+  category: 'tools',
+  execute: async (args, ctx) => ({
+    type: 'prompt',
+    content: `Request the security_reviewer specialist to review the authorized scope.
+Target data: ${JSON.stringify(args || ctx.workspaceRoot)}`,
+  }),
+};
+// The host validates the destination and authorizes any actual delegation.

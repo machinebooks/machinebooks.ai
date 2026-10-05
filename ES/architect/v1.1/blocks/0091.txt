@@ -1,0 +1,37 @@
+# Compose fragment only. Supply tested matching hub/node images pinned by digest.
+# Didactic example: patterns/automation/docker-compose-selenium.yml
+
+  selenium-hub:
+    image: ${SELENIUM_HUB_IMAGE:?Set tested pinned hub image}
+    container_name: selenium-hub
+    ports:
+      - "127.0.0.1:4444:4444"   # Grid web console port
+    environment:
+      - SE_SESSION_REQUEST_TIMEOUT=300
+      - SE_SESSION_RETRY_INTERVAL=5
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4444/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  selenium-node-chrome-1:
+    image: ${SELENIUM_NODE_IMAGE:?Set tested pinned Chrome node image}
+    container_name: selenium-node-chrome-1
+    shm_size: 2gb              # Example allocation: verify workload and container limits
+    depends_on:
+      selenium-hub:
+        condition: service_healthy
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - SE_NODE_MAX_SESSIONS=1         # One session per node in this example
+      - SE_START_VNC=false
+      - SE_SCREEN_WIDTH=1920
+      - SE_SCREEN_HEIGHT=1080
+    networks:
+      - app-network
+    mem_limit: 2g              # Memory limit per node

@@ -1,0 +1,20 @@
+// Educational TypeScript object; this is not JSON source or a forensic validator.
+const workflow = {
+  id: 'dfir-triage', name: 'DFIR: Borrador de triaje',
+  variables: [
+    { name: 'evidencePath', label: 'Ruta de entrada', type: 'file', required: true },
+    { name: 'caseId', label: 'ID del caso', type: 'string', required: true },
+    { name: 'analyst', label: 'Analista', type: 'string', required: false, defaultValue: 'on-duty' },
+  ],
+  steps: [
+    { id: 'timeline', name: 'Timeline candidata',
+      prompt: 'Describe eventos candidatos en {{evidencePath}}; indica fuentes y límites.' },
+    { id: 'iocs', name: 'Contrastar indicadores',
+      prompt: 'Con {{timeline.output}}, contrasta indicadores con las fuentes disponibles; declara datos ausentes.' },
+    { id: 'informe', name: 'Borrador técnico',
+      prompt: 'Redacta un borrador del caso {{caseId}} usando {{iocs.output}}; no acredites custodia sin evidencias.',
+      saveOutputTo: 'output/informe_{{caseId}}_{{evidencePath}}.md' },
+    { id: 'custody', name: 'Revisar documentación de procedencia',
+      prompt: 'Revisa {{informe.output}} y enumera documentación de procedencia que falta; no declares custodia íntegra.' },
+  ],
+};

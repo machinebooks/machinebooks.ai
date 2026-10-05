@@ -1,0 +1,65 @@
+import time
+
+
+def analyze_requirements_document(
+    document_id, project_id, security_context, client, model,
+    authorize_project, load_authorized_document, search_authorized_context,
+    minimize_for_provider, load_prompt, log_usage, prompt_version="v3.2",
+):
+    # Dependencies enforce current identity, tenant and document permissions.
+    for value in (document_id, project_id):
+        if type(value) is not int or value <= 0:
+            raise ValueError("Invalid resource identifier")
+    if security_context is None or authorize_project(
+        security_context, project_id
+    ) is not True:
+        raise PermissionError("Project access denied")
+    document = load_authorized_document(
+        security_context, document_id, project_id
+    )
+    if not isinstance(document, str) or not document.strip():
+        raise ValueError("Invalid authorized document")
+    safe_document = minimize_for_provider(document, security_context)
+    if not isinstance(safe_document, str) or not safe_document.strip():
+        raise ValueError("Invalid minimized document")
+    fragments = search_authorized_context(
+        security_context, project_id, safe_document[:2000], top_k=5
+    )
+    if not isinstance(fragments, list) or len(fragments) > 5:
+        raise ValueError("Invalid authorized context")
+    safe_fragments = []
+    for fragment in fragments:
+        if not isinstance(fragment, str):
+            raise ValueError("Invalid context fragment")
+        safe = minimize_for_provider(fragment, security_context)
+        if not isinstance(safe, str):
+            raise ValueError("Invalid minimized context")
+        safe_fragments.append(safe)
+    prompt = load_prompt("document_analysis_main", prompt_version)
+    if not isinstance(prompt, str) or not prompt.strip():
+        raise ValueError("Invalid prompt")
+    started = time.perf_counter()
+    response = client.messages.create(
+        model=model, max_tokens=4096, system=prompt,
+        messages=[{"role": "user", "content": safe_document + "\n\n"
+                   + "\n---\n".join(safe_fragments)}],
+    )
+    duration_ms = int((time.perf_counter() - started) * 1000)
+    blocks = getattr(response, "content", None)
+    if not isinstance(blocks, list):
+        raise ValueError("Invalid response blocks")
+    text = [block.text for block in blocks
+            if getattr(block, "type", None) == "text"
+            and isinstance(getattr(block, "text", None), str)]
+    if not text:
+        raise ValueError("No text response")
+    usage = getattr(response, "usage", None)
+    record = {"document_id": document_id, "project_id": project_id,
+              "model": getattr(response, "model", model),
+              "prompt_version": prompt_version, "latency_ms": duration_ms,
+              "input_tokens": getattr(usage, "input_tokens", None),
+              "output_tokens": getattr(usage, "output_tokens", None)}
+    if log_usage(security_context, record) is not True:
+        raise RuntimeError("Usage recording was not acknowledged")
+    return {"analysis": "\n".join(text), "rag_fragments_used": len(fragments),
+            "latency_ms": duration_ms}

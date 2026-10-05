@@ -1,0 +1,27 @@
+# Current manual deployment process
+# (documented for comparison with the automated process)
+
+# 1. Connect to the production server
+ssh deploy@production-server
+
+# 2. Navigate to the project directory
+cd /opt/plataforma
+
+# 3. Update the code (if the server has repository access)
+git pull origin main
+
+# 4. Rebuild modified services
+# The architect decides which services have changed, manually
+docker compose -f docker-compose.prod.yml build backend
+
+# 5. Apply migrations if any
+docker compose -f docker-compose.prod.yml run --rm backend flask db upgrade
+
+# 6. Restart services
+docker compose -f docker-compose.prod.yml up -d --no-deps backend
+
+# 7. Check logs
+docker compose -f docker-compose.prod.yml logs -f backend --tail=50
+
+# 8. Verify health check
+curl http://localhost/api/health/full

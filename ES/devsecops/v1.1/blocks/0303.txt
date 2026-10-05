@@ -1,0 +1,12 @@
+rules:
+  - id: devsecops-book.llm.xss-from-llm-output
+    pattern-regex: 'dangerouslySetInnerHTML\s*=\s*\{\{\s*__html\s*:'
+    message: "HTML directo en React; revise procedencia y sanitización del valor."
+    severity: WARNING
+    languages: [generic]
+    metadata:
+      category: security
+      cwe: "CWE-79: Cross-site Scripting"
+      owasp-llm: "LLM05: Improper Output Handling"
+      confidence: LOW
+      chapter: 10

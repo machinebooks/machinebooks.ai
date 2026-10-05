@@ -1,0 +1,110 @@
+import anthropic
+from typing import Any
+
+class SecureAgentRunner:
+    """Agent executor with integrated security controls."""
+
+    def __init__(
+        self,
+        permissions: AgentPermissions,
+        tools: list[SecureTool],
+        system_prompt: str,
+    ):
+        self.permissions = permissions
+        self.budget = AgentBudgetGuard(permissions)
+        self.audit_log: list[dict] = []
+        self.tools = self._filter_tools(tools)
+        self.system_prompt = system_prompt
+        self.client = anthropic.Anthropic()
+
+    def _filter_tools(self, tools: list[SecureTool]) -> list[SecureTool]:
+        """Only admits tools at the permitted risk level."""
+        allowed = []
+        for tool in tools:
+            if tool.risk_level in self.permissions.allowed_risk_levels:
+                allowed.append(tool)
+            else:
+                self.audit_log.append({
+                    "event": "tool_rejected",
+                    "tool": tool.name,
+                    "risk_level": tool.risk_level.value,
+                    "reason": "Risk level not permitted",
+                })
+        return allowed
+
+    def _execute_tool(self, tool: SecureTool, args: dict) -> Any:
+        """Executes a tool with budget verification."""
+        # 1. Verify budget before executing
+        self.budget.check_budget()
+
+        # 2. Check if human approval is required
+        if tool.requires_approval:
+            approval = self._request_human_approval(tool, args)
+            if not approval.approved:
+                return {"status": "rejected", "reason": approval.reason}
+
+        # 3. Verify the tool's individual limit
+        tool_calls = sum(
+            1 for a in self.budget.state.actions_log
+            if a["tool"] == tool.name
+        )
+        if tool_calls >= tool.max_calls_per_run:
+            return {
+                "status": "limit_reached",
+                "message": f"{tool.name}: maximum {tool.max_calls_per_run} "
+                           f"invocations per execution",
+            }
+
+        # 4. Execute the tool
+        result = tool.func(**args)
+
+        # 5. Record the invocation
+        self.budget.record_call(tool.name, tokens=0, args=args)
+
+        return result
+
+    def _request_human_approval(
+        self, tool: SecureTool, args: dict,
+    ) -> "ApprovalResponse":
+        """Sends an approval request and waits for a response."""
+        # Implementation connects with Slack/webhook/email
+        # based on self.permissions.human_approval_channel
+        ...
+
+    def run(self, task: str) -> dict:
+        """Executes the agent with all security layers."""
+        try:
+            # Build the tool list for Claude
+            tool_definitions = [
+                {
+                    "name": t.name,
+                    "description": t.description,
+                    "input_schema": _get_schema(t.func),
+                }
+                for t in self.tools
+            ]
+
+            # Invoke Claude with the filtered tools
+            response = self.client.messages.create(
+                model="claude-sonnet-4-6",
+                max_tokens=4096,
+                system=self.system_prompt,
+                tools=tool_definitions,
+                messages=[{"role": "user", "content": task}],
+            )
+
+            # Process tool_use in the response (agent loop)
+            return self._agent_loop(response)
+
+        except BudgetExceeded as e:
+            self.audit_log.append({
+                "event": "budget_exceeded",
+                "dimension": e.dimension,
+                "limit": e.limit,
+                "actual": e.actual,
+            })
+            return {
+                "status": "budget_exceeded",
+                "partial_results": self.budget.state.actions_log,
+                "error": str(e),
+            }

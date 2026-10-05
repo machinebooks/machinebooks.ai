@@ -1,0 +1,30 @@
+def register_disagreement(
+    finding_id: str,
+    agent_priority: int,
+    human_priority: int,
+    human_reasoning: str
+) -> None:
+    """Records a disagreement between agent and analyst
+    to feed the feedback loop."""
+    disagreement = {
+        "finding_id": finding_id,
+        "agent_priority": agent_priority,
+        "human_priority": human_priority,
+        "delta": abs(agent_priority - human_priority),
+        "direction": "upgraded" if human_priority > agent_priority
+                     else "downgraded",
+        "human_reasoning": human_reasoning,
+        "timestamp": datetime.utcnow().isoformat(),
+    }
+
+    # Persist for weekly analysis
+    with open("data/triage_disagreements.jsonl", "a") as f:
+        f.write(json.dumps(disagreement) + "\n")
+
+    # Alert if more than 10 disagreements in a day
+    daily_count = count_daily_disagreements()
+    if daily_count > 10:
+        notify_security_lead(
+            f"Alert: {daily_count} triage disagreements today. "
+            f"Review agent calibration."
+        )

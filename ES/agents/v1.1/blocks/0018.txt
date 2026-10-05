@@ -1,0 +1,5 @@
+while (!this.cancelled && this.state.turnCount < this.config.maxTurns) {
+  this.state.turnCount++;
+  // ... ocho fases ...
+  if (toolUseBlocks.length === 0) { return /* agent_complete */; }
+}

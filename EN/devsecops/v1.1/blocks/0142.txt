@@ -1,0 +1,33 @@
+def build_sandwiched_messages(
+    user_input: str,
+    context: str = ""
+) -> list[dict]:
+    """Builds the message sequence with sandwich defense."""
+    # Top layer: system instructions (already in system prompt)
+    # Middle layer: user input with context
+    # Bottom layer: instruction reminder
+
+    messages = []
+
+    # If there is RAG context, inject it as a prior assistant message
+    if context:
+        messages.append({
+            "role": "user",
+            "content": f"Reference documentation:\n{context}"
+        })
+        messages.append({
+            "role": "assistant",
+            "content": "Understood. I will use that documentation as a reference "
+                       "to answer the user's next question, "
+                       "maintaining my security rules."
+        })
+
+    # User input (untrusted zone)
+    messages.append({
+        "role": "user",
+        "content": user_input
+    })
+
+    # Historical function name: this fragment supplies no assistant prefill.
+    # Context remains untrusted; host permissions enforce the actual boundary.
+    return messages

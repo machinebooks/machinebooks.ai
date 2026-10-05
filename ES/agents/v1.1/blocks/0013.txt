@@ -1,0 +1,75 @@
+import { GatewayClient } from './GatewayClient.js';
+import { PromptFetcher } from './PromptFetcher.js';
+
+// Registro 2: plantilla con {{userMsg}} y {{assistantBlock}}.
+// Es el fallback que se usa si la BD local aún no está sembrada.
+const TITLE_PROMPT_FALLBACK = `Resume esta conversación en un título corto (máximo 6 palabras, sin comillas, sin emojis).
+Solo responde con el título, nada más.
+
+Usuario: {{userMsg}}
+{{assistantBlock}}`;
+
+export class ConversationTitler {
+  private static pending = new Map<string, boolean>();
+
+  // Registro 5: orquestador de un solo paso que combina los registros 1, 2 y 3.
+  static async generateTitle(
+    conversationId: string,
+    messages: { role: string; content: string }[],
+  ): Promise<string | null> {
+    if (this.pending.has(conversationId)) return null;
+    this.pending.set(conversationId, true);
+    try {
+      const userMsg = messages.find(m => m.role === 'user')?.content || '';
+      const assistantMsg = messages.find(m => m.role === 'assistant')?.content || '';
+      if (!userMsg) return null;
+
+      // Registro 2: fetch + sustitución de variables.
+      const assistantBlock = assistantMsg ? `Asistente: ${assistantMsg.slice(0, 300)}` : '';
+      const template = await PromptFetcher.fetchWithFallback(
+        'internal.conversation_title', TITLE_PROMPT_FALLBACK,
+      );
+      const userSlice = userMsg.slice(0, 500);
+      // IMPORTANTE: el segundo argumento es función, no string, para que
+      // $1, $&, $$ del input no se interpreten como backreferences.
+      const prompt = template
+        .replace(/\{\{\s*userMsg\s*\}\}/g, () => userSlice)
+        .replace(/\{\{\s*assistantBlock\s*\}\}/g, () => assistantBlock);
+
+      // Registro 1 + 5: llamada al LLM con un prompt que controla su salida.
+      const result = await GatewayClient.postAuth<{
+        choices?: { message?: { content?: string } }[];
+      }>('/v1/chat/completions', {
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 20,
+        temperature: 0.3,
+        stream: false,
+        purpose: 'auto_title',
+      });
+
+      // Registro 3: limpieza determinista de la salida del LLM.
+      const title = result?.choices?.[0]?.message?.content?.trim();
+      if (title && title.length > 0 && title.length < 80) {
+        return title.replace(/^["']|["']$/g, '');
+      }
+      return null;
+    } catch {
+      return null;
+    } finally {
+      this.pending.delete(conversationId);
+    }
+  }
+
+  // Registro 3 puro: sin LLM, sin red, sin BD. Determinista.
+  static generateFallbackTitle(firstMessage: string): string {
+    const clean = firstMessage
+      .replace(/```[\s\S]*?```/g, '')
+      .replace(/\[.*?\]\(.*?\)/g, '')
+      .replace(/[#*_~`]/g, '')
+      .trim();
+    if (clean.length <= 50) return clean;
+    const cutoff = clean.slice(0, 50);
+    const lastSpace = cutoff.lastIndexOf(' ');
+    return (lastSpace > 20 ? cutoff.slice(0, lastSpace) : cutoff) + '...';
+  }
+}

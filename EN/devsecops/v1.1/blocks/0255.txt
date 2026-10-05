@@ -1,0 +1,66 @@
+from dataclasses import dataclass
+from enum import Enum
+
+class Severity(Enum):
+    CRITICAL = "critical"
+    HIGH = "high"
+    MEDIUM = "medium"
+
+@dataclass
+class Finding:
+    id: str
+    title: str
+    severity: Severity
+    cwe: str
+    file_path: str
+    line: int
+    code_snippet: str
+    tool: str           # "semgrep", "grype", "trivy"
+    suggested_fix: str
+
+def generate_training_module(
+    finding: Finding,
+    team_stack: list[str]
+) -> dict:
+    """Generates a microtraining module from a finding."""
+    client = anthropic.Anthropic()
+
+    prompt = f"""Generate a brief training module for a security champion
+about the following security finding.
+
+Finding: {finding.title}
+Severity: {finding.severity.value}
+CWE: {finding.cwe}
+Tool: {finding.tool}
+File: {finding.file_path}:{finding.line}
+Affected code:
+{finding.code_snippet}
+Suggested fix:
+{finding.suggested_fix}
+Team stack: {', '.join(team_stack)}
+
+Module structure:
+1. WHAT (2-3 sentences): what vulnerability is this and its CWE.
+2. WHY IT MATTERS (2-3 sentences): real impact if exploited.
+3. HOW IT IS EXPLOITED (3-4 sentences): simplified attack vector.
+4. HOW TO REMEDIATE (3-4 sentences): explanation of the suggested fix.
+5. RULE TO REMEMBER (1 sentence): mnemonic rule.
+
+Write in technical English. Maximum 250 words total."""
+
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=800,
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    return {
+        "status":"REVIEW",
+        "coverage":"partial",
+        "origin_verified":False,
+        "finding_id": finding.id,
+        "module_text": response.content[0].text,
+        "cwe": finding.cwe,
+        "severity": finding.severity.value,
+        "estimated_read_time_minutes": None
+    }

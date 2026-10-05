@@ -1,0 +1,115 @@
+class SecureRAGSystem:
+    """Full orchestration of the secure RAG pipeline."""
+
+    def __init__(self, config: dict):
+        api_key = config["anthropic_api_key"]
+        self.ingestion = SecureIngestionPipeline()
+        self.semantic_validator = SemanticDocumentValidator(api_key)
+        self.retriever = SecureRAGRetriever(
+            config["qdrant_url"], config["collection"]
+        )
+        self.injection_detector = IndirectInjectionDetector(
+            anthropic.Anthropic(api_key=api_key)
+        )
+        self.llm = anthropic.Anthropic(api_key=api_key)
+
+    def ingest_document(
+        self, text: str, metadata: DocumentMetadata
+    ) -> dict:
+        """Ingestion proposal with authorization review."""
+        # Layer 1: static validation
+        static_result = self.ingestion.validate_static(
+            text, metadata
+        )
+        if not static_result.passed:
+            return {
+                "status": "rejected",
+                "stage": "static",
+                "findings": static_result.findings
+            }
+
+        # Layer 2: semantic validation
+        semantic_result = self.semantic_validator.validate(
+            text, domain_context="security regulations"
+        )
+        if any("INCOMPLETE" in str(f) for f in semantic_result.findings):
+            return {"status":"INCOMPLETE","stage":"semantic","findings":semantic_result.findings}
+        if not semantic_result.passed:
+            return {
+                "status": "rejected",
+                "stage": "semantic",
+                "findings": semantic_result.findings
+            }
+
+        # Layer 3: pending proposal; no indexing
+        return {"status":"REVIEW", "stage":"authorization",
+                "sha256":metadata.sha256,
+                "findings":static_result.findings + semantic_result.findings,
+                "action":"Host must verify provenance, identity, and approval before indexing"}
+
+    def query(self, question: str, user: UserContext) -> dict:
+        """Secure query: filtered retrieval + generation + validation."""
+        # Step 1: retrieve chunks with access control
+        chunks = self.retriever.retrieve(
+            question, user, top_k=5
+        )
+
+        if not chunks:
+            return {
+                "answer": "No relevant documents were found "
+                          "for your access level.",
+                "sources": [],
+                "security_status": "no_results"
+            }
+
+        # Step 2: generate response with context
+        context = "\n\n".join(
+            [c["text"] for c in chunks]
+        )
+        response = self.llm.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=2048,
+            system=(
+                "Respond based exclusively on the provided context. "
+                "If the context does not contain sufficient information, "
+                "indicate so. Do not invent data."
+            ),
+            messages=[{
+                "role": "user",
+                "content": (
+                    f"Context:\n{context}\n\n"
+                    f"Question: {question}"
+                )
+            }]
+        )
+        answer = response.content[0].text
+
+        # Step 3: validate response against indirect injection
+        check = self.injection_detector.check_response(
+            question,
+            [c["text"] for c in chunks],
+            answer
+        )
+
+        if check["action"] != "pass":
+            return {
+                "answer": "The response did not pass integrity "
+                          "controls. Please contact the administrator.",
+                "sources": [c["source"] for c in chunks],
+                "security_status": check["action"]
+            }
+
+        return {
+            "answer": answer,
+            "sources": [c["source"] for c in chunks],
+            "security_status": check["action"],
+            "coherence_score": check["coherence_score"]
+        }
+
+    def _index_with_metadata(
+        self, text: str, metadata: DocumentMetadata
+    ):
+        """Indexes a document with security metadata."""
+        # Chunking, embedding, and insertion into Qdrant
+        # (simplified — in production use langchain/llama_index)
+        raise NotImplementedError("INCOMPLETE: indexing host not implemented")

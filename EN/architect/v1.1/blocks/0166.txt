@@ -1,0 +1,29 @@
+# Didactic example: patterns/agents/approval_gate.py
+
+class ApprovalGate:
+    """Human approval gate in the ReAct loop."""
+
+    async def check_approval(self, tool_name: str, params: dict,
+                              reasoning: str, session_id: str) -> dict:
+        tool_config = get_tool_config(tool_name)
+
+        if not tool_config.approval_required:
+            return {"approved": True, "mode": "autonomous"}
+
+        # Build approval message for user
+        approval_request = {
+            "type": "approval_required",
+            "tool": tool_name,
+            "params_summary": summarize_params(params),
+            "reasoning": reasoning,  # Why the agent wants to execute this
+            "estimated_cost": estimate_tool_cost(tool_name, params),
+            "session_id": session_id,
+            "expires_at": datetime.utcnow() + timedelta(minutes=15),
+        }
+
+        # Persist in Redis and notify frontend via SSE
+        await store_pending_approval(session_id, approval_request)
+        await notify_user_sse(session_id, approval_request)
+
+        return {"approved": False, "mode": "waiting_approval",
+                "approval_id": approval_request["id"]}

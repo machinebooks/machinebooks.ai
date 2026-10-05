@@ -1,0 +1,8 @@
+{
+  "model": "claude-sonnet-4-20250514",
+  "messages": [
+    {"role": "user", "content": "Analyze this code fragment."}
+  ],
+  "max_tokens": 4096,
+  "system": "You are a code reviewer."
+}

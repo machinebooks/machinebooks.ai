@@ -1,0 +1,31 @@
+from datetime import datetime, timedelta, timezone
+from copy import deepcopy
+
+def request_human_approval(self, execution_id: str, step, proposed_action: dict,
+                           security_ctx) -> dict:
+    if not isinstance(proposed_action, dict) or not callable(getattr(self, "authorize_workflow", None)):
+        raise PermissionError("Acceso denegado")
+    if self.authorize_workflow(security_ctx, execution_id, "request_approval") is not True:
+        raise PermissionError("Acceso denegado")
+    now = datetime.now(timezone.utc)
+    request = {"execution_id": execution_id, "step_name": step.name,
+               "step_description": step.description,
+               "proposed_action": deepcopy(proposed_action),
+               "requested_at": now.isoformat().replace("+00:00", "Z"),
+               "expires_at": (now + timedelta(hours=8)).isoformat().replace("+00:00", "Z")}
+    return self.approval_store.create_pending(security_ctx, request)
+
+def resume_after_approval(self, execution_id: str, approved: bool,
+                          security_ctx) -> dict:
+    if type(approved) is not bool:
+        raise ValueError("Decisión no válida")
+    if not callable(getattr(self, "authorize_workflow", None)) or self.authorize_workflow(security_ctx, execution_id, "resume") is not True:
+        raise PermissionError("Acceso denegado")
+    pending = self.approval_store.claim_pending(
+        security_ctx, execution_id, approved, now=datetime.now(timezone.utc))
+    if pending is None:
+        raise PermissionError("Aprobación ausente, vencida o consumida")
+    if not approved:
+        return {"status": "rejected", "message": "Workflow cancelado por el usuario."}
+    return self.advance_step(execution_id, deepcopy(pending["proposed_action"]),
+                             security_ctx=security_ctx)

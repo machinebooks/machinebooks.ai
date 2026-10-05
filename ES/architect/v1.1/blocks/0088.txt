@@ -1,0 +1,7 @@
+# Coverage is descriptive and cannot authorize a GO decision.
+def calculate_requirement_coverage(covered,partial,total_requirements):
+    if any(type(x) is not int or x<0 for x in (covered,partial,total_requirements)):
+        raise ValueError("Nonnegative integer counts required")
+    if covered+partial>total_requirements:raise ValueError("Counts exceed requirements")
+    if total_requirements==0:return None
+    return (covered+partial*.5)/total_requirements*100

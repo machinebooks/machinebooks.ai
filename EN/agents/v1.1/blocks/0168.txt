@@ -1,0 +1,17 @@
+// Educational preflight around the private batch API; host reservations are omitted.
+const items = ['/evidence/case-A.raw', '/evidence/case-B.raw'];
+const commonVariables = { caseId: 'BATCH-2026-Q2', analyst: 'on-duty' };
+const destinations = items.map(evidencePath => substitute(
+  'output/informe_{{caseId}}_{{evidencePath}}.md',
+  { ...commonVariables, evidencePath }, {}, true,
+));
+if (new Set(destinations).size !== destinations.length) {
+  throw new Error('Batch output path collision');
+}
+await authorizeAndReserveBatchOutputs(items, destinations);
+const config: BatchJobConfig = {
+  workflowId: workflow.id, items, itemVariableName: 'evidencePath',
+  commonVariables, workspacePath: authorizedWorkspacePath, concurrency: 3,
+};
+const batchId = batchRunner.start(config, onEvent);
+// The shown two items illustrate a larger batch; effective path checks remain required.

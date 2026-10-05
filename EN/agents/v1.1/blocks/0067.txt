@@ -1,0 +1,44 @@
+@startuml
+!theme plain
+skinparam backgroundColor transparent
+skinparam componentStyle uml2
+
+interface "ToolDefinition" as Def {
+  +name: string
+  +description: string
+  +inputSchema: JSON Schema
+  +isReadOnly: boolean
+  +isConcurrencySafe: bool|fn
+  +timeoutMs?: number
+  +onError?: fn
+  +requiredPack?: string
+  +isDeferred?: boolean
+}
+
+interface "ToolHandler" as H {
+  +definition: ToolDefinition
+  +execute(input, ctx): Promise<ToolResult>
+}
+
+class "ToolResult" as R {
+  +tool_use_id: string
+  +content: string
+  +is_error: boolean
+}
+
+H *-- Def : groups
+H ..> R : returns
+
+note right of Def
+  The adapter sends active name,
+  description, and schema.
+  Other metadata remains in the host.
+end note
+
+note right of H
+  What executes when
+  the host admits the
+  complete proposal.
+end note
+
+@enduml

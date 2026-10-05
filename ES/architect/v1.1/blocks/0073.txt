@@ -1,0 +1,55 @@
+# Partial RPA adapter: authorization, durable deadline and effect reconciliation
+# are mandatory external contracts; this excerpt does not implement them.
+# Didactic example: automation task with aggressive retries
+# Pattern: tasks/automation/portal_bot.py
+
+from celery import shared_task
+from celery.exceptions import SoftTimeLimitExceeded
+
+@shared_task(
+    name="tasks.automation.portal_bot",
+    bind=True,
+    base=AutomationTask,
+    queue="automation",
+    time_limit=14400,      # Four hours PER EXECUTION; no job-wide deadline
+    soft_time_limit=13800, # Soft limit PER EXECUTION; hard termination can skip finally
+)
+def run_portal_automation(self, operation_id: str, params: dict):
+    """
+    Executes an automation session against the corporate portal.
+    Manages retries for maintenance and session expiration.
+    """
+    # Adapters load current server-side scope and the durable job deadline.
+    if authorize_operation(operation_id,params) is not True:
+        raise PermissionError("Operation denied")
+    if operation_deadline_open(operation_id) is not True:
+        raise TimeoutError("Job deadline exceeded")
+    from automation.drivers import SeleniumDriver
+
+    try:
+        driver = SeleniumDriver(
+            grid_url="http://selenium-hub:4444/wd/hub",
+            browser="chrome",
+            timeout=30,
+        )
+        session = driver.authenticate(
+            username=get_portal_credential("username"),
+            password=get_portal_credential("password"),
+        )
+        result = session.execute_operation(params)
+        log_automation_result(operation_id, result)
+        return {"status": "completed", "operation_id": operation_id}
+
+    except PortalMaintenanceException:
+        raise self.retry(countdown=60)
+    except SessionExpiredException:
+        raise self.retry(countdown=30)
+    except SoftTimeLimitExceeded:
+        save_partial_state(operation_id)
+        raise self.retry(countdown=300)
+    finally:
+        if "driver" in locals():
+            try:
+                driver.quit()
+            except Exception:
+                logger.warning("Driver cleanup failed", extra={"operation_id":operation_id})

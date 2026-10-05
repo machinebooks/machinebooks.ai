@@ -1,0 +1,6 @@
+// Historical SSE wiring only; the host supplies an authenticated URL.
+const es = new EventSource(authenticatedStreamUrl);
+es.addEventListener('content', handleContent);
+es.addEventListener('tool_use_start', handleToolAnnouncement);
+es.addEventListener('done', () => es.close());
+// The host also handles validation, failures, cancellation and recovery.

@@ -1,0 +1,29 @@
+# Didactic example: environment variable validation at startup
+# patterns/config/env_validator.py
+
+import os
+import sys
+
+REQUIRED_ENV_VARS = [
+    "DATABASE_URL",
+    "REDIS_URL",
+    "SECRET_KEY",
+    "ANTHROPIC_API_KEY",
+    # ... rest of critical variables
+]
+
+def validate_env():
+    """Validates that all critical environment variables are present.
+
+    Fails with explicit message if any variable is missing,
+    instead of letting the error occur later at runtime.
+    """
+    missing = [var for var in REQUIRED_ENV_VARS if not os.environ.get(var)]
+
+    if missing:
+        print(f"ERROR: Required environment variables not found: {missing}")
+        print("Check the .env.prod file on the production server.")
+        sys.exit(1)
+
+# Call at Flask application startup
+validate_env()

@@ -1,0 +1,46 @@
+// src/hooks/useProposals.ts
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { apiClient } from '@/api/client'
+import type { Proposal, CreateProposalPayload } from '@shared/types'
+
+// Query key factory: ensures consistency in invalidations
+const proposalKeys = {
+  all: ['proposals'] as const,
+  list: (filters: Record<string, unknown>) =>
+    [...proposalKeys.all, 'list', filters] as const,
+  detail: (id: number) => [...proposalKeys.all, 'detail', id] as const,
+}
+
+// Hook for listing with filters and pagination
+export function useProposals(filters: Record<string, unknown> = {}) {
+  return useQuery({
+    queryKey: proposalKeys.list(filters),
+    queryFn: () => apiClient.get<Proposal[]>('/proposals', { params: filters }),
+    staleTime: 2 * 60 * 1000,    // 2 minutes before refetch
+    gcTime: 10 * 60 * 1000,      // 10 minutes in cache after unmount
+  })
+}
+
+// Hook for proposal detail
+export function useProposal(id: number) {
+  return useQuery({
+    queryKey: proposalKeys.detail(id),
+    queryFn: () => apiClient.get<Proposal>(`/proposals/${id}`),
+    enabled: !!id,               // Do not execute if there is no id
+  })
+}
+
+// Hook for creation with automatic list invalidation
+export function useCreateProposal() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (payload: CreateProposalPayload) =>
+      apiClient.post<Proposal>('/proposals', payload),
+
+    onSuccess: () => {
+      // Invalidate all proposal list queries
+      queryClient.invalidateQueries({ queryKey: proposalKeys.all })
+    },
+  })
+}

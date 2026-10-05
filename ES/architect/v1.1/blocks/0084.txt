@@ -1,0 +1,24 @@
+# Educational package core. Celery retry policy belongs to a separate adapter.
+def generate_proposal_package(proposal_id,security_context,load_authorized_proposal,
+                              generators,notify_package):
+    if type(proposal_id) is not int or proposal_id<1 or security_context is None:
+        raise PermissionError("Authorized proposal required")
+    proposal=load_authorized_proposal(security_context,proposal_id)
+    if not isinstance(proposal,dict) or proposal.get("status")!="approved":
+        raise PermissionError("Approved proposal required")
+    if not isinstance(generators,dict) or set(generators)!={"pdf","pptx","docx"}:
+        raise ValueError("Three reviewed generators required")
+    generated={};errors={}
+    for format_name,generator in generators.items():
+        try:
+            path=generator(proposal,security_context)
+            if not isinstance(path,str) or not path:raise ValueError("Artifact reference required")
+            generated[format_name]=path
+        except Exception as exc:errors[format_name]=type(exc).__name__
+    if not generated:raise RuntimeError("All package formats failed")
+    status="completed" if not errors else "partial"
+    if notify_package(security_context,proposal_id,status,generated,errors) is not True:
+        raise RuntimeError("Package notification acknowledgement required")
+    return {"status":status,"generated":generated,"errors":errors}
+# Artifact authorization, protected storage, durable publication and human review
+# are adapter requirements. A partial package is never announced as fully ready.

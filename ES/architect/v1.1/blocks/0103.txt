@@ -1,0 +1,7 @@
+    try:
+        with PortalBot(task_id,credentials,challenge_store,context["user_id"],context) as bot:
+            if not bot.login():raise PermissionError("Portal login failed")
+            projects=bot.extract_project_list()
+            if persist_sync_result(context,task_id,projects) is not True:
+                raise RuntimeError("Durable sync acknowledgement required")
+            return {"status":"completed","projects_synced":len(projects)}

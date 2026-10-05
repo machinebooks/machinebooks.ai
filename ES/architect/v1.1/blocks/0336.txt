@@ -1,0 +1,17 @@
+# Prompt genérico (insuficiente)
+"Documenta los endpoints del módulo de análisis."
+
+# Prompt con ingeniería de contexto (efectivo)
+"Genera la referencia de API para el módulo de análisis documental, dirigida a un
+desarrollador externo que va a integrar su sistema con nuestra API REST.
+
+Convenciones de la API:
+- Autenticación: Bearer token JWT en header Authorization
+- Formato de respuesta: JSON con estructura {data: ..., meta: {page, total, per_page}}
+- Errores: HTTP estándar con body {error: string, code: string, details: object}
+- Paginación: query params page y per_page, máximo 100 por página
+
+Para cada endpoint incluir: método HTTP, ruta, parámetros (path, query, body),
+ejemplo de petición con curl, ejemplo de respuesta exitosa, códigos de error
+específicos del endpoint. NO incluir detalles de implementación interna ni
+rutas de ficheros del servidor."

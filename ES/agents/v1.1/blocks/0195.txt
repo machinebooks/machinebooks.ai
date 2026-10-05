@@ -1,0 +1,12 @@
+private enqueue(value: T): void {
+  if (this.isDone) return;
+  if (this.readResolve) {
+    // Deliver directly to a waiting consumer.
+    const resolve = this.readResolve;
+    this.readResolve = undefined;
+    resolve({ value, done: false });
+  } else {
+    // Historical unbounded queue; no producer backpressure.
+    this.queue.push(value);
+  }
+}

@@ -1,0 +1,15 @@
+---
+name: pdf
+description: "Usa este skill para crear, editar, fusionar, dividir, watermark, cifrar PDFs..."
+pack_slug: devsecops
+category: devsecops
+---
+
+# PDF — Creación y manipulación
+
+## Resumen rápido
+
+| Tarea | Herramienta |
+|-------|-------------|
+| Fusionar PDFs | `pypdf.PdfWriter` |
+...

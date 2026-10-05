@@ -1,0 +1,143 @@
+import json
+import hashlib
+import re
+from pathlib import Path
+from datetime import datetime, timezone
+
+
+class EvidenceCollector:
+    """Collects and records pipeline evidence for compliance."""
+
+    def __init__(self, reports_dir: str, evidence_store: str):
+        self.reports_dir = Path(reports_dir)
+        self.evidence_store = Path(evidence_store)
+        self.evidence_store.mkdir(parents=True, exist_ok=True)
+
+    def collect_from_pipeline_run(
+        self, run_id: str, commit_sha: str
+    ) -> list[Evidence]:
+        """Collects shown source types only; provenance and sufficient coverage are unverified."""
+        if (not isinstance(run_id,str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,128}",run_id)
+                or not isinstance(commit_sha,str) or not re.fullmatch(r"[0-9a-fA-F]{40}|[0-9a-fA-F]{64}",commit_sha)):
+            raise ValueError("INCOMPLETE: invalid run or immutable commit identity")
+        evidences = []
+
+        # Collect from each configured source
+        collectors = {
+            "sast": self._collect_sast,
+            "sca": self._collect_sca,
+            "trivy": self._collect_trivy,
+            "secrets": self._collect_secrets,
+            "opa": self._collect_opa,
+        }
+
+        for source_name, collector_fn in collectors.items():
+            source_dir = self.reports_dir / source_name
+            if source_dir.exists():
+                for report_file in source_dir.glob("*.json"):
+                    evidence = collector_fn(
+                        report_file, run_id, commit_sha
+                    )
+                    if evidence:
+                        evidences.append(evidence)
+
+        # Persist evidence index
+        if not evidences:
+            raise ValueError("INCOMPLETE: no evidence artifacts")
+        self._store_evidence_index(evidences, run_id)
+        return evidences
+
+    def _collect_sast(
+        self, report_path: Path, run_id: str, commit_sha: str
+    ) -> Evidence:
+        """Extracts evidence from a Semgrep SAST report."""
+        data = json.loads(report_path.read_text())
+        findings = data.get("results") if isinstance(data,dict) else None
+        if (not isinstance(data,dict) or data.get("errors")
+                or not isinstance(findings,list)
+                or any(not isinstance(f,dict) or not isinstance(f.get("extra"),dict)
+                       or f["extra"].get("severity") not in {"ERROR","WARNING","INFO"} for f in findings)):
+            raise ValueError("INCOMPLETE: invalid SAST report")
+        critical = [f for f in findings if f.get("extra",{}).get("severity") == "ERROR"]
+
+        return Evidence(
+            source=EvidenceSource.SAST_SCAN,
+            timestamp=datetime.now(timezone.utc),
+            artifact_path=str(report_path),
+            pipeline_run_id=run_id,
+            commit_sha=commit_sha,
+            summary=f"{len(findings)} findings, {len(critical)} critical",
+            passed=False,
+            metadata={
+                "origin_verified": False,
+                "status":"REVIEW","coverage":"partial",
+                "no_critical_in_report":len(critical) == 0,
+                "tool": "semgrep",
+                "total_findings": len(findings),
+                "critical_findings": len(critical),
+                "file_hash": self._hash_file(report_path),
+            },
+        )
+
+    def _collect_sca(
+        self, report_path: Path, run_id: str, commit_sha: str
+    ) -> Evidence:
+        """Extracts evidence from a Grype SCA report."""
+        data = json.loads(report_path.read_text())
+        matches = data.get("matches") if isinstance(data,dict) else None
+        if (not isinstance(data,dict) or data.get("errors")
+                or not isinstance(matches,list)
+                or any(not isinstance(m,dict) or not isinstance(m.get("vulnerability"),dict)
+                       or m["vulnerability"].get("severity") not in {"Critical","High","Medium","Low","Negligible","Unknown"} for m in matches)):
+            raise ValueError("INCOMPLETE: invalid SCA report")
+        critical = [
+            m for m in matches
+            if m.get("vulnerability", {}).get("severity") == "Critical"
+        ]
+
+        return Evidence(
+            source=EvidenceSource.SCA_SCAN,
+            timestamp=datetime.now(timezone.utc),
+            artifact_path=str(report_path),
+            pipeline_run_id=run_id,
+            commit_sha=commit_sha,
+            summary=f"{len(matches)} vulnerabilities, "
+                    f"{len(critical)} critical",
+            passed=False,
+            metadata={
+                "origin_verified": False,
+                "status":"REVIEW","coverage":"partial",
+                "no_critical_in_report":len(critical) == 0,
+                "tool": "grype",
+                "total_vulnerabilities": len(matches),
+                "critical_vulnerabilities": len(critical),
+                "file_hash": self._hash_file(report_path),
+            },
+        )
+
+    def _hash_file(self, path: Path) -> str:
+        """SHA-256 of the artifact to guarantee integrity."""
+        return hashlib.sha256(path.read_bytes()).hexdigest()
+
+    def _store_evidence_index(
+        self, evidences: list[Evidence], run_id: str
+    ) -> None:
+        """Stores the evidence index of an execution."""
+        index = {
+            "run_id": run_id,
+            "status":"REVIEW","coverage":"partial","origin_verified":False,
+            "collected_at": datetime.now(timezone.utc).isoformat(),
+            "evidence_count": len(evidences),
+            "evidences": [
+                {
+                    "source": e.source.value,
+                    "artifact_path": e.artifact_path,
+                    "passed": e.passed,
+                    "summary": e.summary,
+                    "file_hash": e.metadata.get("file_hash", ""),
+                }
+                for e in evidences
+            ],
+        }
+        index_path = self.evidence_store / f"evidence-{run_id}.json"
+        index_path.write_text(json.dumps(index, indent=2))

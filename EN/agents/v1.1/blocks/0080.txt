@@ -1,0 +1,14 @@
+// Educational variant: complete call and host permission are prerequisites.
+const startTool = (block: ToolUseBlock): void => {
+  if (block.name === 'ToolSearch' && this.deferredToolManager) {
+    assertCompleteAndAuthorizedToolSearch(block); // Host implementation omitted.
+    const query = block.input.query;
+    if (typeof query !== 'string' || !query.trim()) {
+      throw new Error('ToolSearch query must be a non-empty string');
+    }
+    const matches = this.deferredToolManager.searchDeferredTools(query);
+    for (const match of matches) this.deferredToolManager.loadTool(match.name);
+  }
+  toolUseBlocks.push(block);
+  toolExecutor.addTool(block);
+};

@@ -1,0 +1,39 @@
+@startuml
+!theme plain
+skinparam backgroundColor transparent
+skinparam componentStyle uml2
+
+package "ToolRegistry singleton" {
+  [Map<name, ToolHandler>] as Map
+  [register / unregister] as Mut
+  [get / has / listTools] as Read
+  [getToolSchemas] as Schemas
+  [isConcurrencySafe] as Conc
+  [getInterruptBehavior] as Intr
+}
+
+package "Origenes de tools" {
+  [builtinTools.ts] as Built
+  [packs/*/index.ts] as Packs
+  [tools/AgentTool.ts] as Agent
+  [tools/mcpTools.ts + syncMcpToolsToRegistry] as MCP
+}
+
+Built --> Mut : 22 ToolHandler
+Packs --> Mut : 6 packs x 4-6 tools
+Agent --> Mut : Agent, Swarm, SendMessage
+MCP --> Mut : N tools mcp_*
+
+note right of Schemas
+  Devuelve OpenAI-compat:
+  { type: 'function', function: {...} }
+  Aplica strict mode si schema lo permite.
+end note
+
+note bottom of Map
+  Una sola Map<string, ToolHandler>.
+  Si dos handlers se registran con el
+  mismo name: warn una vez, gana el
+  ultimo (last-write-wins).
+end note
+@enduml

@@ -1,0 +1,9 @@
+// Shape of the OpenAI translation (done by the client, not the gateway)
+{
+  "type": "function",
+  "function": {
+    "name": "search_salesforce",
+    "description": "Buscar registros en Salesforce...",
+    "parameters": { "type": "object", "properties": { "query": { "type": "string" } } }
+  }
+}

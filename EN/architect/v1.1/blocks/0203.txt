@@ -1,0 +1,71 @@
+// useApiCall.ts — Generic hook for API calls with error handling
+import { useState, useCallback } from 'react';
+import toast from 'react-hot-toast';
+import { AxiosError } from 'axios';
+
+interface ApiCallState<T> {
+  data: T | null;
+  isLoading: boolean;
+  error: string | null;
+}
+
+type ApiFunction<T, A extends unknown[]> = (...args: A) => Promise<T>;
+
+export function useApiCall<T, A extends unknown[]>(
+  apiFn: ApiFunction<T, A>,
+  options: {
+    successMessage?: string;
+    errorMessage?: string;
+    showSuccessToast?: boolean;
+  } = {}
+) {
+  const [state, setState] = useState<ApiCallState<T>>({
+    data: null,
+    isLoading: false,
+    error: null,
+  });
+
+  const execute = useCallback(
+    async (...args: A): Promise<T | null> => {
+      setState((prev) => ({ ...prev, isLoading: true, error: null }));
+
+      try {
+        const result = await apiFn(...args);
+        setState({ data: result, isLoading: false, error: null });
+
+        if (options.showSuccessToast && options.successMessage) {
+          toast.success(options.successMessage);
+        }
+
+        return result;
+      } catch (err) {
+        const axiosError = err as AxiosError<{ message?: string; error?: string }>;
+
+        // Extract the error message from the response body if it exists
+        const serverMessage =
+          axiosError.response?.data?.message ||
+          axiosError.response?.data?.error;
+
+        // The final message: first from the server, then the hook's default,
+        // then a generic one
+        const errorMessage =
+          serverMessage ||
+          options.errorMessage ||
+          'An error occurred. Please try again.';
+
+        setState({ data: null, isLoading: false, error: errorMessage });
+
+        // 401 errors are not shown as toast: the Axios interceptor
+        // already handles logout and shows its own message
+        if (axiosError.response?.status !== 401) {
+          toast.error(errorMessage);
+        }
+
+        return null;
+      }
+    },
+    [apiFn, options]
+  );
+
+  return { ...state, execute };
+}

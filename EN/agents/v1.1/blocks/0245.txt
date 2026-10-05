@@ -1,0 +1,32 @@
+// Updated educational example, not a product source snapshot.
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+
+const allowedElements = [
+  'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'a', 'em', 'strong',
+  'del', 'code', 'pre', 'blockquote', 'ul', 'ol', 'li', 'hr', 'br',
+  'table', 'thead', 'tbody', 'tr', 'th', 'td',
+];
+
+const components = {
+  a: ({ children, href, title }) => (
+    <a href={href} title={title} target="_blank" rel="noopener noreferrer">
+      {children}
+    </a>
+  ),
+};
+
+// Raw HTML is ignored. Components customize permitted elements.
+// URL policy permits external HTTP(S) and same-document anchors only.
+export const MarkdownContent = ({ content }) => (
+  <ReactMarkdown
+    remarkPlugins={[remarkGfm]}
+    skipHtml
+    allowedElements={allowedElements}
+    unwrapDisallowed
+    urlTransform={(url) => /^(https?:\/\/|#)/i.test(url) ? url : ''}
+    components={components}
+  >
+    {content}
+  </ReactMarkdown>
+);

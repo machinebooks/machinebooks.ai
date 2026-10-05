@@ -1,0 +1,19 @@
+flowchart TD
+    A[BatchRunner.start<br>items: N paths] --> B{nextIndex < N?}
+    B -->|yes| C[item idx]
+    C --> D[variables ← common + itemVarName=path]
+    D --> E[WorkflowRunner.start]
+    E --> F[await run_completed]
+    F --> G[result.completedItems++]
+    G --> B
+    B -->|no| H[batch_completed<br>+ report markdown]
+
+    subgraph Worker_pool
+        W1[worker 1]
+        W2[worker 2]
+        W3[worker 3]
+    end
+
+    W1 -.competes for nextIndex.-> B
+    W2 -.competes for nextIndex.-> B
+    W3 -.competes for nextIndex.-> B

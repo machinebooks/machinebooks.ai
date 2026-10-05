@@ -1,0 +1,62 @@
+@startuml
+!theme plain
+skinparam backgroundColor transparent
+skinparam componentStyle uml2
+
+package "Transporte HTTP" {
+  [Express app] as App
+  [sessionAuthMiddleware] as Auth
+  [rateLimitMiddleware] as RL
+  [registerChatRoute] as Route
+}
+
+package "Envolvente del turno" {
+  [parseSlashCommand] as Slash
+  [buildSystemPrompt] as Prompt
+  [executeHooks] as Hooks
+  [streamLLMCall] as LLMCall
+  [executeToolCall] as ToolExec
+  [trackUsage] as Cost
+  [serverTasks] as Tasks
+  [sendSSE] as SSE
+}
+
+package "Primitiva interna" {
+  [AgentLoop] as Loop
+  [StreamingToolExecutor] as Stream
+  [ToolRegistry] as Reg
+  [Providers] as Prov
+}
+
+App --> Auth : 1
+Auth --> RL : 2
+RL --> Route : 3
+Route --> Slash : 4
+Route --> Prompt
+Route --> Hooks
+Route --> LLMCall
+LLMCall --> Prov
+Route --> ToolExec
+ToolExec --> Reg
+Route --> Cost
+Route --> Tasks
+Route --> SSE
+
+Route ..> Loop : /api/chat/agent path
+Loop --> Stream
+Loop --> Reg
+Loop --> Prov
+
+note right of Route
+  /api/chat usa el bucle
+  interno (~940 LOC).
+  /api/chat/agent delega
+  en AgentLoop.run().
+end note
+
+note right of Loop
+  Primitiva ReAct con
+  AsyncGenerator. No habla
+  HTTP. La consumen otros.
+end note
+@enduml

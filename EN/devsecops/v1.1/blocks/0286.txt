@@ -1,0 +1,16 @@
+Trigger proposal
+       |
++------------------------------------------------------+
+| 4 AgentGuardrails: proposed tool call                |
+| Allowed tools and local budget checks                |
++------------------------------------------------------+
+       |
++------------------------------------------------------+
+| Protected host: identity, scope, arguments,          |
+| approval, reservation, SQL grants, execution         |
+| Adapter omitted: REVIEW / INCOMPLETE                 |
++------------------------------------------------------+
+       |
++------------------------------------------------------+
+| 5 Metrics: event and persistence pending             |
++------------------------------------------------------+

@@ -1,0 +1,62 @@
+def generate_security_report(
+    metrics: dict,
+    audience: str,  # "engineer", "lead", "ciso"
+    previous_metrics: dict | None = None,
+) -> str:
+    """Generate weekly security report with Claude."""
+
+    # Calculate deltas if previous metrics exist
+    deltas = {}
+    if previous_metrics:
+        for key in ["fix_rate", "scan_coverage", "false_positive_rate"]:
+            if key in metrics and key in previous_metrics:
+                deltas[key] = metrics[key] - previous_metrics[key]
+
+    audience_prompts = {
+        "engineer": (
+            "Generate a brief report for development engineers. "
+            "Focus on open findings requiring action, "
+            "the most affected services, and pending fixes. "
+            "Direct, actionable tone. Maximum 300 words. "
+            "Include a prioritized action list."
+        ),
+        "lead": (
+            "Generate a weekly report for the security lead. "
+            "Analyze MTTR, fix rate, and false positive trends. "
+            "Compare with the previous week and identify improvements "
+            "and degradations. Suggest process adjustments. "
+            "Maximum 500 words."
+        ),
+        "ciso": (
+            "Generate an executive security posture summary "
+            "for the CISO. Use RAG indicators (green/amber/red) "
+            "for each key metric. Include residual risk and "
+            "investment recommendations if applicable. "
+            "Maximum 200 words. Executive tone."
+        ),
+    }
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=1024,
+        system=(
+            "You are a DevSecOps security analyst. You generate weekly "
+            "reports from real pipeline metrics. "
+            "Be precise with data. Do not invent numbers. "
+            "If a metric worsened, state it clearly. "
+            "Use technical English."
+        ),
+        messages=[
+            {
+                "role": "user",
+                "content": (
+                    f"Metrics for the week:\n"
+                    f"{json.dumps(metrics, indent=2)}\n\n"
+                    f"Changes from previous week:\n"
+                    f"{json.dumps(deltas, indent=2)}\n\n"
+                    f"{audience_prompts[audience]}"
+                ),
+            }
+        ],
+    )
+    return "REVIEW: partial unverified draft; human decision pending\n" + message.content[0].text

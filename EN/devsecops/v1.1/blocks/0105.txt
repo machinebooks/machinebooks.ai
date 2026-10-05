@@ -1,0 +1,10 @@
+def load_exceptions() -> dict:
+    """Loads review exceptions if they exist."""
+    config_path = Path(".security-review-config.yml")
+    if not config_path.exists():
+        return {}
+    import yaml
+    proposal = yaml.safe_load(config_path.read_text())
+    if not isinstance(proposal,dict):
+        raise ValueError("INCOMPLETE: invalid review configuration")
+    raise ValueError("REVIEW: protected exception authority, scope and expiry verifier omitted")

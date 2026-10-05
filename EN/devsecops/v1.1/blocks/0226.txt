@@ -1,0 +1,30 @@
+# scripts/generate_rego_policy.py
+import anthropic
+
+client = anthropic.Anthropic()
+
+def generate_rego_policy(requirement: str, domain: str) -> str:
+    """Generates a Rego policy draft from a natural language requirement."""
+    system_prompt = """You are an expert in Open Policy Agent and Rego.
+Generate security policies in Rego following these conventions:
+- Use import future.keywords (in, if, contains)
+- Generate 'deny' rules for blocks and 'warn' for advisories
+- Include descriptive messages with sprintf
+- Generate tests for each rule
+- Use data.* for parameterizable external data
+- Comment each rule with its purpose"""
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        system=system_prompt,
+        messages=[{
+            "role": "user",
+            "content": (
+                f"Domain: {domain}\n"
+                f"Requirement: {requirement}\n\n"
+                "Generate the Rego policy and corresponding tests."
+            )
+        }]
+    )
+    return message.content[0].text

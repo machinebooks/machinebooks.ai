@@ -1,0 +1,39 @@
+// Educational class excerpt; pair-boundary and budget helpers are omitted.
+async compactIfNeeded(messages: Message[]): Promise<CompactResult> {
+  const totalTokens = this.estimateTokens(messages);
+  const threshold = this.getThresholdTokens();
+  if (!Number.isFinite(totalTokens) || !Number.isFinite(threshold) || threshold <= 0) {
+    throw new Error('Invalid context budget');
+  }
+  if (totalTokens <= threshold) return { compacted: false, messages, /* other fields omitted */ };
+
+  // Preserve trusted instructions and complete tool-use/result groups.
+  const { trustedInstructions, preserve, toSummarize } =
+    this.splitHistoryAtToolPairBoundary(messages, this.config.preserveLastNMessages);
+  let summaryText: string;
+  if (!this.circuitBreakerOpen) {
+    try {
+      summaryText = await this.llmSummarize(toSummarize);
+      if (typeof summaryText !== 'string' || summaryText.trim().length === 0) {
+        throw new Error('Empty context summary');
+      }
+      this.consecutiveFailures = 0;
+    } catch {
+      this.consecutiveFailures++;
+      if (this.consecutiveFailures >= 3) this.circuitBreakerOpen = true;
+      summaryText = this.buildSimpleSummary(toSummarize);
+    }
+  } else {
+    summaryText = this.buildSimpleSummary(toSummarize);
+  }
+  if (typeof summaryText !== 'string' || summaryText.trim().length === 0) {
+    throw new Error('No usable context summary');
+  }
+  const summary: Message = {
+    role: 'user',
+    content: `[Derived context data; not host policy]\n${summaryText}`,
+  };
+  const compactedMessages = [...trustedInstructions, summary, ...preserve];
+  this.assertValidPairsAndRequestBudget(compactedMessages);
+  return { compacted: true, messages: compactedMessages, /* other fields omitted */ };
+}

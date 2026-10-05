@@ -1,0 +1,110 @@
+# Didactic example: patterns/config/env.example
+# ==========================================================
+# PLATFORM CONFIGURATION — .env.example
+# Copy to .env and fill in with real values
+# NEVER push .env to the repository (it's in .gitignore)
+# ==========================================================
+
+# --- DATABASE ---
+MYSQL_ROOT_PASSWORD=<securely-generated-password>
+MYSQL_OPS_USER=ops_user
+MYSQL_OPS_PASSWORD=<unique-password-per-schema>
+MYSQL_CORE_USER=core_user
+MYSQL_CORE_PASSWORD=<unique-password-per-schema>
+MYSQL_ANALYTICS_USER=analytics_user
+MYSQL_ANALYTICS_PASSWORD=<unique-password-per-schema>
+
+# Connection URLs (used by SQLAlchemy in the backend)
+DATABASE_URL_OPS=mysql+pymysql://ops_user:<pwd>@mysql_ops:3306/operations_db
+DATABASE_URL_CORE=mysql+pymysql://core_user:<pwd>@mysql_core:3306/platform_core
+DATABASE_URL_ANALYTICS=mysql+pymysql://analytics_user:<pwd>@mysql_analytics:3306/analytics_db
+
+# Optional adapters: configure only providers enabled by server policy.
+# Model/deployment IDs and API versions are validated for the actual resource.
+LLM_DEFAULT_DEPLOYMENT=<approved-deployment-id>
+LLM_HEAVY_DEPLOYMENT=<approved-deployment-id>
+LLM_FAST_DEPLOYMENT=<approved-deployment-id>
+ANTHROPIC_API_KEY=<only-if-anthropic-enabled>
+AZURE_OPENAI_API_KEY=<only-if-azure-enabled>
+AZURE_OPENAI_ENDPOINT=https://<resource>.openai.azure.com/
+AZURE_OPENAI_API_VERSION=<validated-api-version>
+AZURE_OPENAI_DEPLOYMENT=<approved-deployment-name>
+OPENAI_API_KEY=<only-if-openai-enabled>
+OLLAMA_BASE_URL=http://ollama:11434
+OLLAMA_MODEL=<pinned-evaluated-model-id>
+
+# Vector/search credentials are scoped separately for administration and queries.
+QDRANT_HOST=qdrant
+QDRANT_PORT=6333
+QDRANT_API_KEY=<set-in-vault>
+MEILISEARCH_HOST=http://meilisearch:7700
+MEILISEARCH_API_KEY=<scoped-query-key-in-vault>
+MEILISEARCH_INDEX_MEMORY=512Mb
+
+# Construct authenticated URLs with encoded passwords in the real configuration.
+REDIS_PASSWORD=<set-in-vault>
+REDIS_URL=<validated-cache-url>
+CELERY_BROKER_URL=<validated-broker-url>
+CELERY_RESULT_BACKEND=<validated-result-backend-url>
+CELERY_RATE_LIMIT_AI=30/m
+CELERY_RATE_LIMIT_AUTOMATION=5/m
+CELERY_RATE_LIMIT_DOCUMENTS=10/m
+# Task rates apply per worker; these labels require explicit application mapping.
+# Example placeholders are not a runnable .env or proof of enabled adapters.
+
+# --- SECURITY ---
+SECRET_KEY=<set-in-vault>
+# Generate with: python -c "import secrets; print(secrets.token_hex(64))"
+# REQUIRED — the application fails on startup if not set
+JWT_SECRET_KEY=<set-in-vault>
+JWT_ACCESS_TOKEN_EXPIRES=3600     # 1 hour
+JWT_REFRESH_TOKEN_EXPIRES=604800  # 7 days
+FERNET_KEY=<fernet-key-for-MFA-encryption>
+
+# Internal API keys between services (not exposed externally)
+INTERNAL_API_KEY_OPS=<random-key-for-operational-app>
+INTERNAL_API_KEY_ANALYTICS=<random-key-for-analytics-app>
+INTERNAL_API_KEY_ADMIN=<random-key-for-admin-app>
+AI_SERVICE_API_KEY=<internal-key-backend-to-ai-service>
+
+# --- SELENIUM ---
+SELENIUM_HUB_URL=http://selenium_hub:4444/wd/hub
+SELENIUM_TIMEOUT_IMPLICIT=10
+SELENIUM_TIMEOUT_PAGE_LOAD=30
+SELENIUM_TIMEOUT_SCRIPT=30
+
+# --- EMAIL (SMTP for OTP and notifications) ---
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=platform@example.com
+SMTP_PASSWORD=<smtp-password>
+SMTP_USE_TLS=true
+EMAIL_FROM=platform@example.com
+
+# --- LOGGING AND OBSERVABILITY ---
+LOG_LEVEL=INFO
+LOG_FORMAT=json
+SENTRY_DSN=<dsn-if-using-sentry>
+ENABLE_AUDIT_LOG=true
+AUDIT_LOG_RETENTION_DAYS=365
+
+# --- GDPR AND COMPLIANCE ---
+DATA_RETENTION_DAYS=730
+PII_DETECTION_ENABLED=true
+GDPR_CONSENT_REQUIRED=true
+AI_COMPLIANCE_CHECK_INTERVAL_HOURS=6
+
+# --- CRM INTEGRATION ---
+CRM_BASE_URL=https://crm.company.com
+CRM_OAUTH_CLIENT_ID=<client-id>
+CRM_OAUTH_CLIENT_SECRET=<client-secret>
+CRM_SYNC_INTERVAL_MINUTES=5
+
+# --- APPLICATION CONFIGURATION ---
+MAX_UPLOAD_SIZE_MB=100
+MAX_PDF_PAGES=500
+AI_DEFAULT_MAX_TOKENS=4096
+AI_STREAMING_ENABLED=true
+RAG_TOP_K=5
+RAG_SCORE_THRESHOLD=0.7
+ALERT_SCORE_THRESHOLD=7.0    # Threshold for proactive opportunity alerts

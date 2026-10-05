@@ -1,0 +1,5 @@
+type JsonRpcResponse =
+  | { jsonrpc: '2.0'; id: number | string | null; result: unknown; error?: never }
+  | { jsonrpc: '2.0'; id: number | string | null; result?: never;
+      error: { code: number; message: string; data?: unknown } };
+// Runtime validation and correlation with an outstanding request are still required.

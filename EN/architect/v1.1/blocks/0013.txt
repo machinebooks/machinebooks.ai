@@ -1,0 +1,30 @@
+import asyncio
+import json
+
+
+async def handle_call_tool(
+    name, arguments, security_context, authorize_search, document_service,
+):
+    # Core handler; the chosen MCP SDK adapter registers and serializes it.
+    if name != "search_documents":
+        raise ValueError("Unknown tool")
+    if not isinstance(arguments, dict) or set(arguments) - {"query", "max_results"}:
+        raise ValueError("Invalid arguments")
+    query = arguments.get("query")
+    limit = arguments.get("max_results", 10)
+    if not isinstance(query, str) or not query.strip() or len(query) > 2000:
+        raise ValueError("Invalid query")
+    if type(limit) is not int or not 1 <= limit <= 50:
+        raise ValueError("Invalid result limit")
+    if security_context is None or authorize_search(
+        security_context, "search_documents", query
+    ) is not True:
+        raise PermissionError("Search access denied")
+    # The service must enforce current tenant, document ACL and data policy.
+    async with asyncio.timeout(10):
+        results = await document_service.search(
+            query=query, max_results=limit, security_context=security_context,
+        )
+    if not isinstance(results, list) or len(results) > limit:
+        raise ValueError("Invalid search result")
+    return [{"type": "text", "text": json.dumps(results, ensure_ascii=False)}]

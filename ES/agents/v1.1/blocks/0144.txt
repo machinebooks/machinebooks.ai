@@ -1,0 +1,12 @@
+// Private invocation excerpt: awaiting waits for this child result.
+import { runSubagent } from '@/server/subagent';
+const result = await runSubagent({
+  description: 'audit dependencies',
+  prompt: 'List dependency versions requiring review in this workspace.',
+  workspaceRoot: authorizedWorkspaceRoot,
+  llmBaseUrl: validatedLlmBaseUrl,
+  llmApiKey: configuredApiKey,
+  llmModel: configuredModel,
+});
+console.log(result.content);
+// Host authorization, budgets and concurrent coordination are not shown.

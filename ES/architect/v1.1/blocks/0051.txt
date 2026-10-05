@@ -1,0 +1,32 @@
+OUTPUT_GUARDRAIL_PATTERNS = [
+    # Detection of leaked credentials in the response
+    (r"(password|token|secret|api.?key)\s*[:=]\s*\S+", "SANITIZE",
+     "credential_leak"),
+    # Internal OS or backend system paths
+    (r"(/app/|/backend/|/ai_service/|/var/lib/)", "SANITIZE",
+     "internal_path"),
+    # Exposure of the model's system prompt
+    (r"(system prompt|system instructions|you are an assistant)",
+     "SANITIZE", "prompt_exposure"),
+    # Hallucination indicators — logged but not blocked
+    (r"(I don't have access|I cannot verify|this might be incorrect)",
+     "FLAG", "expressed_uncertainty"),
+]
+
+def check_output_guardrails(response_text: str,
+                             user_context: SecurityContext) -> GuardrailResult:
+    """Filters the model's response before sending it to the user."""
+    filtered = response_text
+    for pattern, action, category in OUTPUT_GUARDRAIL_PATTERNS:
+        if re.search(pattern, filtered, re.IGNORECASE):
+            audit_log('GUARDRAIL_OUTPUT_TRIGGERED', severity='WARNING',
+                     details=f"Category: {category}, action: {action}")
+            if action == "SANITIZE":
+                filtered = re.sub(pattern, "[REDACTED]", filtered,
+                                  flags=re.IGNORECASE)
+            elif action == "BLOCK":
+                return GuardrailResult(action="BLOCK", reason=category)
+            elif action == "FLAG":
+                # Log for quality analysis but do not modify
+                log_quality_event('expressed_uncertainty', user_context)
+    return GuardrailResult(action="ALLOW", filtered_text=filtered)

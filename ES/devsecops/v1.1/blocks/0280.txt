@@ -1,0 +1,80 @@
+from dataclasses import dataclass, field
+from typing import Callable
+
+@dataclass
+class AgentGuardrails:
+    """Guardrails para agentes autónomos."""
+    max_actions_per_run: int = 10
+    max_tokens_per_run: int = 50_000
+    allowed_tools: list[str] = field(default_factory=list)
+    requires_approval: list[str] = field(default_factory=list)
+    db_permissions: list[str] = field(default_factory=list)
+
+    # Contadores de ejecución
+    _action_count: int = field(default=0, init=False)
+    _token_count: int = field(default=0, init=False)
+
+    def check_action(self, tool_name: str) -> bool:
+        """Verifica si el agente puede ejecutar la acción."""
+        # Verificar presupuesto de acciones
+        if self._action_count >= self.max_actions_per_run or self._token_count >= self.max_tokens_per_run:
+            raise BudgetExhaustedError(
+                f"Agente alcanzó límite de {self.max_actions_per_run} "
+                f"acciones. Requiere reinicio manual."
+            )
+
+        # Verificar tool permitida
+        if tool_name not in self.allowed_tools:
+            raise UnauthorizedToolError(
+                f"Tool '{tool_name}' no está en la lista de "
+                f"herramientas permitidas: {self.allowed_tools}"
+            )
+
+        # Verificar si requiere aprobación humana
+        if tool_name in self.requires_approval:
+            raise ApprovalRequiredError(
+                f"Tool '{tool_name}' requiere aprobación humana."
+            )
+
+        # Database grants are declarations; execution requires the host's protected adapter.
+        if self.db_permissions:
+            raise UnauthorizedToolError("REVIEW: database authorization adapter omitted")
+        self._action_count += 1
+        return True
+
+class BudgetExhaustedError(Exception):
+    pass
+
+class UnauthorizedToolError(Exception):
+    pass
+
+class ApprovalRequiredError(Exception):
+    pass
+
+# Configuración específica por agente
+AGENT_CONFIGS = {
+    "classifier": AgentGuardrails(
+        max_actions_per_run=20,
+        max_tokens_per_run=30_000,
+        allowed_tools=["read_document", "classify_document",
+                       "update_classification", "delete_document"],
+        requires_approval=["delete_document"],
+        db_permissions=["SELECT", "UPDATE:documents.classification"],
+    ),
+    "normative_monitor": AgentGuardrails(
+        max_actions_per_run=15,
+        max_tokens_per_run=40_000,
+        allowed_tools=["fetch_regulation", "compare_versions",
+                       "create_alert", "notify_external"],
+        requires_approval=["notify_external"],
+        db_permissions=["SELECT", "INSERT:alerts"],
+    ),
+    "summarizer": AgentGuardrails(
+        max_actions_per_run=10,
+        max_tokens_per_run=50_000,
+        allowed_tools=["read_document", "generate_summary",
+                       "store_summary"],
+        requires_approval=[],
+        db_permissions=["SELECT", "INSERT:summaries"],
+    ),
+}

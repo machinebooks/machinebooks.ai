@@ -1,0 +1,21 @@
+def _resolve_input(self, task, task_states):
+    resolved = {}
+    for target_key, mapping_path in task.input_mappings.items():
+        if not isinstance(mapping_path, str):
+            raise ValueError("Mapping no válido")
+        parts = mapping_path.split(".")
+        if len(parts) < 4 or parts[0] != "task" or parts[2] != "output":
+            raise ValueError("Mapping no válido")
+        source_task_id = parts[1]
+        if source_task_id not in task.depends_on:
+            raise ValueError("El mapping no corresponde a una dependencia")
+        source_state = task_states.get(source_task_id)
+        if source_state is None or source_state.status != "completed":
+            raise ValueError("Dependencia no completada")
+        value = source_state.output
+        for key in parts[3:]:
+            if not isinstance(value, dict) or key not in value:
+                raise ValueError("Falta un campo requerido en el resultado")
+            value = value[key]
+        resolved[target_key] = value
+    return resolved

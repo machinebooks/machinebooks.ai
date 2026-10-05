@@ -1,0 +1,14 @@
+const callbacks: StreamCallbacks = {
+  onContent: (text) => { sendSSE(res, 'content', { text, iteration: iterNum }); },
+  onThinking: (text) => { sendSSE(res, 'thinking', { text, iteration: iterNum }); },
+  onToolCall: (_idx, _id, name) => {
+    if (name) sendSSE(res, 'status', { state: 'executing', message: `Tool: ${name}` });
+  },
+  onToolCallDone: () => { /* handled in main loop */ },
+  onUsage: (inputTokens, outputTokens) => {
+    totalUsage.prompt_tokens += inputTokens;
+    totalUsage.completion_tokens += outputTokens;
+    trackUsage(model, inputTokens, outputTokens, iterNum === 1 ? 'chat' : 'continuation');
+  },
+  onError: (error) => { sendSSE(res, 'error', { message: error }); },
+};

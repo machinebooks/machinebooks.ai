@@ -1,0 +1,40 @@
+# Didactic example: patterns/docker/celery-workers.yml
+  celery_worker_ai:
+    build:
+      context: ./backend
+    container_name: plataforma_celery_ai
+    command: >
+      celery -A app.celery_app worker
+      --queues=ai
+      --concurrency=2
+      --loglevel=info
+      --max-tasks-per-child=50
+    environment:
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    depends_on:
+      - redis
+      - backend
+    deploy:
+      resources:
+        limits:
+          memory: 1.5G    # AI tasks can load large documents
+          cpus: '1.0'
+    restart: on-failure:5
+
+  celery_worker_automation:
+    build:
+      context: ./backend
+    container_name: plataforma_celery_automation
+    command: >
+      celery -A app.celery_app worker
+      --queues=automation
+      --concurrency=1   # Only one automation at a time to avoid conflicts
+      --loglevel=info
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+    restart: on-failure:5

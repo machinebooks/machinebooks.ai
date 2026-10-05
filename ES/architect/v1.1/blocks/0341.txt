@@ -1,0 +1,52 @@
+def pipeline_validacion_codigo(
+    codigo_generado: str,
+    requisitos_negocio: str
+) -> dict:
+    """
+    Pipeline de validación multi-perspectiva para código generado por IA.
+    El arquitecto supervisa el resultado; el pipeline ejecuta la revisión sistemática.
+    Usar claude-opus-4-6 en la síntesis garantiza razonamiento de alta calidad
+    para la decisión final sobre si el código puede pasar a producción.
+    """
+    # Paso 1: revisión de seguridad independiente
+    revision_seguridad = revisor_seguridad(
+        tarea=f"Revisa este código:\n\n```python\n{codigo_generado}\n```",
+        contexto_adicional="Entorno: aplicación B2B en producción con datos de clientes empresariales."
+    )
+
+    # Paso 2: validación de negocio con contexto de lo hallado en seguridad
+    # Pasar los hallazgos de seguridad evita que el validador de negocio repita el mismo análisis
+    revision_negocio = validador_negocio(
+        tarea=f"Valida este código contra los requisitos:\n\nRequisitos:\n{requisitos_negocio}\n\nCódigo:\n```python\n{codigo_generado}\n```",
+        contexto_adicional=f"Hallazgos de seguridad ya identificados: {revision_seguridad}"
+    )
+
+    # Paso 3: síntesis por el coordinador con el modelo más capaz
+    # claude-opus-4-6 para razonamiento complejo en la decisión final
+    decision_final = cliente.messages.create(
+        model="claude-opus-4-6",
+        max_tokens=2048,
+        messages=[{
+            "role": "user",
+            "content": f"""Sintetiza estas dos revisiones y determina si el código puede
+pasar a producción o requiere correcciones previas.
+
+Revisión de seguridad:
+{revision_seguridad}
+
+Revisión de lógica de negocio:
+{revision_negocio}
+
+Devuelve:
+1. Estado: APROBADO o CORRECCIONES_NECESARIAS
+2. Bloqueos críticos (si estado = CORRECCIONES_NECESARIAS): qué impide producción
+3. Mejoras recomendadas (opcionales): qué mejoraría la calidad sin bloquear
+4. Confianza en la decisión (alta/media/baja) y por qué"""
+        }]
+    ).content[0].text
+
+    return {
+        "seguridad": revision_seguridad,
+        "negocio": revision_negocio,
+        "decision": decision_final
+    }

@@ -1,0 +1,56 @@
+# adaptive_defense_policy.rego — Política adaptativa para nivel de amenaza
+# Se evalúa en cada ciclo del pipeline para ajustar umbrales
+package adaptive_security
+
+import future.keywords.if
+
+valid_input if {
+    is_number(input.cve_feed.critical_last_24h)
+    input.cve_feed.critical_last_24h >= 0
+    is_boolean(input.cve_feed.affects_our_stack)
+    is_number(input.github_audit.failed_auth_last_hour)
+    input.github_audit.failed_auth_last_hour >= 0
+}
+
+# Nivel de amenaza basado en indicadores externos
+elevated if {
+    valid_input
+    # CVE crítica publicada en últimas 24h para tecnologías del stack
+    input.cve_feed.critical_last_24h > 0
+    input.cve_feed.affects_our_stack == true
+}
+
+elevated if {
+    valid_input
+    # Incremento anómalo de intentos de acceso al repositorio
+    input.github_audit.failed_auth_last_hour > 10
+}
+
+threat_level := "elevated" if { elevated }
+default threat_level := "unknown"
+threat_level := "normal" if {
+    valid_input
+    not elevated
+    input.github_audit.failed_auth_last_hour <= 10
+}
+default max_autonomy_level := 3
+
+# Ajuste dinámico de niveles de autonomía según amenaza
+max_autonomy_level := 2 if {
+    threat_level == "elevated"
+}
+
+max_autonomy_level := 1 if {
+    threat_level == "normal"
+}
+
+# Bajo amenaza elevada, todo sube un nivel de supervisión
+deny[msg] if {
+    threat_level == "elevated"
+    input.finding.proposed_autonomy == 1
+    msg := "Amenaza elevada: hallazgo reclasificado a nivel 2 (supervisado)"
+}
+deny[msg] if {
+    not valid_input
+    msg := "INCOMPLETE: missing or invalid threat indicators; human-only autonomy"
+}

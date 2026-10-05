@@ -1,0 +1,39 @@
+@analytics_bp.route('/heatmap', methods=['GET'])
+@platform_guard
+@require_permissions(['analytics_view'])
+def get_heatmap():
+    """
+    Returns the scoring matrix for the requested period.
+    If the period has no pre-calculated data, returns 404 with
+    indication of the last available period.
+    """
+    period = request.args.get('period', _current_period())
+    include_detail = request.args.get('detail', 'false').lower() == 'true'
+
+    # Validate period has correct format (YYYY-MM)
+    if not re.match(r'^\d{4}-\d{2}$', period):
+        return jsonify({'error': 'Invalid period format. Use YYYY-MM'}), 400
+
+    scores = HeatmapScore.query.filter_by(period=period)\
+                               .order_by(HeatmapScore.total_score.desc())\
+                               .all()
+
+    if not scores:
+        last_available = _get_last_calculated_period()
+        return jsonify({
+            'error': f'No data for {period}',
+            'last_available_period': last_available
+        }), 404
+
+    matrix = _build_matrix(scores, include_detail)
+
+    # Validity metadata so the frontend shows the timestamp
+    last_calc = max(s.calculated_at for s in scores)
+
+    return jsonify({
+        'period': period,
+        'matrix': matrix,
+        'calculated_at': last_calc.isoformat(),
+        'total_cells': len(scores),
+        'weights_config': _get_active_weights()
+    })

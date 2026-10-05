@@ -1,0 +1,79 @@
+from illustrative_host import Agent, tool
+import re
+
+@tool
+def scan_document_for_injection(
+    document_text: str,
+    source: str
+) -> dict:
+    """Scans a document before indexing it in the RAG."""
+    # Look for instructions embedded in the document
+    suspicious_patterns = [
+        r"(?i)(ignore|ignora|olvida).{0,30}(instrucciones|instructions|rules)",
+        r"(?i)(eres|you are).{0,20}(ahora|now)",
+        r"(?i)(system|sistema).{0,10}(prompt|override|anular)",
+        r"<!--.*?-->",                    # Hidden HTML comments
+        r"\u200b|\u200c|\u200d|\ufeff",   # Zero-width characters
+    ]
+    findings = []
+    for pattern in suspicious_patterns:
+        matches = re.finditer(pattern, document_text)
+        for match in matches:
+            findings.append({
+                "pattern": pattern,
+                "match": match.group()[:100],
+                "position": match.start(),
+                "source": source
+            })
+    return {
+        "status":"REVIEW","coverage":"partial",
+        "no_pattern_match": len(findings) == 0,
+        "findings": findings,
+        "document_length": len(document_text),
+        "source": source
+    }
+
+@tool
+def scan_prompt_template(
+    template: str,
+    template_name: str
+) -> dict:
+    """Audits a prompt template before deployment."""
+    issues = []
+
+    # Verify the template includes basic defenses
+    if "NUNCA" not in template and "NEVER" not in template:
+        issues.append("WARN: template without explicit restrictions")
+
+    if "instrucciones" not in template.lower() and \
+       "instructions" not in template.lower():
+        issues.append("WARN: template does not mention instruction protection")
+
+    # Verify it has no placeholders that allow injection
+    import string
+    placeholders = [
+        fn for _, fn, _, _ in string.Formatter().parse(template)
+        if fn is not None
+    ]
+    for ph in placeholders:
+        issues.append(
+            f"INFO: placeholder '{{{ph}}}' detected. "
+            f"Verify that content is validated before insertion."
+        )
+
+    return {
+        "status":"REVIEW","coverage":"partial",
+        "template_name": template_name,
+        "issues": issues,
+        "has_critical": any(i.startswith("CRIT") for i in issues),
+        "placeholder_count": len(placeholders)
+    }
+
+# Agent configuration
+injection_scanner = Agent(
+    model="claude-haiku-4-5",
+    tools=[scan_document_for_injection, scan_prompt_template],
+    system_prompt="You are a security agent specialized in detecting "
+                  "prompt injection in documents and templates. Analyze "
+                  "the provided content and report findings with severity."
+)

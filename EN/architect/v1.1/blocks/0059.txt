@@ -1,0 +1,34 @@
+# Backend — OAuth2 callback validation
+@auth_bp.route('/api/auth/oauth2/callback', methods=['POST'])
+@platform_guard
+def oauth2_callback():
+    """Exchanges authorization code for tokens. Validates state against CSRF."""
+    data = request.get_json()
+
+    # Verify state parameter — prevents CSRF in the OAuth2 flow
+    # Flask session only for temporary OAuth2 flow — the API uses stateless JWT
+    stored_state = session.pop('oauth2_state', None)
+    if not hmac.compare_digest(data.get('state', ''),
+                                stored_state or ''):
+        audit_log('ACCESS_DENIED', severity='CRITICAL',
+                 details="OAuth2 state mismatch — possible CSRF")
+        return jsonify({"error": "Invalid state"}), 403
+
+    # Exchange authorization code + code_verifier for tokens
+    token_response = requests.post(CRM_TOKEN_URL, data={
+        'grant_type': 'authorization_code',
+        'code': data['code'],
+        'code_verifier': data['code_verifier'],  # PKCE — never travels in plaintext
+        'redirect_uri': OAUTH2_REDIRECT_URI,
+        'client_id': os.environ['CRM_CLIENT_ID'],
+    }, timeout=10)
+
+    if not token_response.ok:
+        audit_log('AUTH_FAILED', severity='WARNING',
+                 details=f"OAuth2 token exchange failed: {token_response.status_code}")
+        return jsonify({"error": "Authorization error"}), 401
+
+    # Store encrypted tokens in CredentialVault — not in session or cookies
+    store_oauth_tokens(g.current_user_id, token_response.json())
+    audit_log('OAUTH2_CONNECTED', user_id=g.current_user_id, severity='INFO')
+    return jsonify({"status": "connected"})

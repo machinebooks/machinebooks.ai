@@ -1,0 +1,15 @@
+stateDiagram-v2
+    [*] --> none
+    none --> soft: 0.70 &lt;= utilization &lt; 0.85
+    none --> hard: utilization &gt;= 0.85
+    soft --> hard: utilization &gt;= 0.85
+    soft --> none: utilization &lt; 0.70
+    hard --> soft: 0.70 &lt;= utilization &lt; 0.85
+    hard --> none: utilization &lt; 0.70
+    note right of soft
+      High-utilization notice
+    end note
+    note right of hard
+      Review budget before
+      the next request
+    end note

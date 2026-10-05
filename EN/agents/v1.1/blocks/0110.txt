@@ -1,0 +1,14 @@
+gantt
+    title Illustrative durations, not retention policy
+    dateFormat X
+    axisFormat %s
+    section Layer 1
+    Active messages     :a1, 0, 1
+    section Layer 2
+    Static cache        :a2, 0, 10
+    section Layer 3
+    Compaction          :a3, 5, 15
+    section Layer 4
+    Subagent snapshot   :a4, 3, 30
+    section Layer 5
+    Persistent memory   :a5, 0, 100

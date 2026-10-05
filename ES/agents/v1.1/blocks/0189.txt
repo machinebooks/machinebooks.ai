@@ -1,0 +1,13 @@
+const plan = enterPlanV2({
+  sessionId: ctx.sessionId,
+  title: 'Refactor del módulo de auth',
+  rationale: 'Separar AuthService en TokenService, SessionService y AuthFacade.',
+  initialSteps: [
+    { description: 'Leer src/auth/AuthService.ts', expectedTools: ['Read'] },
+    { description: 'Identificar dependencias entre métodos', expectedTools: ['Grep', 'Read'] },
+    { description: 'Crear TokenService.ts', expectedTools: ['Write'] },
+    { description: 'Crear SessionService.ts', expectedTools: ['Write'] },
+    { description: 'Actualizar AuthFacade y referencias', expectedTools: ['Edit'] },
+    { description: 'Ejecutar tests', expectedTools: ['Bash'] },
+  ],
+});

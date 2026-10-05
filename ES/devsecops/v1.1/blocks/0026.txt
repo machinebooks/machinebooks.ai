@@ -1,0 +1,64 @@
+import json
+import anthropic
+
+client = anthropic.Anthropic()
+
+PROMPT_TRIAJE = """Eres un ingeniero de seguridad senior. Analiza
+el siguiente hallazgo SAST y el código circundante.
+
+Hallazgo: {finding_id}
+Severidad reportada: {severity}
+Mensaje: {message}
+Fichero: {file_path}
+Línea: {line}
+
+Código circundante (40 líneas):
+{code_context}
+
+Responde EXCLUSIVAMENTE en JSON con este formato:
+{{
+  "clasificacion": "verdadero_positivo" | "falso_positivo" | "requiere_revision",
+  "severidad_ajustada": "critical" | "high" | "medium" | "low",
+  "justificacion": "explicación en 2-3 frases",
+  "vector_ataque": "descripción del ataque si es verdadero positivo",
+  "remediacion": "sugerencia concreta de fix"
+}}"""
+
+
+def leer_codigo_circundante(filepath, linea, margen=20):
+    """Lee las líneas alrededor del hallazgo para dar contexto."""
+    with open(filepath, "r") as f:
+        lineas = f.readlines()
+    inicio = max(0, linea - margen)
+    fin = min(len(lineas), linea + margen)
+    return "".join(lineas[inicio:fin])
+
+
+def triaje_hallazgo(finding: dict) -> dict:
+    """Envía un hallazgo a Claude y devuelve la clasificación."""
+    contexto = leer_codigo_circundante(
+        finding["path"], finding["start"]["line"]
+    )
+    respuesta = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=512,
+        temperature=0,
+        messages=[{
+            "role": "user",
+            "content": PROMPT_TRIAJE.format(
+                finding_id=finding["check_id"],
+                severity=finding["extra"]["severity"],
+                message=finding["extra"]["message"],
+                file_path=finding["path"],
+                line=finding["start"]["line"],
+                code_context=contexto,
+            ),
+        }],
+    )
+    proposal = json.loads(respuesta.content[0].text)
+    if not isinstance(proposal, dict):
+        raise ValueError("INCOMPLETE: invalid proposal schema")
+    proposal["status"] = "REVIEW"
+    proposal["coverage"] = "partial"
+    proposal["origin_verified"] = False
+    return proposal

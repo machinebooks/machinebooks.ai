@@ -1,0 +1,8 @@
+stateDiagram-v2
+    [*] --> http: start()
+    http --> ws: ws.open
+    ws --> http: ws.close
+    ws --> http: ws.giveup (max retries)
+    http --> ws: ws.open
+    http --> [*]: close()
+    ws --> [*]: close()

@@ -1,0 +1,14 @@
+gantt
+    title Duraciones ilustrativas, no política de retención
+    dateFormat X
+    axisFormat %s
+    section Capa 1
+    Mensajes activos     :a1, 0, 1
+    section Capa 2
+    Cache estatica       :a2, 0, 10
+    section Capa 3
+    Compactacion         :a3, 5, 15
+    section Capa 4
+    Snapshot subagente   :a4, 3, 30
+    section Capa 5
+    Memoria persistente  :a5, 0, 100

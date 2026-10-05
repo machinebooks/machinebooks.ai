@@ -1,0 +1,14 @@
+    except RetryablePortalError as exc:
+        # Adapter classifies retryable reads and reconciles ambiguous write effects.
+        if self.request.retries>=self.max_retries:
+            record_sync_failure(context,task_id,type(exc).__name__)
+            raise RuntimeError("Portal sync retry limit exceeded") from None
+        logger.warning("Portal sync retry",extra={"task_id":task_id,"error_type":type(exc).__name__})
+        raise self.retry(exc=RuntimeError("Retryable portal read failure"),countdown=60) from None
+    except Exception as exc:
+        record_sync_failure(context,task_id,type(exc).__name__)
+        logger.error("Portal sync failed",extra={"task_id":task_id,"error_type":type(exc).__name__})
+        raise RuntimeError("Portal sync failed") from None
+# RetryablePortalError and all repositories are application-owned dependencies.
+# Three retries is this task's policy; Chapter 8's 180 belongs to another task.
+# Failure recording is idempotent, uses protected job references and omits raw errors.

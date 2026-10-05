@@ -1,0 +1,2 @@
+# Alerta si hay más de 5 eventos CRITICAL en 15 minutos
+sum(increase(falco_events{priority="2"}[15m])) > 5

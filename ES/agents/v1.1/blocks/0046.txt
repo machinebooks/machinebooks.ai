@@ -1,0 +1,94 @@
+type FinishEvent = Extract<AgentStreamEvent, { type: 'finish' }>;
+async function* callbackEvents(
+  start: (callbacks: StreamCallbacks, signal: AbortSignal) =>
+    Promise<Omit<FinishEvent, 'type'>>,
+  model: string,
+  signal: AbortSignal,
+  maxQueuedEvents = 1024,
+  maxQueuedChars = 1 << 20,
+): AsyncGenerator<AgentStreamEvent> {
+  if (![maxQueuedEvents, maxQueuedChars].every(n => Number.isInteger(n) && n > 0)) {
+    throw new Error('Invalid queue limits.');
+  }
+  if (signal.aborted) throw new Error('Cancelled.');
+  const controller = new AbortController();
+  const queue: Array<{ event: AgentStreamEvent; chars: number }> = [];
+  let queuedChars = 0;
+  let producerDone = false;
+  let stopped = false;
+  let producerError: Error | undefined;
+  let resolveNext: (() => void) | undefined;
+  const wake = () => { const resolve = resolveNext; resolveNext = undefined; resolve?.(); };
+  const fail = (error: Error) => {
+    producerError ??= error;
+    controller.abort();
+    wake();
+  };
+  const abort = () => fail(new Error('Cancelled.'));
+  signal.addEventListener('abort', abort, { once: true });
+  const push = (event: AgentStreamEvent) => {
+    if (stopped || producerError) return;
+    const chars = JSON.stringify(event).length;
+    if (queue.length >= maxQueuedEvents || queuedChars + chars > maxQueuedChars) {
+      const error = new Error('Event queue limit.');
+      fail(error);
+      throw error;
+    }
+    queue.push({ event, chars });
+    queuedChars += chars;
+    wake();
+  };
+  const producer = (async () => {
+    try {
+      const terminal = await start({
+        onContent: text => push({ type: 'text', text }),
+        onThinking: text => push({ type: 'thinking', text }),
+        onToolCall: (index, id, name, args) => push({
+          type: 'tool_call_delta', delta: { index, id, name, arguments: args },
+        }),
+        onToolCallDone: index => push({ type: 'tool_call_complete', index }),
+        onUsage: (input, output) => {
+          if (![input, output].every(n => Number.isFinite(n) && n >= 0)) {
+            fail(new Error('Invalid usage.'));
+            return;
+          }
+          push({ type: 'usage', usage: {
+            prompt_tokens: input, completion_tokens: output, model,
+          } });
+        },
+        onError: message => fail(new Error(message)),
+      }, controller.signal);
+      const reasons = ['stop', 'tool_calls', 'length', 'filtered',
+        'refused', 'paused', 'unknown', 'error'];
+      if (!reasons.includes(terminal.reason)) throw new Error('Missing terminal state.');
+      push({ ...terminal, type: 'finish' });
+    } catch (error) {
+      fail(error instanceof Error ? error : new Error('Producer failed.'));
+    } finally {
+      producerDone = true;
+      wake();
+    }
+  })();
+  try {
+    while (!producerDone || queue.length) {
+      if (producerError) throw producerError;
+      const next = queue.shift();
+      if (next) {
+        queuedChars -= next.chars;
+        yield next.event;
+      } else {
+        await new Promise<void>(resolve => { resolveNext = resolve; });
+      }
+    }
+    if (producerError) throw producerError;
+  } finally {
+    stopped = true;
+    controller.abort();
+    signal.removeEventListener('abort', abort);
+    queue.length = 0;
+    queuedChars = 0;
+    wake();
+    // The producer handles its own rejection; cancellation remains cooperative.
+    void producer;
+  }
+}

@@ -1,0 +1,32 @@
+import asyncio
+from copy import deepcopy
+from jsonschema import Draft202012Validator, ValidationError, SchemaError
+
+async def execute(self, tool_name: str, arguments: dict,
+                  security_ctx: SecurityContext | None = None) -> ToolResult:
+    ctx = security_ctx
+    tool = self._tools.get(tool_name)
+    if ctx is None or type(ctx.user_id) is not int or ctx.user_id < 1 or tool is None:
+        return ToolResult(tool_name=tool_name, success=False, error="Acceso denegado")
+    if not isinstance(arguments, dict) or "security_ctx" in arguments:
+        return ToolResult(tool_name=tool_name, success=False, error="Argumentos no válidos")
+    arguments = deepcopy(arguments)
+    if tool.security_level == SecurityLevel.ADMIN and ctx.is_admin is not True:
+        return ToolResult(tool_name=tool_name, success=False, error="Acceso denegado")
+    try:
+        schema = {**tool.parameters, "additionalProperties": False}
+        Draft202012Validator.check_schema(schema)
+        Draft202012Validator(schema).validate(arguments)
+    except (ValidationError, SchemaError, TypeError):
+        return ToolResult(tool_name=tool_name, success=False, error="Argumentos no válidos")
+    authorize = getattr(self, "authorize_tool", None)
+    if not callable(authorize) or (await authorize(ctx, tool_name, arguments)) is not True:
+        return ToolResult(tool_name=tool_name, success=False, error="Acceso denegado")
+    try:
+        result = await asyncio.wait_for(tool.handler(security_ctx=ctx, **arguments),
+                                        timeout=tool.timeout_seconds)
+    except asyncio.CancelledError:
+        raise
+    except Exception:
+        return ToolResult(tool_name=tool_name, success=False, error="Herramienta no completada")
+    return ToolResult(tool_name=tool_name, success=True, result=result)

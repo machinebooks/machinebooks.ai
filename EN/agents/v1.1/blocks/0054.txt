@@ -1,0 +1,4 @@
+// Educational capability configuration, not a port-based inference.
+if (capabilities.includeUsage === true) {
+  requestBody.stream_options = { include_usage: true };
+}

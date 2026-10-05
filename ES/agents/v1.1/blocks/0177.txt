@@ -1,0 +1,17 @@
+flowchart TD
+    U[Mensaje del usuario] --> IG{Input guardrails aplicables}
+    IG -->|rechazo o fallo obligatorio| B1[Detener]
+    IG -->|admite| LLM[Provider stream]
+    LLM -->|invocación completa| VAL[Validar nombre, id y argumentos]
+    VAL --> AUTH{Política vigente del host}
+    AUTH -->|deniega| B2[Resultado de denegación correlacionado]
+    AUTH -->|admite| PRE{PreToolUse autorizado}
+    PRE -->|veto o fallo obligatorio| B2
+    PRE -->|admite| TR[Ejecutar efecto autorizado]
+    TR --> POST[PostToolUse: resultado y trazas]
+    POST --> LLM
+    B2 --> LLM
+    LLM -->|fin de llamada normalizado| OG{Output guardrails}
+    OG -->|rechaza| B3[Retener salida si aún no emitida]
+    OG -->|admite| OUT[Respuesta]
+    PRE -. orden y permisos de hooks definidos por host .-> AUTH

@@ -1,0 +1,47 @@
+# Educational service cores; authenticated HTTP adapters supply server-resolved context.
+# Repository callbacks enforce current tenant/object scope and logical exclusion.
+def list_proposals(ctx, page, per_page, status, authorize_scope,
+                   query_authorized_proposals):
+    if ctx is None or authorize_scope(ctx, "proposals.read") is not True:
+        raise PermissionError("Proposal scope not authorized")
+    if type(page) is not int or page < 1:
+        raise ValueError("Positive page required")
+    if type(per_page) is not int or not 1 <= per_page <= 100:
+        raise ValueError("per_page must be between 1 and 100")
+    allowed_statuses = {"draft","in_review","approved","rejected","sent","won","lost"}
+    if status is not None and (not isinstance(status,str) or status not in allowed_statuses):
+        raise ValueError("Invalid proposal status")
+    result = query_authorized_proposals(ctx, page, per_page, status)
+    if not isinstance(result,dict) or type(result.get("total")) is not int:
+        raise RuntimeError("Valid scoped pagination result required")
+    if result["total"] < 0 or not isinstance(result.get("items"),list):
+        raise RuntimeError("Invalid scoped pagination result")
+    if len(result["items"]) > per_page:
+        raise RuntimeError("Page exceeds requested bound")
+    return {"proposals":result["items"], "pagination":{
+        "page":page, "per_page":per_page, "total":result["total"],
+        "pages":(result["total"]+per_page-1)//per_page,
+    }}
+
+
+def create_proposal(ctx, data, authorize_project, persist_with_outbox):
+    if ctx is None or not isinstance(data,dict):
+        raise ValueError("Authenticated context and object body required")
+    if set(data) != {"project_id","title","proposal_type"}:
+        raise ValueError("Unexpected or missing proposal fields")
+    project_id = data["project_id"]
+    if type(project_id) is not int or project_id < 1:
+        raise ValueError("Positive project_id required")
+    title = data["title"]
+    if not isinstance(title,str) or not title.strip() or len(title) > 300:
+        raise ValueError("Title must contain 1 to 300 characters")
+    if not isinstance(data["proposal_type"],str) or data["proposal_type"] not in {"base","competitive","premium","custom","executive"}:
+        raise ValueError("Invalid proposal type")
+    if authorize_project(ctx,project_id,"proposals.write") is not True:
+        raise PermissionError("Project not authorized")
+    result = persist_with_outbox(ctx,{**data,"title":title.strip()})
+    if not isinstance(result,dict) or type(result.get("id")) is not int or result["id"] < 1:
+        raise RuntimeError("Committed proposal acknowledgement required")
+    return result
+# persist_with_outbox uses one operations bind transaction for proposal and outbox.
+# Publishing the audit event to another bind needs retries and reconciliation.

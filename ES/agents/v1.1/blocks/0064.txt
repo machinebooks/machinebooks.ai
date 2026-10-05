@@ -1,0 +1,18 @@
+if (withTools) {
+  // Historical heuristic: retain eight base tools and previously requested tools.
+  // Measure coverage and prefix reuse; this filter does not grant permissions.
+  if (iterNum <= 1) {
+    requestBody.tools = AGENT_TOOLS;          // First iteration: snapshot catalog.
+  } else {
+    const usedToolNames = new Set(allToolCalls.map(t => t.name));
+    const coreTools = new Set([
+      'read_file', 'write_file', 'edit_file', 'bash',
+      'list_directory', 'grep', 'glob', 'todo_write',
+    ]);
+    const reducedTools = AGENT_TOOLS.filter(t =>
+      usedToolNames.has(t.function.name) || coreTools.has(t.function.name)
+    );
+    requestBody.tools = reducedTools;         // Later iterations: previously requested plus base tools.
+  }
+  requestBody.tool_choice = 'auto';
+}

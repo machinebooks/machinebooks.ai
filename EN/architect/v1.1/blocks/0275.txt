@@ -1,0 +1,46 @@
+def generate_incident_runbook(
+    service: str,
+    symptoms: List[str],
+    diagnostics: List[dict],
+    recovery_procedures: List[dict]
+) -> str:
+    """
+    Generates an incident runbook from diagnostic data
+    extracted from the monitoring system.
+    """
+    client = anthropic.Anthropic()
+
+    context = {
+        "service": service,
+        "common_symptoms": symptoms,
+        "diagnostic_trees": diagnostics,
+        "recovery_procedures": recovery_procedures,
+        "dependencies": get_service_dependencies(service),
+        "normal_metrics": get_metrics_baseline(service)
+    }
+
+    prompt = f"""Generate an operational runbook for the '{service}' service.
+
+Technical context:
+{json.dumps(context, ensure_ascii=False, indent=2)}
+
+The runbook must follow this structure:
+1. Service description and its criticality
+2. Alert indicators (when to consult this runbook)
+3. Diagnostic tree: symptom → possible cause → diagnostic command → action
+4. Step-by-step recovery procedures, numbered
+5. Escalation: when and to whom to escalate
+6. On-call contacts and communication channels [REDACTED - fill in with real data]
+7. Record of previous incidents and resolutions
+
+Tone: direct and precise. The reader is under pressure. Each step must be executable
+without ambiguity. Commands must be in code blocks. Indicate the estimated time
+for each procedure."""
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    return message.content[0].text

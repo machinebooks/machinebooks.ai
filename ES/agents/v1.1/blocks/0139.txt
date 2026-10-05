@@ -1,0 +1,15 @@
+// Educational execution excerpt; host checks and directory branch are omitted.
+async execute(input) {
+  const indexer = getRagIndexToolIndexer();
+  if (!indexer) return { content: 'Base documental no inicializada.', is_error: true };
+  await validateAndAuthorizeRagIndex(input);
+  if (typeof input.file_path !== 'string' || input.file_path.length === 0) {
+    throw new Error('Expected a validated file path');
+  }
+  const doc = await indexer.indexFile(input.file_path);
+  return {
+    content: `Indexado: ${doc.fileName} — ${doc.chunkCount} fragmentos.`,
+    is_error: false,
+  };
+}
+// Path identity, parser limits, generation swap and cancellation are not shown.

@@ -1,0 +1,22 @@
+class LLMModelPricing(db.Model):
+    """Per-token pricing configurable from the Admin panel.
+    Enables automatic cost calculation per task and per provider."""
+    __tablename__ = 'llm_model_pricing'
+    __bind_key__ = 'platform_core'
+
+    id = db.Column(db.Integer, primary_key=True)
+    provider = db.Column(db.String(30), nullable=False)
+    model_name = db.Column(db.String(100), nullable=False)
+    input_price_per_1k = db.Column(db.Numeric(18, 8), nullable=False)   # EUR/1,000 input tokens
+    output_price_per_1k = db.Column(db.Numeric(18, 8), nullable=False)  # EUR/1,000 output tokens
+    currency = db.Column(db.String(3), default='EUR')          # ISO 4217
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    effective_from = db.Column(db.DateTime, nullable=False)    # Price change history
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, onupdate=lambda: datetime.now(timezone.utc))
+    updated_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+
+    __table_args__ = (
+        db.UniqueConstraint('provider', 'model_name', 'effective_from',
+                            name='uq_pricing_provider_model_date'),
+    )

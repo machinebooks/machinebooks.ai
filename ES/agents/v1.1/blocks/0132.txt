@@ -1,0 +1,32 @@
+flowchart TB
+    subgraph Sesion["Sesión activa"]
+        Loop[AgentLoop]
+        Msgs[(messages disponibles)]
+        Loop -.lee/escribe.-> Msgs
+    end
+    subgraph Episodica["Iteración de memoria propuesta"]
+        Idle{idle configurado?}
+        Dream[autoDream: 4 fases propuestas]
+        Store[(MemoryStore propuesto)]
+        Snap[(snapshots guardados)]
+        Idle -- si procede --> Dream
+        Dream --> Store
+        Loop -.captureSnapshot.-> Snap
+    end
+    subgraph Documental["Memoria documental"]
+        Tools["RagIndex / RagSearch"]
+        Extractor[DocumentExtractor]
+        Indexer[RagIndexer]
+        VS[(VectorStore local)]
+        Gateway[[Endpoint de embeddings]]
+        Tools --> Extractor
+        Extractor --> Indexer
+        Indexer -- texto y consultas --> Gateway
+        Gateway -- vectores --> Indexer
+        Indexer --> VS
+    end
+    Msgs -.estado de actividad.-> Idle
+    Loop -.incorporación propuesta.-> Store
+    Loop -- bajo demanda --> Tools
+    Tools -- fragmentos recuperados --> Msgs
+    Msgs -- contexto si se usa API remota --> Model[Modelo de respuesta]

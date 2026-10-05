@@ -1,0 +1,4 @@
+// Wiring excerpt: the host supplies the real call id and principal.
+const guard = await PackEntitlements.requirePack(PACK_SLUG);
+if (guard) return { tool_use_id: callId, content: guard, is_error: true };
+// In the described private configuration requirePack always returns null.

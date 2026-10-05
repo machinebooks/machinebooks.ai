@@ -1,0 +1,29 @@
+class AppRole(db.Model):
+    """User role within a specific application.
+    The same user can have different roles in each app."""
+    __tablename__ = 'app_roles'
+    __bind_key__ = 'platform_core'
+
+    id = db.Column(db.Integer, primary_key=True)
+    app_id = db.Column(db.Integer, db.ForeignKey('apps.id'), nullable=False)
+    name = db.Column(db.String(50), nullable=False)
+    # Examples: "analyst", "manager", "viewer", "admin"
+
+    # Granular permissions per module (JSON for flexibility)
+    permissions = db.Column(db.JSON, nullable=False, default=dict)
+    # Example: {"clients": ["read", "write"], "proposals": ["read"]}
+
+    # Access control for AI modules
+    ai_modules_access = db.Column(db.JSON, default=list)
+    # Example: ["document_analyzer", "proposal_generator"]
+
+    # Bypass for administration roles
+    is_admin = db.Column(db.Boolean, default=False, nullable=False)
+
+    description = db.Column(db.String(200))
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+    __table_args__ = (
+        db.UniqueConstraint('app_id', 'name', name='uq_approle_app_name'),
+    )

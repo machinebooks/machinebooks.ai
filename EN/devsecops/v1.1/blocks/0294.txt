@@ -1,0 +1,41 @@
+# autonomous_remediation.py — Remediation agent with guardrails
+import anthropic
+from illustrative_host import Agent, tool
+
+MAX_FILES_MODIFIED = 3       # File limit per remediation
+MAX_LINES_CHANGED = 50       # Modified lines limit
+ALLOWED_ACTIONS = [
+    "update_dependency",
+    "block_commit",
+    "rotate_secret",
+    "update_dockerfile_base",
+]
+
+client = anthropic.Anthropic()
+
+@tool
+def apply_dependency_fix(package: str, current: str, target: str) -> dict:
+    """Returns INCOMPLETE; the dependency executor is omitted."""
+    # Verifies the change is in the allowed actions list
+    # Executes bump, runs tests, validates no regressions
+    return {"status": "INCOMPLETE", "tests_passed": False,
+            "rollback_available": False, "reason": "host executor omitted"}
+
+@tool
+def verify_fix(finding_id: str) -> dict:
+    """Returns INCOMPLETE; no scanner is executed."""
+    # Runs Grype/Semgrep/Trivy on the affected component
+    return {"status": "INCOMPLETE", "finding_id": finding_id,
+            "resolved": False, "new_findings": None}
+
+# The agent operates with strict scope instructions
+agent = Agent(
+    model="claude-sonnet-4-6",
+    tools=[apply_dependency_fix, verify_fix],
+    system="""You are an autonomous remediation agent. Strict rules:
+    1. Only execute actions from the ALLOWED_ACTIONS list.
+    2. Never modify more than 3 files or more than 50 lines.
+    3. Always verify the fix with a re-scan.
+    4. If the fix fails verification, revert and escalate to level 2.
+    5. Log every action in the audit log."""
+)

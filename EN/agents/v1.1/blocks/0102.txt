@@ -1,0 +1,8 @@
+// Educational pseudocode: trusted issuer metadata and endpoint policy are host-owned.
+validateOAuthEndpointsAgainstTrustedMetadata({
+  issuer: trustedIssuer,
+  authorizationEndpoint: authUrl,
+  tokenEndpoint: tokenUrl,
+  redirectUri: registeredLoopbackRedirect,
+});
+// Implementation, redirect handling and issuer/response validation are omitted.

@@ -1,0 +1,9 @@
+import re
+def publish_pr_comment(
+    repo: str, pr_number: int, finding: dict, token: str
+):
+    commit = finding.get("commit_id")
+    if not isinstance(commit,str) or not re.fullmatch(r"[a-fA-F0-9]{40}|[a-fA-F0-9]{64}",commit):
+        return {"status":"INCOMPLETE","finding":finding,"error":"Immutable commit required"}
+    return {"status":"REVIEW","finding":finding,"commit_id":commit,
+            "action":"Host must validate scope, diff line, authorization and publish response; publishing adapter omitted"}

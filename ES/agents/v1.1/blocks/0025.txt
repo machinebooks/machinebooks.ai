@@ -1,0 +1,48 @@
+async function* readSSEData(
+  body: ReadableStream<Uint8Array>,
+  maxEventChars = 1 << 20,
+): AsyncGenerator<string> {
+  if (!Number.isInteger(maxEventChars) || maxEventChars < 1) {
+    throw new Error('Invalid event limit.');
+  }
+  const reader = body.getReader();
+  const decoder = new TextDecoder('utf-8', { fatal: true });
+  let line = '';
+  let data: string[] = [];
+  let dataChars = 0;
+  let afterCR = false;
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      const text = decoder.decode(value, { stream: !done });
+      for (const char of text) {
+        if (afterCR) {
+          afterCR = false;
+          if (char === '\n') continue;
+        }
+        if (char !== '\r' && char !== '\n') {
+          line += char;
+          if (line.length > maxEventChars) throw new Error('Line limit.');
+          continue;
+        }
+        afterCR = char === '\r';
+        if (line === '') {
+          if (data.length) yield data.join('\n');
+          data = [];
+          dataChars = 0;
+        } else if (line === 'data' || line.startsWith('data:')) {
+          const value = line === 'data' ? '' : line.slice(5).replace(/^ /, '');
+          dataChars += value.length + 1;
+          if (dataChars > maxEventChars) throw new Error('Event limit.');
+          data.push(value);
+        }
+        // Comments and other fields are ignored by this data-only subset.
+        line = '';
+      }
+      if (done) break;
+    }
+    if (line || data.length) throw new Error('Incomplete SSE event.');
+  } finally {
+    try { await reader.cancel(); } finally { reader.releaseLock(); }
+  }
+}

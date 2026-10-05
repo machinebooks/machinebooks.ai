@@ -1,0 +1,91 @@
+# Didactic example: patterns/automation/base_bot.py
+
+import os
+import time
+import logging
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException, WebDriverException
+
+logger = logging.getLogger(__name__)
+
+class BaseBot:
+    """Base class for all RPA automation bots.
+
+    Manages the driver lifecycle, retries, and logging
+    in a centralized manner to avoid duplication between bots.
+    """
+
+    SELENIUM_HUB_URL = os.environ["SELENIUM_HUB_URL"]
+    DEFAULT_WAIT = 15    # seconds to wait for elements
+    PAGE_LOAD_TIMEOUT = 30
+
+    def __init__(self, task_id: str, headless: bool = True):
+        self.task_id = task_id
+        self.headless = headless
+        self.driver = None
+        self.wait = None
+
+    def _create_driver(self) -> webdriver.Remote:
+        """Creates a Chrome session in the Grid with standard options."""
+        options = Options()
+        if self.headless:
+            options.add_argument("--headless=new")
+
+        # Critical stability options for containerized environments
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--window-size=1920,1080")
+        options.add_argument("--disable-notifications")
+
+        driver = webdriver.Remote(
+            command_executor=self.SELENIUM_HUB_URL,
+            options=options
+        )
+        try:
+            driver.set_page_load_timeout(self.PAGE_LOAD_TIMEOUT)
+            return driver
+        except BaseException:
+            try:driver.quit()
+            except Exception:logger.warning("Driver setup cleanup unconfirmed")
+            raise
+
+
+    def __enter__(self):
+        try:
+            self.driver=self._create_driver()
+            self.wait=WebDriverWait(self.driver,self.DEFAULT_WAIT)
+            logger.info("Driver started",extra={"task_id":self.task_id})
+            return self
+        except BaseException:
+            if self.driver is not None:
+                try:self.driver.quit()
+                except Exception:logger.warning("Driver entry cleanup unconfirmed")
+            raise
+
+    def __exit__(self,exc_type,exc_val,exc_tb):
+        if self.driver is not None:
+            try:self.driver.quit()
+            except Exception:logger.warning("Driver exit cleanup unconfirmed")
+        return False
+    # Context cleanup cannot handle process hard termination; Grid lease/timeout
+    # and external reconciliation are separate controls.
+
+    def wait_for_element(self, locator, timeout: int = None):
+        """Waits for an element to be visible and returns the reference."""
+        t = timeout or self.DEFAULT_WAIT
+        try:
+            return WebDriverWait(self.driver, t).until(
+                EC.visibility_of_element_located(locator)
+            )
+        except TimeoutException:
+            # Capture screenshot for diagnostics before propagating the error
+            self._capture_screenshot(f"timeout_{locator[1][:20]}")
+            raise
+
+    def _capture_screenshot(self,name):
+        # Capture is disabled here. A protected, reviewed capture adapter must
+        # enforce destination, retention, authorization and redaction separately.
+        logger.info("Diagnostic capture disabled",extra={"task_id":self.task_id})

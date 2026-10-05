@@ -1,0 +1,60 @@
+// Educational subset: text and tools for Chat Completions.
+function serializeTextToolMessages(messages: Message[]): Record<string, unknown>[] {
+  const result: Record<string, unknown>[] = [];
+  const pending = new Set<string>();
+  for (const msg of messages) {
+    if (!['user', 'system', 'assistant', 'tool'].includes(msg.role)) {
+      throw new Error('Unsupported role.');
+    }
+    if (typeof msg.content === 'string') {
+      if (msg.role === 'tool' || pending.size) {
+        throw new Error('Uncorrelated tool result or missing results.');
+      }
+      result.push({ role: msg.role, content: msg.content });
+      continue;
+    }
+    const blocks = msg.content;
+    if (!blocks.length) throw new Error('Empty block array.');
+    if (msg.role === 'tool') {
+      for (const block of blocks) {
+        if (block.type !== 'tool_result' || !pending.delete(block.tool_use_id)) {
+          throw new Error('Uncorrelated tool result.');
+        }
+        result.push({ role: 'tool', tool_call_id: block.tool_use_id,
+          content: block.content });
+      }
+      continue;
+    }
+    if (pending.size) throw new Error('Missing tool results.');
+    if (msg.role === 'user' || msg.role === 'system') {
+      if (!blocks.every(block => block.type === 'text')) {
+        throw new Error('Unsupported user/system block.');
+      }
+      result.push({ role: msg.role, content: blocks
+        .map(block => (block as TextBlock).text).join('\n') });
+      continue;
+    }
+    if (msg.role !== 'assistant' ||
+        !blocks.every(block => block.type === 'text' || block.type === 'tool_use')) {
+      throw new Error('Unsupported role or assistant block.');
+    }
+    const textParts = blocks.filter((block): block is TextBlock => block.type === 'text');
+    const toolParts = blocks.filter((block): block is ToolUseBlock => block.type === 'tool_use');
+    const apiMsg: Record<string, unknown> = {
+      role: 'assistant', content: textParts.map(block => block.text).join('\n') || null,
+    };
+    if (toolParts.length) {
+      apiMsg.tool_calls = toolParts.map(call => {
+        if (!call.id || pending.has(call.id)) throw new Error('Invalid tool identifier.');
+        pending.add(call.id);
+        const args = JSON.stringify(call.input);
+        if (typeof args !== 'string') throw new Error('Missing tool input.');
+        return { id: call.id, type: 'function',
+          function: { name: call.name, arguments: args } };
+      });
+    }
+    result.push(apiMsg);
+  }
+  if (pending.size) throw new Error('Missing tool results.');
+  return result;
+}

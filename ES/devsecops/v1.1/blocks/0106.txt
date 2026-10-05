@@ -1,0 +1,36 @@
+from dataclasses import dataclass
+
+@dataclass
+class CodeReviewFinding:
+    """Hallazgo de code review convertible a NormalizedFinding."""
+    file: str
+    line: int
+    category: str
+    severity: str
+    confidence: str
+    explanation: str
+    suggested_fix: str
+    pr_number: int
+
+    def to_normalized(self) -> dict:
+        """Convierte a formato del agente de triaje (Cap. 9)."""
+        category_to_cwe = {
+            "AUTH": "CWE-306",    # Missing Authentication
+            "IDOR": "CWE-639",   # Authorization Bypass
+            "SQLI": "CWE-89",    # SQL Injection
+            "XSS": "CWE-79",     # Cross-site Scripting
+            "RACE": "CWE-362",   # Race Condition
+            "CRYPTO": "CWE-327", # Broken Crypto
+            "INPUT": "CWE-20",   # Improper Input Validation
+            "INFO": "CWE-200",   # Information Exposure
+        }
+        return {
+            "status":"REVIEW","coverage":"partial","confidence":self.confidence,
+            "id": f"cr-{self.pr_number}-{self.file}-{self.line}",
+            "source": "code_review",
+            "severity": self.severity,
+            "title": f"[{self.category}] {self.explanation[:80]}",
+            "cwe_id": category_to_cwe.get(self.category),
+            "file_path": self.file,
+            "line_number": self.line,
+        }

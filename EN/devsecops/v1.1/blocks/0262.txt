@@ -1,0 +1,80 @@
+# assessment_agent.py — Claude agent for automated maturity assessment
+import anthropic
+import json
+
+client = anthropic.Anthropic()
+
+ASSESSMENT_SYSTEM_PROMPT = """You are a DevSecOps maturity evaluator. Your function is to analyze
+technical evidence (CI/CD configurations, logs, metrics, policies) and determine whether
+a maturity criterion is met or not.
+
+Rules:
+1. Respond ONLY with JSON: {"met": true/false, "evidence": "description of the evidence",
+   "confidence": "high/medium/low", "recommendation": "if not met, what to do"}
+2. A criterion is met ONLY if the evidence is clear and unambiguous.
+3. "Partially implemented" is NOT met. No ambiguity.
+4. If evidence is insufficient to determine, respond met: false with confidence: low.
+"""
+
+def assess_criterion_with_agent(
+    criterion_id: str,
+    criterion_description: str,
+    evidence_data: str,        # Configuration, logs, or relevant metrics
+) -> dict:
+    """Uses Claude to evaluate a criterion based on technical evidence."""
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=1024,
+        system=ASSESSMENT_SYSTEM_PROMPT,
+        messages=[{
+            "role": "user",
+            "content": f"""Criterion: {criterion_id} — {criterion_description}
+
+Evidence provided:
+{evidence_data}
+
+Is this criterion met? Analyze the evidence and respond in JSON."""
+        }]
+    )
+    try:
+        proposal = json.loads(message.content[0].text)
+        if (not isinstance(proposal, dict) or type(proposal.get("met")) is not bool
+                or proposal.get("confidence") not in {"high","medium","low"}
+                or not isinstance(proposal.get("evidence"),str)
+                or not isinstance(proposal.get("recommendation"),str)):
+            raise ValueError("invalid assessment proposal")
+        proposal["proposed_met"] = proposal.pop("met")
+        proposal["status"] = "REVIEW"
+        proposal["coverage"] = "partial"
+        return proposal
+    except (ValueError, TypeError, KeyError, IndexError, AttributeError):
+        return {"status":"INCOMPLETE", "proposed_met":None,
+                "coverage":"partial", "recommendation":"Human evidence review required"}
+
+# Example: verify if SAST runs on every PR
+workflow_yaml = """
+name: Security Scan
+on:
+  pull_request:
+    branches: [main, develop]
+jobs:
+  sast:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/owasp-top-ten
+            .semgrep/custom-rules/
+"""
+
+result = assess_criterion_with_agent(
+    "PS-2.1",
+    "Does SAST scanning run on every PR automatically?",
+    f"GitHub Actions workflow:\n{workflow_yaml}"
+)
+# A workflow is configuration evidence, not proof of execution for every PR.
+# Expected state: REVIEW with proposed_met; invalid output: INCOMPLETE.
+# Only the authorized host reviewer can supply accepted booleans to evaluate_domain.

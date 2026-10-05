@@ -1,0 +1,27 @@
+// Fragment preconditions: normal termination and approved output.
+// The caller must enforce them; this excerpt omits those gates.
+const assistantBlocks: ContentBlock[] = [];
+if (fullContent) assistantBlocks.push({ type: 'text', text: fullContent });
+for (const tb of toolUseBlocks) assistantBlocks.push(tb);
+this.messages.push({ role: 'assistant', content: assistantBlocks });
+
+// No tool calls: offer the already-validated final response.
+if (toolUseBlocks.length === 0) {
+  yield { type: 'agent_complete', finalMessage: fullContent };
+  await this.emitAgentEnd(fullContent);
+  return;
+}
+
+// Preserve each completed, authorized call and its matching result.
+// The provider adapter must translate the internal tool role.
+for (const result of results) {
+  this.messages.push({
+    role: 'tool',
+    content: [{ type: 'tool_result',
+                tool_use_id: result.tool_use_id,
+                content: result.content,
+                is_error: result.is_error }],
+  });
+}
+
+// Continue with calls and results correlated by their identifiers.
