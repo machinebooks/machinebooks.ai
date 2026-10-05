@@ -1,0 +1,13 @@
+// Structure of an RPC message
+// [4 bytes] Length (Big-Endian) — size of the JSON not counting the prefix
+// [N bytes] JSON UTF-8 — the request or response
+
+// Example: send {"method":"isRunning","params":{}}
+// JSON is 34 bytes
+// Frame: 38 bytes; Message: 00 00 00 22 7B 22 6D 65 74 68 6F 64 22 3A ...
+//          ^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//          length=34   JSON payload
+
+// The response follows the same format:
+// [4 bytes] Length (Big-Endian)
+// [N bytes] JSON UTF-8 response

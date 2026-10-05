@@ -1,0 +1,33 @@
+# Pydantic v2: bounded export envelope; scope enforced by the query adapter
+from datetime import datetime
+from typing import Literal
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+class AuditLogFilter(BaseModel):
+    model_config=ConfigDict(extra="forbid",strict=True)
+    start_date: datetime | None=None
+    end_date: datetime | None=None
+    event_types: list[Literal["login_attempt","security_event","resource_access"]]=Field(default_factory=list,max_length=20)
+    severities: list[Literal["info","warning","security","critical"]]=Field(default_factory=list,max_length=4)
+    actor_refs: list[str]=Field(default_factory=list,max_length=100)
+    search_text: str=Field(default="",max_length=200)
+    @model_validator(mode="after")
+    def validate_window(self):
+        for value in (self.start_date,self.end_date):
+            if value is not None and (value.tzinfo is None or value.utcoffset() is None):
+                raise ValueError("aware dates required")
+        if self.start_date and self.end_date and self.end_date<self.start_date:
+            raise ValueError("reversed date window")
+        if any(not isinstance(value, str) or not 1 <= len(value) <= 128 for value in self.actor_refs):
+            raise ValueError("bounded actor references required")
+        return self
+
+class AuditExportRequest(BaseModel):
+    model_config=ConfigDict(extra="forbid",strict=True)
+    format: Literal["csv","json"]="csv"
+    filters: AuditLogFilter=Field(default_factory=AuditLogFilter)
+    include_details: bool=False
+    max_records: int=Field(default=10000,ge=1,le=50000)
+
+# Router authorization, tenant/resource scope, parameterized queries and
+# field redaction are required separately. This is not every product filter.

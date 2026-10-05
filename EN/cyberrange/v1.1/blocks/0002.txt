@@ -1,0 +1,30 @@
+# Simplified workzone model
+# Didactic example: patrones/workzone/models.py
+
+class Workzone(Base):
+    __tablename__ = "workzone"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), nullable=False)
+    app_id = Column(Integer, unique=True)  # Unique identifier 1-99
+
+    # Network isolation
+    vlan_id = Column(Integer, unique=True)  # Dedicated VLAN
+    network_cidr = Column(String(18))       # E.g.: "10.1.0.0/24"
+    pfsense_vmid = Column(Integer)          # Dedicated firewall
+    internet_enabled = Column(Boolean, default=False)
+
+    # Resource limits
+    max_cpu = Column(Integer, default=16)
+    max_memory_gb = Column(Integer, default=32)
+    max_storage_gb = Column(Integer, default=500)
+    max_vms = Column(Integer, default=20)
+
+    # Lifecycle
+    zone_ttl_hours = Column(Integer, default=24)
+    auto_cleanup_at = Column(DateTime)
+    current_zone = Column(Enum("gaming", "cyberrange", "none"))
+
+    # Relationships
+    scenario_id = Column(Integer, ForeignKey("scenario.id"))
+    users = relationship("User", back_populates="workzone")

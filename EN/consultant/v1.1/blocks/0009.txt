@@ -1,0 +1,26 @@
+# .claude/commands/analyze-project.md
+
+Analyze a consulting project and generate the automation map.
+
+1. Read the project description provided by the user.
+2. Decompose into activities by phase (pre-sales, delivery, capture).
+3. For each activity, evaluate:
+   - Estimated manual hours
+   - Estimated AI-assisted hours
+   - Automation potential (high/medium/low/none)
+   - Whether it requires client interaction
+   - Whether it requires expert judgment
+4. Generate summary table with totals and reduction percentage.
+5. Explicit list of activities that should NOT be automated and why.
+6. Prioritization recommendations: what to automate first.
+
+## Evaluation criteria
+- HIGH: repetitive, structured, low variability between projects
+- MEDIUM: mechanical component + judgment component
+- LOW: value in human interaction or expert judgment
+- NONE: inherently human task (negotiation, trust, politics)
+
+## Warning
+This analysis is a starting point. Estimates must be adjusted
+with real project data as it progresses. Human activities
+tend to consume more time than expected.

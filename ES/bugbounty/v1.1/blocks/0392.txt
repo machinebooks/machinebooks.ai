@@ -1,0 +1,6 @@
+# Dentro del contenedor de análisis
+# Copiar un binario a analizar
+cp /mnt/host/target.exe /opt/samples/
+
+# Ejecutar análisis automatizado con Claude
+python3 /opt/scripts/analyze_pe.py /opt/samples/target.exe

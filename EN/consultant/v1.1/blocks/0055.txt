@@ -1,0 +1,85 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+@dataclass
+class ScoreGoNoGo:
+    """Result of the go/no-go analysis of an RFP."""
+    puntuacion_global: float          # 0-100
+    recomendacion: str                # "go" | "no-go" | "go-condicional"
+    requisitos_criticos_cumplidos: int
+    requisitos_criticos_total: int
+    brechas_bloqueantes: list[str]
+    brechas_mitigables: list[str]
+    fortalezas_competitivas: list[str]
+    riesgos_principales: list[str]
+    esfuerzo_propuesta_horas: int     # Estimated hours to prepare
+    coste_estimado_propuesta: float   # In EUR
+    probabilidad_estimada_ganar: str  # "alta" | "media" | "baja"
+    justificacion: str                # 3-5 sentence narrative
+
+    def __post_init__(self):
+        from math import isfinite
+        if type(self.puntuacion_global) not in (int, float) or not isfinite(self.puntuacion_global) or not 0 <= self.puntuacion_global <= 100:
+            raise ValueError("Invalid go/no-go score")
+        counts = (self.requisitos_criticos_cumplidos, self.requisitos_criticos_total, self.esfuerzo_propuesta_horas)
+        if any(type(v) is not int or v < 0 for v in counts) or self.requisitos_criticos_cumplidos > self.requisitos_criticos_total:
+            raise ValueError("Invalid requirement counts or proposal effort")
+        if type(self.coste_estimado_propuesta) not in (int, float) or not isfinite(self.coste_estimado_propuesta) or self.coste_estimado_propuesta < 0:
+            raise ValueError("Invalid proposal cost")
+        if self.recomendacion not in ("go", "no-go", "go-condicional") or self.probabilidad_estimada_ganar not in ("alta", "media", "baja"):
+            raise ValueError("Use canonical recommendation and probability enums")
+        for values in (self.brechas_bloqueantes, self.brechas_mitigables, self.fortalezas_competitivas, self.riesgos_principales):
+            if not isinstance(values, list) or any(type(v) is not str for v in values):
+                raise ValueError("Invalid go/no-go lists")
+        expected = "no-go" if self.puntuacion_global < 30 else "go-condicional" if self.puntuacion_global < 65 else "go"
+        if self.recomendacion != expected or (self.brechas_bloqueantes and self.recomendacion != "no-go"):
+            raise ValueError("Recommendation contradicts score or blocking gaps")
+        if self.recomendacion == "go" and (self.requisitos_criticos_total == 0 or self.requisitos_criticos_cumplidos != self.requisitos_criticos_total):
+            raise ValueError("Go requires a known, fully satisfied critical requirement set")
+
+
+PROMPT_SCORING = """Based on the complete analysis of this RFP,
+generate a structured go/no-go assessment.
+
+INPUT DATA:
+- Mandatory requirements and compliance: {requisitos_cumplimiento}
+- Evaluation criteria and fit: {criterios_encaje}
+- Risks and penalties: {riesgos}
+- Deadlines and constraints: {plazos}
+- Regulatory compliance: {normativo}
+
+SCORING RULES:
+1. If there are 1+ blocking gaps without mitigation → no-go (score < 30)
+2. If there are mitigable but feasible gaps → go-condicional (30 <= score < 65)
+3. If all mandatory requirements are met and there's fit with
+   evaluation criteria → go (65-100)
+4. Win probability depends on fit with judgment-based criteria,
+   not just meeting mandatory requirements
+5. Proposal preparation effort is a cost that
+   must be considered: if probability is low and effort
+   high, even a technical go can be an economic no-go
+
+Generate a JSON with the ScoreGoNoGo structure.
+Include a 3-5 sentence narrative justification that a partner
+can read in 30 seconds and understand the recommendation."""
+
+def generar_score_go_nogo(
+    analisis_completo: dict
+) -> ScoreGoNoGo:
+    """Generates the go/no-go score from the analysis."""
+    mensaje = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=2048,
+        system="You are a pre-sales director with 15 years of "
+               "experience in technology consulting. You evaluate "
+               "opportunities with financial rigor: not submitting "
+               "a bid for a tender you can't win is as "
+               "important as winning the ones you can.",
+        messages=[{
+            "role": "user",
+            "content": PROMPT_SCORING.format(**analisis_completo)
+        }]
+    )
+    # Parse JSON response to ScoreGoNoGo
+    import json
+    datos = json.loads(mensaje.content[0].text)
+    return ScoreGoNoGo(**datos)

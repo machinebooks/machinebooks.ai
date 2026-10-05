@@ -1,0 +1,2 @@
+gcc -shared -m32 -o VERSION.dll steam_poc.c \
+    -lkernel32 -ladvapi32

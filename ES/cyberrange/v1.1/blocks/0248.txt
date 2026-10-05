@@ -1,0 +1,15 @@
+// Didactic player-visible response; runtime validation remains necessary.
+interface ChallengeWorkspaceType {
+  id:number;title:string;description:string;
+  type:'ctf'|'crisis'|'guided'|'escape';
+  difficulty:string;max_points:number;
+  mitre_tactics:string[];       // Names/TA identifiers from the pinned catalog.
+  mitre_techniques:string[];    // T identifiers, a different category.
+  files:{id:string;name:string;download_ref:string}[];
+  flags:{id:string;points:number;captured:boolean}[]; // No values/hash seeds.
+  hints_available:number;
+  user_instance?:{id:number;status:string;expires_at:string;points:number};
+  console?:{protocol:'pty'|'rfb';request_ticket_ref:string};
+}
+// Types do not authorize access. Downloads/tickets resolve through scoped APIs;
+// credentials, private writeups, flag values and Proxmox headers are excluded.

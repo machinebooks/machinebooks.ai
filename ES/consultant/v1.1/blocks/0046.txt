@@ -1,0 +1,25 @@
+# .claude/commands/compliance-check.md
+
+Ejecuta verificación de cumplimiento contra: $ARGUMENTS
+
+## Proceso
+1. Identifica el framework de referencia (ISO 27001, ENS, NIS2, DORA, AI Act)
+2. Carga los controles/medidas aplicables desde el RAG normativo
+3. Cruza contra las evidencias disponibles en el directorio del proyecto
+4. Genera matriz de cumplimiento: control → estado → evidencia → gap
+
+## Estados válidos
+- CUMPLE: evidencia suficiente documentada
+- CUMPLE PARCIAL: evidencia incompleta o implementación parcial
+- NO CUMPLE: sin evidencia o evidencia de incumplimiento
+- NO APLICA: justificación documentada de exclusión
+- SIN EVALUAR: no se dispone de información suficiente
+
+## Formato de salida
+Tabla Markdown con columnas:
+| ID Control | Descripción | Estado | Evidencia | Gap | Prioridad |
+
+Seguida de:
+- Resumen estadístico (% por estado)
+- Top 10 gaps por criticidad
+- Recomendaciones priorizadas (Quick win / Medio plazo / Largo plazo)

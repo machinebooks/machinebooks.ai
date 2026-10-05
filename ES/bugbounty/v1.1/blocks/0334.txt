@@ -1,0 +1,74 @@
+"""
+teams_bridge_enum.py -- Enumeracion de modulos nativos del bridge
+Utiliza CDP para ejecutar JavaScript que enumera el bridge.
+"""
+import websocket
+import json
+
+def enumerate_bridge(ws_url):
+    """Enumerar modulos y metodos del bridge nativo de Teams."""
+    ws = websocket.create_connection(ws_url)
+
+    # JavaScript que enumera el bridge nativo
+    js_code = """
+    (function() {
+        // El bridge de Teams expone modulos como propiedades
+        // de un objeto global accesible desde JavaScript
+        var bridge = window.nativeModuleProxy ||
+                     window.chrome.webview.hostObjects;
+        var modules = {};
+        var totalMethods = 0;
+
+        for (var modName in bridge) {
+            if (typeof bridge[modName] === 'object') {
+                var methods = [];
+                for (var method in bridge[modName]) {
+                    if (typeof bridge[modName][method] === 'function') {
+                        methods.push(method);
+                        totalMethods++;
+                    }
+                }
+                modules[modName] = methods;
+            }
+        }
+
+        return JSON.stringify({
+            moduleCount: Object.keys(modules).length,
+            totalMethods: totalMethods,
+            modules: modules
+        });
+    })()
+    """
+
+    cmd = json.dumps({
+        "id": 2,
+        "method": "Runtime.evaluate",
+        "params": {"expression": js_code, "returnByValue": True}
+    })
+    ws.send(cmd)
+    result = json.loads(ws.recv())
+
+    bridge_data = json.loads(
+        result["result"]["result"]["value"]
+    )
+    print(f"[+] {bridge_data['moduleCount']} modulos nativos")
+    print(f"[+] {bridge_data['totalMethods']} metodos totales\n")
+
+    # Modulos criticos para la seguridad
+    critical = [
+        "Auth", "Core", "Moduleloader",
+        "Windowcontrols", "Files", "HID",
+        "SlimCorePIE", "Appswitcher"
+    ]
+    for mod in critical:
+        if mod in bridge_data["modules"]:
+            methods = bridge_data["modules"][mod]
+            print(f"  [{mod}] ({len(methods)} metodos)")
+            for m in methods[:5]:  # Primeros 5
+                print(f"    - {m}()")
+            if len(methods) > 5:
+                print(f"    ... y {len(methods)-5} mas")
+            print()
+
+    ws.close()
+    return bridge_data

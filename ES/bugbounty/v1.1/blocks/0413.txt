@@ -1,0 +1,26 @@
+from decimal import Decimal
+
+def score(row):
+    hours = Decimal(row["hours"])
+    if hours <= 0:
+        raise ValueError("positive hours required")
+    return Decimal(row["probability"]) * Decimal(row["reward"]) / hours
+
+fixture = [
+    {"category": "Electron", "probability": ".57",
+     "reward": "150", "hours": "8"},
+    {"category": "IoT", "probability": ".27",
+     "reward": "100", "hours": "10"},
+    {"category": "web", "probability": ".12",
+     "reward": "60", "hours": "10"},
+    {"category": "LLM", "probability": ".70",
+     "reward": "3000", "hours": "10"},
+]
+assert [score(row) for row in fixture] == [
+    Decimal("10.6875"), Decimal("2.70"),
+    Decimal(".72"), Decimal("210.00")]
+ranked = sorted(fixture, key=score, reverse=True)
+assert ranked[0]["category"] == "LLM"
+assert len(ranked[:2]) == 2 and len(ranked) == 4
+assert all("cve" not in row for row in fixture)
+print("scenario fixture: PASS")

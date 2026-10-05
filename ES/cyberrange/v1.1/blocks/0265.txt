@@ -1,0 +1,11 @@
+// Finite presentation window; immutable server IDs and sequences are validated upstream
+export function appendLog(state, event, limit = 500) {
+  if (!Number.isInteger(limit) || limit < 1 || limit > 1000)
+    throw new Error('Límite inválido');
+  if (state.logs.some(item => item.event_id === event.event_id)) return state;
+  const previous = state.logs.at(-1);
+  const gap = !!previous && event.sequence !== previous.sequence + 1;
+  const logs = [...state.logs, event].slice(-limit);
+  return {logs, seen: new Set(logs.map(item => item.event_id)),
+          recovery_required: state.recovery_required || gap};
+}

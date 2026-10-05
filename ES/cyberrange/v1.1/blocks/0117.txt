@@ -1,0 +1,9 @@
+# Didactic approved firewall plan; options and ordering are version-specific.
+async def enable_vm_firewall(actor, plan_ref, access, firewall, store):
+    scope = await access.reviewed_firewall_plan(actor, plan_ref)
+    intent = await store.record_network_intent(scope, scope.lease, "pending")
+    receipt = await firewall.apply_default_deny_plan(scope, directions={"in", "out"},
+        families={"ipv4", "ipv6"}, timeout=30)
+    verified = await firewall.verify_allowed_and_denied_paths(scope, timeout=30)
+    await store.record_firewall_result(intent, receipt, verified)
+    return {"status": "confirmed" if verified else "pending"}

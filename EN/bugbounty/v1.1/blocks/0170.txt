@@ -1,0 +1,39 @@
+// Step 1: Enable security fuses at compile time (electron-builder)
+// In package.json or electron-builder.yml:
+// "electronFuses": {
+//   "RunAsNode": false,
+//   "EnableNodeCliInspectArguments": false,
+//   "OnlyLoadAppFromAsar": true,
+//   "EnableEmbeddedAsarIntegrityValidation": true
+// }
+
+// Step 2: Verify ASAR integrity at runtime (additional defense)
+const crypto = require('crypto');
+const fs = require('fs');
+
+function verifyAsarIntegrity() {
+    const asarPath = path.join(process.resourcesPath, 'app.asar');
+    const asar = fs.readFileSync(asarPath);
+    const hash = crypto.createHash('sha256').update(asar).digest('hex');
+
+    // The reference hash must come from an external source
+    // NOT from the executable (Wand's mistake) nor from the ASAR itself
+    // Options: vendor server, TPM, Windows DPAPI
+    const expectedHash = fetchExpectedHash(); // API call or TPM read
+
+    if (hash !== expectedHash) {
+        dialog.showErrorBox('Integrity Error',
+            'Application code has been tampered with.');
+        app.quit();
+    }
+}
+
+// Step 3: Secure Electron configuration
+new BrowserWindow({
+    webPreferences: {
+        nodeIntegration: false,       // NEVER true in production
+        contextIsolation: true,       // ALWAYS true
+        sandbox: true,                // Enable Chromium sandbox
+        enableRemoteModule: false,    // Deprecated, disable
+    }
+});

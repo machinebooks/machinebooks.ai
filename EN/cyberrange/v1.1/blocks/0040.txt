@@ -1,0 +1,22 @@
+# Didactic Pydantic Settings 2.x example; values come from external secret sources.
+from pydantic import SecretStr, Field, field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix="CYBERRANGE_", extra="forbid")
+    database_url: SecretStr
+    jwt_secret: SecretStr
+    jwt_issuer: str = Field(min_length=1)
+    jwt_audience: str = Field(min_length=1)
+    jwt_exp_hours: int = Field(default=4, ge=1, le=24)
+    proxmox_token_secret: SecretStr
+    proxmox_ssl_verify: bool = True
+    sync_interval_minutes: int = Field(default=15, ge=1, le=1440)
+    ai_enabled: bool = False
+    @field_validator("database_url", "jwt_secret", "proxmox_token_secret")
+    @classmethod
+    def require_nonempty(cls, value):
+        if not value.get_secret_value().strip():
+            raise ValueError("secret must not be empty")
+        return value
+# Do not print Settings or expose secrets in an API response.

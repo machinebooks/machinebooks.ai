@@ -1,0 +1,1 @@
+final_points = max(0, base_points - hint_penalty) + first_blood + completion_bonus

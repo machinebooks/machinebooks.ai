@@ -1,0 +1,80 @@
+#!/usr/bin/env python3
+"""
+Authenticode digital signature analysis with security interpretation.
+Claude generates and runs this script, then interprets the results.
+"""
+import subprocess
+import json
+from pathlib import Path
+
+def analyze_signature(exe_path: str) -> dict:
+    """Analyzes the Authenticode signature of an executable."""
+    # PowerShell Get-AuthenticodeSignature is more reliable
+    # than manually parsing the PE
+    ps_command = f"""
+    $sig = Get-AuthenticodeSignature '{exe_path}'
+    @{{
+        Status = $sig.Status.ToString()
+        StatusMessage = $sig.StatusMessage
+        SignerCertificate = @{{
+            Subject = $sig.SignerCertificate.Subject
+            Issuer = $sig.SignerCertificate.Issuer
+            Thumbprint = $sig.SignerCertificate.Thumbprint
+            NotBefore = $sig.SignerCertificate.NotBefore.ToString('o')
+            NotAfter = $sig.SignerCertificate.NotAfter.ToString('o')
+        }}
+        TimeStamperCertificate = if ($sig.TimeStamperCertificate) {{
+            @{{
+                Subject = $sig.TimeStamperCertificate.Subject
+                Issuer = $sig.TimeStamperCertificate.Issuer
+            }}
+        }} else {{ $null }}
+        IsOSBinary = $sig.IsOSBinary
+        Path = $sig.Path
+    }} | ConvertTo-Json -Depth 3
+    """
+
+    result = subprocess.run(
+        ["powershell", "-Command", ps_command],
+        capture_output=True, text=True, timeout=15
+    )
+
+    try:
+        sig_data = json.loads(result.stdout)
+    except json.JSONDecodeError:
+        return {"error": result.stderr, "raw": result.stdout}
+
+    # Security evaluation
+    issues = []
+
+    if sig_data.get("Status") != "Valid":
+        issues.append(f"Invalid signature: {sig_data.get('Status')}")
+
+    signer = sig_data.get("SignerCertificate", {})
+    subject = signer.get("Subject", "")
+
+    # Verify that the signer is who we expect
+    # (not a generic or compromised certificate)
+    if "CN=" not in subject:
+        issues.append("Certificate without Common Name")
+
+    # Verify timestamp (signature survives certificate expiration)
+    if not sig_data.get("TimeStamperCertificate"):
+        issues.append("No timestamp: signature will expire with the certificate")
+
+    sig_data["security_issues"] = issues
+    return sig_data
+
+
+def compare_signatures(executables: list[str]) -> list[dict]:
+    """Compares signatures of multiple executables."""
+    results = []
+    for exe in executables:
+        sig = analyze_signature(exe)
+        results.append({
+            "file": Path(exe).name,
+            "status": sig.get("Status", "Unknown"),
+            "signer": sig.get("SignerCertificate", {}).get("Subject", ""),
+            "issues": sig.get("security_issues", []),
+        })
+    return results

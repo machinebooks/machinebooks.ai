@@ -1,0 +1,45 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import anthropic
+
+client = anthropic.Anthropic()
+
+def analyze_regulatory_change(
+    regulation_text: str,
+    service_context: list[str]
+) -> dict:
+    """
+    Analyzes a regulatory change and evaluates its impact
+    on the consulting offering.
+    """
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        messages=[{
+            "role": "user",
+            "content": f"""Analyze the following regulatory change
+            and evaluate its impact for a technology consultancy
+            offering these services: {service_context}
+
+            Regulatory change text:
+            {regulation_text}
+
+            Structure your analysis in:
+            1. SUMMARY: what changes and who is affected (3-5 sentences)
+            2. DEADLINES: mandatory compliance dates
+            3. AFFECTED SECTORS: which industries must act
+            4. DEMANDED SERVICES: what clients will need
+               (assessment, gap analysis, audit, training,
+               technical implementation)
+            5. WINDOW OF OPPORTUNITY: how long before the
+               market saturates
+            6. POSITIONED COMPETITORS: who already offers related
+               services (based on known public information)
+            7. RECOMMENDATION: what we should do and when
+
+            Be specific with deadlines and data. If you don't have
+            enough information for a section, indicate it explicitly."""
+        }]
+    )
+
+    return _parse_regulatory_analysis(message.content[0].text)

@@ -1,0 +1,26 @@
+# Atomic account-level lockout contract, not an IP:user counter
+from datetime import datetime, timedelta, timezone
+from math import ceil
+
+def check_account_lockout(user):
+    now=datetime.now(timezone.utc)
+    if user.locked_until is not None:
+        if user.locked_until.tzinfo is None:
+            raise ValueError("UTC-aware persistence adapter required")
+        if user.locked_until>now:
+            return {"allowed":False,"retry_after_seconds":ceil((user.locked_until-now).total_seconds())}
+    return {"allowed":True,"retry_after_seconds":0}
+
+def record_failed_login(db,user_id,max_attempts=5,lockout_minutes=30):
+    if type(max_attempts) is not int or not 1<=max_attempts<=100:
+        raise ValueError("invalid attempt limit")
+    if type(lockout_minutes) is not int or not 1<=lockout_minutes<=1440:
+        raise ValueError("invalid lockout duration")
+    now=datetime.now(timezone.utc)
+    with db.atomic_account_update(user_id) as user:
+        user.failed_login_count=(user.failed_login_count or 0)+1
+        if user.failed_login_count>=max_attempts:
+            user.locked_until=now+timedelta(minutes=lockout_minutes)
+        db.append_minimized_auth_event("login_failure",now)
+    # Adapter must lock/update/commit atomically, reset on successful login,
+    # protect unknown accounts and combine ingress/IP controls. No PII logged.

@@ -1,0 +1,46 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+MAPPING_PROMPT = """You are an agent specialized in mapping controls
+between security and compliance frameworks. Your job is to identify
+correspondences between controls from different frameworks.
+
+For each pair of controls, classify the relationship as:
+- EQUIVALENT: they cover the same requirement with similar scope
+- PARTIAL: they overlap but one is broader than the other
+- COMPLEMENTARY: they reinforce each other without overlapping
+- NO_RELATION: they have no thematic connection
+
+Always include the justification for the classification.
+"""
+
+@tool
+def get_framework_mapping(
+    source_framework: str,
+    source_control: str,
+    target_framework: str
+) -> list[dict]:
+    """Gets the mapping of a control from one framework to equivalent
+    or related controls in another framework.
+
+    Args:
+        source_framework: Source framework (iso27001, ens, dora)
+        source_control: Source control (e.g.: 'A.5.1')
+        target_framework: Target framework
+    """
+    conn = sqlite3.connect("framework_mappings.db")
+    cursor = conn.execute("""
+        SELECT target_control, relationship, justification
+        FROM mappings
+        WHERE source_framework = ?
+          AND source_control = ?
+          AND target_framework = ?
+    """, (source_framework, source_control, target_framework))
+
+    return [
+        {
+            "target_control": row[0],
+            "relationship": row[1],
+            "justification": row[2]
+        }
+        for row in cursor.fetchall()
+    ]

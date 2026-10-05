@@ -1,0 +1,23 @@
+# Ejemplo: Claude calcula CVSS para DLL hijacking en Discord
+# El investigador valida cada métrica
+
+cvss_analysis = """
+Attack Vector (AV): Local (L) — requiere acceso al filesystem local
+Attack Complexity (AC): Low (L) — no requiere condiciones especiales
+Privileges Required (PR): Low (L) — cualquier usuario puede escribir
+                                      en %LOCALAPPDATA%
+User Interaction (UI): Required (R) — el usuario debe iniciar Discord
+Scope (S): Unchanged (U) — el impacto se limita al contexto del usuario
+Confidentiality (C): High (H) — acceso completo a tokens de sesión
+Integrity (I): High (H) — ejecución de código arbitrario
+Availability (A): Low (L) — la app sigue funcionando
+
+Score: 6.8 (Medium)
+Vector: CVSS:3.1/AV:L/AC:L/PR:L/UI:R/S:U/C:H/I:H/A:L
+"""
+
+# NOTA: Claude inicialmente calculó PR:N (None),
+# argumentando que "cualquier usuario" equivale a "sin privilegios".
+# El investigador corrigió a PR:L porque el atacante necesita
+# al menos una sesión de usuario en el sistema.
+# Esa corrección bajó el score de 7.3 a 6.8.

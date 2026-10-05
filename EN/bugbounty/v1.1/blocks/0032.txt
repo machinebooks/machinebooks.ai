@@ -1,0 +1,5 @@
+1. The developer may sign the executable with their certificate
+2. Windows policy and the applicable verifier assess that signature
+3. The runtime selects the package and applies its load controls
+4. The package supplies the application's JavaScript code
+5. The runtime executes code accepted by those controls

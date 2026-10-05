@@ -1,0 +1,22 @@
+# ~/.sylvarsec/mcp_servers.yaml
+servers:
+  ghidra:
+    command: ghidra-mcp-server
+    args: ["--project", "${workspace}/analysis/ghidra"]
+
+  radare2:
+    command: r2-mcp-server
+    args: ["--lab-container", "aegis-security-lab"]
+
+  burp:
+    url: http://127.0.0.1:1337/mcp
+    api_key_env: BURP_MCP_KEY
+
+  wireshark:
+    command: tshark-mcp
+    args: ["--interface", "lo"]
+
+  ida:
+    command: ida-mcp-bridge
+    args: ["--ida-path", "C:/IDA/ida64.exe"]
+    enabled: false   # Enable only with an applicable license

@@ -1,0 +1,46 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Benchmark origin, cohort comparability and publication approval require omitted adapters.
+from dataclasses import dataclass
+from statistics import median
+from math import isfinite
+
+@dataclass
+class BenchmarkComparison:
+    dimension: Dimension
+    client_score: float
+    sector_median: float
+    sector_p25: float
+    sector_p75: float
+    size_band_median: float | None
+    position: str
+    gap_to_median: float
+
+def benchmark_against_sector(assessment, benchmark_db):
+    assessment.overall_level_weighted
+    if not isinstance(benchmark_db, list) or not benchmark_db:
+        raise ValueError("A benchmark requires a nonempty reference cohort")
+    dimensions = {d.value for d in Dimension}
+    for row in benchmark_db:
+        if not isinstance(row, dict) or any(type(row.get(k)) is not str or not row[k].strip() for k in ("sector", "size_band")):
+            raise ValueError("Missing benchmark cohort identity")
+        if not isinstance(row.get("scores"), dict) or set(row["scores"]) != dimensions:
+            raise ValueError("Benchmark dimensions differ from canonical schema")
+        if any(type(v) not in (int, float) or not isfinite(v) or not 1 <= v <= 5 for v in row["scores"].values()):
+            raise ValueError("Benchmark levels must be finite numbers in range 1 through 5")
+    sector_rows = [r for r in benchmark_db if r["sector"] == assessment.sector]
+    if not sector_rows:
+        raise ValueError("No compatible sector benchmark")
+    size_rows = [r for r in sector_rows if r["size_band"] == assessment.size_band]
+    comparisons = []
+    for score in assessment.dimensions:
+        values = sorted(r["scores"][score.dimension.value] for r in sector_rows)
+        def percentile(fraction):
+            position = (len(values) - 1) * fraction
+            lower = int(position)
+            upper = min(lower + 1, len(values) - 1)
+            return values[lower] + (values[upper] - values[lower]) * (position - lower)
+        sector_median = median(values)
+        size_median = median(r["scores"][score.dimension.value] for r in size_rows) if size_rows else None
+        position = "en la media" if score.level == sector_median else "por debajo" if score.level < sector_median else "por encima"
+        comparisons.append(BenchmarkComparison(score.dimension, score.level, sector_median, percentile(0.25), percentile(0.75), size_median, position, round(score.level - sector_median, 1)))
+    return comparisons

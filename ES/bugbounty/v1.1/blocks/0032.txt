@@ -1,0 +1,5 @@
+1. El desarrollador puede firmar el ejecutable con su certificado
+2. La política de Windows y el verificador aplicable evalúan esa firma
+3. El runtime selecciona el paquete y aplica sus controles de carga
+4. El paquete aporta el código JavaScript de la aplicación
+5. El runtime ejecuta el código aceptado por esos controles

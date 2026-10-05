@@ -1,0 +1,29 @@
+import json
+from datetime import datetime, timedelta
+
+def check_report_status(reports_file):
+    """Verifies report status and generates alerts."""
+    with open(reports_file) as f:
+        reports = json.load(f)
+
+    today = datetime.now()
+    alerts = []
+
+    for report in reports:
+        submitted = datetime.fromisoformat(report["submitted"])
+        days = (today - submitted).days
+        status = report["status"]
+
+        # Alerts for time without response
+        if status == "submitted" and days > 7:
+            alerts.append(f"[!] {report['id']}: {days}d without triage")
+        if status == "triaged" and days > 30:
+            alerts.append(f"[!] {report['id']}: {days}d without validation")
+        if status == "validated" and days > 90:
+            alerts.append(f"[!!] {report['id']}: {days}d without fix — disclosure eligible")
+
+        # Alerts for pending bounty
+        if status == "resolved" and not report.get("bounty_paid"):
+            alerts.append(f"[$] {report['id']}: resolved but no bounty")
+
+    return alerts

@@ -1,0 +1,12 @@
+# YAML: proposed teaching profile, subject to catalog and capacity review.
+workzone_template:
+  name: Red versus Blue
+  resources: {cpu_limit: 24, memory_limit_mb: 32768, storage_limit_gb: 300, max_vms: 8}
+  network: {reservation: atomic_scoped_lease, internet_requested: false}
+  lifecycle: {default_ttl_hours: 8, max_ttl_hours: 24, cleanup: confirmed_receipts}
+  firewall: {template_ref: reviewed_firewall, ram_mb: 2048, cpu: 1}
+  default_vms:
+    - {name: attacker, template_ref: reviewed_training_workstation, network_ref: attack_net}
+    - {name: defender, template_ref: reviewed_soc_workstation, network_ref: defense_net}
+    - {name: target, template_ref: reviewed_web_lab, network_ref: dmz}
+  status: pending_review

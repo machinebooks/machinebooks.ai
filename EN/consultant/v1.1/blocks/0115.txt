@@ -1,0 +1,64 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import anthropic
+from dataclasses import dataclass, field
+from enum import Enum
+
+class Dimension(str, Enum):
+    STRATEGY = "strategy"
+    DATA = "data"
+    TECHNOLOGY = "technology"
+    PEOPLE = "people"
+    GOVERNANCE = "governance"
+
+@dataclass
+class AssessmentQuestion:
+    id: str
+    dimension: Dimension
+    text: str
+    stakeholder_profiles: list[str]  # CIO, CDO, business, IT, etc.
+    evidence_required: bool = False
+    follow_ups: list[str] = field(default_factory=list)
+
+# Partial catalog — the real one has 85 questions
+QUESTION_CATALOG = [
+    AssessmentQuestion(
+        id="STR-01",
+        dimension=Dimension.STRATEGY,
+        text="Does an AI strategy document approved by "
+             "management exist? Who prepared it and when?",
+        stakeholder_profiles=["CIO", "CEO", "CDO"],
+        evidence_required=True,
+        follow_ups=[
+            "Is it reviewed periodically? How often?",
+            "Does it have allocated budget or is it declarative?",
+            "What success metrics does it define?"
+        ]
+    ),
+    AssessmentQuestion(
+        id="DAT-01",
+        dimension=Dimension.DATA,
+        text="Do you have an up-to-date data catalog? "
+             "What percentage of your data sources are documented?",
+        stakeholder_profiles=["CDO", "CIO", "IT"],
+        evidence_required=True,
+        follow_ups=[
+            "Do you have automated data quality metrics?",
+            "How long does it take a new team to access "
+             "the data they need?"
+        ]
+    ),
+    AssessmentQuestion(
+        id="PER-01",
+        dimension=Dimension.PEOPLE,
+        text="How many people in the organization work with AI "
+             "as their primary activity? And as a secondary activity?",
+        stakeholder_profiles=["CIO", "HR", "CDO"],
+        evidence_required=False,
+        follow_ups=[
+            "Is there an AI training program? Who participates?",
+            "Have ML/data profiles been hired in the last "
+             "12 months? How many?"
+        ]
+    ),
+]

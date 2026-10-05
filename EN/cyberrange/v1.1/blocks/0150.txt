@@ -1,0 +1,12 @@
+# Didactic predicate inside an already-authorized exercise scope.
+def can_user_access_challenge(challenge, user, authorized_scope):
+    if not authorized_scope or challenge.exercise_id != authorized_scope.exercise_id:
+        return False
+    role = getattr(user, "role", None)
+    if role not in {"admin", "organizer", "red", "blue", "purple"}:
+        return False
+    visibility = challenge.visibility
+    if not isinstance(visibility, dict):
+        return False
+    key = {"red": "red_team", "blue": "blue_team", "purple": "purple_team"}.get(role)
+    return authorized_scope.can_supervise if key is None else visibility.get(key) is True

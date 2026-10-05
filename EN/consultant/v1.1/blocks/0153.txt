@@ -1,0 +1,47 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+@tool
+def calcular_breakeven_retainer(
+    coste_mensual_automatizacion: float,
+    coste_mensual_equipo_dedicado: float,
+    precio_retainer_mensual: float,
+    horas_consultor_incluidas: int
+) -> str:
+    """Calculates break-even for a retainer model.
+
+    Args:
+        coste_mensual_automatizacion: Monthly AI infrastructure cost
+        coste_mensual_equipo_dedicado: Dedicated team cost (partial)
+        precio_retainer_mensual: Client retainer price
+        horas_consultor_incluidas: Senior consultant hours included/month
+    """
+    from math import isfinite, ceil
+    values = (coste_mensual_automatizacion, coste_mensual_equipo_dedicado, precio_retainer_mensual, horas_consultor_incluidas)
+    if any(type(v) not in (int, float) or not isfinite(v) or v < 0 for v in values) or precio_retainer_mensual <= 0:
+        raise ValueError("Retainer quantities must be finite and nonnegative with positive price")
+
+    coste_hora_senior = 195.0  # Loaded cost
+    coste_horas = horas_consultor_incluidas * coste_hora_senior
+    coste_total_mensual = (
+        coste_mensual_automatizacion + coste_mensual_equipo_dedicado + coste_horas
+    )
+    margen_por_cliente = precio_retainer_mensual - coste_total_mensual
+
+    costes_fijos_mensuales = 4200  # Platform, monitoring, maintenance
+
+    if margen_por_cliente <= 0:
+        return json.dumps({
+            "viable": False,
+            "mensaje": "Retainer does not cover per-client variable costs"
+        })
+
+    clientes_breakeven = costes_fijos_mensuales / margen_por_cliente
+
+    return json.dumps({
+        "viable": True,
+        "coste_por_cliente_mes": f"€{coste_total_mensual:,.0f}",
+        "margen_por_cliente_mes": f"€{margen_por_cliente:,.0f}",
+        "clientes_breakeven": ceil(clientes_breakeven),
+        "margen_con_15_clientes": f"€{(margen_por_cliente * 15 - costes_fijos_mensuales):,.0f}/mes",
+        "arr_con_15_clientes": f"€{precio_retainer_mensual * 15 * 12:,.0f}",
+    }, indent=2, ensure_ascii=False)

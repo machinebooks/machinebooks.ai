@@ -1,0 +1,15 @@
+# Didactic FastAPI handler; never reflect raw input or exception values.
+import uuid
+from fastapi import Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    request_ref = str(uuid.uuid4())
+    fields = []
+    for error in exc.errors()[:20]:
+        location = [str(v)[:64] for v in error.get("loc", ()) if isinstance(v, (str, int))]
+        fields.append({"location": location, "code": "invalid_field"})
+    return JSONResponse(status_code=422,
+        content={"detail": fields, "request_ref": request_ref})
+# Log only a vetted route template, request_ref and reason code via the audit adapter.

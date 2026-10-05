@@ -1,0 +1,15 @@
+> En un binario x64 autorizado con wWinMain identificado, pausa en su entrada
+[plugin: símbolo y dirección comprobados; breakpoint en wWinMain]
+[hit. RIP = 0x7ff6...]
+
+> ¿Qué hay en R8 al entrar en wWinMain?
+[plugin: read register R8]
+R8 = 0x000001f2... (tercer argumento lpCmdLine; verificar dirección y límites)
+
+> Sigue el puntero, dame los primeros 256 bytes como UTF-16
+[plugin: read memory 0x000001f2... 256 bytes, decode utf-16-le]
+"--app-path=C:/Users/.../discord_desktop_core/index.js --..."
+
+> Pon un breakpoint en el módulo discord_desktop_core cuando se cargue
+[plugin: bp on module load discord_desktop_core.node]
+[continúa la ejecución]

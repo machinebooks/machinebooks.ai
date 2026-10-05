@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+"""
+Vulnerability report generator with Claude.
+Takes researcher notes and produces a structured draft.
+"""
+import anthropic
+
+client = anthropic.Anthropic(api_key="<YOUR_API_KEY>")
+
+def generate_report(notes: str, vendor: str, vuln_id: str) -> str:
+    """Generates a report draft from researcher notes."""
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        messages=[{
+            "role": "user",
+            "content": f"""Generate a professional vulnerability report
+from these research notes.
+
+Vendor: {vendor}
+ID: {vuln_id}
+
+Researcher notes:
+{notes}
+
+Requirements:
+- Markdown format with sections: Executive Summary,
+  Severity (CVSS v3.1), Affected Component, Technical Description,
+  Steps to Reproduce, PoC, Impact, Remediation, Timeline
+- Professional and objective tone
+- CVSS score with full vector string
+- CWE mapping
+- Numbered and specific reproduction steps
+- Concrete remediation recommendations
+- DO NOT include sensitive data: real IPs, tokens, credentials"""
+        }]
+    )
+    return message.content[0].text
+
+# Usage example (post-disclosure, now safe to use Claude)
+notes = """
+Discord VERSION.dll hijack.
+The installation directory (%LOCALAPPDATA%\\Discord) is
+writable by the user. Discord.exe loads VERSION.dll
+from its directory before System32. We can place a
+proxy DLL that forwards to the real one and runs a payload.
+PoC: DLL that spawns cmd.exe on load. PID confirmed.
+ASLR and DEP active but irrelevant (the DLL is loaded
+legitimately by the app). Affects Discord 1.0.9045+.
+"""
+
+report = generate_report(notes, "Discord", "DISCORD-2026-002")
+print(report)

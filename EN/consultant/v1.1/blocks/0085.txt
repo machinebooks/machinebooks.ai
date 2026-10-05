@@ -1,0 +1,80 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+# Illustrative configuration; keys alone do not implement an engine or authorize actions.
+    def generate_finding(
+        self, control: AuditControl, finding_number: int
+    ) -> AuditFinding:
+        """Generates a formal finding from a non-compliant control."""
+        response = self.client.messages.create(
+            model=self.model,
+            max_tokens=1500,
+            system=f"""You are a senior auditor drafting findings
+for a {self.framework} audit report.
+
+The finding must be:
+- Objective: based on documented facts, not opinions
+- Actionable: the recommendation must be implementable
+- Proportional: severity must reflect actual risk
+- Verifiable: any auditor can confirm the finding
+
+Severities:
+- high: risk of serious incident or legal non-compliance
+- medium: weakness that increases the risk surface
+- low: recommended improvement without immediate risk
+- observation: improvement opportunity with no associated risk""",
+            messages=[{
+                "role": "user",
+                "content": f"""Control: {control.control_id} — {control.title}
+Status: {control.status}
+Justification: {control.justification}
+Evidence reviewed: {', '.join(control.evidence_refs)}
+
+Generate the finding in JSON:
+{{
+  "severity": "high|medium|low|observation",
+  "title": "concise finding title",
+  "description": "detailed description of the non-compliance",
+  "evidence_quote": "textual quote of the evidence (or absence)",
+  "risk": "concrete risk if not remediated",
+  "recommendation": "specific remediation action",
+  "estimated_effort": "estimated remediation effort"
+}}"""
+            }]
+        )
+
+        result = json.loads(response.content[0].text)
+        return AuditFinding(
+            finding_id=f"FND-{finding_number:03d}",
+            control_id=control.control_id,
+            severity=result["severity"],
+            title=result["title"],
+            description=result["description"],
+            evidence_quote=result["evidence_quote"],
+            risk=result["risk"],
+            recommendation=result["recommendation"]
+        )
+
+    def run_audit(self):
+        """Executes the complete audit."""
+        # Phase 1: Evaluate all controls
+        for control in self.controls:
+            self.evaluate_control(control)
+
+        # Phase 2: Generate findings for non-conformities
+        finding_num = 1
+        for control in self.controls:
+            if control.status in ("non_compliant", "partial"):
+                finding = self.generate_finding(control, finding_num)
+                self.findings.append(finding)
+                finding_num += 1
+
+        # Phase 3: Compliance statistics
+        stats = self._calculate_stats()
+        print(f"\nAudit results for {self.framework}:")
+        print(f"  Controls evaluated: {stats['total']}")
+        print(f"  Compliant: {stats['compliant']} ({stats['pct_compliant']:.0f}%)")
+        print(f"  Partial: {stats['partial']} ({stats['pct_partial']:.0f}%)")
+        print(f"  Non-compliant: {stats['non_compliant']} ({stats['pct_non']:.0f}%)")
+        print(f"  Findings generated: {len(self.findings)}")
+
+        return self.findings

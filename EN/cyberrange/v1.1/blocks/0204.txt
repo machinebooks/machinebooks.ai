@@ -1,0 +1,29 @@
+{
+  "title": "Behind the Filter",
+  "category": "web",
+  "difficulty": "medium",
+  "points": 300,
+  "description": "CyberLab Corp's API has a search endpoint that seems well protected. The WAF blocks classic payloads. But every filter has exceptions...",
+  "hints": [
+    {
+      "level": 1,
+      "text": "Have you tried alternative encodings for the blocked characters?",
+      "cost": 50
+    },
+    {
+      "level": 2,
+      "text": "The WAF does not filter MySQL inline comments: /*!50000UNION*/",
+      "cost": 100
+    },
+    {
+      "level": 3,
+      "text": "Use /*!50000UNION*/ /*!50000SELECT*/ with extractvalue() to exfiltrate data without direct SELECT",
+      "cost": 150
+    }
+  ],
+  "mitre_mapping": [
+    {"technique_id": "T1190", "name": "Exploit Public-Facing Application"}
+  ],
+  "solution_writeup": "The /api/search endpoint accepts a 'q' parameter that is concatenated into an SQL query...",
+  "flag_type": "dynamic"
+}

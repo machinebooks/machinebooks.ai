@@ -1,0 +1,4 @@
+The add → remove → remove sequence proposes a state hypothesis.
+It does not suffice to confirm CWE-416: release and later access to the
+affected resource are required. An inconsistent finalizer does not itself
+demonstrate reuse of native memory.

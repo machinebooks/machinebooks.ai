@@ -1,0 +1,46 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import anthropic
+
+def generate_quarterly_analysis(tracker: ROITracker, quarter: str) -> str:
+    """Generates quarterly ROI narrative analysis with Claude."""
+    import re
+    if type(quarter) is not str or re.fullmatch(r"[0-9]{4}-Q[1-4]", quarter) is None:
+        raise ValueError("Quarter must use YYYY-Q1 through YYYY-Q4")
+    year, number = int(quarter[:4]), int(quarter[-1])
+    for record in tracker.records:
+        record.__post_init__()
+    records = [r for r in tracker.records if r.start_date.year == year and (r.start_date.month - 1) // 3 + 1 == number]
+    if not records:
+        raise ValueError("No projects started in the requested quarter")
+    tracker = ROITracker(records=records)
+
+    client = anthropic.Anthropic()
+
+    summary = {
+        "quarter": quarter,
+        "total_projects": len(tracker.records),
+        "total_hours_saved": tracker.total_hours_saved,
+        "aggregate_roi": f"{tracker.aggregate_roi:.1f}x",
+        "avg_compression": f"{tracker.avg_compression:.0%}",
+        "by_type": tracker.by_project_type(),
+        "total_ai_investment": tracker.total_ai_cost,
+        "total_incremental_margin": tracker.total_incremental_margin,
+    }
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=2048,
+        system="""You are a financial analyst at a technology consulting practice.
+Analyze the AI tools ROI data and generate an executive report. Include:
+performance summary, trends by project type, alerts if any type has ROI
+below 5x, and recommendations for the next quarter. Be direct, use data.""",
+        messages=[{
+            "role": "user",
+            "content": (
+                f"Quarter {quarter} data:\n"
+                f"{json.dumps(summary, indent=2, ensure_ascii=False)}"
+            )
+        }]
+    )
+    return message.content[0].text

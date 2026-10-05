@@ -1,0 +1,19 @@
+manifest = {
+    "name": "owned_fixture",
+    "artifacts": ["input.json"],
+    "dependencies": ["python-standard-library"],
+    "network": False,
+    "privileged": False,
+    "writable_host_mounts": [],
+    "health_check_observed": False,
+}
+available = {"input.json"}
+missing = set(manifest["artifacts"]) - available
+assert not missing
+assert not manifest["network"]
+assert not manifest["privileged"]
+assert not manifest["writable_host_mounts"]
+assert not manifest["health_check_observed"]
+incomplete = {"artifacts": ["Dockerfile", "runner.py"]}
+assert set(incomplete["artifacts"]) - available == {"Dockerfile", "runner.py"}
+print("owned laboratory manifest fixture: PASS")

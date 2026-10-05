@@ -1,0 +1,4 @@
+0x140012a48    lea rcx, [rip + 0x4b21]    ; "VERSION.dll"
+0x140012a4f    call qword [rip + 0x1a8b3]  ; LoadLibraryW
+0x140012a55    test rax, rax
+0x140012a58    je 0x140012a70

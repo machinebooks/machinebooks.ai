@@ -1,0 +1,14 @@
+# Async assignment contract; store enforces transaction, FKs and one active assignment.
+import asyncio
+from uuid import UUID
+
+async def assign_user_to_workzone(actor, user_id, workzone_id, request_ref, access, store):
+    if any(type(value) is not int or value <= 0 for value in (user_id, workzone_id)):
+        raise ValueError("invalid assignment identifiers")
+    request_ref = str(UUID(request_ref))
+    scope = await asyncio.wait_for(access.authorize_assignment(actor, user_id, workzone_id), 10)
+    result = await asyncio.wait_for(store.assign_if_unassigned(scope, request_ref), 20)
+    if result["status"] not in {"assigned", "already_assigned", "conflict", "pending"}:
+        raise ValueError("invalid assignment receipt")
+    return {"status": result["status"], "request_ref": request_ref}
+# Timeout leaves an unknown outcome to reconcile by request_ref, never a false success.

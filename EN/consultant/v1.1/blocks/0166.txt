@@ -1,0 +1,21 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+def cumulative_roi_series(tracker, initial_investment, initial_date):
+    if initial_investment <= 0:
+        raise ValueError("Initial investment must be positive")
+    investment = float(initial_investment)
+    net_gain = -investment
+    series = [{"date": initial_date.isoformat(), "cumulative_roi": -1.0,
+               "cumulative_investment": investment, "cumulative_net_gain": net_gain}]
+    for record in sorted(tracker.records, key=lambda value: value.start_date):
+        if record.start_date < initial_date or record.ai_cost < 0:
+            raise ValueError("Invalid period or cost")
+        investment += record.ai_cost
+        # incremental_margin already deducts this project's AI operating cost.
+        net_gain += record.incremental_margin
+        series.append({"date": record.start_date.isoformat(),
+                       "cumulative_roi": net_gain / investment,
+                       "cumulative_investment": investment,
+                       "cumulative_net_gain": net_gain,
+                       "project_type": record.project_type})
+    return series

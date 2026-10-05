@@ -1,0 +1,10 @@
+# FastAPI factory: actor, authorization and async start signature match the service contract.
+from fastapi import APIRouter, Depends
+
+def build_vm_router(service, access, api, store, authenticate):
+    router = APIRouter()
+    @router.post("/{cluster_id}/vms/{vmid}/start")
+    async def start_vm(cluster_id: int, vmid: int, actor=Depends(authenticate)):
+        return await service(actor, cluster_id, vmid, access, api, store)
+    return router
+# Supply Chapter 5's request_vm_start; object permission and task receipts live in that service.

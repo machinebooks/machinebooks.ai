@@ -1,0 +1,66 @@
+"""
+tg_storage_dump.py -- Enumeracion de almacenamiento de Mini Apps
+Extrae datos de localStorage, sessionStorage e IndexedDB
+del contexto de una Mini App via CDP.
+"""
+import websocket
+import json
+
+def dump_webapp_storage(ws_url):
+    """Enumerar todo el almacenamiento accesible de la Mini App."""
+    ws = websocket.create_connection(ws_url)
+    
+    js_storage = """
+    (function() {
+        var result = {};
+        
+        // localStorage
+        result.localStorage = {};
+        for (var i = 0; i < localStorage.length; i++) {
+            var key = localStorage.key(i);
+            result.localStorage[key] = localStorage.getItem(key);
+        }
+        
+        // sessionStorage
+        result.sessionStorage = {};
+        for (var i = 0; i < sessionStorage.length; i++) {
+            var key = sessionStorage.key(i);
+            result.sessionStorage[key] = sessionStorage.getItem(key);
+        }
+        
+        // CloudStorage (API asincrona, capturamos referencia)
+        result.cloudStorageAvailable =
+            !!(window.Telegram &&
+               window.Telegram.WebApp &&
+               window.Telegram.WebApp.CloudStorage);
+        
+        // DeviceStorage
+        result.deviceStorageAvailable =
+            !!(window.Telegram &&
+               window.Telegram.WebApp &&
+               window.Telegram.WebApp.DeviceStorage);
+        
+        return JSON.stringify(result);
+    })();
+    """
+    
+    cmd = json.dumps({
+        "id": 1,
+        "method": "Runtime.evaluate",
+        "params": {"expression": js_storage, "returnByValue": True}
+    })
+    ws.send(cmd)
+    result = json.loads(ws.recv())
+    
+    storage = json.loads(
+        result["result"]["result"]["value"]
+    )
+    
+    print("[+] Almacenamiento de Mini App:")
+    print(f"    localStorage: {len(storage.get('localStorage', {}))} claves")
+    print(f"    sessionStorage: {len(storage.get('sessionStorage', {}))} claves")
+    print(f"    CloudStorage disponible: {storage.get('cloudStorageAvailable')}")
+    print(f"    DeviceStorage disponible: {storage.get('deviceStorageAvailable')}")
+    
+    ws.close()
+    return storage

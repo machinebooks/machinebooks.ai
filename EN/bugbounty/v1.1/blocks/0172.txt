@@ -1,0 +1,51 @@
+import sqlite3
+import shutil
+from pathlib import Path
+
+def extract_discord_cookies():
+    """Extracts Discord cookies in plain text."""
+    # Discord stores data in the user profile
+    cookie_db = (Path.home() / "AppData" / "Roaming"
+                 / "discord" / "Network" / "Cookies")
+
+    if not cookie_db.exists():
+        print("[-] Discord cookies DB not found")
+        return []
+
+    # Copy to avoid lock (Discord has the file open)
+    temp_copy = Path.home() / "AppData" / "Local" / "Temp" / "cookies_copy"
+    shutil.copy2(cookie_db, temp_copy)
+
+    conn = sqlite3.connect(str(temp_copy))
+    cursor = conn.cursor()
+
+    # Extract all cookies for discord.com
+    cursor.execute("""
+        SELECT host_key, name, value, encrypted_value, path,
+               expires_utc, is_secure, is_httponly
+        FROM cookies
+        WHERE host_key LIKE '%discord%'
+    """)
+
+    cookies = []
+    for row in cursor.fetchall():
+        host, name, value, encrypted_value, path = row[:5]
+
+        # If COOKIE_ENCRYPTION is disabled, value has the data
+        # If enabled, encrypted_value has the DPAPI-encrypted data
+        if value:
+            cookies.append({
+                "host": host, "name": name,
+                "value": value[:20] + "...",  # Truncate for log
+                "encrypted": False,
+            })
+        elif encrypted_value:
+            cookies.append({
+                "host": host, "name": name,
+                "value": "(encrypted)",
+                "encrypted": True,
+            })
+
+    conn.close()
+    temp_copy.unlink()
+    return cookies

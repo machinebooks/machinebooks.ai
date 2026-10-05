@@ -1,0 +1,9 @@
+# Verificar firma del binario original
+$sig = Get-AuthenticodeSignature "C:\Program Files\Epic Games\...\EpicGamesUpdater.exe"
+$sig.Status            # Valid
+$sig.SignerCertificate  # CN=Epic Games Inc., O=Epic Games Inc.
+
+# Despues del reemplazo con payload
+$sig = Get-AuthenticodeSignature "C:\Program Files\Epic Games\...\EpicGamesUpdater.exe"
+$sig.Status            # NotSigned
+# El SCM ejecuta el binario sin firmar como SYSTEM

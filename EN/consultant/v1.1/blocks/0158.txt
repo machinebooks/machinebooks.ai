@@ -1,0 +1,51 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+# Pseudocode only; not an executable SDK example
+# Pseudocode: Agent and tool are conceptual interfaces, not SDK imports
+
+@tool
+def run_assessment(client_id: str, sector: str) -> dict:
+    """Runs the complete assessment for a client."""
+    # 1. Retrieve questionnaire responses (already completed online)
+    responses = get_client_responses(client_id)
+
+    # 2. Evaluate each dimension
+    dimensions = [
+        "datos", "talento", "gobernanza",
+        "infraestructura", "casos_uso", "cultura"
+    ]
+    result = AssessmentResult(client_id=client_id)
+
+    for dim in dimensions:
+        dim_responses = [r for r in responses if r["dimension"] == dim]
+        inconsistencies = detect_inconsistencies(dim, dim_responses)
+        raw_score = calculate_dimension_score(dim_responses)
+        confidence = max(0.3, 1.0 - len(inconsistencies) * 0.15)
+
+        result.dimensions.append(DimensionScore(
+            dimension=dim,
+            score=raw_score,
+            confidence=confidence,
+            inconsistencies=inconsistencies,
+            evidence_gaps=find_evidence_gaps(dim_responses),
+        ))
+
+    result.calculate_overall()
+
+    # 3. Generate executive report
+    report = generate_executive_report(
+        result,
+        client_name=get_client_name(client_id),
+        sector=sector,
+    )
+
+    # 4. Save results and schedule consultant review
+    save_assessment(client_id, result, report)
+    schedule_consultant_review(client_id, result.flags_for_consultant)
+
+    return {
+        "overall_level": result.overall_level.name,
+        "flags_count": len(result.flags_for_consultant),
+        "report_generated": True,
+        "consultant_review_scheduled": len(result.flags_for_consultant) > 0,
+    }

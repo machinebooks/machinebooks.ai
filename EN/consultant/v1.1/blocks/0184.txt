@@ -1,0 +1,36 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+def generate_finding(
+    control_id: str,
+    document_evidence: list[dict],
+    field_notes: list[str],
+    cross_ref: ControlMapping
+) -> dict:
+    """Generates a complete audit finding for a control."""
+
+    context = f"""Control: {control_id} - {cross_ref.iso_control}
+
+    Documentary evidence:
+    {json.dumps(document_evidence, ensure_ascii=False, indent=2)}
+
+    Field notes:
+    {chr(10).join(f'- {note}' for note in field_notes)}
+
+    ISO/ENS cross-reference status:
+    - Status: {cross_ref.status}
+    - Affected ENS measures: {', '.join(cross_ref.ens_measures)}
+    - Preliminary gap: {cross_ref.gap_description}"""
+
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=2048,
+        system="""Generate a professional audit finding.
+        Structure: type (major/minor non-conformity/observation/
+        improvement opportunity), factual description, evidence,
+        impact on the organization, actionable recommendation,
+        suggested implementation timeline.
+        Tone: objective, precise, without value judgments.
+        Language: formal audit English.""",
+        messages=[{"role": "user", "content": context}]
+    )
+    return parse_finding(response.content[0].text)

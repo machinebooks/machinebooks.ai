@@ -1,0 +1,20 @@
+# Didactic ledger boundary; never fabricate a missing open instance.
+from datetime import datetime,timezone
+
+def record_hint_use(adapter,actor_id,instance_id,objective_id,request_id,text,level,penalty_pct):
+    if not isinstance(text,str) or not 1<=len(text)<=1000:
+        raise ValueError("invalid_hint")
+    if type(level) is not int or not 1<=level<=5 or type(penalty_pct) is not int or not 0<=penalty_pct<=40:
+        raise ValueError("invalid_hint_policy")
+    with adapter.hint_transaction(actor_id,instance_id) as transaction:
+        transaction.require_authorized_open_unexpired_instance()
+        transaction.require_rubric_objective(objective_id)
+        prior=transaction.find_unique_request(request_id)
+        if prior is not None:
+            return prior
+        return transaction.append_hint_and_use(objective_id=objective_id,
+            request_id=request_id,text=text,level=level,penalty_pct=penalty_pct,
+            total_cap_pct=60,used_at=datetime.now(timezone.utc))
+
+# Schema/migration must link objective/flag, actor, instance and later capture.
+# Locking, unique keys, rollback and a tested scoring join are adapter obligations.

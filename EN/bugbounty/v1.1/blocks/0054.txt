@@ -1,0 +1,19 @@
+# Analysis of Squirrel's update flow in Discord
+# (Claude Code — Squirrel code is public)
+
+# Squirrel executes Update.exe with special arguments:
+# --squirrel-install       → first installation
+# --squirrel-updated       → after each update
+# --squirrel-obsolete      → when deleting an old version
+# --squirrel-uninstall     → when uninstalling
+
+# The app's main executable receives these arguments
+# and must process them. If Electron's main.js processes
+# --squirrel-updated, it can execute code on each update.
+
+# Discord main.js (excerpt from ASAR analysis):
+# if (process.argv.includes('--squirrel-updated')) {
+#     // Code that runs after each update
+#     // If this code is in a tampered ASAR, it runs
+#     // with every update, creating persistence
+# }

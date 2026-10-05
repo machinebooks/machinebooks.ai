@@ -1,0 +1,8 @@
+# Intentar conectar al pipe sin inyección
+$pipe = [System.IO.Pipes.NamedPipeClientStream]::new(
+    ".", "cowork-vm-service", "InOut")
+$pipe.Connect(5000)
+# El servicio responde:
+# {"success":false,"error":"signature verification failed: client
+#  executable is not signed: C:/Windows/System32/WindowsPowerShell/
+#  v1.0/powershell.exe"}

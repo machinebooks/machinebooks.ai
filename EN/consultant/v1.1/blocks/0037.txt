@@ -1,0 +1,49 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+    def generate_full_report(self, assessment_data: dict) -> str:
+        """Complete three-phase pipeline."""
+        # Phase 1: Global outline
+        outline = self._generate_outline(assessment_data)
+
+        # Phase 2: Section-by-section generation
+        sections_content = {}
+        total_tokens = 0
+        for section in self.template["sections"]:
+            if section.get("static_content"):
+                sections_content[section["id"]] = (
+                    self._get_static_content(section["id"])
+                )
+                continue
+            result = self.generate_section(
+                section, assessment_data, outline
+            )
+            sections_content[section["id"]] = result.content
+            total_tokens += result.tokens_used
+            self.results.append(result)
+
+        # Phase 3: Coherence review
+        assembled = self._assemble_document(sections_content)
+        coherent = self._review_coherence(assembled)
+
+        # Record generation metadata
+        self._save_metadata(assessment_data, total_tokens)
+        return coherent
+
+    def _generate_outline(self, data: dict) -> str:
+        """Phase 1: outline with main findings."""
+        response = self.client.messages.create(
+            model=self.model,
+            max_tokens=2048,
+            messages=[{
+                "role": "user",
+                "content": f"""From this assessment data,
+generate a report outline with:
+1. The 5 most critical findings
+2. The overall compliance percentage
+3. The general tone (alarming/concerning/acceptable)
+4. The 3 priority recommendations
+
+Data: {self._summarize_data(data)}"""
+            }]
+        )
+        return response.content[0].text

@@ -1,0 +1,28 @@
+FROM python:3.11-slim-bookworm
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONDONTWRITEBYTECODE=1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      build-essential gcc g++ make cmake \
+      mingw-w64 gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 \
+      binutils file xxd \
+      tcpdump tshark wireshark-common \
+      p7zip-full unzip git curl wget jq vim less tree \
+      libmagic1 libfuzzy-dev ssdeep libssl-dev libffi-dev \
+   && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --no-cache-dir \
+      impacket scapy \
+      capstone unicorn keystone-engine lief pefile \
+      boofuzz pycryptodome \
+      rich tabulate hexdump \
+      yara-python ssdeep \
+      ipython r2pipe
+
+RUN git clone --depth=1 https://github.com/radareorg/radare2.git /tmp/r2 \
+   && cd /tmp/r2 && sys/install.sh && rm -rf /tmp/r2
+
+WORKDIR /lab
+RUN mkdir -p /lab/drivers /lab/scripts /lab/results /lab/symbols
+ENTRYPOINT ["/bin/bash"]

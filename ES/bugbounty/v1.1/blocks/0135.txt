@@ -1,0 +1,10 @@
+T+0.0s  — Víctima abre VS Code con el repositorio malicioso
+T+0.2s  — VS Code detecta .github/copilot-instructions.md
+T+0.3s  — Copilot carga el fichero como instrucciones del workspace
+T+0.5s  — Víctima cambia a Agent mode (si no estaba ya)
+T+2.0s  — Víctima escribe: "What does this project do?"
+T+2.1s  — Copilot construye el prompt: system_prompt + workspace_instructions + user_query
+T+2.5s  — El modelo procesa el prompt y genera un tool call para run_in_terminal
+T+2.6s  — La extensión ejecuta el tool call sin confirmación
+T+2.7s  — calc.exe se abre en el escritorio del developer
+T+3.0s  — Copilot responde a la pregunta del usuario como si nada hubiera pasado

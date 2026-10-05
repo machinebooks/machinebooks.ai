@@ -1,0 +1,37 @@
+# Didactic read-only tool factory; adapter holds authenticated actor/scope.
+from agents import function_tool
+
+def scenario_tools(adapter, actor_id, workzone_id):
+    adapter.authorize(actor_id,"scenario_propose",workzone_id)
+
+    @function_tool
+    async def list_vm_templates(os_type: str | None = None):
+        if os_type is not None and os_type not in ("linux","windows"):
+            raise ValueError("invalid_os_filter")
+        return await adapter.list_authorized_templates(actor_id,workzone_id,os_type,limit=100)
+
+    @function_tool
+    async def validate_network_config(cidr: str, vlan_id: int):
+        import ipaddress
+        network=ipaddress.ip_network(cidr,strict=True)
+        if network.version!=4 or type(vlan_id) is not int or not 1<=vlan_id<=4094:
+            raise ValueError("invalid_network")
+        return await adapter.check_scoped_network(actor_id,workzone_id,str(network),vlan_id)
+
+    @function_tool
+    async def check_resource_availability(cpu_needed: int,memory_mb: int,storage_gb: int):
+        if any(type(n) is not int or n<=0 for n in (cpu_needed,memory_mb,storage_gb)):
+            raise ValueError("invalid_resources")
+        return await adapter.check_current_capacity(actor_id,workzone_id,
+            cpu=cpu_needed,memory_mb=memory_mb,storage_gb=storage_gb)
+
+    @function_tool
+    async def list_available_playbooks(category: str | None = None):
+        return await adapter.list_approved_artifacts(actor_id,workzone_id,category,limit=100)
+
+    return [list_vm_templates,validate_network_config,check_resource_availability,
+            list_available_playbooks]
+
+# Adapter closes DB sessions and includes creating/running/stopped reservations,
+# current storage use, pending leases and inventory timestamp. No implicit
+# 32-core/64-GB defaults, global catalog disclosure or deployment reservation.

@@ -1,0 +1,11 @@
+1. Attacker on the same network (home WiFi, corporate network)
+2. Port scan: nmap -p 47990 192.168.1.0/24
+3. Detect Sunshine (HTTPS with self-signed cert on port 47990)
+4. curl -u admin:admin https://target:47990/api/apps
+   -> default credentials work
+5. POST /api/apps with malicious cmd
+   -> command persisted in config
+6. The command executes as SYSTEM when:
+   a) A Moonlight client connects, or
+   b) Sunshine restarts and a client is configured
+7. Attacker has SYSTEM shell on the host

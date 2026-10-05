@@ -1,0 +1,1643 @@
+{
+  "editorial_version": "1.1",
+  "source_word_sha256": "cc7ce310d60dc5d37d9333032375f33dc5ed468cb323ce51a150fbb6433b4aaf",
+  "source_file": "The-Consultant-and-the-Machine.docx",
+  "language": "en",
+  "scope": "educational SourceCode blocks; private desktop and core excluded",
+  "extraction": "literal w:t, line breaks w:br/w:cr and tabs w:tab in document order; UTF-8 without added headers",
+  "block_count": 203,
+  "execution_status": "not established by extraction",
+  "manuscript_final_four_sha256": {
+    "El-Consultor-y-la-Maquina.docx": "6f61faf97a6f2083d60d2ae8abc5f1f1b30507c641b9eaa00f6b85995becdb27",
+    "El-Consultor-y-la-Maquina.epub": "d9df2a4faf8886547e82743d00a37f07e83b2b30de816a7c65e0182086577338",
+    "The-Consultant-and-the-Machine.docx": "cc7ce310d60dc5d37d9333032375f33dc5ed468cb323ce51a150fbb6433b4aaf",
+    "The-Consultant-and-the-Machine.epub": "5da7fc5c9878bc55c17669fb402ab3937210af8f49cb06463b8b83cacd22b11e"
+  },
+  "canonical_promotion_receipt_sha256": "53b466f8d7afec7d7e03b51e38ce180e1075f3fa52ad6e2ef98f6c0c09ef78e1",
+  "blocks": [
+    {
+      "id": 1,
+      "file": "blocks/0001.txt",
+      "word_paragraph_index_zero_based": 198,
+      "heading_context": [],
+      "sha256": "b0848c9caae093a4e87da010345abe7cb68c37a2880f85d170f3739f9f66eb6c",
+      "bytes": 2001
+    },
+    {
+      "id": 2,
+      "file": "blocks/0002.txt",
+      "word_paragraph_index_zero_based": 204,
+      "heading_context": [],
+      "sha256": "5bcb048567a46a198223ab6e271e843ed7383f164f9cf7a2fecab78175abc24c",
+      "bytes": 1492
+    },
+    {
+      "id": 3,
+      "file": "blocks/0003.txt",
+      "word_paragraph_index_zero_based": 210,
+      "heading_context": [],
+      "sha256": "c4d9e6cc327d313c321a3e587f0a7542d250e74ddf3bfa07d7fcf4eeec989862",
+      "bytes": 2466
+    },
+    {
+      "id": 4,
+      "file": "blocks/0004.txt",
+      "word_paragraph_index_zero_based": 310,
+      "heading_context": [],
+      "sha256": "17950a5ef8abe5c37f2ca144aa4e2c012e1901d372a968782a7af3875a1357c5",
+      "bytes": 3013
+    },
+    {
+      "id": 5,
+      "file": "blocks/0005.txt",
+      "word_paragraph_index_zero_based": 314,
+      "heading_context": [],
+      "sha256": "537f5bd006722b9ada889b88511714d4b810304c337ce34b9a22b9e43c4ccca6",
+      "bytes": 2478
+    },
+    {
+      "id": 6,
+      "file": "blocks/0006.txt",
+      "word_paragraph_index_zero_based": 319,
+      "heading_context": [],
+      "sha256": "0dee1ec0f70513bbf3e0159fe4842501cc3afab8fa969f924f368937b584f957",
+      "bytes": 574
+    },
+    {
+      "id": 7,
+      "file": "blocks/0007.txt",
+      "word_paragraph_index_zero_based": 325,
+      "heading_context": [],
+      "sha256": "9648eb73742508bd03122a4de488a7657563014c2be6e8c69116458221f799d5",
+      "bytes": 2197
+    },
+    {
+      "id": 8,
+      "file": "blocks/0008.txt",
+      "word_paragraph_index_zero_based": 330,
+      "heading_context": [],
+      "sha256": "e4f188cf4218268115a797b421bc19ca8f40833fdcec6a28e966430445ad695e",
+      "bytes": 1994
+    },
+    {
+      "id": 9,
+      "file": "blocks/0009.txt",
+      "word_paragraph_index_zero_based": 342,
+      "heading_context": [],
+      "sha256": "2d47f429b31e2b7ea0329ad315090d42ef06950ba43291cc8db11d7aa9b6627f",
+      "bytes": 1072
+    },
+    {
+      "id": 10,
+      "file": "blocks/0010.txt",
+      "word_paragraph_index_zero_based": 424,
+      "heading_context": [],
+      "sha256": "b2710017ca04888d2198249d243c49e1303aeaf56b96220eacbc22a9404be8be",
+      "bytes": 1421
+    },
+    {
+      "id": 11,
+      "file": "blocks/0011.txt",
+      "word_paragraph_index_zero_based": 427,
+      "heading_context": [],
+      "sha256": "aa26e82c477c700710fd5f6f1fa0555d8757de265cf2a60111701450e2c79636",
+      "bytes": 622
+    },
+    {
+      "id": 12,
+      "file": "blocks/0012.txt",
+      "word_paragraph_index_zero_based": 430,
+      "heading_context": [],
+      "sha256": "4dbfcb27fe859c3cec636f4239e802fd14059caeb32a426ac1e6bc1df43a83d0",
+      "bytes": 4099
+    },
+    {
+      "id": 13,
+      "file": "blocks/0013.txt",
+      "word_paragraph_index_zero_based": 437,
+      "heading_context": [],
+      "sha256": "d59f6aae4c9c393720c72f42ff528ffd92ddd03994008ab17d34ccece876f04e",
+      "bytes": 2422
+    },
+    {
+      "id": 14,
+      "file": "blocks/0014.txt",
+      "word_paragraph_index_zero_based": 441,
+      "heading_context": [],
+      "sha256": "2fe8d8868eff4ff6aa8ab22bc704db04eb0b3dc6e6314e2bed72d97b8ca14190",
+      "bytes": 1666
+    },
+    {
+      "id": 15,
+      "file": "blocks/0015.txt",
+      "word_paragraph_index_zero_based": 534,
+      "heading_context": [],
+      "sha256": "ed995bdd637af74affb9712d576122aef29b5cdb37540489e0ac6411da7fc446",
+      "bytes": 516
+    },
+    {
+      "id": 16,
+      "file": "blocks/0016.txt",
+      "word_paragraph_index_zero_based": 536,
+      "heading_context": [],
+      "sha256": "f79f334cc55484efef16807078263a41889eac27bc02fe6a16621cecda89ae67",
+      "bytes": 471
+    },
+    {
+      "id": 17,
+      "file": "blocks/0017.txt",
+      "word_paragraph_index_zero_based": 540,
+      "heading_context": [],
+      "sha256": "d13ed7b70c00dd0a092606ae28df57e66c6a35a59295ccffdb13af12c9ebce98",
+      "bytes": 1121
+    },
+    {
+      "id": 18,
+      "file": "blocks/0018.txt",
+      "word_paragraph_index_zero_based": 543,
+      "heading_context": [],
+      "sha256": "5622fbe9bb098e32c538e0f264b07cb32d2848f695c028a1a6aa5685878cbede",
+      "bytes": 1432
+    },
+    {
+      "id": 19,
+      "file": "blocks/0019.txt",
+      "word_paragraph_index_zero_based": 547,
+      "heading_context": [],
+      "sha256": "3774c422cdeced19befbdae05e07d262d4114363426f9e2fd3155ea52f8b205c",
+      "bytes": 2063
+    },
+    {
+      "id": 20,
+      "file": "blocks/0020.txt",
+      "word_paragraph_index_zero_based": 552,
+      "heading_context": [],
+      "sha256": "f22d37c31b380cd933fe26805e98dbbabe626c6ca2daa72aafaba29a20e4deb2",
+      "bytes": 1293
+    },
+    {
+      "id": 21,
+      "file": "blocks/0021.txt",
+      "word_paragraph_index_zero_based": 556,
+      "heading_context": [],
+      "sha256": "15c6af8ad122287a5fa0ac60bc53a5dfc616af602d90c251a33326d08ddaa699",
+      "bytes": 1846
+    },
+    {
+      "id": 22,
+      "file": "blocks/0022.txt",
+      "word_paragraph_index_zero_based": 560,
+      "heading_context": [],
+      "sha256": "5b8bd1b433ccffd8992330c1b43b89cbf5e36f23d027ae033aee356c4ce5d79e",
+      "bytes": 1179
+    },
+    {
+      "id": 23,
+      "file": "blocks/0023.txt",
+      "word_paragraph_index_zero_based": 565,
+      "heading_context": [],
+      "sha256": "0684fb27c999696b1a99eaf0a8281b246a15a13c149da616e9c999e1ed0de189",
+      "bytes": 1362
+    },
+    {
+      "id": 24,
+      "file": "blocks/0024.txt",
+      "word_paragraph_index_zero_based": 576,
+      "heading_context": [],
+      "sha256": "a4c126fc1cb4bcf2d98b931262b08248785038092be54335dd223b156ad73e37",
+      "bytes": 933
+    },
+    {
+      "id": 25,
+      "file": "blocks/0025.txt",
+      "word_paragraph_index_zero_based": 581,
+      "heading_context": [],
+      "sha256": "ab8137bd970a01c344c811e859f3281b6970f40144d720eecc1fda7809e70646",
+      "bytes": 531
+    },
+    {
+      "id": 26,
+      "file": "blocks/0026.txt",
+      "word_paragraph_index_zero_based": 596,
+      "heading_context": [],
+      "sha256": "acd22c7cb20583080b2981f57ecc13c140071721a2b41ba1d109343f45eb2664",
+      "bytes": 1845
+    },
+    {
+      "id": 27,
+      "file": "blocks/0027.txt",
+      "word_paragraph_index_zero_based": 706,
+      "heading_context": [],
+      "sha256": "2431fb25d80958f91b50e1ff03d5df08c971e75236f8909f36dddc4da483bcf3",
+      "bytes": 1737
+    },
+    {
+      "id": 28,
+      "file": "blocks/0028.txt",
+      "word_paragraph_index_zero_based": 709,
+      "heading_context": [],
+      "sha256": "dd6e68b4843bc00d516c51e2f0f122ea7ee61a35966e596befd265345f805e9e",
+      "bytes": 1652
+    },
+    {
+      "id": 29,
+      "file": "blocks/0029.txt",
+      "word_paragraph_index_zero_based": 712,
+      "heading_context": [],
+      "sha256": "2d34c4d4910cf046641761b225b67fa05780d12fd514d1637c734c85dd31be7c",
+      "bytes": 1260
+    },
+    {
+      "id": 30,
+      "file": "blocks/0030.txt",
+      "word_paragraph_index_zero_based": 716,
+      "heading_context": [],
+      "sha256": "6885be95362e8f8b5cdd788bc0ee0b1e219997e08cb6a0e60a9912b955300ab1",
+      "bytes": 2056
+    },
+    {
+      "id": 31,
+      "file": "blocks/0031.txt",
+      "word_paragraph_index_zero_based": 722,
+      "heading_context": [],
+      "sha256": "b658e9a29e1fbce6cd1ee6df5ed6c46c515d023cedce89e51f2a705ff2e76d2c",
+      "bytes": 1702
+    },
+    {
+      "id": 32,
+      "file": "blocks/0032.txt",
+      "word_paragraph_index_zero_based": 728,
+      "heading_context": [],
+      "sha256": "5edb915a815c9d7c704f0c4c9f2c064ddaedeb12ffe8bbb681354f8ee12e543b",
+      "bytes": 1678
+    },
+    {
+      "id": 33,
+      "file": "blocks/0033.txt",
+      "word_paragraph_index_zero_based": 733,
+      "heading_context": [],
+      "sha256": "1990a81c89c1f9d522e5ffaf06ae5197fd0ae3302da87fb361687648b596f820",
+      "bytes": 2108
+    },
+    {
+      "id": 34,
+      "file": "blocks/0034.txt",
+      "word_paragraph_index_zero_based": 752,
+      "heading_context": [],
+      "sha256": "165d2fcceedb140ba2e70fcd372c23b782e0218beb6a43cb36e99ccbf0537be7",
+      "bytes": 1898
+    },
+    {
+      "id": 35,
+      "file": "blocks/0035.txt",
+      "word_paragraph_index_zero_based": 830,
+      "heading_context": [],
+      "sha256": "c4380068a1af7a310622be3e6b5bbf247cb4bac4d12a987d6fdd9fd92d3b0532",
+      "bytes": 2063
+    },
+    {
+      "id": 36,
+      "file": "blocks/0036.txt",
+      "word_paragraph_index_zero_based": 835,
+      "heading_context": [],
+      "sha256": "e7876bca14dfca4fdd1502dbdc8ff732f47c1fbecfce956eceb3978a2b47443f",
+      "bytes": 2420
+    },
+    {
+      "id": 37,
+      "file": "blocks/0037.txt",
+      "word_paragraph_index_zero_based": 838,
+      "heading_context": [],
+      "sha256": "14026fda2c8ae990a8384d2db75bbc9413ac31bd01b317277b2a5919d3787069",
+      "bytes": 1889
+    },
+    {
+      "id": 38,
+      "file": "blocks/0038.txt",
+      "word_paragraph_index_zero_based": 842,
+      "heading_context": [],
+      "sha256": "160b0f1378157576746407ceb05e545bad2ff7ecad308d3e8bd4912aebabf917",
+      "bytes": 3438
+    },
+    {
+      "id": 39,
+      "file": "blocks/0039.txt",
+      "word_paragraph_index_zero_based": 847,
+      "heading_context": [],
+      "sha256": "b8830b25047cc8458f8d568ac5b1e9d082f90075b01b58f601d30caf958161c1",
+      "bytes": 2322
+    },
+    {
+      "id": 40,
+      "file": "blocks/0040.txt",
+      "word_paragraph_index_zero_based": 852,
+      "heading_context": [],
+      "sha256": "f378987da8cd510f3c61bc8f6bc00df7b94e80e271c1474b93f9ea81a4956d39",
+      "bytes": 969
+    },
+    {
+      "id": 41,
+      "file": "blocks/0041.txt",
+      "word_paragraph_index_zero_based": 857,
+      "heading_context": [],
+      "sha256": "798642b56b2752fd3e2fdf6a6ef4ed01aefa340cad44f311c85b6524de0e8339",
+      "bytes": 458
+    },
+    {
+      "id": 42,
+      "file": "blocks/0042.txt",
+      "word_paragraph_index_zero_based": 949,
+      "heading_context": [],
+      "sha256": "9f6d7294649a0ad99c94acf569a6cd8156dcad897a3afbbf0ad8d10d9ead0b9a",
+      "bytes": 1290
+    },
+    {
+      "id": 43,
+      "file": "blocks/0043.txt",
+      "word_paragraph_index_zero_based": 952,
+      "heading_context": [],
+      "sha256": "ac92f2aa0b22d14a1a475abfe72e7029e4f118ecc88ec1b7143dff1300aea7b8",
+      "bytes": 913
+    },
+    {
+      "id": 44,
+      "file": "blocks/0044.txt",
+      "word_paragraph_index_zero_based": 957,
+      "heading_context": [],
+      "sha256": "b25aaccb20b31947286c50f707b8e568b3f2664ed7f102be1a74fed33f13a0df",
+      "bytes": 1069
+    },
+    {
+      "id": 45,
+      "file": "blocks/0045.txt",
+      "word_paragraph_index_zero_based": 960,
+      "heading_context": [],
+      "sha256": "36cd65961a4f3b63cd87559ba904f9362cedf4bd580cb6f8ef9002f42b2850b4",
+      "bytes": 988
+    },
+    {
+      "id": 46,
+      "file": "blocks/0046.txt",
+      "word_paragraph_index_zero_based": 962,
+      "heading_context": [],
+      "sha256": "0634997695a4d28391cdfed314a2d0b33263be0725e119dbb22cfa6b7d5615e0",
+      "bytes": 928
+    },
+    {
+      "id": 47,
+      "file": "blocks/0047.txt",
+      "word_paragraph_index_zero_based": 968,
+      "heading_context": [],
+      "sha256": "e136a182a36a5828fe19ab29a7a03dfaebe160e2974a9bb4373d663258c924a7",
+      "bytes": 1101
+    },
+    {
+      "id": 48,
+      "file": "blocks/0048.txt",
+      "word_paragraph_index_zero_based": 969,
+      "heading_context": [],
+      "sha256": "bd8610498947a2cc11dc49c46ee76ae9f43b479e636ad64957de9a15f1c8eff3",
+      "bytes": 472
+    },
+    {
+      "id": 49,
+      "file": "blocks/0049.txt",
+      "word_paragraph_index_zero_based": 975,
+      "heading_context": [],
+      "sha256": "6d9165f72bbf1ad6908fd2e688aa8aa78ecd586b261051a00eb56188a724eba2",
+      "bytes": 792
+    },
+    {
+      "id": 50,
+      "file": "blocks/0050.txt",
+      "word_paragraph_index_zero_based": 977,
+      "heading_context": [],
+      "sha256": "583b0cbd5881703391378df472f79f7e32ab0b1de41fc68f0b063b3089439a3a",
+      "bytes": 1262
+    },
+    {
+      "id": 51,
+      "file": "blocks/0051.txt",
+      "word_paragraph_index_zero_based": 986,
+      "heading_context": [],
+      "sha256": "8c4f1c6e5c38a9a918f48d03ac79b5d6029ff216a1c309ce447576d777f02485",
+      "bytes": 2908
+    },
+    {
+      "id": 52,
+      "file": "blocks/0052.txt",
+      "word_paragraph_index_zero_based": 1058,
+      "heading_context": [],
+      "sha256": "606acf0ee9a1c2e8e1c162a61b2441569c52c6d560b5d48e0b2d4b08998b88ef",
+      "bytes": 1860
+    },
+    {
+      "id": 53,
+      "file": "blocks/0053.txt",
+      "word_paragraph_index_zero_based": 1063,
+      "heading_context": [],
+      "sha256": "6e4e66862bd6d359f2c6f5fef3bcc38d9cf5caadbfe5772430636bf686c712fa",
+      "bytes": 4286
+    },
+    {
+      "id": 54,
+      "file": "blocks/0054.txt",
+      "word_paragraph_index_zero_based": 1069,
+      "heading_context": [],
+      "sha256": "51bdef4f1c9c1b5646accc51213b36aa8a808ce0ada29c6362845f824b0cbe81",
+      "bytes": 2126
+    },
+    {
+      "id": 55,
+      "file": "blocks/0055.txt",
+      "word_paragraph_index_zero_based": 1074,
+      "heading_context": [],
+      "sha256": "0f8800d583b71b7fd9436fafc94d09eee2b645e6e36610828e13d125683b422a",
+      "bytes": 4570
+    },
+    {
+      "id": 56,
+      "file": "blocks/0056.txt",
+      "word_paragraph_index_zero_based": 1079,
+      "heading_context": [],
+      "sha256": "196f8785e974d5150784a058865a2a2849054792af50a6fee8af8b8ea07c0bcd",
+      "bytes": 2341
+    },
+    {
+      "id": 57,
+      "file": "blocks/0057.txt",
+      "word_paragraph_index_zero_based": 1090,
+      "heading_context": [],
+      "sha256": "da75f62a5495713ff47b09993fca649f2a46daff7a6c546cd09e06c4ab9ba548",
+      "bytes": 1719
+    },
+    {
+      "id": 58,
+      "file": "blocks/0058.txt",
+      "word_paragraph_index_zero_based": 1094,
+      "heading_context": [],
+      "sha256": "063d338a69d8021a0338dcbe995fe412fa3eec8e7993b6a70df924ed64e60f25",
+      "bytes": 833
+    },
+    {
+      "id": 59,
+      "file": "blocks/0059.txt",
+      "word_paragraph_index_zero_based": 1098,
+      "heading_context": [],
+      "sha256": "08601537d4d814228df247639e96414d432e1c8369f3772a6a2ba109922452e3",
+      "bytes": 2490
+    },
+    {
+      "id": 60,
+      "file": "blocks/0060.txt",
+      "word_paragraph_index_zero_based": 1169,
+      "heading_context": [],
+      "sha256": "bc15303f1c5c56c3355fe5ac1b550d3e73e1ffd2b2e9f3ffad9ebc655474ad8c",
+      "bytes": 1582
+    },
+    {
+      "id": 61,
+      "file": "blocks/0061.txt",
+      "word_paragraph_index_zero_based": 1173,
+      "heading_context": [],
+      "sha256": "ca132c8b663aefa2f4f7464abbaee80e9022e54ab06c38e0223081f2a1a93270",
+      "bytes": 865
+    },
+    {
+      "id": 62,
+      "file": "blocks/0062.txt",
+      "word_paragraph_index_zero_based": 1177,
+      "heading_context": [],
+      "sha256": "b6483d5e3b6f8bb4a3ccc113c0578903e1cdb9dfbbf9d41eb4cd32b8184b777b",
+      "bytes": 4483
+    },
+    {
+      "id": 63,
+      "file": "blocks/0063.txt",
+      "word_paragraph_index_zero_based": 1184,
+      "heading_context": [],
+      "sha256": "d1d020b9e34e7852c8be26bb0d87ebc37fac17e0c2f8ac4d5fc554ac1c6080a2",
+      "bytes": 1783
+    },
+    {
+      "id": 64,
+      "file": "blocks/0064.txt",
+      "word_paragraph_index_zero_based": 1189,
+      "heading_context": [],
+      "sha256": "742e5a535720e7ff554ef46cf57a99d94b243fc7b3f633a8151f7af879993a30",
+      "bytes": 2898
+    },
+    {
+      "id": 65,
+      "file": "blocks/0065.txt",
+      "word_paragraph_index_zero_based": 1194,
+      "heading_context": [],
+      "sha256": "001c8c0eb85318130fb9a3974d7062f5ea3c91baf4df4b066f67812130cf97e6",
+      "bytes": 3828
+    },
+    {
+      "id": 66,
+      "file": "blocks/0066.txt",
+      "word_paragraph_index_zero_based": 1200,
+      "heading_context": [],
+      "sha256": "38bdce96d54d9b186186d5d5e6d295b732705a1129e81b7a49ac7b13511dbd6e",
+      "bytes": 973
+    },
+    {
+      "id": 67,
+      "file": "blocks/0067.txt",
+      "word_paragraph_index_zero_based": 1304,
+      "heading_context": [],
+      "sha256": "39d6712fcf175ed268255da91d782c6ab4826b3334d3b6a8990e1b8aaa682ef3",
+      "bytes": 1462
+    },
+    {
+      "id": 68,
+      "file": "blocks/0068.txt",
+      "word_paragraph_index_zero_based": 1309,
+      "heading_context": [],
+      "sha256": "a29386f304d2ab11e4e92b8c5a59e668ab02c698f4e4f894da3ee54cb7dc2208",
+      "bytes": 1658
+    },
+    {
+      "id": 69,
+      "file": "blocks/0069.txt",
+      "word_paragraph_index_zero_based": 1313,
+      "heading_context": [],
+      "sha256": "5fa97ab5b7a1026e0af832c7322d469f45b819b2ee516f64d8bd7c54f0f1c7b8",
+      "bytes": 4734
+    },
+    {
+      "id": 70,
+      "file": "blocks/0070.txt",
+      "word_paragraph_index_zero_based": 1318,
+      "heading_context": [],
+      "sha256": "ef1dc5dac31c3fef213f7ef7672d0e88ddf32a5925c80476d98e51608bd1bb99",
+      "bytes": 3788
+    },
+    {
+      "id": 71,
+      "file": "blocks/0071.txt",
+      "word_paragraph_index_zero_based": 1338,
+      "heading_context": [],
+      "sha256": "d8ebfa50c2c8707f63e14cea0012ea21f7ae2b0a8c84b00850f4aab95b8c9ff1",
+      "bytes": 692
+    },
+    {
+      "id": 72,
+      "file": "blocks/0072.txt",
+      "word_paragraph_index_zero_based": 1343,
+      "heading_context": [],
+      "sha256": "de812e261673e04597ea494238f61b92a52b314342d3f26e440cbcfd01d83d80",
+      "bytes": 1205
+    },
+    {
+      "id": 73,
+      "file": "blocks/0073.txt",
+      "word_paragraph_index_zero_based": 1352,
+      "heading_context": [],
+      "sha256": "6abdb8f58489a603bdd82939a8cf74c75a9e641d957f440ae539401bd0187a95",
+      "bytes": 1257
+    },
+    {
+      "id": 74,
+      "file": "blocks/0074.txt",
+      "word_paragraph_index_zero_based": 1356,
+      "heading_context": [],
+      "sha256": "113b3c5b261ad427e84ff1551692121ef7a836ea3d0f6b036cded476f8c37cf3",
+      "bytes": 2293
+    },
+    {
+      "id": 75,
+      "file": "blocks/0075.txt",
+      "word_paragraph_index_zero_based": 1360,
+      "heading_context": [],
+      "sha256": "85d29118f8829772554f483b9d5336d3d4a12e26f6b75318ecb7c55da0799a32",
+      "bytes": 822
+    },
+    {
+      "id": 76,
+      "file": "blocks/0076.txt",
+      "word_paragraph_index_zero_based": 1437,
+      "heading_context": [],
+      "sha256": "f20c7cf4a6eefe5dc7f52a599cb167b8edbe32964d83bcb67f377deccdb7f96c",
+      "bytes": 1546
+    },
+    {
+      "id": 77,
+      "file": "blocks/0077.txt",
+      "word_paragraph_index_zero_based": 1442,
+      "heading_context": [],
+      "sha256": "6de7f5f3710628efe227e209e9694e31838cea4a3f8985a2be88719026dee533",
+      "bytes": 2537
+    },
+    {
+      "id": 78,
+      "file": "blocks/0078.txt",
+      "word_paragraph_index_zero_based": 1446,
+      "heading_context": [],
+      "sha256": "6974ad750e7d8c438aeab2ad4154b626c9a8bbdb92225566c20cea7852b00f5c",
+      "bytes": 2001
+    },
+    {
+      "id": 79,
+      "file": "blocks/0079.txt",
+      "word_paragraph_index_zero_based": 1451,
+      "heading_context": [],
+      "sha256": "4a3dada8d3577721a2d25ad0bc717d492e9570b67b41710a91af2028d1bfda4a",
+      "bytes": 3721
+    },
+    {
+      "id": 80,
+      "file": "blocks/0080.txt",
+      "word_paragraph_index_zero_based": 1458,
+      "heading_context": [],
+      "sha256": "e3cd8dbac33bcb823ef413f02f93a028e84baedc009fd2e3c0bcababb65459ee",
+      "bytes": 1718
+    },
+    {
+      "id": 81,
+      "file": "blocks/0081.txt",
+      "word_paragraph_index_zero_based": 1469,
+      "heading_context": [],
+      "sha256": "f1533208cedef8cacdc375df46c700dd99268e3aede174d650f4d61cfa108414",
+      "bytes": 1643
+    },
+    {
+      "id": 82,
+      "file": "blocks/0082.txt",
+      "word_paragraph_index_zero_based": 1566,
+      "heading_context": [],
+      "sha256": "c9ecb9793dc5b2913944afd2555f6fad0773745dc49deed6098aa1ed46ce860c",
+      "bytes": 1805
+    },
+    {
+      "id": 83,
+      "file": "blocks/0083.txt",
+      "word_paragraph_index_zero_based": 1570,
+      "heading_context": [],
+      "sha256": "478b255de9d0828c937e7f6ba3bec8dc6b2afc918798f5c3ee18b31cd252c590",
+      "bytes": 1787
+    },
+    {
+      "id": 84,
+      "file": "blocks/0084.txt",
+      "word_paragraph_index_zero_based": 1574,
+      "heading_context": [],
+      "sha256": "0a8c32f9e3c36725f0ed853249b12c2ada7e511ba091775fce596175ccca1eb3",
+      "bytes": 3585
+    },
+    {
+      "id": 85,
+      "file": "blocks/0085.txt",
+      "word_paragraph_index_zero_based": 1579,
+      "heading_context": [],
+      "sha256": "96e531bba1fa6855285916ade7cd1bc2dd3f821107413daf52040c3ef3ef43aa",
+      "bytes": 3320
+    },
+    {
+      "id": 86,
+      "file": "blocks/0086.txt",
+      "word_paragraph_index_zero_based": 1583,
+      "heading_context": [],
+      "sha256": "d445ea6040c9e9b460b54b9629ad07882e0fb93d1e798a7cb25d9ce6e9bff6b1",
+      "bytes": 1825
+    },
+    {
+      "id": 87,
+      "file": "blocks/0087.txt",
+      "word_paragraph_index_zero_based": 1587,
+      "heading_context": [],
+      "sha256": "203d70f34ed4fab4f919fa18fcbb8bdf61484b6a7100f91b2f2e56bd124455d0",
+      "bytes": 2071
+    },
+    {
+      "id": 88,
+      "file": "blocks/0088.txt",
+      "word_paragraph_index_zero_based": 1591,
+      "heading_context": [],
+      "sha256": "eb1220b954cba8ca9466de74d180601bcf15f30a6986500cabe0e37fb951f8d7",
+      "bytes": 1781
+    },
+    {
+      "id": 89,
+      "file": "blocks/0089.txt",
+      "word_paragraph_index_zero_based": 1605,
+      "heading_context": [],
+      "sha256": "46e0dce974f122a831686ed119485cefbb7723d6fa04bcedeb2a3c50a5715f57",
+      "bytes": 1536
+    },
+    {
+      "id": 90,
+      "file": "blocks/0090.txt",
+      "word_paragraph_index_zero_based": 1609,
+      "heading_context": [],
+      "sha256": "319aa5dddb5068ed63023e9370669168532e4b255985932cc12f3462a8e02a75",
+      "bytes": 1590
+    },
+    {
+      "id": 91,
+      "file": "blocks/0091.txt",
+      "word_paragraph_index_zero_based": 1622,
+      "heading_context": [],
+      "sha256": "042a718005033f3422c22c3a91d6e7ddf704309443e79beb19635d9ab440e015",
+      "bytes": 1771
+    },
+    {
+      "id": 92,
+      "file": "blocks/0092.txt",
+      "word_paragraph_index_zero_based": 1627,
+      "heading_context": [],
+      "sha256": "49c6d5ea853f08a3f2d46486ab7cd161a54a88c7d891326228423382007116b6",
+      "bytes": 1067
+    },
+    {
+      "id": 93,
+      "file": "blocks/0093.txt",
+      "word_paragraph_index_zero_based": 1639,
+      "heading_context": [],
+      "sha256": "67766dfaebbc295dac6eb1f679b01a40221088be812f89dce2451b6f2b83fb25",
+      "bytes": 2190
+    },
+    {
+      "id": 94,
+      "file": "blocks/0094.txt",
+      "word_paragraph_index_zero_based": 1702,
+      "heading_context": [],
+      "sha256": "da139c17f6dc5f246b603d43f2be0f2e0a25f6d30c6a84132c2065b67d4216ee",
+      "bytes": 1981
+    },
+    {
+      "id": 95,
+      "file": "blocks/0095.txt",
+      "word_paragraph_index_zero_based": 1706,
+      "heading_context": [],
+      "sha256": "7c538e4e704399caa343ffeaf823a5f72f4080f894d5d15135379f00183fc234",
+      "bytes": 1051
+    },
+    {
+      "id": 96,
+      "file": "blocks/0096.txt",
+      "word_paragraph_index_zero_based": 1710,
+      "heading_context": [],
+      "sha256": "ab02e5ca00670035166acb81e325c84c58e5187438b131f44a4c246ac7d42c74",
+      "bytes": 4532
+    },
+    {
+      "id": 97,
+      "file": "blocks/0097.txt",
+      "word_paragraph_index_zero_based": 1716,
+      "heading_context": [],
+      "sha256": "a4a293147a11760f2674490c21bc37e28567e3c11361e6bb9b1d9ebc8e3d2b4c",
+      "bytes": 2109
+    },
+    {
+      "id": 98,
+      "file": "blocks/0098.txt",
+      "word_paragraph_index_zero_based": 1721,
+      "heading_context": [],
+      "sha256": "e6e41a41336d27726a60f7210d57ec9064bf292a96a5884958866d4e6bc5eb05",
+      "bytes": 3517
+    },
+    {
+      "id": 99,
+      "file": "blocks/0099.txt",
+      "word_paragraph_index_zero_based": 1726,
+      "heading_context": [],
+      "sha256": "e3729460c6ad77dcefaa944f6c6ef146962a1f0bb1768b868bc9a983558f598c",
+      "bytes": 3639
+    },
+    {
+      "id": 100,
+      "file": "blocks/0100.txt",
+      "word_paragraph_index_zero_based": 1734,
+      "heading_context": [],
+      "sha256": "ae949ef600ea490b76dc91eb8289293512a45f5a0427751d1ad90e6b8aef4244",
+      "bytes": 1495
+    },
+    {
+      "id": 101,
+      "file": "blocks/0101.txt",
+      "word_paragraph_index_zero_based": 1738,
+      "heading_context": [],
+      "sha256": "88e77844d400e9e7ea03d08873e9bae2b644781bf7fe96574e017973af33c549",
+      "bytes": 1817
+    },
+    {
+      "id": 102,
+      "file": "blocks/0102.txt",
+      "word_paragraph_index_zero_based": 1742,
+      "heading_context": [],
+      "sha256": "b86f9ea73d5fad15f9bdb601df7f5279c3ece4a3906a0498088dc41699da2060",
+      "bytes": 1454
+    },
+    {
+      "id": 103,
+      "file": "blocks/0103.txt",
+      "word_paragraph_index_zero_based": 1842,
+      "heading_context": [],
+      "sha256": "623945d16150342dc55e6557374fe8990dca66c593aa9a4914821e1f1cb90a58",
+      "bytes": 1299
+    },
+    {
+      "id": 104,
+      "file": "blocks/0104.txt",
+      "word_paragraph_index_zero_based": 1846,
+      "heading_context": [],
+      "sha256": "5981705505d7e92183564b23eca3939713d6ed6ac53412f9ae41baf34788a09e",
+      "bytes": 1314
+    },
+    {
+      "id": 105,
+      "file": "blocks/0105.txt",
+      "word_paragraph_index_zero_based": 1850,
+      "heading_context": [],
+      "sha256": "da53827974dcad5b6e38d9a690cee8d24bbcde2b72e9dae0a86d649d0d41dce3",
+      "bytes": 1322
+    },
+    {
+      "id": 106,
+      "file": "blocks/0106.txt",
+      "word_paragraph_index_zero_based": 1856,
+      "heading_context": [],
+      "sha256": "56729c0d189aab9ebfcb0634c4a41db481d57a8b3823cea2aba193f70ef1343c",
+      "bytes": 2131
+    },
+    {
+      "id": 107,
+      "file": "blocks/0107.txt",
+      "word_paragraph_index_zero_based": 1860,
+      "heading_context": [],
+      "sha256": "fe084b1e7147534e529e9904007fecbcb43168f386a8af027e6495e08c2dd508",
+      "bytes": 1709
+    },
+    {
+      "id": 108,
+      "file": "blocks/0108.txt",
+      "word_paragraph_index_zero_based": 1865,
+      "heading_context": [],
+      "sha256": "c2684ba7cf165b2a78a0d36fec6d21c73a041bc77132fdda1b9ea02c7562fc0e",
+      "bytes": 890
+    },
+    {
+      "id": 109,
+      "file": "blocks/0109.txt",
+      "word_paragraph_index_zero_based": 1868,
+      "heading_context": [],
+      "sha256": "cc1816e652313da1779b253ff8d125f58150f07e5c05f1e9226e343f4df83577",
+      "bytes": 2670
+    },
+    {
+      "id": 110,
+      "file": "blocks/0110.txt",
+      "word_paragraph_index_zero_based": 1871,
+      "heading_context": [],
+      "sha256": "f56e538e39732fc7b66b7ee1403e3aefcedf113231fcce4fafab8c00d2472eae",
+      "bytes": 1855
+    },
+    {
+      "id": 111,
+      "file": "blocks/0111.txt",
+      "word_paragraph_index_zero_based": 1875,
+      "heading_context": [],
+      "sha256": "4069556d6d3b06a4401ef795c33210988efe9d98c9654249ef90b1e8375a2aa4",
+      "bytes": 2934
+    },
+    {
+      "id": 112,
+      "file": "blocks/0112.txt",
+      "word_paragraph_index_zero_based": 1885,
+      "heading_context": [],
+      "sha256": "bcee6870c313c4005e254565c5cb882a0119e729426cfe72a469ddf8288397c1",
+      "bytes": 1080
+    },
+    {
+      "id": 113,
+      "file": "blocks/0113.txt",
+      "word_paragraph_index_zero_based": 1890,
+      "heading_context": [],
+      "sha256": "7a2ea4e2daac0d0637c849e4b4a3b2c4a30acf09716665e578410f0918a39872",
+      "bytes": 1236
+    },
+    {
+      "id": 114,
+      "file": "blocks/0114.txt",
+      "word_paragraph_index_zero_based": 1895,
+      "heading_context": [],
+      "sha256": "cb1261cee4f1cb80f252f51d018d6e2b6e682c1681480c2b8f31d9f041af71b7",
+      "bytes": 1962
+    },
+    {
+      "id": 115,
+      "file": "blocks/0115.txt",
+      "word_paragraph_index_zero_based": 1959,
+      "heading_context": [],
+      "sha256": "41eaf848856139b530cbe3a097bfd512e31edcc7750f0e0aced4c67d73ada809",
+      "bytes": 2218
+    },
+    {
+      "id": 116,
+      "file": "blocks/0116.txt",
+      "word_paragraph_index_zero_based": 1962,
+      "heading_context": [],
+      "sha256": "6fd9cb838bedc62a9b22795b79e2ddccf3187ab6799d91fb996881797bfeb92d",
+      "bytes": 2140
+    },
+    {
+      "id": 117,
+      "file": "blocks/0117.txt",
+      "word_paragraph_index_zero_based": 1966,
+      "heading_context": [],
+      "sha256": "d919da11808e6e539ed66e28d55c8ddb579aba00c4824d0b03b1d04e210d4077",
+      "bytes": 4532
+    },
+    {
+      "id": 118,
+      "file": "blocks/0118.txt",
+      "word_paragraph_index_zero_based": 1971,
+      "heading_context": [],
+      "sha256": "7ba47cb617b500948f6f80a664727ebe11b5b432e8d816ffcdb0260d635658fb",
+      "bytes": 2525
+    },
+    {
+      "id": 119,
+      "file": "blocks/0119.txt",
+      "word_paragraph_index_zero_based": 1976,
+      "heading_context": [],
+      "sha256": "fa2c06b5af4a94fa168ec8b8d98aad68e95fc2ca99f8a9266bf5c9b9f8501829",
+      "bytes": 2322
+    },
+    {
+      "id": 120,
+      "file": "blocks/0120.txt",
+      "word_paragraph_index_zero_based": 1980,
+      "heading_context": [],
+      "sha256": "5acc522e3e1f214acddd8710b20d3f5558fe3ef108538da46d26c82af164056a",
+      "bytes": 1660
+    },
+    {
+      "id": 121,
+      "file": "blocks/0121.txt",
+      "word_paragraph_index_zero_based": 2053,
+      "heading_context": [],
+      "sha256": "a111d125cae371f99d3d9dc1fe5f9efeeaa6bdd5243f0865fa54be47bc978929",
+      "bytes": 74
+    },
+    {
+      "id": 122,
+      "file": "blocks/0122.txt",
+      "word_paragraph_index_zero_based": 2076,
+      "heading_context": [],
+      "sha256": "9271126ede15519e188a8e3c451f2119514ac1bb7eeea99d5cb90ec3934e788f",
+      "bytes": 1215
+    },
+    {
+      "id": 123,
+      "file": "blocks/0123.txt",
+      "word_paragraph_index_zero_based": 2079,
+      "heading_context": [],
+      "sha256": "dcf8ec037a6eef7a8f543b13b31208959213beb4b301abda4d797a8196b200a1",
+      "bytes": 2569
+    },
+    {
+      "id": 124,
+      "file": "blocks/0124.txt",
+      "word_paragraph_index_zero_based": 2083,
+      "heading_context": [],
+      "sha256": "0bda2942b18ff239c5359c1d3b5d15aa85c3f94d84e7c6a834cd1ee31e7fa657",
+      "bytes": 2613
+    },
+    {
+      "id": 125,
+      "file": "blocks/0125.txt",
+      "word_paragraph_index_zero_based": 2088,
+      "heading_context": [],
+      "sha256": "e6b49c532c7666ad7bdec86210459e868f264c5f0e2960c52bc6831f0a2b6cbd",
+      "bytes": 1774
+    },
+    {
+      "id": 126,
+      "file": "blocks/0126.txt",
+      "word_paragraph_index_zero_based": 2093,
+      "heading_context": [],
+      "sha256": "6703740b3838f777d9b037b064bbbf9b20f94c36e6faf7c5bfe8c0ad0e743be7",
+      "bytes": 1706
+    },
+    {
+      "id": 127,
+      "file": "blocks/0127.txt",
+      "word_paragraph_index_zero_based": 2108,
+      "heading_context": [],
+      "sha256": "a9351d3c8d063002a9feec20ac7dfdd5ec0b23b577ba1c988324fc894accc02b",
+      "bytes": 2494
+    },
+    {
+      "id": 128,
+      "file": "blocks/0128.txt",
+      "word_paragraph_index_zero_based": 2147,
+      "heading_context": [],
+      "sha256": "1e4da2d7e665dfaaa97922625b8c3704e0408716c3c8ddab92cd072f011c4997",
+      "bytes": 87
+    },
+    {
+      "id": 129,
+      "file": "blocks/0129.txt",
+      "word_paragraph_index_zero_based": 2212,
+      "heading_context": [],
+      "sha256": "b810a7fce90a1571eeee52819dcb0204dcd2696b0eb85d4aa4d893b2c3fc2ebd",
+      "bytes": 490
+    },
+    {
+      "id": 130,
+      "file": "blocks/0130.txt",
+      "word_paragraph_index_zero_based": 2216,
+      "heading_context": [],
+      "sha256": "60c04a6106ffb4cc51bc7ca36dcd66fbbe2c534ede991c16717c24980eb087e2",
+      "bytes": 2335
+    },
+    {
+      "id": 131,
+      "file": "blocks/0131.txt",
+      "word_paragraph_index_zero_based": 2221,
+      "heading_context": [],
+      "sha256": "2f69ea133c40a2cc326139662d91646caf2a4de8c143623422139452877f39a4",
+      "bytes": 2534
+    },
+    {
+      "id": 132,
+      "file": "blocks/0132.txt",
+      "word_paragraph_index_zero_based": 2227,
+      "heading_context": [],
+      "sha256": "db5259e787aa28f218202832f591fda0663e5307fd91a12a686aaac4b6dc90d0",
+      "bytes": 2616
+    },
+    {
+      "id": 133,
+      "file": "blocks/0133.txt",
+      "word_paragraph_index_zero_based": 2232,
+      "heading_context": [],
+      "sha256": "124aa9bd04db98016f8b3a2a82a15ab0ae9bc569968bba70f9dc526d4e9edc2e",
+      "bytes": 3511
+    },
+    {
+      "id": 134,
+      "file": "blocks/0134.txt",
+      "word_paragraph_index_zero_based": 2238,
+      "heading_context": [],
+      "sha256": "526f74b5ff57aedb23f7b259fc7aae27d1e455649b6055816951b15c0aeab9ba",
+      "bytes": 2805
+    },
+    {
+      "id": 135,
+      "file": "blocks/0135.txt",
+      "word_paragraph_index_zero_based": 2243,
+      "heading_context": [],
+      "sha256": "3ebe4ffdcd655991ea060a88655e0838ff52f707414969e02943d52e6a0f6fd1",
+      "bytes": 2113
+    },
+    {
+      "id": 136,
+      "file": "blocks/0136.txt",
+      "word_paragraph_index_zero_based": 2333,
+      "heading_context": [],
+      "sha256": "5b0430ab05d5c41b22aa5a6a6dbeff0115a1389559f4b5359e47058c7d8d0dc4",
+      "bytes": 1419
+    },
+    {
+      "id": 137,
+      "file": "blocks/0137.txt",
+      "word_paragraph_index_zero_based": 2338,
+      "heading_context": [],
+      "sha256": "ed1bc0cfa00e48d5b79a57db5b8c50ab11c9d282a4a834abea5ea4b13ab8a659",
+      "bytes": 2954
+    },
+    {
+      "id": 138,
+      "file": "blocks/0138.txt",
+      "word_paragraph_index_zero_based": 2345,
+      "heading_context": [],
+      "sha256": "d1fa355415cbfdf3885cdece281a71a12424bc6920a443571c86f115a91d3e80",
+      "bytes": 3756
+    },
+    {
+      "id": 139,
+      "file": "blocks/0139.txt",
+      "word_paragraph_index_zero_based": 2348,
+      "heading_context": [],
+      "sha256": "1a5a445f11cef609c87320e405c309f2a2f1709e0554edb452288c20cec9573f",
+      "bytes": 1944
+    },
+    {
+      "id": 140,
+      "file": "blocks/0140.txt",
+      "word_paragraph_index_zero_based": 2353,
+      "heading_context": [],
+      "sha256": "f267e831ace08706fd629d43c81bc72c53075fc9b667996c2ac6cb3bfe40a719",
+      "bytes": 5632
+    },
+    {
+      "id": 141,
+      "file": "blocks/0141.txt",
+      "word_paragraph_index_zero_based": 2367,
+      "heading_context": [],
+      "sha256": "b3e63e35b540ef91508fb3aa4c7263b63f9930c2d95759d33bf283c049bfddd1",
+      "bytes": 1706
+    },
+    {
+      "id": 142,
+      "file": "blocks/0142.txt",
+      "word_paragraph_index_zero_based": 2447,
+      "heading_context": [],
+      "sha256": "f85032b4c48a1dcd1e4a398109b79f8e96406ea6948984a2c1a07f612c835431",
+      "bytes": 1587
+    },
+    {
+      "id": 143,
+      "file": "blocks/0143.txt",
+      "word_paragraph_index_zero_based": 2450,
+      "heading_context": [],
+      "sha256": "bca551852f05ef9b13c0a3953d3a9da171f636ae0d2cad18327f162524e75b10",
+      "bytes": 2677
+    },
+    {
+      "id": 144,
+      "file": "blocks/0144.txt",
+      "word_paragraph_index_zero_based": 2455,
+      "heading_context": [],
+      "sha256": "9fafd2fefe82e9ab4bca6ad366d3f11116e4511c4c2684f9a093b4c6869b1eaf",
+      "bytes": 2921
+    },
+    {
+      "id": 145,
+      "file": "blocks/0145.txt",
+      "word_paragraph_index_zero_based": 2460,
+      "heading_context": [],
+      "sha256": "106634fd88447d770a0615453874150bb74d6ed46e11e55e2af568d4e41239e1",
+      "bytes": 3921
+    },
+    {
+      "id": 146,
+      "file": "blocks/0146.txt",
+      "word_paragraph_index_zero_based": 2466,
+      "heading_context": [],
+      "sha256": "5b72ee1e17a343c31a375cb016fc54226fb3fdacfe7994807ee5ea574cd318d9",
+      "bytes": 3355
+    },
+    {
+      "id": 147,
+      "file": "blocks/0147.txt",
+      "word_paragraph_index_zero_based": 2472,
+      "heading_context": [],
+      "sha256": "60300a242b9ad4a52104b3ff11f254ce4d86f76149fd6762bc495a36b461d036",
+      "bytes": 2551
+    },
+    {
+      "id": 148,
+      "file": "blocks/0148.txt",
+      "word_paragraph_index_zero_based": 2575,
+      "heading_context": [],
+      "sha256": "be35ad5289b12c5acc5b648023fbe4ea19ec9b270e2e06b5e29ee8da120e007b",
+      "bytes": 2105
+    },
+    {
+      "id": 149,
+      "file": "blocks/0149.txt",
+      "word_paragraph_index_zero_based": 2578,
+      "heading_context": [],
+      "sha256": "af8ce91f1f221a8bd45d90ed6a1ae9a6b3b9d21a429ee9aba45126b4b16cfd55",
+      "bytes": 3014
+    },
+    {
+      "id": 150,
+      "file": "blocks/0150.txt",
+      "word_paragraph_index_zero_based": 2582,
+      "heading_context": [],
+      "sha256": "02a75500b0c894c1a378ab2bd97c49ba843b72240d827556751775deae9793ae",
+      "bytes": 2491
+    },
+    {
+      "id": 151,
+      "file": "blocks/0151.txt",
+      "word_paragraph_index_zero_based": 2587,
+      "heading_context": [],
+      "sha256": "1c2a359969f347dfeb95a4ae8d581a379d3b9482c4db0a0bf555b39928d1bfbd",
+      "bytes": 4315
+    },
+    {
+      "id": 152,
+      "file": "blocks/0152.txt",
+      "word_paragraph_index_zero_based": 2591,
+      "heading_context": [],
+      "sha256": "4ec35b72a0e173dbb135cd0abfad536a02441acba044cc270e08caa1fb8de488",
+      "bytes": 1259
+    },
+    {
+      "id": 153,
+      "file": "blocks/0153.txt",
+      "word_paragraph_index_zero_based": 2595,
+      "heading_context": [],
+      "sha256": "5ab13e6bf336b89ec6d966b0016835295ae97d5bbb7637fd68abf32622f0e0b8",
+      "bytes": 2177
+    },
+    {
+      "id": 154,
+      "file": "blocks/0154.txt",
+      "word_paragraph_index_zero_based": 2714,
+      "heading_context": [],
+      "sha256": "52bd5bbcfde4e5ced80e85854ce311c78fecf8f35c7c6c6fb45ac3c8ad6fb739",
+      "bytes": 1967
+    },
+    {
+      "id": 155,
+      "file": "blocks/0155.txt",
+      "word_paragraph_index_zero_based": 2717,
+      "heading_context": [],
+      "sha256": "38f0965bf5bc6d514452063514f4b5e08ba782853636ddb9b8c59ff2103719ea",
+      "bytes": 1421
+    },
+    {
+      "id": 156,
+      "file": "blocks/0156.txt",
+      "word_paragraph_index_zero_based": 2721,
+      "heading_context": [],
+      "sha256": "3945b12ff3851e62e11f8f67d5ddb124dd59e63fd88e0a22e09ccf161e880bc4",
+      "bytes": 2918
+    },
+    {
+      "id": 157,
+      "file": "blocks/0157.txt",
+      "word_paragraph_index_zero_based": 2727,
+      "heading_context": [],
+      "sha256": "fb2055083d9f1db29944d6bee33250ef14ed8cb68f3d1e573add8326675d31b6",
+      "bytes": 2969
+    },
+    {
+      "id": 158,
+      "file": "blocks/0158.txt",
+      "word_paragraph_index_zero_based": 2743,
+      "heading_context": [],
+      "sha256": "af370475beeb7bff45aa1cc51a04017cdbeb46c0773c55763153b161d4dc7172",
+      "bytes": 1907
+    },
+    {
+      "id": 159,
+      "file": "blocks/0159.txt",
+      "word_paragraph_index_zero_based": 2746,
+      "heading_context": [],
+      "sha256": "adbbb94403c50efb90fc7c0027f54e52989be076587f4ef8bc52041f8490ffbf",
+      "bytes": 1786
+    },
+    {
+      "id": 160,
+      "file": "blocks/0160.txt",
+      "word_paragraph_index_zero_based": 2750,
+      "heading_context": [],
+      "sha256": "c1de1080eba1340d8eae53c6f4af5907db26db64d13e7d0064140263c5e2ab1d",
+      "bytes": 2522
+    },
+    {
+      "id": 161,
+      "file": "blocks/0161.txt",
+      "word_paragraph_index_zero_based": 2856,
+      "heading_context": [],
+      "sha256": "56130441279612313e89fe3e495f9c8bd3418413d650d3f7a01df92c7a81735a",
+      "bytes": 2920
+    },
+    {
+      "id": 162,
+      "file": "blocks/0162.txt",
+      "word_paragraph_index_zero_based": 2859,
+      "heading_context": [],
+      "sha256": "268a206d5f0c5fa3932d7f2fc86d86c1ba28fd1241a36c67c248339d9079b2c4",
+      "bytes": 4092
+    },
+    {
+      "id": 163,
+      "file": "blocks/0163.txt",
+      "word_paragraph_index_zero_based": 2863,
+      "heading_context": [],
+      "sha256": "306455107c4867132d44c9778613a60c8e799f25255b7351dace88c79e3dbaa3",
+      "bytes": 2468
+    },
+    {
+      "id": 164,
+      "file": "blocks/0164.txt",
+      "word_paragraph_index_zero_based": 2868,
+      "heading_context": [],
+      "sha256": "496413fed8ad57776d8538879ff8da7c61dc2e08df1930a555add50026632dd9",
+      "bytes": 4800
+    },
+    {
+      "id": 165,
+      "file": "blocks/0165.txt",
+      "word_paragraph_index_zero_based": 2875,
+      "heading_context": [],
+      "sha256": "2352e5352a6d956fefaca4ce947774a4ea04e288cb1bbe2ba034d32eca86b62a",
+      "bytes": 2026
+    },
+    {
+      "id": 166,
+      "file": "blocks/0166.txt",
+      "word_paragraph_index_zero_based": 2885,
+      "heading_context": [],
+      "sha256": "7af9697af36773a68ffa891964335e7347aa8fdebb6a8fed88ed0db9e17cf373",
+      "bytes": 1264
+    },
+    {
+      "id": 167,
+      "file": "blocks/0167.txt",
+      "word_paragraph_index_zero_based": 2889,
+      "heading_context": [],
+      "sha256": "3b46a32c7f8996872ee0e9dc6f7df843d591dae1c1da66fb184295cce773be80",
+      "bytes": 3987
+    },
+    {
+      "id": 168,
+      "file": "blocks/0168.txt",
+      "word_paragraph_index_zero_based": 2971,
+      "heading_context": [],
+      "sha256": "ca58daafbfeec39628efbf3b97487bb15d06f9334b290c1df5a82d0d35b236c6",
+      "bytes": 1855
+    },
+    {
+      "id": 169,
+      "file": "blocks/0169.txt",
+      "word_paragraph_index_zero_based": 2974,
+      "heading_context": [],
+      "sha256": "d53d1f5c54a176da4c6aad5586f3ac2f1329ad3d188b968565ed781a410727bb",
+      "bytes": 450
+    },
+    {
+      "id": 170,
+      "file": "blocks/0170.txt",
+      "word_paragraph_index_zero_based": 2978,
+      "heading_context": [],
+      "sha256": "886e698002aadfa2d1cf3b0dccf2ded04e380cf584512958dacbe5fb393a3f5a",
+      "bytes": 1943
+    },
+    {
+      "id": 171,
+      "file": "blocks/0171.txt",
+      "word_paragraph_index_zero_based": 2982,
+      "heading_context": [],
+      "sha256": "0ade67f570366e4f5c8d58e4cd6fdef858003f65727d1b048dc526f5d8717530",
+      "bytes": 1270
+    },
+    {
+      "id": 172,
+      "file": "blocks/0172.txt",
+      "word_paragraph_index_zero_based": 3013,
+      "heading_context": [],
+      "sha256": "0251540cfd334ea9ca4e8cb3a2136ba7d3e90bbf98ef5a24ba07d9dff5903b81",
+      "bytes": 1367
+    },
+    {
+      "id": 173,
+      "file": "blocks/0173.txt",
+      "word_paragraph_index_zero_based": 3089,
+      "heading_context": [],
+      "sha256": "b0cc23af2399c95f6a42f72c7a100edcf6a09ac7845eca6f7ab321202dfde822",
+      "bytes": 1828
+    },
+    {
+      "id": 174,
+      "file": "blocks/0174.txt",
+      "word_paragraph_index_zero_based": 3102,
+      "heading_context": [],
+      "sha256": "7d75c59112c15c0c403fd6f9f81ed56c29b51cfce6b100e6f5710d20a36b61a3",
+      "bytes": 1768
+    },
+    {
+      "id": 175,
+      "file": "blocks/0175.txt",
+      "word_paragraph_index_zero_based": 3111,
+      "heading_context": [],
+      "sha256": "641f1b4a4fdf7660ef3cf8ba88e03ae8ab535508eff76b1cf961d6e5d3be72b0",
+      "bytes": 2257
+    },
+    {
+      "id": 176,
+      "file": "blocks/0176.txt",
+      "word_paragraph_index_zero_based": 3115,
+      "heading_context": [],
+      "sha256": "01a86bf512b90eec42dac9cfb3e3b87b9eb308f55dfdcccf849c930af8c05eb0",
+      "bytes": 2774
+    },
+    {
+      "id": 177,
+      "file": "blocks/0177.txt",
+      "word_paragraph_index_zero_based": 3125,
+      "heading_context": [],
+      "sha256": "fae68e8676bbfe293d8c31048f380d5658c11a5b1686b5f97c3e92da3dc39eb4",
+      "bytes": 1788
+    },
+    {
+      "id": 178,
+      "file": "blocks/0178.txt",
+      "word_paragraph_index_zero_based": 3212,
+      "heading_context": [],
+      "sha256": "0ea512a6052603e950381022a6a68296050e6ac51523354267c0ccf702c4b909",
+      "bytes": 1091
+    },
+    {
+      "id": 179,
+      "file": "blocks/0179.txt",
+      "word_paragraph_index_zero_based": 3235,
+      "heading_context": [],
+      "sha256": "ba93240d53921cdd9839bfa32ac08a179102584b4b6582fc5f50f11e10de9e00",
+      "bytes": 2018
+    },
+    {
+      "id": 180,
+      "file": "blocks/0180.txt",
+      "word_paragraph_index_zero_based": 3271,
+      "heading_context": [],
+      "sha256": "88ca2f0be1bafe1354ce294c29fc20c052ba7f7b3ae895f59a3266ade7ed29a3",
+      "bytes": 1402
+    },
+    {
+      "id": 181,
+      "file": "blocks/0181.txt",
+      "word_paragraph_index_zero_based": 3336,
+      "heading_context": [],
+      "sha256": "ec87d2c0a06319b7e8ba86afc93f4c21b2aa5bf96482b7859a407e6c71df213f",
+      "bytes": 1470
+    },
+    {
+      "id": 182,
+      "file": "blocks/0182.txt",
+      "word_paragraph_index_zero_based": 3343,
+      "heading_context": [],
+      "sha256": "d2763e0c6cb3e4b0f0284a78420b4d25f2a52bbb6bb2e9d814491a32644a820d",
+      "bytes": 1868
+    },
+    {
+      "id": 183,
+      "file": "blocks/0183.txt",
+      "word_paragraph_index_zero_based": 3350,
+      "heading_context": [],
+      "sha256": "b7000823823df2cd28364d4fea58896622132b0c086d35d8295c4d4ca4268b61",
+      "bytes": 1498
+    },
+    {
+      "id": 184,
+      "file": "blocks/0184.txt",
+      "word_paragraph_index_zero_based": 3356,
+      "heading_context": [],
+      "sha256": "3c6a20033beac01751e10f9e72b4ac816f8305d697fb487655282b862aaf2717",
+      "bytes": 1423
+    },
+    {
+      "id": 185,
+      "file": "blocks/0185.txt",
+      "word_paragraph_index_zero_based": 3371,
+      "heading_context": [],
+      "sha256": "0bb515784cc9877ceb1a2f2a28170220f111876b71e13c4d288fd2c074542496",
+      "bytes": 1868
+    },
+    {
+      "id": 186,
+      "file": "blocks/0186.txt",
+      "word_paragraph_index_zero_based": 3383,
+      "heading_context": [],
+      "sha256": "67b7dc7584ff9b62044810319637e453b4f2e281c22e36a085a90acbc6e056a2",
+      "bytes": 1136
+    },
+    {
+      "id": 187,
+      "file": "blocks/0187.txt",
+      "word_paragraph_index_zero_based": 3476,
+      "heading_context": [],
+      "sha256": "191493000be1ae8b0a2a80065b12cd6fdbf204f8ce470b3b6696da5900c835f4",
+      "bytes": 1646
+    },
+    {
+      "id": 188,
+      "file": "blocks/0188.txt",
+      "word_paragraph_index_zero_based": 3483,
+      "heading_context": [],
+      "sha256": "670807e39dc9027ecc2bf2a3fb719b00c84642bbedaf7046f45e46a91f79bb7d",
+      "bytes": 1331
+    },
+    {
+      "id": 189,
+      "file": "blocks/0189.txt",
+      "word_paragraph_index_zero_based": 3490,
+      "heading_context": [],
+      "sha256": "fd770270c6b2a4f4e05140674dd80c4ada777f7d48652c94f816f9d3b72b4889",
+      "bytes": 1260
+    },
+    {
+      "id": 190,
+      "file": "blocks/0190.txt",
+      "word_paragraph_index_zero_based": 3501,
+      "heading_context": [],
+      "sha256": "1e1dbf48eed121378febc4acad4a2d804265fd274c72616406e6ba1ea695d150",
+      "bytes": 1304
+    },
+    {
+      "id": 191,
+      "file": "blocks/0191.txt",
+      "word_paragraph_index_zero_based": 3546,
+      "heading_context": [],
+      "sha256": "7dd3e4de7a0186aad52da3d2faa9721caa2ff2027aa98c7102c7a5db2a83d09d",
+      "bytes": 1439
+    },
+    {
+      "id": 192,
+      "file": "blocks/0192.txt",
+      "word_paragraph_index_zero_based": 3616,
+      "heading_context": [],
+      "sha256": "a31a26faef237398dd3cad152d2e8689f8df51e7e9ab31647ca7e5dd3b2ab9da",
+      "bytes": 3146
+    },
+    {
+      "id": 193,
+      "file": "blocks/0193.txt",
+      "word_paragraph_index_zero_based": 3648,
+      "heading_context": [],
+      "sha256": "0cbcfb176081d698758a353c0022b55de5282dc1b0494bc2de4ac31af5fffdbd",
+      "bytes": 1863
+    },
+    {
+      "id": 194,
+      "file": "blocks/0194.txt",
+      "word_paragraph_index_zero_based": 3763,
+      "heading_context": [],
+      "sha256": "faf22595250384862c84553f20eeb313b72870241151da288a9212ac113763cc",
+      "bytes": 2069
+    },
+    {
+      "id": 195,
+      "file": "blocks/0195.txt",
+      "word_paragraph_index_zero_based": 3772,
+      "heading_context": [],
+      "sha256": "3c266397e8043b4af4e1425ef7eb88f045a9d2e27f5a3b95f7c818822f9fe3b9",
+      "bytes": 1834
+    },
+    {
+      "id": 196,
+      "file": "blocks/0196.txt",
+      "word_paragraph_index_zero_based": 3786,
+      "heading_context": [],
+      "sha256": "7c8e8599d0472a75ece97deaf6c1dc11e2062cc59bd8fbd036516cec334e7e6d",
+      "bytes": 1975
+    },
+    {
+      "id": 197,
+      "file": "blocks/0197.txt",
+      "word_paragraph_index_zero_based": 3867,
+      "heading_context": [],
+      "sha256": "e955375f0c6ad1912423fb01188c18ff2556c44bc8a53534b0f9afb3bb07e441",
+      "bytes": 1278
+    },
+    {
+      "id": 198,
+      "file": "blocks/0198.txt",
+      "word_paragraph_index_zero_based": 3872,
+      "heading_context": [],
+      "sha256": "aa048946898a604fa7d2933b674acb1cf418474349c7ff426ed7a2fd3baa895a",
+      "bytes": 1363
+    },
+    {
+      "id": 199,
+      "file": "blocks/0199.txt",
+      "word_paragraph_index_zero_based": 3877,
+      "heading_context": [],
+      "sha256": "12b863ecae796544b926380296f77d2b104fd1a290c0a8bf2af3d2415e881fe1",
+      "bytes": 1209
+    },
+    {
+      "id": 200,
+      "file": "blocks/0200.txt",
+      "word_paragraph_index_zero_based": 3880,
+      "heading_context": [],
+      "sha256": "c8e5be3a0419487bdf22a4421f509cab2ba10e3f4883d818e46e9e31ec3dc6ad",
+      "bytes": 1512
+    },
+    {
+      "id": 201,
+      "file": "blocks/0201.txt",
+      "word_paragraph_index_zero_based": 3883,
+      "heading_context": [],
+      "sha256": "566c6a1faa7787f0fb7be7f091130b9e4fa582d855f6a3a7a0e450bf74577078",
+      "bytes": 1992
+    },
+    {
+      "id": 202,
+      "file": "blocks/0202.txt",
+      "word_paragraph_index_zero_based": 3886,
+      "heading_context": [],
+      "sha256": "9358259b1c215c480ecb88073dab377b7f89d1eaa53fbdc7ae8ce962c8718baa",
+      "bytes": 1221
+    },
+    {
+      "id": 203,
+      "file": "blocks/0203.txt",
+      "word_paragraph_index_zero_based": 3889,
+      "heading_context": [],
+      "sha256": "183e5242f0a3b9909060187e3887286a2a17f399cab9f49a114771e2ee18b14f",
+      "bytes": 1424
+    }
+  ]
+}

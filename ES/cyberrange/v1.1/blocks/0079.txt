@@ -1,0 +1,18 @@
+# YAML: illustrative six-node proposal; exact nominal sums plus explicit headroom.
+cpu_limit: 16
+memory_limit_mb: 28672
+storage_limit_gb: 220
+vm_count: 6
+vms:
+  - {name: dc01, cpu: 4, ram_mb: 4096, disk_gb: 40}
+  - {name: webserver, cpu: 2, ram_mb: 2048, disk_gb: 20}
+  - {name: siem, cpu: 4, ram_mb: 8192, disk_gb: 80}
+  - {name: attacker, cpu: 2, ram_mb: 4096, disk_gb: 30}
+  - {name: defender, cpu: 2, ram_mb: 2048, disk_gb: 20}
+  - {name: firewall, cpu: 1, ram_mb: 2048, disk_gb: 8}
+nominal_totals: {cpu: 15, ram_mb: 22528, disk_gb: 198}
+headroom: {cpu: 1, ram_mb: 6144, disk_gb: 22}
+internet_required: false
+estimated_duration_hours: 8
+recommended_ttl_hours: 12
+status: pending_review

@@ -1,0 +1,6 @@
+# actor_refs are opaque IDs resolved from authorized accounts, not emails logged by the API
+async def assign_participants(actor, instance_id, actor_refs, api):
+    if not actor_refs or len(actor_refs) > 50 or len(set(actor_refs)) != len(actor_refs):
+        raise ValueError("invalid participant references")
+    return await api.assign_authorized_members(actor, instance_id, actor_refs,
+                                              exercise_role="red")

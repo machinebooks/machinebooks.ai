@@ -1,0 +1,31 @@
+# Didactic ASGI audit factory; no body, raw path, query, token or exception text.
+import asyncio
+import time
+import uuid
+
+def build_audit_middleware(app, sink, policy):
+    async def middleware(scope, receive, send):
+        if scope["type"] != "http":
+            return await app(scope, receive, send)
+        request_ref = str(uuid.uuid4())
+        started, status = time.monotonic(), 500
+        async def capture_send(message):
+            nonlocal status
+            if message["type"] == "http.response.start":
+                status = message["status"]
+            await send(message)
+        try:
+            await app(scope, receive, capture_send)
+        finally:
+            route_ref = policy.vetted_route_ref(scope)
+            if policy.should_audit(scope, route_ref):
+                try:
+                    await asyncio.wait_for(sink.append_minimized({"request_ref": request_ref,
+                        "route_ref": route_ref, "status": status,
+                        "duration_ms": int((time.monotonic()-started)*1000)}), 3)
+                except Exception:
+                    # The local bounded signal records a gap without exception text.
+                    policy.record_audit_gap(request_ref, route_ref)
+
+    return middleware
+# Sink availability/integrity policy is explicit; WebSocket sessions need separate events.

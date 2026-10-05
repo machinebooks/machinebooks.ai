@@ -1,0 +1,16 @@
+import subprocess
+
+def monitor_during_fuzzing(duration_seconds=60):
+    """Monitors corruption indicators during fuzzing."""
+    # 1. Pool integrity check (requires driver verifier)
+    subprocess.run(["verifier", "/query"], capture_output=True)
+
+    # 2. Event log: look for kernel entries
+    subprocess.run([
+        "wevtutil", "qe", "System",
+        "/q:*[System[TimeCreated[@SystemTime>='2026-03-31T00:00:00']]]",
+        "/f:text", "/c:50"
+    ], capture_output=True)
+
+    # 3. Pool tag statistics (look for leaks)
+    subprocess.run(["poolmon", "-b", "-n", "AsIO"], capture_output=True)

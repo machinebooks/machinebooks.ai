@@ -1,0 +1,6 @@
+Day 0: Send report to primary channel
+Day 7: Resend if there is no confirmation of receipt
+Day 14: Contact attempt via alternative channel (PSIRT, CISO LinkedIn, security team Twitter/X)
+Day 30: Second resend with note that a limited advisory will be published in 60 days
+Day 60: Public advisory without exploit (vulnerability description, impact, mitigation recommendations for users)
+Day 90: Full disclosure (technique, sanitized PoC, timeline)

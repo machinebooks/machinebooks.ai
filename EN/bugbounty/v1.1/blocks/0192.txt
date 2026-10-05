@@ -1,0 +1,10 @@
+Service: EpicGamesUpdater
+Account: NT AUTHORITY\SYSTEM (LocalSystem)
+Binary:  C:\Program Files\Epic Games\...\EpicGamesUpdater.exe
+DACL:    (A;;RPWPDTRC;;;BU) — Users: START + STOP
+Issues:  [Runs as SYSTEM, Users can START/STOP]
+
+Service: EpicOnlineServices
+Account: NT AUTHORITY\SYSTEM (LocalSystem)
+DACL:    (A;;RPWPDTRC;;;WD) — Everyone: START + STOP
+Issues:  [Runs as SYSTEM, Everyone can START/STOP]

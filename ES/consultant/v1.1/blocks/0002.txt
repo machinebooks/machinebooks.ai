@@ -1,0 +1,21 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+# Pseudocode with explicit adapters; not a complete Qdrant implementation.
+def index_document(doc_id, text, metadata, identity, embedding_adapter, vector_store):
+    authorize(identity, metadata["tenant_id"], "index", doc_id)
+    require_fields(metadata, "tenant_id", "acl", "version", "source_uri", "doc_hash")
+    for chunk_index, chunk in enumerate(split_into_chunks(text, 500, 50)):
+        vector = embedding_adapter.encode(chunk)
+        require_finite_vector(vector, embedding_adapter.dimension)
+        point_id = uuid5_for(metadata["tenant_id"], doc_id, metadata["version"], chunk_index)
+        vector_store.upsert(point_id, vector, {**metadata, "text": chunk,
+                                              "chunk_index": chunk_index})
+
+def search_relevant_experience(query, identity, filters, limit, embedding_adapter, vector_store):
+    authorize(identity, identity.tenant_id, "search")
+    validate_allowed_filters(filters)
+    vector = embedding_adapter.encode(query)
+    require_finite_vector(vector, embedding_adapter.dimension)
+    mandatory = tenant_and_acl_filter(identity)  # enforced by server, never replaced by caller
+    hits = vector_store.query(vector, AND(mandatory, filters), bounded_limit(limit))
+    return [AuthorizedHit(payload=hit.payload, score=hit.score) for hit in hits]

@@ -1,0 +1,23 @@
+# Didactic factory; access checks Origin, identity and session before acceptance.
+import asyncio
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+
+def build_session_router(manager, authenticate):
+    router = APIRouter()
+    @router.websocket("/deploy/{session_id}")
+    async def stream(websocket: WebSocket, session_id: str):
+        actor = await authenticate(websocket)
+        await manager.connect(websocket, actor, session_id)
+        try:
+            while True:
+                data = await asyncio.wait_for(websocket.receive_json(), 20)
+                if data != {"type": "ping"}:
+                    break
+                await manager.access.revalidate(manager.connections[websocket])
+                await asyncio.wait_for(websocket.send_json({"type": "pong"}), 5)
+        except (WebSocketDisconnect, TimeoutError):
+            pass
+        finally:
+            manager.disconnect(websocket)
+            await websocket.close()
+    return router

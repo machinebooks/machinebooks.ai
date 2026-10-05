@@ -1,0 +1,20 @@
+# Explicit didactic policy; blocklist adapter fails closed and hashing is separate
+import unicodedata
+
+def validate_password(password, mfa_required, blocklist_check, maximum=128):
+    if not isinstance(password, str) or type(mfa_required) is not bool:
+        return False, "Entrada inválida"
+    if type(maximum) is not int or not 64 <= maximum <= 1024:
+        raise ValueError("invalid maximum")
+    normalized = unicodedata.normalize("NFC", password)
+    minimum = 8 if mfa_required else 15
+    if not minimum <= len(normalized) <= maximum:
+        return False, f"Longitud requerida: {minimum}–{maximum} caracteres"
+    if blocklist_check(normalized) is not False:
+        return False, "Contraseña rechazada o lista de bloqueo no disponible"
+    return True, ""
+
+# Registration and password change hash the same normalized value without truncation.
+# MFA must be enforced for the shorter branch, including recovery paths.
+
+# Product UI messages remain Spanish in both editions.

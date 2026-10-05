@@ -1,0 +1,13 @@
+# Didactic example: composite playbook for exercise scenario
+# File: patrones/playbooks/scenario_ad_compromise.yml
+
+---
+- import_playbook: dc_base.yml
+- import_playbook: wazuh_install_server.yml
+- import_playbook: wazuh_install_agent.yml
+- import_playbook: kerberoasting_service_account.yml
+- import_playbook: asreproast_user.yml
+- import_playbook: gpp_passwords.yml
+- import_playbook: smb_signing_disabled.yml
+- import_playbook: expose_sensitive_documents_smb.yml
+- import_playbook: validate_scenario_health.yml

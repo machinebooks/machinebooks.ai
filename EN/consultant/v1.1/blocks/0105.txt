@@ -1,0 +1,42 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import anthropic
+
+client = anthropic.Anthropic()
+
+def generate_finding_narrative(
+    finding: Finding,
+    project_context: str,
+    voice_prompt: str
+) -> str:
+    """Generates the narrative for an individual finding."""
+
+    user_prompt = f"""Write the narrative for this consulting finding.
+
+FINDING:
+- Title: {finding.title}
+- Technical description: {finding.description}
+- Evidence: {finding.evidence}
+- Severity: {finding.severity.value}
+- Area: {finding.area}
+- Business impact: {finding.business_impact}
+
+PROJECT CONTEXT:
+{project_context}
+
+INSTRUCTIONS:
+1. Write 2-4 paragraphs narrating the finding.
+2. Open with the observed fact, not the recommendation.
+3. Connect to business impact in the second paragraph.
+4. If there are quantitative data in the evidence, include them.
+5. Close with the implication, not the solution
+   (the solution goes in Recommendations).
+6. Length: 150-250 words."""
+
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=1024,
+        system=voice_prompt,
+        messages=[{"role": "user", "content": user_prompt}]
+    )
+    return response.content[0].text

@@ -1,0 +1,19 @@
+# TOML: pyproject.toml, not pytest.ini syntax
+[tool.pytest.ini_options]
+markers = [
+    "unit: deterministic offline cases with injected data",
+    "integration: explicitly configured authorized infrastructure",
+    "ai: external provider evaluation with dated corpus",
+    "e2e: complete lifecycle against an authorized environment",
+    "security: explicitly marked security cases",
+]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+timeout = 60
+
+# Install and record compatible pytest, pytest-asyncio and pytest-timeout.
+# Only collected tests with the corresponding mark enter a -m selection.
+# pytest tests/unit/test_ansible_validation.py -m unit --strict-markers -q
+# pytest returns exit 5 for no collected tests: retain that failure.
+# The verify_* infrastructure specifications above require test_* wrappers,
+# authorized adapter fixtures and cleanup before they become collected tests.

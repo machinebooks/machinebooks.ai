@@ -1,0 +1,27 @@
+// Didactic catalog: API returns actor-visible validated records.
+import React,{useEffect,useState} from 'react';
+type Challenge={id:number;title:string;type:string};
+export const GamingZone=({api,onOpen}:{api:any;onOpen:(id:number)=>void})=>{
+  const [challenges,setChallenges]=useState<Challenge[]>([]);
+  const [loading,setLoading]=useState(true);const [error,setError]=useState(false);
+  useEffect(()=>{
+    const controller=new AbortController();let active=true;
+    (async()=>{
+      try{
+        const response=await api.getChallenges({signal:controller.signal});
+        const validated=api.validateChallengeList(response);
+        if(active)setChallenges(validated);
+      }catch {if(active)setError(true);}
+      finally {if(active)setLoading(false);}
+    })();
+    return ()=>{active=false;controller.abort();};
+  },[api]);
+  return <section aria-busy={loading}>
+    {error&&<p role="alert">No se pudo cargar el catálogo</p>}
+    {!loading&&!error&&challenges.length===0&&<p>Sin retos disponibles</p>}
+    <ul>{challenges.map(c=><li key={c.id}>
+      <button type="button" onClick={()=>onOpen(c.id)}>{c.title}</button>
+    </li>)}</ul>
+  </section>;
+};
+// Server checks challenge/instance permissions again when a user opens a record.

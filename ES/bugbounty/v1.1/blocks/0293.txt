@@ -1,0 +1,7 @@
+ASAR framing (little endian):
+0..3: size-Pickle payload length
+4..7: headerSize
+8..11: header-Pickle payload length
+12..15: UTF-8 JSON byte length
+16..: JSON bytes and Pickle padding
+8 + headerSize: file-data base

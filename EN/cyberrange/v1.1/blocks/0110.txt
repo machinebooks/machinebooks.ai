@@ -1,0 +1,33 @@
+# Didactic finite aggregator; absent/invalid observations remain unknown.
+import math
+
+def aggregate_nodes(nodes):
+    if not nodes:
+        return {"coverage": "unknown", "cpu_percent": None, "memory_percent": None}
+    cores = total = used = weighted = 0
+    for node in nodes:
+        c, t, u, load = (node.get(k) for k in ("maxcpu", "maxmem", "mem", "cpu"))
+        if type(c) is not int or c <= 0 or type(t) is not int or t <= 0:
+            raise ValueError("invalid capacity")
+        if type(u) is not int or not 0 <= u <= t or type(load) not in (int, float):
+            raise ValueError("invalid observation")
+        if not math.isfinite(load) or not 0 <= load <= 1:
+            raise ValueError("invalid load")
+        cores += c; total += t; used += u; weighted += load*c
+    return {"coverage": "observed_nodes_only", "cpu_percent": weighted/cores*100,
+            "memory_percent": used/total*100, "memory_bytes": total}
+# Deployment capacity also requires node/storage eligibility, timestamp and atomic leases.
+
+import asyncio
+
+async def read_owned_cluster_metrics(actor,cluster_ref,inventory):
+    async with asyncio.timeout(20):
+        scope=await inventory.authorize_cluster_read(actor,cluster_ref)
+        snapshot=await inventory.read_bounded_metrics(scope,max_nodes=500)
+    # Adapter supplies only valid observations; offline/unread nodes are coverage gaps.
+    if len(snapshot.observed_nodes)>500:
+        raise ValueError("node count exceeds contract")
+    return {"metrics":aggregate_nodes(snapshot.observed_nodes),
+            "snapshot_utc":snapshot.snapshot_utc,"coverage_ref":snapshot.coverage_ref,
+            "missing_nodes":snapshot.missing_node_refs}
+# No request is made to every offline node and no missing observation becomes zero.

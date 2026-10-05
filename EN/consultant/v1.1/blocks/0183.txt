@@ -1,0 +1,36 @@
+# Illustrative configuration; keys alone do not implement an engine or authorize actions.
+# Briefing for interview - Infrastructure Manager
+# Automatically generated from Phase 1-2 findings
+
+interviewee: "Infrastructure and Operations Manager"
+date: "2025-11-12"
+estimated_duration: "90 min"
+
+controls_to_verify:
+  - id: "A.8.8"
+    name: "Management of technical vulnerabilities"
+    documentary_status: "partial"
+    detected_gap: >
+      The vulnerability management policy exists but
+      doesn't document differentiated remediation timelines by
+      criticality. Last recorded scan: 4 months ago.
+    suggested_questions:
+      - "How frequently do you run vulnerability scans?"
+      - "Is there an internal SLA for patching critical vulnerabilities?"
+      - "Can you show the current vulnerability status dashboard?"
+
+  - id: "A.8.9"
+    name: "Configuration management"
+    documentary_status: "non-compliant"
+    detected_gap: >
+      No evidence found of centralized configuration
+      management. Servers use manual configurations
+      according to interviews from the previous cycle.
+    suggested_questions:
+      - "Have you implemented any configuration management tool?"
+      - "How do you ensure a production configuration doesn't differ from baseline?"
+
+contextual_notes:
+  - "The infrastructure team is in the process of migrating to Azure"
+  - "The previous audit identified this area as non-compliant"
+  - "Possible resistance: the team was critical of previous findings"

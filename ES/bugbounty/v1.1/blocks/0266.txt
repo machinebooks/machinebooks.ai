@@ -1,0 +1,9 @@
+1. Explotar ASUS-2026-001 (UAF en COM .NET)
+   -> Control de ejecucion en proceso con firma ASUS
+2. Desde proceso ASUS, enviar PID al pipe asuscert
+   -> AsusCertService valida firma y autoriza
+3. Abrir \\.\Asusgio3 (DACL permite a proceso autorizado)
+4. Llamar a ASIO_MapMem para mapear memoria fisica
+5. Localizar EPROCESS del proceso SYSTEM
+6. Copiar token de SYSTEM al proceso del atacante
+7. NT AUTHORITY\SYSTEM

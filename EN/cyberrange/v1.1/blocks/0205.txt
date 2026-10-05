@@ -1,0 +1,17 @@
+# Didactic measured metrics; unknown cost remains None, never invented zero.
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+
+@dataclass
+class GenerationMetrics:
+    execution_ref: str
+    model_version: str
+    observed_seconds: float
+    measured_input_tokens: int | None
+    measured_output_tokens: int | None
+    estimated_cost_usd: float | None
+    price_reference: str | None
+    validation_coverage: str
+    human_approved: bool = False
+    at_utc: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+# Storage validates nonnegative finite numbers, UTC, identity, scope and price provenance.

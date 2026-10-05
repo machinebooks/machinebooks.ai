@@ -1,0 +1,45 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+FACTORES_RIESGO = {
+    "cliente_nuevo": 1.15,        # +15%: no prior history
+    "equipo_junior": 1.20,        # +20%: >40% of team is junior
+    "tecnologia_nueva": 1.25,     # +25%: technology not used before
+    "multi_framework": 1.10,      # +10%: more than one regulatory framework
+    "dependencia_tercero": 1.15,  # +15%: external dependency
+    "alcance_difuso": 1.30,       # +30%: requirements not finalized
+    "plazo_agresivo": 1.10,       # +10%: duration < 70% of average
+    "distribucion_geografica": 1.10,  # +10%: >2 client locations
+}
+
+def aplicar_factores_riesgo(
+    estimacion: EstimacionCalibrada,
+    factores_activos: list[str]
+) -> EstimacionCalibrada:
+    """Adjusts the calibrated estimate with additional risk factors."""
+    if not isinstance(factores_activos, list) or any(type(f) is not str or f not in FACTORES_RIESGO for f in factores_activos) or len(set(factores_activos)) != len(factores_activos):
+        raise ValueError("Risk factors must be known and unique")
+    if any(f in estimacion.factores_riesgo for f in factores_activos):
+        raise ValueError("A risk factor already applied cannot be applied twice")
+
+    multiplicador = 1.0
+    for factor in factores_activos:
+        if factor in FACTORES_RIESGO:
+            multiplicador *= FACTORES_RIESGO[factor]
+
+    # Apply compound multiplier (capped at 2.0x to avoid
+    # absurd estimates with many accumulated factors)
+    multiplicador = min(multiplicador, 2.0)
+
+    return EstimacionCalibrada(
+        horas_base=estimacion.horas_base,
+        horas_calibrada=round(
+            estimacion.horas_calibrada * multiplicador, 0
+        ),
+        intervalo_p10=round(estimacion.intervalo_p10 * multiplicador, 0),
+        intervalo_p50=round(estimacion.intervalo_p50 * multiplicador, 0),
+        intervalo_p90=round(estimacion.intervalo_p90 * multiplicador, 0),
+        confianza=estimacion.confianza,
+        n_proyectos_referencia=estimacion.n_proyectos_referencia,
+        ratio_desviacion_medio=estimacion.ratio_desviacion_medio,
+        factores_riesgo=estimacion.factores_riesgo + factores_activos
+    )

@@ -1,0 +1,32 @@
+// Defenses against DLL sideloading in Windows applications
+
+// 1. Load DLLs with absolute path
+// BAD:
+HMODULE h = LoadLibrary("VERSION.dll");
+// GOOD:
+wchar_t sysdir[MAX_PATH];
+GetSystemDirectoryW(sysdir, MAX_PATH);
+wchar_t full_path[MAX_PATH];
+swprintf(full_path, MAX_PATH, L"%s\\VERSION.dll", sysdir);
+HMODULE h = LoadLibraryW(full_path);
+
+// 2. Restrict search directories
+// At application startup:
+SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_SYSTEM32);
+// This removes the app directory from the search order
+
+// 3. Verify digital signature of loaded DLLs
+// Before trusting a DLL:
+LONG lStatus;
+WINTRUST_FILE_INFO FileData;
+WINTRUST_DATA WinTrustData;
+// ... (configure structures)
+lStatus = WinVerifyTrust(NULL, &WVTPolicyGUID, &WinTrustData);
+if (lStatus != ERROR_SUCCESS) {
+    // DLL unsigned or invalid signature — don't load
+    FreeLibrary(h);
+}
+
+// 4. Install in Program Files
+// The installer MUST use %ProgramFiles%, not %LOCALAPPDATA%
+// This requires elevation (UAC) but protects against writes

@@ -1,0 +1,50 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+from dataclasses import dataclass
+from enum import Enum
+
+class ProjectStage(Enum):
+    OPPORTUNITY = "opportunity"
+    PROPOSAL = "proposal"
+    DELIVERY = "delivery"
+    CLOSURE = "closure"
+    KNOWLEDGE = "knowledge_captured"
+
+@dataclass
+class ProjectPipeline:
+    """Orchestrates the complete flow of a consulting project."""
+    project_id: str
+    stage: ProjectStage
+    analysis: dict = None       # Analysis agent result
+    proposal: dict = None       # Generated proposal
+    delivery_log: list = None   # Delivery record
+    lessons: dict = None        # Lessons learned
+
+    def advance_to_proposal(self, rfp_text: str):
+        """Analyzes the opportunity and prepares the analysis for the proposal."""
+        self.analysis = analyze_project(rfp_text)
+        self.stage = ProjectStage.PROPOSAL
+        # The analysis feeds the effort estimation
+        # and the technical proposal generation
+        return self.analysis
+
+    def advance_to_delivery(self):
+        """Transitions to delivery with the automation plan."""
+        self.stage = ProjectStage.DELIVERY
+        self.delivery_log = []
+        # Activities identified as automatable
+        # are assigned to agents; human ones to consultants
+
+    def close_and_capture(self, feedback: dict):
+        """Closes the project and captures knowledge."""
+        self.lessons = extract_lessons_learned(
+            project_name=self.project_id,
+            deliverables_summary=feedback.get("deliverables", ""),
+            deviations=feedback.get("deviations", []),
+            team_feedback=feedback.get("team", []),
+            client_feedback=feedback.get("client", "")
+        )
+        self.stage = ProjectStage.KNOWLEDGE
+        # Lessons are indexed for RAG
+        # and feed future project estimations
+        return self.lessons

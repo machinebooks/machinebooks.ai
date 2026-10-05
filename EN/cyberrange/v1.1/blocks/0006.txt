@@ -1,0 +1,97 @@
+# Didactic example: cyber exercise scenario configuration
+# File: patrones/escenarios/ejercicio_ransomware_ad.yaml
+
+exercise:
+  name: "Ransomware response with Active Directory compromise"
+  type: "hybrid"                     # tabletop | live_fire | hybrid | purple_team
+  duration_hours: 8
+  difficulty: "advanced"             # beginner | intermediate | advanced | expert
+
+  # Measurable objectives (NIST SP 800-84: every exercise needs objectives)
+  objectives:
+    - id: "OBJ-01"
+      description: "Detect lateral movement in less than 30 minutes"
+      metric: "time_to_detect_lateral_movement"
+      threshold_minutes: 30
+      mitre_tactic: "TA0008"         # Lateral Movement
+    - id: "OBJ-02"
+      description: "Isolate compromised segment in less than 15 minutes"
+      metric: "time_to_isolate"
+      threshold_minutes: 15
+    - id: "OBJ-03"
+      description: "Communicate incident to management per procedure"
+      metric: "crisis_communication_score"
+      threshold_percent: 80
+
+  # Scenario infrastructure
+  topology:
+    networks:
+      - name: "corporate_lan"
+        cidr: "10.10.1.0/24"
+        description: "Corporate network with workstations"
+      - name: "server_dmz"
+        cidr: "10.10.2.0/24"
+        description: "DMZ with exposed servers"
+      - name: "ad_segment"
+        cidr: "10.10.3.0/24"
+        description: "Active Directory segment"
+
+    vms:
+      - name: "dc01"
+        template: "windows-server-2022-dc"
+        network: "ad_segment"
+        ip: "10.10.3.10"
+        role: "domain_controller"
+        vulnerabilities:
+          - "kerberoasting_service_account"
+          - "asreproast_user"
+      - name: "ws01"
+        template: "windows-11-workstation"
+        network: "corporate_lan"
+        ip: "10.10.1.20"
+        role: "user_workstation"
+      - name: "siem01"
+        template: "wazuh-server-4.x"
+        network: "server_dmz"
+        ip: "10.10.2.50"
+        role: "siem"
+      - name: "kali01"
+        template: "kali-2024"
+        network: "corporate_lan"
+        ip: "10.10.1.100"
+        role: "attacker"
+        assigned_to: "red_team"
+
+  # Injection timeline (for facilitator)
+  injects:
+    - time_offset_minutes: 0
+      target: "tabletop"
+      content: "The SOC receives an anomalous traffic alert from the corporate network."
+    - time_offset_minutes: 45
+      target: "technical"
+      action: "execute_attack_chain"
+      playbook: "scenario_ad_compromise.yml"
+    - time_offset_minutes: 120
+      target: "tabletop"
+      content: "A media outlet contacts the press department."
+    - time_offset_minutes: 180
+      target: "technical"
+      action: "deploy_ransomware"
+      playbook: "scenario_ransomware_deploy.yml"
+
+  # Evaluation
+  scoring:
+    model: "weighted"                # simple | weighted | competitive
+    categories:
+      - name: "detection"
+        weight: 0.30
+        flags: ["flag_lateral_detected", "flag_exfil_detected"]
+      - name: "response"
+        weight: 0.30
+        flags: ["flag_segment_isolated", "flag_malware_contained"]
+      - name: "communication"
+        weight: 0.20
+        manual_evaluation: true
+      - name: "forensics"
+        weight: 0.20
+        flags: ["flag_ioc_extracted", "flag_timeline_complete"]

@@ -1,0 +1,9 @@
+[+] vgk.sys: 339 IOCTL codes found
+[+] Distribution by transfer method:
+    METHOD_BUFFERED:       224  (66.1%)
+    METHOD_IN_DIRECT:       12  ( 3.5%)
+    METHOD_OUT_DIRECT:       8  ( 2.4%)
+    METHOD_NEITHER:         95  (28.0%)
+
+[+] Critical combination:
+    METHOD_NEITHER + FILE_ANY_ACCESS:  20 IOCTLs

@@ -1,0 +1,12 @@
+// example of preTool hook blocking writes outside the workspace
+export const hooks = {
+  preTool: async (ctx) => {
+    if (ctx.tool === "fs_write") {
+      const p = path.resolve(ctx.args.path);
+      if (!p.startsWith(ctx.workspaceRoot)) {
+        return { block: true, reason: "Write outside workspace" };
+      }
+    }
+    return { allow: true };
+  },
+};

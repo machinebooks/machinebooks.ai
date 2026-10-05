@@ -1,0 +1,32 @@
+# Argon2-cffi illustrative hashing adapter; normalized password policy runs first.
+from argon2 import PasswordHasher
+from argon2.exceptions import VerificationError
+
+hasher = PasswordHasher()
+def hash_password(normalized_password):
+    return hasher.hash(normalized_password)
+def verify_password(normalized_password, stored_hash):
+    try:
+        return hasher.verify(stored_hash, normalized_password)
+    except VerificationError:
+        return False
+
+# Token contract: issuer/audience must match the verifier configuration
+from datetime import datetime, timedelta, timezone
+from jose import jwt
+
+def create_token(user, settings):
+    if not user.is_active or not isinstance(user.session_token, str) or not user.session_token:
+        raise ValueError("active persisted session required")
+    if not settings.jwt_issuer or not settings.jwt_audience:
+        raise ValueError("issuer and audience required")
+    if type(settings.jwt_exp_hours) is not int or not 1 <= settings.jwt_exp_hours <= 24:
+        raise ValueError("invalid token lifetime")
+    now = datetime.now(timezone.utc)
+    payload = {"sub": str(user.id), "sid": user.session_token,
+               "iat": now, "exp": now + timedelta(hours=settings.jwt_exp_hours),
+               "iss": settings.jwt_issuer, "aud": settings.jwt_audience}
+    secret = settings.jwt_secret
+    if hasattr(secret, "get_secret_value"):
+        secret = secret.get_secret_value()
+    return jwt.encode(payload, secret, algorithm="HS256")

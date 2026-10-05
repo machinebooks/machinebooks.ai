@@ -1,0 +1,34 @@
+# Illustrative configuration; keys alone do not implement an engine or authorize actions.
+# frameworks/iso27001_2022.yaml
+framework: ISO27001
+version: "2022"
+controls:
+  - id: "A.5.1"
+    title: "Information security policies"
+    category: "Organizational"
+    description: >
+      A set of security policies must be defined,
+      approved by management, published, and communicated.
+    cross_references:
+      - "ENS:org.1"
+      - "NIS2:Art.21.2.a"
+
+  - id: "A.8.8"
+    title: "Management of technical vulnerabilities"
+    category: "Technological"
+    description: >
+      Data on technical vulnerabilities must be obtained,
+      exposure evaluated, and timely measures taken.
+    cross_references:
+      - "ENS:op.exp.4"
+      - "NIS2:Art.21.2.e"
+
+  - id: "A.5.31"
+    title: "Legal, statutory, and contractual requirements"
+    category: "Organizational"
+    description: >
+      Relevant legal and contractual requirements
+      for security must be identified and documented.
+    cross_references:
+      - "ENS:org.4"
+      - "AI_ACT:Art.9"

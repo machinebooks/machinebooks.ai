@@ -1,0 +1,34 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+def extract_voice_corrections(
+    original_draft: str,
+    corrected_text: str,
+    voice_prompt: str
+) -> str:
+    """Analyzes corrections to update the voice prompt."""
+
+    prompt = f"""Compare the original draft with the version corrected
+by the senior consultant. Identify correction patterns
+that indicate necessary adjustments to the voice prompt.
+
+ORIGINAL DRAFT:
+{original_draft[:3000]}
+
+CORRECTED VERSION:
+{corrected_text[:3000]}
+
+CURRENT VOICE PROMPT:
+{voice_prompt}
+
+Generate:
+1. List of correction patterns (what was systematically changed).
+2. New rules to add to the voice prompt.
+3. Existing rules that need refinement.
+4. Complete updated voice prompt."""
+
+    response = client.messages.create(
+        model="claude-opus-4-6",  # Opus for style analysis
+        max_tokens=4096,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return response.content[0].text

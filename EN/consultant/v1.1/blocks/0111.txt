@@ -1,0 +1,88 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import asyncio
+from pathlib import Path
+
+async def generate_complete_report(
+    project: ReportingProject,
+    config: dict
+) -> dict[str, str]:
+    """Orchestrates complete report generation."""
+
+    voice = config["voice_prompt"]
+    output_dir = Path(config["output_dir"])
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Phase 1: Generate finding narratives in parallel
+    narratives = await asyncio.gather(*[
+        asyncio.to_thread(
+            generate_finding_narrative, f, project.scope, voice
+        )
+        for f in project.findings
+    ])
+
+    # Build findings section
+    findings_section = "\n\n---\n\n".join(
+        f"### Finding {f.id}: {f.title}\n\n"
+        f"**Severity:** {f.severity.value.upper()} | "
+        f"**Area:** {f.area}\n\n{narrative}"
+        for f, narrative in zip(project.findings, narratives)
+    )
+
+    sections = {"findings": findings_section}
+
+    # Phase 2: Generate analysis and recommendations
+    sections["analysis"] = generate_analysis_section(
+        project, sections, voice
+    )
+    sections["recommendations"] = prioritize_recommendations(
+        project.findings,
+        config.get("client_budget", "Not defined"),
+        config.get("constraints", "None specified"),
+        voice
+    )
+
+    # Phase 3: Generate executive summary (needs prior sections)
+    sections["executive_summary"] = generate_executive_summary(
+        project, sections, voice
+    )
+
+    # Phase 4: Assemble complete Markdown
+    complete_markdown = assemble_markdown(project, sections)
+    md_path = output_dir / f"{project.project_name}.md"
+    md_path.write_text(complete_markdown, encoding="utf-8")
+
+    # Phase 5: Export formats in parallel
+    word_path = output_dir / f"{project.project_name}.docx"
+    pptx_path = output_dir / f"{project.project_name}_exec.pptx"
+    onepager_path = output_dir / f"{project.project_name}_CEO.docx"
+
+    top_5 = sorted(
+        project.findings,
+        key=lambda f: list(Severity).index(f.severity)
+    )[:5]
+
+    await asyncio.gather(
+        asyncio.to_thread(
+            export_word, str(md_path), str(word_path),
+            config["reference_docx"]
+        ),
+        asyncio.to_thread(
+            generate_executive_presentation,
+            project, sections["executive_summary"], top_5,
+            sections["recommendations"],
+            config["template_pptx"], str(pptx_path)
+        ),
+        asyncio.to_thread(
+            generate_one_pager, project,
+            sections["executive_summary"], top_5,
+            str(onepager_path), config["template_onepager"]
+        ),
+    )
+
+    return {
+        "markdown": str(md_path),
+        "word": str(word_path),
+        "presentation": str(pptx_path),
+        "one_pager": str(onepager_path),
+    }

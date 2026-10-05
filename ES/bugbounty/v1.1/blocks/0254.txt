@@ -1,0 +1,4 @@
+service_current_versions.vdf contiene:
+  - Version por fichero (SteamService.dll, etc.)
+  - kvsign2: hash criptografico del metadata
+  - kvsignatures: firma criptografica del contenido

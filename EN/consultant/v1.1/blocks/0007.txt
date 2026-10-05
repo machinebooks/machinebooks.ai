@@ -1,0 +1,70 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import anthropic
+from datetime import datetime
+
+client = anthropic.Anthropic()
+
+def extract_lessons_learned(
+    project_name: str,
+    deliverables_summary: str,
+    deviations: list[str],
+    team_feedback: list[str],
+    client_feedback: str
+) -> dict:
+    """Extracts structured lessons learned at project closure."""
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        system="""You are a continuous improvement analyst in a technology
+consulting practice. Your job: extract lessons learned from a completed
+project, structure them by category, and generate actionable
+recommendations for future projects.
+
+Lesson categories:
+- ESTIMATION: deviations in effort, timelines, or scope
+- METHODOLOGY: what worked and what didn't in the technical approach
+- CLIENT: communication patterns, expectations, friction
+- TOOLS: effectiveness of agents, RAG, templates used
+- TEAM: coordination, onboarding, workload distribution
+
+Each lesson must include: what happened, why it matters,
+what to do differently next time. Maximum 3 sentences per lesson.""",
+        messages=[{
+            "role": "user",
+            "content": f"""Project: {project_name}
+Closure date: {datetime.now().strftime('%Y-%m-%d')}
+
+Deliverables summary: {deliverables_summary}
+
+Deviations from plan:
+{chr(10).join(f'- {d}' for d in deviations)}
+
+Team feedback:
+{chr(10).join(f'- {f}' for f in team_feedback)}
+
+Client feedback: {client_feedback}
+
+Generate lessons learned in JSON:
+{{
+  "project": "name",
+  "lessons": [
+    {{
+      "category": "ESTIMATION|METHODOLOGY|CLIENT|TOOLS|TEAM",
+      "title": "brief title",
+      "description": "what happened and why it matters",
+      "recommendation": "what to do differently",
+      "severity": "high|medium|low"
+    }}
+  ],
+  "metrics": {{
+    "planned_hours": N,
+    "actual_hours": N,
+    "deviation_percentage": N,
+    "client_satisfaction": "high|medium|low"
+  }}
+}}"""
+        }]
+    )
+    return json.loads(message.content[0].text)

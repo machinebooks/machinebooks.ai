@@ -1,0 +1,19 @@
+# Pseudocode for decryption with DPAPI active
+import win32crypt  # CryptUnprotectData
+import json, base64
+from Crypto.Cipher import AES
+
+# 1. Read encrypted master key from Local State
+with open(local_state_path) as f:
+    encrypted_key = base64.b64decode(
+        json.load(f)["os_crypt"]["encrypted_key"]
+    )[5:]  # Strip "DPAPI" prefix
+
+# 2. Decrypt master key with DPAPI (requires user session)
+master_key = win32crypt.CryptUnprotectData(encrypted_key)[1]
+
+# 3. Decrypt individual cookie
+nonce = encrypted_value[3:15]     # 12 bytes after "v10"
+ciphertext = encrypted_value[15:]
+cipher = AES.new(master_key, AES.MODE_GCM, nonce=nonce)
+decrypted = cipher.decrypt(ciphertext)

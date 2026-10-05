@@ -1,0 +1,41 @@
+# FastAPI socket factory; no request-scoped synchronous DB is held while waiting.
+import asyncio
+import json
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+
+def build_execution_socket(manager, access):
+    router = APIRouter()
+    @router.websocket("/ws/playbook/{session_id}")
+    async def stream(websocket: WebSocket, session_id: str):
+        grant = await access.authenticate_and_accept_once(websocket, session_id)
+        if grant is None:
+            return
+        try:
+            await manager.connect(websocket, "playbook_execution", session_id, grant)
+            while True:
+                metadata = manager.connection_metadata[websocket]
+                if not await access.still_authorized(metadata):
+                    raise PermissionError("connection no longer authorized")
+                raw = await asyncio.wait_for(websocket.receive_text(), 10)
+                if len(raw.encode("utf-8")) > 16384:
+                    raise ValueError("frame too large")
+                data = json.loads(raw)
+                if not isinstance(data, dict):
+                    raise ValueError("invalid frame")
+                if data.get("type") == "heartbeat_reply":
+                    if not manager.accept_heartbeat_reply(websocket, data.get("nonce")):
+                        raise ValueError("invalid heartbeat reply")
+                elif data == {"type": "status_request"}:
+                    status = await manager.get_session_status(session_id)
+                    await manager.send_personal_message(websocket, {"type": "status_response", "status": status})
+                else:
+                    raise ValueError("unsupported frame")
+        except (WebSocketDisconnect, TimeoutError, ValueError, PermissionError):
+            try:
+                await asyncio.wait_for(websocket.close(code=1008), 3)
+            except Exception:
+                pass
+        finally:
+            manager.disconnect(websocket)
+    return router
+# Bind the displayed connect/recover/heartbeat methods to the manager and supervise heartbeat polling.

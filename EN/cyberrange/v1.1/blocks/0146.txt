@@ -1,0 +1,24 @@
+playbooks/
+├── ot_scenarios/              # OT industrial protocols
+│   ├── modbus_tcp_sim.yml     # Modbus TCP simulator (PLC)
+│   ├── s7comm_sim.yml         # Siemens S7 simulator
+│   ├── opcua_server.yml       # OPC-UA server
+│   ├── dnp3_sim.yml           # DNP3 simulator
+│   └── iec104_sim.yml         # IEC 104 simulator
+├── iot_scenarios/             # IoT protocols
+│   ├── mqtt_broker.yml        # MQTT broker (Mosquitto)
+│   ├── coap_server.yml        # CoAP server
+│   └── ble_scanning.yml       # BLE scanning environment
+├── windows_playbooks/         # Windows services
+│   └── deploy_ad.yml          # Active Directory (DC, DNS, DHCP)
+├── linux_service_playbooks/   # Linux services
+│   └── deploy_mail.yml        # Mail server
+├── app_playbooks/             # Web applications
+│   └── deploy_webserver.yml   # Apache/Nginx with vulnerabilities
+├── cve_playbooks/             # Specific vulnerabilities
+│   └── ...                    # One playbook per CVE
+├── scan_playbooks_unique/     # Scanning tools
+│   └── nmap_full_scan.yml     # Nmap for reconnaissance
+├── kali/                      # Offensive tools
+│   └── ...                    # Kali tools deployment
+└── scenario_02_complete.yml   # Proposed scenario; integration and tests pending

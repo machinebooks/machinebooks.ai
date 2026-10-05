@@ -1,0 +1,10 @@
+# IA32_LSTAR contains the address of KiSystemCall64
+# which is a function in ntoskrnl.exe
+lstar = asio.ASIO_ReadMSR(0xC0000082)
+# Example: lstar = 0xFFFFF80254A14C00
+
+# KiSystemCall64 is at a known offset from ntoskrnl base
+# The offset varies by Windows build but is stable within a build
+# Windows 11 23H2: offset = 0x414C00 (verify with public symbols)
+ntoskrnl_base = lstar - 0x414C00
+# ntoskrnl_base = 0xFFFFF80254600000

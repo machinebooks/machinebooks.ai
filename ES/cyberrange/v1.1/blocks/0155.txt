@@ -1,0 +1,18 @@
+# Membership response contract with explicit expiry/version and atomic transition
+from datetime import datetime, timezone
+
+def respond_membership(adapter,actor,request_id,decision,expected_version):
+    if decision not in {"accept","decline"}:
+        raise ValueError("unsupported response")
+    adapter.authorize(actor.id,"membership_response",request_id)
+    with adapter.membership_transaction(request_id) as transaction:
+        request=transaction.lock_authorized_request(actor.id)
+        now=datetime.now(timezone.utc)
+        if request.version!=expected_version or request.state!="pending":
+            raise ValueError("membership state conflict")
+        if request.expires_at is None or request.expires_at.tzinfo is None or now>=request.expires_at:
+            raise ValueError("expired request")
+        return transaction.transition_unique_membership(decision,now)
+
+# Schema and adapter enforce team capacity, one active membership, captain
+# authority and versioned requests. Timestamp alone is not an expiry field.

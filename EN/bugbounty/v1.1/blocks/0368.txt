@@ -1,0 +1,8 @@
+$ r2 -q -c 'izz~ProbeForWrite' vgk.sys
+(no results)
+
+$ r2 -q -c 'izz~ProbeForRead' vgk.sys
+(no results)
+
+$ r2 -q -c 'ii~ProbeFor' vgk.sys
+(no results — no matter the function)

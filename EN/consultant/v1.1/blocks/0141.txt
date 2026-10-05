@@ -1,0 +1,43 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+def pre_review_deliverable(
+    deliverable_text: str,
+    deliverable_type: str,  # "gap_analysis", "audit_report", "proposal_section"
+    style_guide_chunks: list[str]
+) -> dict:
+    """Automated pre-review before sending to the senior."""
+    review_prompt = f"""Review this {deliverable_type} draft produced by
+a junior consultant. Compare against the practice's style standards.
+
+STYLE STANDARDS:
+{chr(10).join(style_guide_chunks)}
+
+DRAFT:
+{deliverable_text}
+
+Review:
+1. Format: does it follow the standard structure for this document type?
+2. Completeness: are any mandatory sections missing?
+3. Terminology: does it use the practice's standard terms or introduce variants?
+4. Data: are there unsupported claims or data without sources?
+5. Minimum quality: is it ready for senior review or needs more work?
+
+Generate:
+- List of necessary corrections before sending to senior (if any)
+- Overall assessment: "ready for review" or "needs more work"
+- Estimated quality score (1-10)
+"""
+
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=1500,
+        system="You are a quality reviewer of consulting documents. "
+               "Your goal is to help the junior improve their draft "
+               "BEFORE it reaches the senior. Be specific and constructive.",
+        messages=[{"role": "user", "content": review_prompt}]
+    )
+
+    return {
+        "review": response.content[0].text,
+        "ready_for_senior": "ready for review" in response.content[0].text.lower()
+    }

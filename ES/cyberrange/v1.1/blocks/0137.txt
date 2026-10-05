@@ -1,0 +1,28 @@
+# Atomic instance-scoped capture contract; no in-memory global rate-limit claim
+from datetime import datetime, timezone
+
+def submit_flag(adapter,actor,instance_id,candidate,idempotency_key):
+    adapter.authorize(actor.id,"flag_submit",instance_id)
+    if not isinstance(candidate,str) or len(candidate)>200:
+        raise ValueError("bounded flag candidate required")
+    adapter.consume_shared_attempt_limit(actor.id,instance_id,10,60)
+    with adapter.capture_transaction(actor.id,instance_id,idempotency_key) as transaction:
+        instance=transaction.lock_owned_instance()
+        now=datetime.now(timezone.utc)
+        if instance.state!="open" or instance.expires_at.tzinfo is None or now>=instance.expires_at:
+            raise ValueError("instance unavailable or expired")
+        flag=transaction.match_instance_flag(candidate)
+        if flag is None:
+            return {"status":"incorrect"}
+        prior=transaction.get_capture(flag.id)
+        if prior is not None:
+            return {"status":"already_captured","capture_id":prior.id}
+        capture=transaction.insert_unique_capture(flag.id,now)
+        hints=transaction.lock_unapplied_instance_hints(flag.id)
+        result=transaction.apply_immutable_rubric(capture,hints,now)
+        transaction.record_unique_score_event(capture.id,result)
+        return {"status":"captured","capture_id":capture.id,"points":result.points}
+
+# Adapter implements per-instance secret matching, unique constraints, locks,
+# rollback and serialized first-blood/one-time completion. A return commits
+# through the transaction manager; failures roll back. No secret is logged.

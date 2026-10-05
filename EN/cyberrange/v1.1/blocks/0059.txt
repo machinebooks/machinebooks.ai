@@ -1,0 +1,21 @@
+# Didactic client for a separately installed, pinned pfSense REST integration.
+import requests
+
+class PfSenseClient:
+    def __init__(self, approved_base_url, secret, trusted_ca):
+        if not approved_base_url.startswith("https://") or not secret or not trusted_ca:
+            raise ValueError("trusted endpoint configuration required")
+        self.base_url = approved_base_url.rstrip("/")
+        self.secret, self.trusted_ca = secret, trusted_ca
+    def request(self, method, endpoint, data=None):
+        if method not in {"GET", "POST", "PUT", "DELETE"}:
+            raise ValueError("unsupported method")
+        if endpoint not in {"/status", "/firewall/rules", "/interfaces/vlan"}:
+            raise ValueError("unsupported endpoint")
+        response = requests.request(method, self.base_url + endpoint,
+            headers={"X-API-Key": self.secret}, json=data,
+            timeout=(5, 20), verify=self.trusted_ca, allow_redirects=False)
+        if not 200 <= response.status_code < 300:
+            raise RuntimeError("firewall request failed")
+        return response.json() if response.content else {}
+# Upstream validates resource scope; do not log URL query, headers or response bodies.

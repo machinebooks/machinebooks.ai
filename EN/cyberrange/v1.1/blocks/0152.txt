@@ -1,0 +1,20 @@
+# Requires UTC-normalized datetimes from the persistence adapter.
+from datetime import datetime, timezone
+class Team(Base):
+    """Player teams for competitions"""
+    __tablename__ = "team"
+    id = Column(Integer, primary_key=True)
+    name = Column(String(128), nullable=False, unique=True)
+    description = Column(Text)
+    captain_id = Column(Integer, ForeignKey("user.id"))
+    created_by = Column(Integer, ForeignKey("user.id"))
+    max_members = Column(Integer, default=5)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc),
+                        onupdate=lambda: datetime.now(timezone.utc))
+
+    # Relationships
+    members = relationship("User", back_populates="team",
+                          foreign_keys="User.team_id")
+    captain = relationship("User", foreign_keys="Team.captain_id")
+    creator = relationship("User", foreign_keys="Team.created_by")

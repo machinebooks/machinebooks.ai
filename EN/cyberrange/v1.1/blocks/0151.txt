@@ -1,0 +1,20 @@
+# Didactic immutable score-event envelope; one rubric and ledger cutoff govern each view.
+from sqlalchemy import Column, DateTime, Integer, String, UniqueConstraint
+
+def create_score_model(Base):
+    class ScoreLog(Base):
+        __tablename__ = "score_log"
+        __table_args__ = (UniqueConstraint("event_ref"),)
+        id = Column(Integer, primary_key=True)
+        event_ref = Column(String(128), nullable=False)
+        scope_ref = Column(String(128), nullable=False)
+        actor_ref = Column(String(128), nullable=False)
+        instance_ref = Column(String(128), nullable=False)
+        capture_ref = Column(String(128))
+        rubric_version = Column(String(64), nullable=False)
+        points = Column(Integer, nullable=False)
+        reason_code = Column(String(64), nullable=False)
+        sequence = Column(Integer, nullable=False)
+        occurred_at = Column(DateTime(timezone=True), nullable=False)
+    return ScoreLog
+# Database locking/constraints implement idempotency and first blood; this model alone does not.

@@ -1,0 +1,74 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+from anthropic import Anthropic
+import json
+
+client = Anthropic()
+
+SYSTEM_PROMPT = """Eres un agente de evaluación de madurez de IA especializado
+en administración pública española. Tu tarea es analizar documentos internos
+de un organismo público y evaluar su nivel de madurez en cada dimensión.
+
+Contexto regulatorio aplicable:
+- Esquema Nacional de Seguridad (ENS) - RD 311/2022
+- Reglamento de IA de la UE (AI Act) - Reglamento 2024/1689
+- RGPD y LOPDGDD
+- Ley 40/2015 de Régimen Jurídico del Sector Público
+
+Para cada documento analizado, extrae:
+1. Dimensión(es) de madurez afectada(s)
+2. Nivel estimado (1-5) con justificación
+3. Evidencias textuales que soportan la evaluación
+4. Gaps identificados respecto al nivel objetivo
+5. Restricciones regulatorias que afectan a la dimensión
+
+Devuelve JSON {"evaluations": [{"dimension": "...", "status":
+"evaluated|not_evaluated", "level": 1, "evidence": [],
+"justification": "...", "gaps": [], "regulatory_constraints": []}]}.
+Si no hay evidencia suficiente, usa not_evaluated y level null.
+No asumas capacidades ni baja madurez sin evidencia.
+Sé conservador en la evaluación — en sector público, sobrevalorar
+la madurez genera roadmaps inviables."""
+
+def evaluar_documento(contenido_documento: str, metadata: dict) -> dict:
+    """Evalúa un documento del organismo contra el framework de madurez."""
+    if not isinstance(contenido_documento, str) or not contenido_documento.strip():
+        return {"status": "not_evaluated", "evaluations": []}
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        system=SYSTEM_PROMPT,
+        messages=[{
+            "role": "user",
+            "content": f"""Analiza el siguiente documento del organismo:
+
+Tipo: {metadata['tipo']}
+Fecha: {metadata['fecha']}
+Área: {metadata['area']}
+
+CONTENIDO:
+{contenido_documento}
+
+Genera la evaluación de madurez estructurada en JSON."""
+        }]
+    )
+    result = json.loads(response.content[0].text)
+    if not isinstance(result, dict) or not isinstance(result.get("evaluations"), list):
+        raise ValueError("Invalid maturity assessment schema")
+    for row in result["evaluations"]:
+        if not isinstance(row, dict):
+            raise ValueError("Invalid maturity dimension")
+        level = row.get("level")
+        if row.get("status") == "not_evaluated":
+            if level is not None:
+                raise ValueError("Unevaluated maturity cannot have a numeric level")
+        elif row.get("status") != "evaluated" or type(level) is not int or not 1 <= level <= 5:
+            raise ValueError("Invalid evaluated maturity level")
+        if row["status"] == "evaluated":
+            quotes = row.get("evidence")
+            if not isinstance(quotes, list) or not quotes or any(
+                not isinstance(q, str) or not q.strip() or q not in contenido_documento
+                for q in quotes
+            ):
+                raise ValueError("Maturity judgment requires verifiable evidence quotes")
+    return result

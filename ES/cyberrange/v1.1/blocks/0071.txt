@@ -1,0 +1,27 @@
+# SQLAlchemy 2.x illustrative model; MySQL adapter normalizes every datetime to UTC.
+from datetime import datetime, timezone
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, JSON, CheckConstraint
+from sqlalchemy.orm import declarative_base
+
+Base = declarative_base()
+class Workzone(Base):
+    __tablename__ = "workzone"
+    __table_args__ = (CheckConstraint("app_id BETWEEN 1 AND 15"),
+                     CheckConstraint("zone_ttl_hours BETWEEN 1 AND 24"))
+    id = Column(Integer, primary_key=True)
+    app_id = Column(Integer, unique=True, nullable=True)
+    owner_ref = Column(String(128), nullable=False)
+    name = Column(String(128), nullable=False)
+    cpu_limit = Column(Integer, nullable=False)
+    memory_limit = Column(Integer, nullable=False)
+    storage_limit = Column(Integer, nullable=False)
+    zone_ttl_hours = Column(Integer, default=4, nullable=False)
+    zone_started_at = Column(DateTime(timezone=True), nullable=True)
+    auto_cleanup_at = Column(DateTime(timezone=True), nullable=True)
+    network_lease_ref = Column(String(128), nullable=True)
+    pfsense_secret_ref = Column(String(128), nullable=True)
+    owned_resource_refs = Column(JSON, nullable=False, default=list)
+    internet_requested = Column(Boolean, default=False, nullable=False)
+    status = Column(String(32), default="pending", nullable=False)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+# Budget/schema checks, resource leases and transaction constraints require the private migration.

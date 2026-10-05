@@ -1,0 +1,7 @@
+# The asuscert pipe exists and accepts connections
+ok = kernel32.WaitNamedPipeW(
+    r"\\.\pipe\asuscert", 1000
+)
+# Result: ok=1 (pipe exists)
+# Protocol: send DWORD PID -> receive 'OK!'
+# Validation: WinVerifyTrust on caller's binary

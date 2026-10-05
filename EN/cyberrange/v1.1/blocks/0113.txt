@@ -1,0 +1,9 @@
+# Didactic reconciliation; no deletion of evidence or adoption by discovered tags.
+async def sync_vms(actor, cluster_ref, access, api, store, owner):
+    scope = await access.authorized_inventory(actor, cluster_ref)
+    async with owner.fenced_job(scope):
+        observed = await api.read_vm_inventory(scope, timeout=20)
+        if observed.coverage != "complete":
+            await store.record_partial_observation(scope, observed)
+            return {"status": "partial", "coverage": observed.coverage}
+        return await store.reconcile_observation_preserving_ownership(scope, observed)

@@ -1,0 +1,62 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+# Pseudocode only; not an executable SDK example
+# Pseudocode: Agent and tool are conceptual interfaces, not SDK imports
+from datetime import datetime, timezone
+
+@tool
+def verify_control_evidence(
+    control_id: str,
+    framework: str,
+    evidence_sources: list[str]
+) -> dict:
+    """Verifies whether a control's evidence is still valid."""
+    evidence_data = collect_evidence(evidence_sources)
+
+    if not evidence_data or isinstance(evidence_data, str) and not evidence_data.strip():
+        return {
+            "control_id": control_id, "framework": framework,
+            "status": "NOT_EVALUATED",
+            "justification": "Insufficient evidence; human review required",
+            "verified_at": datetime.now(timezone.utc).isoformat(),
+            "cost_usd": 0.0,
+        }
+
+    message = client.messages.create(
+        model="claude-haiku-4-5",  # Haiku for frequent verifications
+        max_tokens=512,
+        system=(
+            f"You are a {framework} auditor. Evaluate whether the evidence "
+            "presented demonstrates control compliance. "
+            "If evidence is insufficient, use NOT_EVALUATED. "
+            "Respond with: COMPLIANT, PARTIALLY_COMPLIANT, NON_COMPLIANT or NOT_EVALUATED, "
+            "followed by a one-sentence justification."
+        ),
+        messages=[{
+            "role": "user",
+            "content": (
+                f"Control: {control_id}\n"
+                f"Collected evidence:\n{evidence_data}\n"
+                f"Verification date: {datetime.now(timezone.utc).isoformat()}\n"
+                "Evaluation:"
+            )
+        }]
+    )
+
+    response = message.content[0].text.strip()
+    token = response.split(",", 1)[0].split()
+    status = token[0] if token else "NOT_EVALUATED"
+    if status not in ['COMPLIANT', 'PARTIALLY_COMPLIANT', 'NON_COMPLIANT', 'NOT_EVALUATED']:
+        status = "NOT_EVALUATED"
+        response = "Invalid verification response; human review required"
+    if not response:
+        response = "Empty verification response; human review required"
+
+    return {
+        "control_id": control_id,
+        "framework": framework,
+        "status": status,
+        "justification": response,
+        "verified_at": datetime.now(timezone.utc).isoformat(),
+        "cost_usd": 0.003,  # Estimated cost per verification with Haiku
+    }

@@ -1,0 +1,9 @@
+1. Exploit ASUS-2026-001 (UAF in .NET COM)
+   -> Code execution in ASUS-signed process
+2. From ASUS process, send PID to asuscert pipe
+   -> AsusCertService validates signature and authorizes
+3. Open \\.\Asusgio3 (DACL allows authorized process)
+4. Call ASIO_MapMem to map physical memory
+5. Locate EPROCESS of SYSTEM process
+6. Copy SYSTEM token to attacker's process
+7. NT AUTHORITY\SYSTEM

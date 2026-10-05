@@ -1,0 +1,14 @@
+# Start radare2 with full analysis
+docker exec -it kernel-lab r2 -A /lab/drivers/AsIO3.sys
+
+# Inside r2:
+# 1. Verify entry point (DriverEntry)
+[0x00011000]> ie
+# 2. List all detected functions
+[0x00011000]> afl
+# 3. Search ntoskrnl.exe imports
+[0x00011000]> ii~ntoskrnl
+# 4. Search cross-references to MmMapIoSpace
+[0x00011000]> axt @sym.imp.MmMapIoSpace
+# 5. Disassemble the function that calls MmMapIoSpace
+[0x00011000]> pdf @ fcn.00011a30

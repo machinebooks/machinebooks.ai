@@ -1,0 +1,48 @@
+"""
+adobe_localstorage_enum.py — localStorage extraction via CDP
+Discovers production endpoints and SDK versions.
+"""
+import websocket
+import json
+
+WS_URL = "ws://localhost:9222/devtools/page/<TARGET_ID>"
+
+def extract_localstorage():
+    """Read the entire RNA panel localStorage."""
+    ws = websocket.create_connection(WS_URL)
+    
+    # Execute JavaScript to dump localStorage
+    ws.send(json.dumps({
+        "id": 1,
+        "method": "Runtime.evaluate",
+        "params": {
+            "expression": """
+                JSON.stringify(
+                    Object.keys(localStorage).reduce((acc, key) => {
+                        acc[key] = localStorage.getItem(key);
+                        return acc;
+                    }, {})
+                )
+            """,
+            "returnByValue": True
+        }
+    }))
+    
+    result = json.loads(ws.recv())
+    storage = json.loads(result["result"]["result"]["value"])
+    
+    # Filter API endpoints
+    api_keys = [k for k in storage if "url" in k.lower() 
+                or "endpoint" in k.lower() 
+                or "api" in k.lower()
+                or "sdk" in k.lower()]
+    
+    print("[*] Production endpoints found:\n")
+    for key in sorted(api_keys):
+        print(f"  {key}: {storage[key]}")
+    
+    ws.close()
+    return storage
+
+if __name__ == "__main__":
+    extract_localstorage()

@@ -1,0 +1,26 @@
+# Versioned review annotation; an alert is a hypothesis linked to bounded evidence.
+from datetime import datetime, timezone
+from sqlalchemy import CheckConstraint, Column, DateTime, Float, Integer, String
+
+def create_security_alert_model(Base):
+    class SecurityAlert(Base):
+        __tablename__="security_alerts"
+        id=Column(Integer,primary_key=True)
+        scope_ref=Column(String(128),nullable=False)
+        event_ref=Column(String(80),nullable=False)
+        rule_ref=Column(String(80),nullable=False)
+        rule_version=Column(String(80),nullable=False)
+        evidence_ref=Column(String(128),nullable=False)
+        status=Column(String(24),nullable=False,default="pending_review")
+        review_version=Column(Integer,nullable=False,default=0)
+        reviewer_ref=Column(String(80))
+        false_positive_probability=Column(Float)
+        calibration_ref=Column(String(128))
+        created_at=Column(DateTime(timezone=True),nullable=False,
+                          default=lambda:datetime.now(timezone.utc))
+        __table_args__=(CheckConstraint("status IN ('pending_review','confirmed','false_positive','inconclusive')"),
+            CheckConstraint("review_version >= 0"),
+            CheckConstraint("false_positive_probability IS NULL OR (false_positive_probability >= 0 AND false_positive_probability <= 1 AND calibration_ref IS NOT NULL)"))
+    return SecurityAlert
+# Unknown probability stays NULL; instructor labels retain independent provenance.
+# Review updates use compare-and-swap and immutable revisions in the persistence adapter.

@@ -1,0 +1,17 @@
+# Didactic SQLAlchemy 2.x fragment; templates contain references, not default passwords.
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, UniqueConstraint
+
+def template_model(Base):
+    class ProxmoxTemplate(Base):
+        __tablename__ = "proxmox_template"
+        __table_args__ = (UniqueConstraint("cluster_id", "vmid"),)
+        id = Column(Integer, primary_key=True)
+        cluster_id = Column(Integer, ForeignKey("proxmox_cluster.id"), nullable=False)
+        vmid = Column(Integer, nullable=False)
+        name = Column(String(128), nullable=False)
+        approved_profile_ref = Column(String(128), nullable=False)
+        credential_seed_ref = Column(String(128), nullable=True)
+        artifact_digest = Column(String(128), nullable=False)
+        last_used = Column(DateTime(timezone=True))
+    return ProxmoxTemplate
+# Resource sizing, licensing, cloud-init and per-instance credentials are reviewed in the catalog.

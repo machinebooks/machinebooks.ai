@@ -1,0 +1,16 @@
+This driver is a high-priority research candidate.
+
+1. PRIMITIVES: MmMapIoSpace + absence of privilege checks suggests
+   that IOCTLs allow mapping arbitrary physical memory without verifying
+   that the caller has adequate privileges.
+
+2. IMPACT: If an IOCTL accepts physical address and size:
+   a) Read all physical memory (including the kernel)
+   b) Write to kernel memory (token stealing for LPE)
+   c) Read/write MSRs, I/O ports, PCI config space
+
+3. INVESTIGATION PLAN:
+   - Phase 1: IOCTL brute-force to find which ones respond
+   - Phase 2: Vary buffer size per active IOCTL
+   - Phase 3: Look for METHOD_NEITHER IOCTLs (unvalidated pointers)
+   - Phase 4: Map known physical address (0x1000)

@@ -1,0 +1,48 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+from hashlib import sha256
+
+class QualityChecker:
+    def __init__(self, artifact, version, required_sections):
+        self.artifact_hash = sha256(artifact).hexdigest()
+        self.version = version
+        self.required_sections = set(required_sections)
+        if not self.required_sections:
+            raise ValueError("Required sections must not be empty")
+        self.authorizers = {}
+        self.checked = False
+        self.issues = []
+        self.approvals = {}
+
+    def run_checks(self, artifact, check_function):
+        if sha256(artifact).hexdigest() != self.artifact_hash:
+            raise ValueError("Artifact changed")
+        issues = check_function(artifact)
+        if not isinstance(issues, list):
+            raise ValueError("Invalid check result")
+        self.issues = tuple(issues)
+        self.checked = True
+
+    def approve(self, section, approval, authorize_reviewer):
+        if section not in self.required_sections:
+            raise ValueError("Unknown section")
+        if (approval["artifact_hash"] != self.artifact_hash
+                or approval["version"] != self.version
+                or approval["decision"] != "approved"
+                or authorize_reviewer(approval["reviewer_id"], section) is not True):
+            raise ValueError("Invalid approval")
+        self.authorizers[section] = authorize_reviewer
+        self.approvals[section] = dict(approval)
+
+    def require_ready(self, artifact):
+        if sha256(artifact).hexdigest() != self.artifact_hash:
+            raise ValueError("Artifact changed")
+        if not self.checked or self.issues or set(self.approvals) != self.required_sections:
+            raise ValueError("Checks or reviews incomplete")
+        for section, approval in self.approvals.items():
+            if (approval["artifact_hash"] != self.artifact_hash
+                    or approval["version"] != self.version
+                    or approval["decision"] != "approved"
+                    or self.authorizers[section](approval["reviewer_id"], section) is not True):
+                raise ValueError("Approval is no longer current")
+        return True

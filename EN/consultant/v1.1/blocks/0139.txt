@@ -1,0 +1,31 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import json
+from datetime import datetime, timezone
+
+def validate_evaluation(raw_text: str) -> dict:
+    value = json.loads(raw_text)
+    required = {"score", "rating", "criteria", "strengths", "improvements", "mistakes"}
+    if not isinstance(value, dict) or set(value) != required:
+        raise ValueError("Invalid evaluation schema")
+    score = value["score"]
+    if type(score) not in (int, float) or not 0 <= score <= 10:
+        raise ValueError("Invalid score")
+    expected = "excellent" if score > 8 else "acceptable" if score >= 6 else "insufficient"
+    if value["rating"] != expected:
+        raise ValueError("Rating does not match score")
+    for key in ("criteria", "strengths", "improvements", "mistakes"):
+        if not isinstance(value[key], list):
+            raise ValueError(f"Invalid list: {key}")
+    return value
+
+def evaluate_scenario_response(scenario, junior_response, junior_id, model_adapter):
+    # Partial adapter: authorization, privacy and weighted scoring are external contracts.
+    if type(scenario.scenario_id) is not str or not scenario.scenario_id or scenario.scenario_id != scenario.scenario_id.strip() or type(junior_id) is not str or not junior_id or junior_id != junior_id.strip():
+        raise ValueError("Scenario and junior IDs must be canonical nonempty strings")
+    raw_text = model_adapter.evaluate(scenario, junior_response,
+                                     schema="score/rating/criteria/strengths/improvements/mistakes")
+    evaluation = validate_evaluation(raw_text)
+    return {"scenario_id": scenario.scenario_id, "junior_id": junior_id,
+            "evaluation": evaluation, "rating": evaluation["rating"],
+            "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")}

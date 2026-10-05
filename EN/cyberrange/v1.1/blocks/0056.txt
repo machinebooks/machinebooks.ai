@@ -1,0 +1,16 @@
+# Select an observed address only by its recorded owned network lease.
+from ipaddress import ip_address, ip_network
+
+def select_owned_address(observations, leased_cidr):
+    network = ip_network(leased_cidr, strict=True)
+    matches = []
+    for value in observations:
+        try:
+            address = ip_address(value)
+        except ValueError:
+            continue
+        if address in network and not address.is_loopback and not address.is_link_local:
+            matches.append(str(address))
+    return {"address": matches[0] if len(set(matches)) == 1 else None,
+            "status": "observed" if len(set(matches)) == 1 else "unknown_or_ambiguous"}
+# Guest reports are observations, not independent proof of authorization or connectivity.

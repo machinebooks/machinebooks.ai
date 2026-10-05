@@ -1,0 +1,5 @@
+1. npx asar extract app.asar ./extracted
+2. Inject payload into index.html or main.js
+3. npx asar pack ./extracted ./backdoored.asar
+4. Replace app.asar
+5. Launch Wand

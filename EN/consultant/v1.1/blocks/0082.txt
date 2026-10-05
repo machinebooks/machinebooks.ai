@@ -1,0 +1,52 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import anthropic
+import json
+from pathlib import Path
+from dataclasses import dataclass, field
+
+@dataclass
+class AuditControl:
+    """Represents a control from the reference framework."""
+    control_id: str
+    title: str
+    description: str
+    category: str
+    # Evaluation result
+    status: str = "not_evaluated"  # complies | non_compliant | partial | not_applicable | not_evaluated
+    evidence_refs: list[str] = field(default_factory=list)
+    justification: str = ""
+    finding: dict | None = None
+
+@dataclass
+class AuditFinding:
+    """Structured audit finding."""
+    finding_id: str
+    control_id: str
+    severity: str  # high | medium | low | observation
+    title: str
+    description: str
+    evidence_quote: str  # Verifiable textual quote
+    risk: str
+    recommendation: str
+    compensating_controls: str = ""
+
+class AuditAgent:
+    """Audit agent that evaluates controls against evidence."""
+
+    def __init__(self, framework: str, model: str = "claude-sonnet-4-6"):
+        self.client = anthropic.Anthropic()
+        self.model = model
+        self.framework = framework
+        self.controls: list[AuditControl] = []
+        self.findings: list[AuditFinding] = []
+        self.documents: dict[str, str] = {}  # name -> content
+
+    def load_framework(self, controls_path: str):
+        """Loads controls from the reference framework."""
+        with open(controls_path, "r") as f:
+            raw_controls = json.load(f)
+        self.controls = [
+            AuditControl(**ctrl) for ctrl in raw_controls
+        ]
+        print(f"Loaded {len(self.controls)} controls from {self.framework}")

@@ -1,0 +1,4 @@
+IOCTL 0x22b807 in AsIO3.sys uses METHOD_NEITHER.
+The handler calls MmMapIoSpace after reading two fields from the input buffer.
+MmMapIoSpace signature: PVOID MmMapIoSpace(PHYSICAL_ADDRESS, SIZE_T, MEMORY_CACHING_TYPE)
+What is the likely structure of the input buffer?

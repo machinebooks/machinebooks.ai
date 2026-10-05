@@ -1,0 +1,43 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+from pydantic import BaseModel, Field
+from enum import Enum
+from typing import Optional
+
+class TipoServicio(str, Enum):
+    AUDITORIA = "auditoria"
+    GAP_ANALYSIS = "gap_analysis"
+    ARQUITECTURA = "arquitectura"
+    IMPLANTACION = "implantacion"
+    CONSULTORIA_ESTRATEGICA = "consultoria_estrategica"
+    ASSESSMENT = "assessment"
+
+class ComplejidadRegulatoria(str, Enum):
+    BAJA = "baja"
+    MEDIA = "media"
+    ALTA = "alta"
+
+class ProyectoHistorico(BaseModel):
+    """Record of a completed project with actual data."""
+    id: str
+    nombre: str  # anonymized: "ENS Audit public sector 2024"
+    descripcion_alcance: str  # free text for semantic search
+    tipo_servicio: TipoServicio
+    sector: str
+    complejidad_regulatoria: ComplejidadRegulatoria
+    tecnologias: list[str]
+    # Original estimate
+    horas_estimadas: float
+    duracion_semanas_estimada: int
+    equipo_estimado: int  # number of consultants
+    # Actual result
+    horas_reales: float
+    duracion_semanas_real: int
+    equipo_real: int
+    # Derived metrics
+    ratio_desviacion: float = Field(
+        default=0.0,
+        description="horas_reales / horas_estimadas"
+    )
+    factores_desviacion: Optional[str] = None  # what caused the deviation
+    fecha_cierre: str  # format YYYY-MM

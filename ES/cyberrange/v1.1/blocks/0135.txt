@@ -1,0 +1,43 @@
+# Instance-scoped random tokens; secret values are kept in the authorized secret store.
+import hashlib
+import hmac
+import re
+import secrets
+from datetime import datetime, timezone
+
+FLAG_PATTERN = re.compile(r"CYBERRANGE\{[0-9a-f]{16}_[0-9a-f]{16}\}")
+
+class DynamicFlagService:
+    @staticmethod
+    async def generate_flag_for_instance(adapter, actor_ref, instance_id):
+        async with adapter.lock_authorized_open_instance(actor_ref, instance_id, "seed") as instance:
+            if instance.expires_at is None or instance.expires_at.tzinfo is None or instance.expires_at.utcoffset() is None or datetime.now(timezone.utc) >= instance.expires_at:
+                raise ValueError("invalid or expired instance")
+            if instance.flag_secret_ref:
+                return await adapter.resolve_owned_flag_secret(instance)
+            token = secrets.token_hex(16)
+            value = f"CYBERRANGE{{{token[:16]}_{token[16:]}}}"
+            key = await adapter.resolve_flag_verifier_key(instance)
+            verifier = hmac.new(key, value.encode("ascii"), hashlib.sha256).hexdigest()
+            # Adapter records secret intent before effects and retains pending compensation on failure.
+            await adapter.persist_seed_with_receipt(instance, value, verifier)
+            return value
+
+    @staticmethod
+    async def validate_dynamic_flag(adapter, actor_ref, instance_id, candidate):
+        if not isinstance(candidate, str) or not FLAG_PATTERN.fullmatch(candidate):
+            return {"valid": False, "reason": "invalid_format"}
+        instance = await adapter.authorized_open_instance(actor_ref, instance_id, "capture")
+        if instance is None or not instance.flag_verifier:
+            return {"valid": False, "reason": "no_active_instance"}
+        expiry = instance.expires_at
+        if expiry is None or expiry.tzinfo is None or expiry.utcoffset() is None:
+            return {"valid": False, "reason": "invalid_expiry_contract"}
+        if datetime.now(timezone.utc) >= expiry:
+            return {"valid": False, "reason": "expired"}
+        key = await adapter.resolve_flag_verifier_key(instance)
+        digest = hmac.new(key, candidate.encode("ascii"), hashlib.sha256).hexdigest()
+        valid = hmac.compare_digest(digest, instance.flag_verifier)
+        return {"valid": valid, "instance_id": instance.id}
+# Validation has no capture/scoring effects. The ledger separately rechecks expiry,
+# scope and rubric under its capture transaction; seed retries cannot rotate an open flag.

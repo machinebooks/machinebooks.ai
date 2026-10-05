@@ -1,0 +1,49 @@
+# Security review checklist for AI-generated code
+# Didactic example: patrones/review/security_checklist.py
+
+SECURITY_REVIEW_CHECKLIST = {
+    "endpoints": [
+        "Does it have @require_permission with the correct permission?",
+        "Does it filter data by the authenticated user's workzone_id/team_id?",
+        "Does it validate that the resource belongs to the user's exercise?",
+        "Does it have appropriate rate limiting for the operation?",
+        "Does it log the action in the audit log?",
+        "Does it sanitize input before using it in queries or prompts?",
+        "Does it return only the necessary fields (not the entire model)?",
+    ],
+    "playbooks_ansible": [
+        "Are the deployed vulnerabilities the intended ones?",
+        "Does it not expose sensitive files from the real host?",
+        "Are the credentials from the scenario, not from management?",
+        "Does the workzone firewall block unauthorized traffic?",
+        "Are vulnerable services only accessible within the workzone?",
+    ],
+    "ia_generated_content": [
+        "Does the generated scenario have coherent vulnerabilities?",
+        "Are the generated flags unique per team?",
+        "Do the coaching hints not reveal the direct answer?",
+        "Does the content not include real system information?",
+        "Are the IPs and domains from the range assigned to the workzone?",
+    ],
+}
+
+def review_ai_generated_code(code: str, category: str) -> list:
+    """Runs the security checklist on AI-generated code.
+
+    Returns pending manual-review entries. This function performs no analysis
+    and neither approves nor automatically blocks deployment.
+    """
+    findings = []
+    checklist = SECURITY_REVIEW_CHECKLIST.get(category, [])
+
+    for check in checklist:
+        # Each check is evaluated manually by the architect
+        # This code is the structure, not a complete automated analysis
+        findings.append({
+            "check": check,
+            "status": "pending_review",
+            "reviewer": None,
+            "timestamp": None
+        })
+
+    return findings

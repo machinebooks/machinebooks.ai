@@ -1,0 +1,9 @@
+// Extracted from Wand IDE's app.asar
+new BrowserWindow({
+    webPreferences: {
+        nodeIntegration: true,     // Web code can use Node.js APIs
+        contextIsolation: false,   // No isolation between contexts
+        sandbox: false,            // No Chromium sandbox
+        enableRemoteModule: true,  // Remote module enabled
+    }
+});

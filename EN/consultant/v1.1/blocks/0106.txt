@@ -1,0 +1,65 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+def generate_executive_summary(
+    project: ReportingProject,
+    generated_sections: dict[str, str],
+    voice_prompt: str
+) -> str:
+    """Generates the executive summary from the complete report."""
+
+    # Group findings by severity for the summary
+    findings_by_severity = {}
+    for f in project.findings:
+        sev = f.severity.value
+        findings_by_severity.setdefault(sev, []).append(f)
+
+    severity_summary = "\n".join(
+        f"- {sev}: {len(lst)} findings"
+        for sev, lst in findings_by_severity.items()
+    )
+
+    # Top 5 recommendations by impact
+    top_recommendations = sorted(
+        project.findings,
+        key=lambda f: list(Severity).index(f.severity)
+    )[:5]
+
+    top_recs_text = "\n".join(
+        f"- [{f.priority.value}] {f.recommendation}"
+        for f in top_recommendations
+    )
+
+    executive_prompt = f"""Write the executive summary for this consulting report.
+
+PROJECT: {project.project_name}
+TYPE: {project.type}
+CLIENT: {project.client}
+PERIOD: {project.start_date} to {project.end_date}
+SCOPE: {project.scope}
+
+FINDINGS DISTRIBUTION:
+{severity_summary}
+
+TOP 5 RECOMMENDATIONS BY IMPACT:
+{top_recs_text}
+
+ANALYSIS SECTION ALREADY WRITTEN:
+{generated_sections.get('analysis', 'Not available')}
+
+INSTRUCTIONS:
+1. Maximum 500 words (2 pages with formatting).
+2. First paragraph: what was done and what was found (3 sentences).
+3. Second paragraph: the 3-5 most relevant findings with impact.
+4. Third paragraph: priority recommendations with timelines.
+5. Final paragraph: immediate next steps (what the client must
+   decide this week).
+6. Business language, not technical. A CFO must understand it.
+7. Each recommendation with impact data if available."""
+
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=2048,
+        system=voice_prompt,
+        messages=[{"role": "user", "content": executive_prompt}]
+    )
+    return response.content[0].text

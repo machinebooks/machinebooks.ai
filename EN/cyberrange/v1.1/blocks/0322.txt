@@ -1,0 +1,5 @@
+# Read only the actor's authorized Job inventory, including firewall and pending resources
+async def inspect_exercise_resources(actor, job_id, api):
+    resources = await api.authorized_job_inventory(actor, job_id)
+    return {"resources": resources, "readiness": await api.readiness_receipt(actor, job_id),
+            "coverage": await api.inventory_coverage(actor, job_id)}

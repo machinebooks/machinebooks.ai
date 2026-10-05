@@ -1,0 +1,39 @@
+# Adapters own transactions, authorization, approved inventory and leased workers
+import asyncio
+
+class ExecutionService:
+    def __init__(self, adapter, record, manager):
+        self.adapter, self.record, self.manager = adapter, record, manager
+
+    async def start_execution(self, actor, instance_id, playbook_ref, request_id):
+        approved = await self.adapter.resolve_approved(actor, instance_id, playbook_ref)
+        # One transaction reserves the lease and writes the worker outbox message.
+        return await self.adapter.enqueue_once(actor, approved, request_id)
+
+    async def run_claimed(self, execution_id):
+        execution = await self.adapter.claim_immutable_execution(execution_id)
+        async def output(line):
+            return await stream_to_websocket(execution.actor, execution.session_id,
+                line, "ansible", self.record, self.manager)
+        try:
+            result = await asyncio.wait_for(
+                self.adapter.run_owned_approved_inventory(execution, output),
+                timeout=execution.timeout_seconds)
+            verified = await self.adapter.verify_objectives(execution, result)
+            state = "objective_verified" if verified is True else "objective_unverified"
+            await self.adapter.finish_once(execution_id, state, result)
+            return {"state": state, "objective_verified": verified is True}
+        except asyncio.CancelledError:
+            await self.adapter.record_interruption(execution_id, "cancelled")
+            raise
+        except Exception:
+            await self.adapter.record_interruption(execution_id, "failed")
+            raise
+        finally:
+            receipt = await asyncio.wait_for(
+                self.adapter.cancel_join_remove_temporary_and_inventory(execution), 15)
+            if receipt.get("all_confirmed") is not True:
+                await self.adapter.retain_pending_inventory(execution_id, receipt)
+                raise RuntimeError("cleanup_unverified")
+
+# The private worker implementation is outside this teaching fragment.

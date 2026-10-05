@@ -1,0 +1,61 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+# extraction/knowledge_agent.py — Knowledge extraction agent
+import anthropic
+import json
+
+client = anthropic.Anthropic()
+
+EXTRACTION_PROMPT = """You are a consulting knowledge analyst.
+Your task is to extract reusable knowledge fragments from the following text.
+
+For each fragment, identify:
+1. TYPE: "decision" | "pattern" | "lesson" | "insight"
+2. CONTEXT: situation where it applies (sector, project type, problem)
+3. CONTENT: the knowledge itself, formulated to be useful outside
+   the original project (without client names or confidential data)
+4. RESULT: what consequence it had (if mentioned)
+5. CONDITIONS: when it applies and when it does NOT apply
+
+Rules:
+- Extract only reusable knowledge, not descriptive summaries
+- Anonymize any reference to specific clients or projects
+- If the text contains no reusable knowledge, return an empty list
+- Maximum 5 fragments per text chunk
+- Each fragment must be understandable without the original document
+
+Return JSON with format:
+[{"type": "...", "context": "...", "content": "...",
+  "result": "...", "conditions": "..."}]"""
+
+def extract_knowledge(chunk_text: str, section_title: str) -> list[dict]:
+    """Extracts knowledge fragments from a text chunk."""
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=2048,
+        messages=[{
+            "role": "user",
+            "content": f"## Section: {section_title}\n\n{chunk_text}"
+        }],
+        system=EXTRACTION_PROMPT,
+        temperature=0.1  # Low temperature for deterministic extraction
+    )
+
+    try:
+        fragments = json.loads(message.content[0].text)
+        # Filter empty or low-quality fragments
+        return [f for f in fragments if _is_quality_fragment(f)]
+    except json.JSONDecodeError:
+        return []
+
+def _is_quality_fragment(fragment: dict) -> bool:
+    """Validates that a fragment meets minimum quality requirements."""
+    required_fields = {"type", "context", "content"}
+    if not required_fields.issubset(fragment.keys()):
+        return False
+    # Content must have substance (more than 30 words)
+    if len(fragment["content"].split()) < 30:
+        return False
+    # Verify no residual sensitive data
+    sensitive_patterns = ["@", "http://", "https://", "192.168", "10.0."]
+    return not any(p in fragment["content"] for p in sensitive_patterns)

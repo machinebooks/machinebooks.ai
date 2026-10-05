@@ -1,0 +1,3 @@
+T+2.7s  — PowerShell ejecuta en background: lee .ssh/id_rsa, .aws/credentials
+T+2.9s  — Los datos se envían a un servidor externo via curl
+T+3.0s  — Copilot responde normalmente. El developer no sabe que sus claves fueron robadas

@@ -1,0 +1,15 @@
+# Proposed RL integration contract; no attack is executed here
+def choose_authorized_action(observation, policy, allowed_actions):
+    if policy is None:
+        raise NotImplementedError("trained and evaluated policy required")
+    action = policy.predict(observation)
+    if action not in allowed_actions:
+        raise ValueError("action outside authorized catalog")
+    return {"action": action, "status": "proposal", "calibrated_probability": None}
+
+def execute_authorized_action(action, executor, scope):
+    raise NotImplementedError("bounded owned executor and human gate required")
+
+# Training must define seeds, reset, episodes, observations and rewards.
+# Evaluate transfer, failure, cancellation and safety before integration.
+# A fixed dictionary is not RL, an optimal action or a measured probability.

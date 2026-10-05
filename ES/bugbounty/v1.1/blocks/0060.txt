@@ -1,0 +1,16 @@
+// Concepto de hook de WinVerifyTrust (simplificado)
+// La DLL inyectada reemplaza la función original
+
+// Guardar puntero a la función original
+typedef LONG (WINAPI *WinVerifyTrust_t)(HWND, GUID*, LPVOID);
+WinVerifyTrust_t Original_WinVerifyTrust = NULL;
+
+// Función hook que siempre devuelve "firma válida"
+LONG WINAPI Hooked_WinVerifyTrust(HWND hwnd, GUID *pgActionID,
+                                   LPVOID pWVTData) {
+    // Ignorar la verificación real, devolver éxito
+    return ERROR_SUCCESS;  // 0 = firma válida
+}
+
+// El hook se instala en DllMain de la DLL inyectada
+// usando IAT patching o inline hooking

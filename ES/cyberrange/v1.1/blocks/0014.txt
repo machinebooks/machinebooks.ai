@@ -1,0 +1,15 @@
+# Minimized asynchronous audit boundary; persistence and notification have separate receipts.
+from datetime import datetime, timezone
+
+async def audit_log(actor_ref, request_ref, event_type, status, category, severity, adapter):
+    if status not in {"success", "failure", "pending"}:
+        raise ValueError("invalid audit status")
+    if severity not in {"trace", "info", "warning", "error", "critical", "audit", "security"}:
+        raise ValueError("invalid audit severity")
+    event = {"actor_ref": actor_ref, "request_ref": request_ref, "event_type": event_type,
+             "status": status, "category": category, "severity": severity, "reason_code": None,
+             "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")}
+    await adapter.validate_minimized_references(event)
+    return await adapter.persist_with_integrity(event)
+# Raw identities, addresses, commands and arbitrary metadata are excluded from this envelope.
+# The adapter atomically stores the event and any review outbox entry; fan-out is not delivery proof.

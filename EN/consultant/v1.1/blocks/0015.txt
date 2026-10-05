@@ -1,0 +1,10 @@
+Documents  -->  Ingestion  -->  Qdrant (vectors + metadata)
+    |                                      |
+    |                                      v
+    |                           Semantic search + filters
+    |                                      |
+    |                                      v
+    +------------------------------>  Claude API (synthesis with context)
+                                           |
+                                           v
+                                    Response + sources

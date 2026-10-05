@@ -1,0 +1,76 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+from dataclasses import dataclass, field
+from enum import Enum
+
+class Phase(Enum):
+    PRESALES = "presales"
+    DELIVERY = "delivery"
+    KNOWLEDGE = "knowledge_capture"
+
+class AutomationPotential(Enum):
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+    NONE = "none"
+
+@dataclass
+class Activity:
+    """Represents an activity within a consulting project."""
+    name: str
+    phase: Phase
+    hours_manual: float          # Estimated hours without AI
+    hours_assisted: float        # Estimated hours with AI
+    automation_potential: AutomationPotential
+    requires_client_interaction: bool
+    requires_expert_judgment: bool
+    frequency_per_project: int   # Times executed per project
+    description: str = ""
+
+    def __post_init__(self):
+        from math import isfinite
+        if any(type(v) not in (int, float) or not isfinite(v) or v < 0 for v in (self.hours_manual, self.hours_assisted)):
+            raise ValueError("Activity hours must be finite and nonnegative")
+        if type(self.frequency_per_project) is not int or self.frequency_per_project < 1:
+            raise ValueError("Activity frequency must be a positive integer")
+        if not isinstance(self.phase, Phase) or not isinstance(self.automation_potential, AutomationPotential):
+            raise ValueError("Activity requires canonical enums")
+        if any(type(v) is not bool for v in (self.requires_client_interaction, self.requires_expert_judgment)):
+            raise ValueError("Activity flags must be boolean")
+
+
+@dataclass
+class ConsultingProject:
+    """Structured model of a consulting project."""
+    name: str
+    client_sector: str
+    frameworks: list[str]        # ISO 27001, ENS, DORA, etc.
+    duration_weeks: int
+    team_size: int
+    activities: list[Activity] = field(default_factory=list)
+
+    @property
+    def total_hours_manual(self) -> float:
+        return sum(
+            a.hours_manual * a.frequency_per_project
+            for a in self.activities
+        )
+
+    @property
+    def total_hours_assisted(self) -> float:
+        return sum(
+            a.hours_assisted * a.frequency_per_project
+            for a in self.activities
+        )
+
+    @property
+    def reduction_percentage(self) -> float:
+        if self.total_hours_manual <= 0:
+            raise ValueError("Reduction requires positive manual baseline hours")
+        return (1 - self.total_hours_assisted / self.total_hours_manual) * 100
+    def __post_init__(self):
+        if any(type(v) is not int or v < 1 for v in (self.duration_weeks, self.team_size)):
+            raise ValueError("Project duration and team size must be positive integers")
+        if not isinstance(self.activities, list) or any(not isinstance(a, Activity) for a in self.activities):
+            raise ValueError("Project activities must use Activity records")
+

@@ -1,0 +1,11 @@
+# Install the official tool
+npm install -g @electron/asar
+
+# Extract all ASAR content to a directory
+asar extract app.asar app_extracted/
+
+# List files inside the ASAR
+asar list app.asar
+
+# Create a new ASAR from a directory
+asar pack app_extracted/ app_new.asar

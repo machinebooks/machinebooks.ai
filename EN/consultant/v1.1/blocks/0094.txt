@@ -1,0 +1,54 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+from dataclasses import dataclass, field
+from enum import IntEnum
+from typing import Optional
+
+
+class MaturityLevel(IntEnum):
+    """Maturity levels for control evaluation."""
+    NONEXISTENT = 0   # Evidence establishes that implementation is absent
+    INITIAL = 1       # Exists ad-hoc, not formalized
+    DEFINED = 2       # Documented and formally approved
+    MANAGED = 3       # Implemented, measured, and reviewed
+    OPTIMIZED = 4     # Continuous improvement with metrics
+
+
+@dataclass
+class Control:
+    """A control within a regulatory framework."""
+    framework: str          # "ISO27001", "ENS", "NIS2", "AI_ACT"
+    control_id: str         # "A.8.1", "org.1", "Art.21.2.a"
+    title: str
+    description: str
+    category: str           # Thematic grouping
+    # Equivalent controls in other frameworks
+    cross_references: list[str] = field(default_factory=list)
+
+
+@dataclass
+class EvaluationCriteria:
+    """Evaluation criteria for a control, by profile."""
+    control_id: str
+    org_profile: str        # "large_financial", "sme_services"
+    # What's expected at each maturity level
+    level_criteria: dict[MaturityLevel, str] = field(
+        default_factory=dict
+    )
+
+
+@dataclass
+class GapFinding:
+    """Result of evaluating a control against evidence."""
+    control: Control
+    current_level: MaturityLevel
+    target_level: MaturityLevel
+    evidence_summary: str   # Evidence found
+    gap_description: str    # What's missing to reach the target
+    remediation: str        # Recommended actions
+    effort_days: float      # Effort estimate in person-days
+    priority: str           # "critical", "high", "medium", "low"
+    confidence: float       # 0.0-1.0, evaluation confidence
+    affected_frameworks: list[str] = field(
+        default_factory=list
+    )

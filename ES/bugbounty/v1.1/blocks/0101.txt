@@ -1,0 +1,4 @@
+La secuencia add → remove → remove plantea una hipótesis de estado.
+No basta para confirmar CWE-416: hacen falta liberación y acceso posterior
+al recurso afectado. Un finalizador inconsistente no demuestra por sí solo
+que se haya reutilizado memoria nativa.

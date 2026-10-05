@@ -1,0 +1,14 @@
+# Output contract: derived event count, not professional competence
+from pydantic import BaseModel, Field
+
+class TeamLeaderboardEntry(BaseModel):
+    team_id: int=Field(gt=0)
+    team_name: str=Field(max_length=50)
+    total_score: int
+    flags_captured: int=Field(ge=0)
+    completed_challenges: int=Field(ge=0)
+    badges_earned: int=Field(ge=0)
+    cutoff_utc: str
+
+# Rank within one authorized exercise/cutoff using a published tie-break rule.
+# Every counter and total must derive from the same scoped ledger/snapshot.

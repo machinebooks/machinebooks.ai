@@ -1,0 +1,19 @@
+# Pydantic v2 name policy; uniqueness and safe output are separate controls
+import unicodedata
+from pydantic import BaseModel, Field, field_validator
+
+class TeamCreate(BaseModel):
+    name: str=Field(min_length=1,max_length=50)
+    description: str=Field(default="",max_length=500)
+    @field_validator("name")
+    @classmethod
+    def normalize_name(cls,value):
+        value=unicodedata.normalize("NFC",value).strip()
+        if not 1<=len(value)<=50:
+            raise ValueError("bounded name required")
+        if not all(char in " -_" or unicodedata.category(char)[0] in "LNM" for char in value):
+            raise ValueError("unsupported name characters")
+        return value
+
+# Database enforces scoped normalized uniqueness. Encode for HTML/CSV sinks;
+# Unicode normalization and an allowlist alone do not guarantee absence of XSS.

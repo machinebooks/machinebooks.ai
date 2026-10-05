@@ -1,0 +1,52 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import anthropic
+from dataclasses import dataclass
+
+@dataclass
+class RFPAnalysis:
+    """Structured result of an RFP analysis."""
+    mandatory_requirements: list[dict]   # Solvency and capability requirements
+    evaluation_criteria: list[dict]      # Criteria with weighting
+    deadlines: dict                      # Key process dates
+    required_profiles: list[dict]        # Required professional profiles
+    penalties: list[str]                 # Penalty clauses
+    maximum_budget: float | None         # Base budget if stated
+    go_nogo_recommendation: str          # "GO", "NO-GO" or "EVALUATE"
+    justification: str                   # Reason for the recommendation
+
+client = anthropic.Anthropic(api_key="<YOUR_ANTHROPIC_KEY>")
+
+def analyze_rfp(document_text: str, practice_context: str) -> RFPAnalysis:
+    """Analyzes an RFP and extracts key elements for go/no-go decision."""
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=8192,
+        system="""You are a senior technology consulting analyst
+specialized in public sector tenders.
+Analyze the requirements document and extract the structured
+information a pre-sales team needs to decide whether to bid
+and, if so, prepare the proposal.
+
+Be exhaustive with mandatory requirements — missing one
+means disqualification. Be precise with evaluation criteria
+weights. Explicitly state if any data does not appear
+in the document.""",
+        messages=[{
+            "role": "user",
+            "content": f"""Analyze this RFP:
+
+--- DOCUMENT ---
+{document_text}
+--- END DOCUMENT ---
+
+--- PRACTICE CONTEXT ---
+{practice_context}
+--- END CONTEXT ---
+
+Return the analysis in structured JSON format."""
+        }]
+    )
+    # Parse JSON response to RFPAnalysis
+    return parse_analysis(message.content[0].text)

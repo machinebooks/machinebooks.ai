@@ -1,0 +1,81 @@
+# embedding_adapter is a required conceptual interface, not an Anthropic API.
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+from qdrant_client import QdrantClient
+from qdrant_client.models import PointStruct, VectorParams, Distance
+import anthropic
+import hashlib
+import json
+
+COLLECTION_NAME = "lessons_learned"
+
+def initialize_lessons_collection(qdrant: QdrantClient):
+    """Creates the lessons collection with payload schema."""
+    qdrant.create_collection(
+        collection_name=COLLECTION_NAME,
+        vectors_config=VectorParams(
+            size=1024,        # Embedding dimension
+            distance=Distance.COSINE
+        )
+    )
+
+def store_validated_lesson(
+    lesson: LessonCandidate,
+    qdrant: QdrantClient,
+    anthropic_client: anthropic.Anthropic
+) -> str:
+    """Stores a validated lesson with semantic embedding."""
+    # Combined text for embedding: summary + context + recommendation
+    embedding_text = (
+        f"{lesson.summary}\n"
+        f"Context: {lesson.context}\n"
+        f"Root cause: {lesson.root_cause}\n"
+        f"Recommendation: {lesson.recommendation}"
+    )
+
+    # Generate embedding with Voyager model
+    embedding_response = embedding_adapter.create(
+        model="voyage-3",
+        input=embedding_text
+    )
+    vector = embedding_response.data[0].embedding
+    from math import isfinite
+    from uuid import UUID
+    if len(vector) != 1024 or any(isinstance(v, bool) or not isfinite(v) for v in vector):
+        raise ValueError("Embedding vector must be finite and have 1024 dimensions")
+
+
+    # Deterministic ID based on content
+    lesson_id = hashlib.md5(
+        f"{lesson.summary}{lesson.context}".encode()
+    ).hexdigest()
+
+    # Payload with metadata for structured filtering
+    payload = {
+        "summary": lesson.summary,
+        "context": lesson.context,
+        "what_happened": lesson.what_happened,
+        "root_cause": lesson.root_cause,
+        "recommendation": lesson.recommendation,
+        "project_type": lesson.project_type,
+        "project_phase": lesson.project_phase,
+        "category": lesson.category,
+        "impact_areas": [ia.value for ia in lesson.impact_areas],
+        "polarity": lesson.polarity.value,
+        "confidence": lesson.confidence,
+        "extraction_date": lesson.extraction_date.isoformat(),
+        "validation_status": "validated",
+        "times_surfaced": 0,     # How many times shown to a team
+        "times_useful": 0,       # How many times team marked as useful
+        "usefulness_ratio": 0.0  # Actual usefulness ratio
+    }
+
+    qdrant.upsert(
+        collection_name=COLLECTION_NAME,
+        points=[PointStruct(
+            id=str(UUID(lesson_id)),
+            vector=vector,
+            payload=payload
+        )]
+    )
+    return str(UUID(lesson_id))

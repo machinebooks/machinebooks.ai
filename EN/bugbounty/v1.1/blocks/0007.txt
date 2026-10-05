@@ -1,0 +1,11 @@
+~/bugbounty/discord-2026-q2/
+├── SYLVAR.md               # case context for the agent
+├── CLAUDE.md               # additional context if Claude Code is used in parallel
+├── .sylvarsec/
+│   ├── workspace.yaml      # tags, enabled-skill profiles
+│   ├── chats/              # case conversation history
+│   └── findings/           # structured findings
+├── binaries/               # target binaries (read-only mounted in Docker)
+├── analysis/               # scripts and skills outputs
+├── reports/                # report drafts in markdown
+└── poc/                    # proofs of concept

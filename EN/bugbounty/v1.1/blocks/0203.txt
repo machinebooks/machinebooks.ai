@@ -1,0 +1,4 @@
+// Forwarding via pragma — simpler but less control
+#pragma comment(linker, "/export:GetFileVersionInfoA=C:\\Windows\\System32\\version.GetFileVersionInfoA")
+#pragma comment(linker, "/export:GetFileVersionInfoW=C:\\Windows\\System32\\version.GetFileVersionInfoW")
+// ... (17 lines, one per export)

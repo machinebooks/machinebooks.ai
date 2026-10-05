@@ -1,0 +1,28 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# The omitted adapter conducts the actual interview and validates provenance and evidence.
+def validate_interview_response(record):
+    required = {"question_id", "dimension", "stakeholder", "role", "summary", "raw_response", "evidence_provided"}
+    if not isinstance(record, dict) or set(record) != required:
+        raise ValueError("Invalid canonical interview schema")
+    if any(type(record[k]) is not str or not record[k].strip() for k in required - {"evidence_provided"}):
+        raise ValueError("Missing interview identity or response")
+    if record["dimension"] not in {d.value for d in Dimension} or type(record["evidence_provided"]) is not bool:
+        raise ValueError("Invalid interview dimension or evidence flag")
+    return record
+
+def conduct_interview_turn(question, stakeholder_id, stakeholder_role, previous_responses, contradictions, response_adapter):
+    if any(type(v) is not str or not v.strip() for v in (question.id, stakeholder_id, stakeholder_role)):
+        raise ValueError("Interview requires question and stakeholder identity")
+    if not isinstance(question.dimension, Dimension) or not isinstance(previous_responses, list):
+        raise ValueError("Invalid question or accumulated responses")
+    if not isinstance(contradictions, list) or any(type(c) is not str or not c.strip() for c in contradictions):
+        raise ValueError("Invalid contradiction list")
+    previous = [validate_interview_response(r) for r in previous_responses]
+    context = [{k: r[k] for k in ("stakeholder", "role", "summary")} for r in previous if r["question_id"] == question.id]
+    result = response_adapter.conduct_and_record(question, stakeholder_id, stakeholder_role, context, contradictions)
+    validate_interview_response(result)
+    expected = (question.id, question.dimension.value, stakeholder_id, stakeholder_role)
+    actual = tuple(result[k] for k in ("question_id", "dimension", "stakeholder", "role"))
+    if actual != expected:
+        raise ValueError("Interview response identity mismatch")
+    return dict(result)

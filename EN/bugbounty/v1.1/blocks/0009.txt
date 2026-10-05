@@ -1,0 +1,22 @@
+{
+  "id": "dll-sideload-checker",
+  "version": "1.4.0",
+  "description": "Enumerates DLL sideload indicators for authorized review",
+  "entrypoint": "main.py",
+  "runtime": "python3.11",
+  "permissions": {
+    "filesystem": {
+      "read": ["${input.target_dir}"],
+      "write": ["${workspace}/analysis/dll-sideload"]
+    },
+    "network": "deny",
+    "processes": "deny"
+  },
+  "inputs": {
+    "target_dir": {"type": "string", "description": "Folder to analyze"}
+  },
+  "outputs": {
+    "report_path": {"type": "string"},
+    "findings_count": {"type": "integer"}
+  }
+}

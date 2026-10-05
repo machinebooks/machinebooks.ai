@@ -1,17 +1,24 @@
 {
   "editorial_version": "1.1",
-  "source_word_sha256": "cfcb64ee0f1b3c870cd8aef8d200999498ed3446da89c6f669fcd199bf9ca103",
+  "source_word_sha256": "8e7d1d134d8c0b4513593e5fbf7c2ce9b96faffb7daf104aa4125b2e00cada17",
   "source_file": "The-User-and-the-Machine.docx",
   "language": "en",
   "scope": "educational SourceCode blocks; private desktop and core excluded",
   "extraction": "literal w:t, line breaks w:br/w:cr and tabs w:tab in document order; UTF-8 without added headers",
   "block_count": 630,
   "execution_status": "not established by extraction",
+  "manuscript_final_four_sha256": {
+    "El-Usuario-y-la-Maquina_Fv.docx": "d0f3dfec4173ec726ec343f73767cd2e6766979b121980dec516eb0598695059",
+    "El-Usuario-y-la-Maquina_Fv.epub": "2272a9269b7e711fd17b1b0fc6f94f2b5f9252da3ee39f54c04ea0b4386c5cbe",
+    "The-User-and-the-Machine.docx": "8e7d1d134d8c0b4513593e5fbf7c2ce9b96faffb7daf104aa4125b2e00cada17",
+    "The-User-and-the-Machine.epub": "76b8cc615e8cc12ea29ea7c3bf31ea022daa12dbdc935fda0828224eb4cba13f"
+  },
+  "canonical_promotion_receipt_sha256": "814833a308a14facd1838a3a80efd7eb786ed432bb4434d024453cdb5ab27ebb",
   "blocks": [
     {
       "id": 1,
       "file": "blocks/0001.txt",
-      "word_paragraph_index_zero_based": 279,
+      "word_paragraph_index_zero_based": 212,
       "heading_context": [
         "Chapter 1 — You Already Use AI, but Not an Agent",
         "3. Do it yourself",
@@ -23,7 +30,7 @@
     {
       "id": 2,
       "file": "blocks/0002.txt",
-      "word_paragraph_index_zero_based": 282,
+      "word_paragraph_index_zero_based": 215,
       "heading_context": [
         "Chapter 1 — You Already Use AI, but Not an Agent",
         "3. Do it yourself",
@@ -35,7 +42,7 @@
     {
       "id": 3,
       "file": "blocks/0003.txt",
-      "word_paragraph_index_zero_based": 289,
+      "word_paragraph_index_zero_based": 222,
       "heading_context": [
         "Chapter 1 — You Already Use AI, but Not an Agent",
         "3. Do it yourself",
@@ -47,7 +54,7 @@
     {
       "id": 4,
       "file": "blocks/0004.txt",
-      "word_paragraph_index_zero_based": 292,
+      "word_paragraph_index_zero_based": 225,
       "heading_context": [
         "Chapter 1 — You Already Use AI, but Not an Agent",
         "3. Do it yourself",
@@ -59,7 +66,7 @@
     {
       "id": 5,
       "file": "blocks/0005.txt",
-      "word_paragraph_index_zero_based": 317,
+      "word_paragraph_index_zero_based": 238,
       "heading_context": [
         "Chapter 1 — You Already Use AI, but Not an Agent",
         "3. Do it yourself",
@@ -71,7 +78,7 @@
     {
       "id": 6,
       "file": "blocks/0006.txt",
-      "word_paragraph_index_zero_based": 319,
+      "word_paragraph_index_zero_based": 240,
       "heading_context": [
         "Chapter 1 — You Already Use AI, but Not an Agent",
         "3. Do it yourself",
@@ -83,7 +90,7 @@
     {
       "id": 7,
       "file": "blocks/0007.txt",
-      "word_paragraph_index_zero_based": 493,
+      "word_paragraph_index_zero_based": 373,
       "heading_context": [
         "Chapter 2 — Your First Agent: Claude.ai, Claude Code, and VS Code",
         "3. Do it yourself",
@@ -95,7 +102,7 @@
     {
       "id": 8,
       "file": "blocks/0008.txt",
-      "word_paragraph_index_zero_based": 496,
+      "word_paragraph_index_zero_based": 376,
       "heading_context": [
         "Chapter 2 — Your First Agent: Claude.ai, Claude Code, and VS Code",
         "3. Do it yourself",
@@ -107,7 +114,7 @@
     {
       "id": 9,
       "file": "blocks/0009.txt",
-      "word_paragraph_index_zero_based": 508,
+      "word_paragraph_index_zero_based": 388,
       "heading_context": [
         "Chapter 2 — Your First Agent: Claude.ai, Claude Code, and VS Code",
         "3. Do it yourself",
@@ -119,7 +126,7 @@
     {
       "id": 10,
       "file": "blocks/0010.txt",
-      "word_paragraph_index_zero_based": 513,
+      "word_paragraph_index_zero_based": 393,
       "heading_context": [
         "Chapter 2 — Your First Agent: Claude.ai, Claude Code, and VS Code",
         "3. Do it yourself",
@@ -131,7 +138,7 @@
     {
       "id": 11,
       "file": "blocks/0011.txt",
-      "word_paragraph_index_zero_based": 518,
+      "word_paragraph_index_zero_based": 398,
       "heading_context": [
         "Chapter 2 — Your First Agent: Claude.ai, Claude Code, and VS Code",
         "3. Do it yourself",
@@ -143,7 +150,7 @@
     {
       "id": 12,
       "file": "blocks/0012.txt",
-      "word_paragraph_index_zero_based": 522,
+      "word_paragraph_index_zero_based": 402,
       "heading_context": [
         "Chapter 2 — Your First Agent: Claude.ai, Claude Code, and VS Code",
         "3. Do it yourself",
@@ -155,7 +162,7 @@
     {
       "id": 13,
       "file": "blocks/0013.txt",
-      "word_paragraph_index_zero_based": 525,
+      "word_paragraph_index_zero_based": 405,
       "heading_context": [
         "Chapter 2 — Your First Agent: Claude.ai, Claude Code, and VS Code",
         "3. Do it yourself",
@@ -167,7 +174,7 @@
     {
       "id": 14,
       "file": "blocks/0014.txt",
-      "word_paragraph_index_zero_based": 530,
+      "word_paragraph_index_zero_based": 410,
       "heading_context": [
         "Chapter 2 — Your First Agent: Claude.ai, Claude Code, and VS Code",
         "3. Do it yourself",
@@ -179,7 +186,7 @@
     {
       "id": 15,
       "file": "blocks/0015.txt",
-      "word_paragraph_index_zero_based": 537,
+      "word_paragraph_index_zero_based": 417,
       "heading_context": [
         "Chapter 2 — Your First Agent: Claude.ai, Claude Code, and VS Code",
         "3. Do it yourself",
@@ -191,7 +198,7 @@
     {
       "id": 16,
       "file": "blocks/0016.txt",
-      "word_paragraph_index_zero_based": 556,
+      "word_paragraph_index_zero_based": 436,
       "heading_context": [
         "Chapter 2 — Your First Agent: Claude.ai, Claude Code, and VS Code",
         "3. Do it yourself",
@@ -203,7 +210,7 @@
     {
       "id": 17,
       "file": "blocks/0017.txt",
-      "word_paragraph_index_zero_based": 563,
+      "word_paragraph_index_zero_based": 443,
       "heading_context": [
         "Chapter 2 — Your First Agent: Claude.ai, Claude Code, and VS Code",
         "3. Do it yourself",
@@ -215,7 +222,7 @@
     {
       "id": 18,
       "file": "blocks/0018.txt",
-      "word_paragraph_index_zero_based": 565,
+      "word_paragraph_index_zero_based": 445,
       "heading_context": [
         "Chapter 2 — Your First Agent: Claude.ai, Claude Code, and VS Code",
         "3. Do it yourself",
@@ -227,7 +234,7 @@
     {
       "id": 19,
       "file": "blocks/0019.txt",
-      "word_paragraph_index_zero_based": 567,
+      "word_paragraph_index_zero_based": 447,
       "heading_context": [
         "Chapter 2 — Your First Agent: Claude.ai, Claude Code, and VS Code",
         "3. Do it yourself",
@@ -239,7 +246,7 @@
     {
       "id": 20,
       "file": "blocks/0020.txt",
-      "word_paragraph_index_zero_based": 569,
+      "word_paragraph_index_zero_based": 449,
       "heading_context": [
         "Chapter 2 — Your First Agent: Claude.ai, Claude Code, and VS Code",
         "3. Do it yourself",
@@ -251,7 +258,7 @@
     {
       "id": 21,
       "file": "blocks/0021.txt",
-      "word_paragraph_index_zero_based": 581,
+      "word_paragraph_index_zero_based": 461,
       "heading_context": [
         "Chapter 2 — Your First Agent: Claude.ai, Claude Code, and VS Code",
         "3. Do it yourself",
@@ -263,7 +270,7 @@
     {
       "id": 22,
       "file": "blocks/0022.txt",
-      "word_paragraph_index_zero_based": 584,
+      "word_paragraph_index_zero_based": 464,
       "heading_context": [
         "Chapter 2 — Your First Agent: Claude.ai, Claude Code, and VS Code",
         "3. Do it yourself",
@@ -275,7 +282,7 @@
     {
       "id": 23,
       "file": "blocks/0023.txt",
-      "word_paragraph_index_zero_based": 600,
+      "word_paragraph_index_zero_based": 480,
       "heading_context": [
         "Chapter 2 — Your First Agent: Claude.ai, Claude Code, and VS Code",
         "3. Do it yourself",
@@ -287,7 +294,7 @@
     {
       "id": 24,
       "file": "blocks/0024.txt",
-      "word_paragraph_index_zero_based": 607,
+      "word_paragraph_index_zero_based": 487,
       "heading_context": [
         "Chapter 2 — Your First Agent: Claude.ai, Claude Code, and VS Code",
         "3. Do it yourself",
@@ -299,7 +306,7 @@
     {
       "id": 25,
       "file": "blocks/0025.txt",
-      "word_paragraph_index_zero_based": 612,
+      "word_paragraph_index_zero_based": 492,
       "heading_context": [
         "Chapter 2 — Your First Agent: Claude.ai, Claude Code, and VS Code",
         "3. Do it yourself",
@@ -311,7 +318,7 @@
     {
       "id": 26,
       "file": "blocks/0026.txt",
-      "word_paragraph_index_zero_based": 618,
+      "word_paragraph_index_zero_based": 498,
       "heading_context": [
         "Chapter 2 — Your First Agent: Claude.ai, Claude Code, and VS Code",
         "3. Do it yourself",
@@ -323,7 +330,7 @@
     {
       "id": 27,
       "file": "blocks/0027.txt",
-      "word_paragraph_index_zero_based": 652,
+      "word_paragraph_index_zero_based": 532,
       "heading_context": [
         "Chapter 2 — Your First Agent: Claude.ai, Claude Code, and VS Code",
         "3. Do it yourself",
@@ -335,7 +342,7 @@
     {
       "id": 28,
       "file": "blocks/0028.txt",
-      "word_paragraph_index_zero_based": 655,
+      "word_paragraph_index_zero_based": 535,
       "heading_context": [
         "Chapter 2 — Your First Agent: Claude.ai, Claude Code, and VS Code",
         "3. Do it yourself",
@@ -347,7 +354,7 @@
     {
       "id": 29,
       "file": "blocks/0029.txt",
-      "word_paragraph_index_zero_based": 704,
+      "word_paragraph_index_zero_based": 584,
       "heading_context": [
         "Chapter 3 — Anatomy of an Agent: Tools, Context, and Autonomy",
         "2. The solution"
@@ -358,7 +365,7 @@
     {
       "id": 30,
       "file": "blocks/0030.txt",
-      "word_paragraph_index_zero_based": 824,
+      "word_paragraph_index_zero_based": 668,
       "heading_context": [
         "Chapter 3 — Anatomy of an Agent: Tools, Context, and Autonomy",
         "2. The solution",
@@ -370,7 +377,7 @@
     {
       "id": 31,
       "file": "blocks/0031.txt",
-      "word_paragraph_index_zero_based": 827,
+      "word_paragraph_index_zero_based": 671,
       "heading_context": [
         "Chapter 3 — Anatomy of an Agent: Tools, Context, and Autonomy",
         "2. The solution",
@@ -382,7 +389,7 @@
     {
       "id": 32,
       "file": "blocks/0032.txt",
-      "word_paragraph_index_zero_based": 868,
+      "word_paragraph_index_zero_based": 694,
       "heading_context": [
         "Chapter 3 — Anatomy of an Agent: Tools, Context, and Autonomy",
         "3. Do it yourself",
@@ -394,7 +401,7 @@
     {
       "id": 33,
       "file": "blocks/0033.txt",
-      "word_paragraph_index_zero_based": 870,
+      "word_paragraph_index_zero_based": 696,
       "heading_context": [
         "Chapter 3 — Anatomy of an Agent: Tools, Context, and Autonomy",
         "3. Do it yourself",
@@ -406,7 +413,7 @@
     {
       "id": 34,
       "file": "blocks/0034.txt",
-      "word_paragraph_index_zero_based": 873,
+      "word_paragraph_index_zero_based": 699,
       "heading_context": [
         "Chapter 3 — Anatomy of an Agent: Tools, Context, and Autonomy",
         "3. Do it yourself",
@@ -418,7 +425,7 @@
     {
       "id": 35,
       "file": "blocks/0035.txt",
-      "word_paragraph_index_zero_based": 878,
+      "word_paragraph_index_zero_based": 704,
       "heading_context": [
         "Chapter 3 — Anatomy of an Agent: Tools, Context, and Autonomy",
         "3. Do it yourself",
@@ -430,7 +437,7 @@
     {
       "id": 36,
       "file": "blocks/0036.txt",
-      "word_paragraph_index_zero_based": 883,
+      "word_paragraph_index_zero_based": 709,
       "heading_context": [
         "Chapter 3 — Anatomy of an Agent: Tools, Context, and Autonomy",
         "3. Do it yourself",
@@ -442,7 +449,7 @@
     {
       "id": 37,
       "file": "blocks/0037.txt",
-      "word_paragraph_index_zero_based": 895,
+      "word_paragraph_index_zero_based": 721,
       "heading_context": [
         "Chapter 3 — Anatomy of an Agent: Tools, Context, and Autonomy",
         "3. Do it yourself",
@@ -454,7 +461,7 @@
     {
       "id": 38,
       "file": "blocks/0038.txt",
-      "word_paragraph_index_zero_based": 897,
+      "word_paragraph_index_zero_based": 723,
       "heading_context": [
         "Chapter 3 — Anatomy of an Agent: Tools, Context, and Autonomy",
         "3. Do it yourself",
@@ -466,7 +473,7 @@
     {
       "id": 39,
       "file": "blocks/0039.txt",
-      "word_paragraph_index_zero_based": 899,
+      "word_paragraph_index_zero_based": 725,
       "heading_context": [
         "Chapter 3 — Anatomy of an Agent: Tools, Context, and Autonomy",
         "3. Do it yourself",
@@ -478,7 +485,7 @@
     {
       "id": 40,
       "file": "blocks/0040.txt",
-      "word_paragraph_index_zero_based": 909,
+      "word_paragraph_index_zero_based": 735,
       "heading_context": [
         "Chapter 3 — Anatomy of an Agent: Tools, Context, and Autonomy",
         "3. Do it yourself",
@@ -490,7 +497,7 @@
     {
       "id": 41,
       "file": "blocks/0041.txt",
-      "word_paragraph_index_zero_based": 911,
+      "word_paragraph_index_zero_based": 737,
       "heading_context": [
         "Chapter 3 — Anatomy of an Agent: Tools, Context, and Autonomy",
         "3. Do it yourself",
@@ -502,7 +509,7 @@
     {
       "id": 42,
       "file": "blocks/0042.txt",
-      "word_paragraph_index_zero_based": 913,
+      "word_paragraph_index_zero_based": 739,
       "heading_context": [
         "Chapter 3 — Anatomy of an Agent: Tools, Context, and Autonomy",
         "3. Do it yourself",
@@ -514,7 +521,7 @@
     {
       "id": 43,
       "file": "blocks/0043.txt",
-      "word_paragraph_index_zero_based": 920,
+      "word_paragraph_index_zero_based": 746,
       "heading_context": [
         "Chapter 3 — Anatomy of an Agent: Tools, Context, and Autonomy",
         "3. Do it yourself",
@@ -526,7 +533,7 @@
     {
       "id": 44,
       "file": "blocks/0044.txt",
-      "word_paragraph_index_zero_based": 923,
+      "word_paragraph_index_zero_based": 749,
       "heading_context": [
         "Chapter 3 — Anatomy of an Agent: Tools, Context, and Autonomy",
         "3. Do it yourself",
@@ -538,7 +545,7 @@
     {
       "id": 45,
       "file": "blocks/0045.txt",
-      "word_paragraph_index_zero_based": 926,
+      "word_paragraph_index_zero_based": 752,
       "heading_context": [
         "Chapter 3 — Anatomy of an Agent: Tools, Context, and Autonomy",
         "3. Do it yourself",
@@ -550,7 +557,7 @@
     {
       "id": 46,
       "file": "blocks/0046.txt",
-      "word_paragraph_index_zero_based": 1039,
+      "word_paragraph_index_zero_based": 865,
       "heading_context": [
         "Chapter 4 — Files under control: analyze, rename, organize and transform",
         "3. Do it yourself",
@@ -562,7 +569,7 @@
     {
       "id": 47,
       "file": "blocks/0047.txt",
-      "word_paragraph_index_zero_based": 1043,
+      "word_paragraph_index_zero_based": 869,
       "heading_context": [
         "Chapter 4 — Files under control: analyze, rename, organize and transform",
         "3. Do it yourself",
@@ -574,7 +581,7 @@
     {
       "id": 48,
       "file": "blocks/0048.txt",
-      "word_paragraph_index_zero_based": 1046,
+      "word_paragraph_index_zero_based": 872,
       "heading_context": [
         "Chapter 4 — Files under control: analyze, rename, organize and transform",
         "3. Do it yourself",
@@ -586,7 +593,7 @@
     {
       "id": 49,
       "file": "blocks/0049.txt",
-      "word_paragraph_index_zero_based": 1050,
+      "word_paragraph_index_zero_based": 876,
       "heading_context": [
         "Chapter 4 — Files under control: analyze, rename, organize and transform",
         "3. Do it yourself",
@@ -598,7 +605,7 @@
     {
       "id": 50,
       "file": "blocks/0050.txt",
-      "word_paragraph_index_zero_based": 1052,
+      "word_paragraph_index_zero_based": 878,
       "heading_context": [
         "Chapter 4 — Files under control: analyze, rename, organize and transform",
         "3. Do it yourself",
@@ -610,7 +617,7 @@
     {
       "id": 51,
       "file": "blocks/0051.txt",
-      "word_paragraph_index_zero_based": 1080,
+      "word_paragraph_index_zero_based": 886,
       "heading_context": [
         "Chapter 4 — Files under control: analyze, rename, organize and transform",
         "3. Do it yourself",
@@ -622,7 +629,7 @@
     {
       "id": 52,
       "file": "blocks/0052.txt",
-      "word_paragraph_index_zero_based": 1082,
+      "word_paragraph_index_zero_based": 888,
       "heading_context": [
         "Chapter 4 — Files under control: analyze, rename, organize and transform",
         "3. Do it yourself",
@@ -634,7 +641,7 @@
     {
       "id": 53,
       "file": "blocks/0053.txt",
-      "word_paragraph_index_zero_based": 1084,
+      "word_paragraph_index_zero_based": 890,
       "heading_context": [
         "Chapter 4 — Files under control: analyze, rename, organize and transform",
         "3. Do it yourself",
@@ -646,7 +653,7 @@
     {
       "id": 54,
       "file": "blocks/0054.txt",
-      "word_paragraph_index_zero_based": 1092,
+      "word_paragraph_index_zero_based": 898,
       "heading_context": [
         "Chapter 4 — Files under control: analyze, rename, organize and transform",
         "3. Do it yourself",
@@ -658,7 +665,7 @@
     {
       "id": 55,
       "file": "blocks/0055.txt",
-      "word_paragraph_index_zero_based": 1114,
+      "word_paragraph_index_zero_based": 905,
       "heading_context": [
         "Chapter 4 — Files under control: analyze, rename, organize and transform",
         "3. Do it yourself",
@@ -670,7 +677,7 @@
     {
       "id": 56,
       "file": "blocks/0056.txt",
-      "word_paragraph_index_zero_based": 1120,
+      "word_paragraph_index_zero_based": 911,
       "heading_context": [
         "Chapter 4 — Files under control: analyze, rename, organize and transform",
         "3. Do it yourself",
@@ -682,7 +689,7 @@
     {
       "id": 57,
       "file": "blocks/0057.txt",
-      "word_paragraph_index_zero_based": 1127,
+      "word_paragraph_index_zero_based": 918,
       "heading_context": [
         "Chapter 4 — Files under control: analyze, rename, organize and transform",
         "3. Do it yourself",
@@ -694,7 +701,7 @@
     {
       "id": 58,
       "file": "blocks/0058.txt",
-      "word_paragraph_index_zero_based": 1129,
+      "word_paragraph_index_zero_based": 920,
       "heading_context": [
         "Chapter 4 — Files under control: analyze, rename, organize and transform",
         "3. Do it yourself",
@@ -706,7 +713,7 @@
     {
       "id": 59,
       "file": "blocks/0059.txt",
-      "word_paragraph_index_zero_based": 1131,
+      "word_paragraph_index_zero_based": 922,
       "heading_context": [
         "Chapter 4 — Files under control: analyze, rename, organize and transform",
         "3. Do it yourself",
@@ -718,7 +725,7 @@
     {
       "id": 60,
       "file": "blocks/0060.txt",
-      "word_paragraph_index_zero_based": 1133,
+      "word_paragraph_index_zero_based": 924,
       "heading_context": [
         "Chapter 4 — Files under control: analyze, rename, organize and transform",
         "3. Do it yourself",
@@ -730,7 +737,7 @@
     {
       "id": 61,
       "file": "blocks/0061.txt",
-      "word_paragraph_index_zero_based": 1135,
+      "word_paragraph_index_zero_based": 926,
       "heading_context": [
         "Chapter 4 — Files under control: analyze, rename, organize and transform",
         "3. Do it yourself",
@@ -742,7 +749,7 @@
     {
       "id": 62,
       "file": "blocks/0062.txt",
-      "word_paragraph_index_zero_based": 1192,
+      "word_paragraph_index_zero_based": 963,
       "heading_context": [
         "Chapter 4 — Files under control: analyze, rename, organize and transform",
         "3. Do it yourself",
@@ -754,7 +761,7 @@
     {
       "id": 63,
       "file": "blocks/0063.txt",
-      "word_paragraph_index_zero_based": 1198,
+      "word_paragraph_index_zero_based": 969,
       "heading_context": [
         "Chapter 4 — Files under control: analyze, rename, organize and transform",
         "3. Do it yourself",
@@ -766,7 +773,7 @@
     {
       "id": 64,
       "file": "blocks/0064.txt",
-      "word_paragraph_index_zero_based": 1292,
+      "word_paragraph_index_zero_based": 1063,
       "heading_context": [
         "Chapter 5 — From PDF to data: extracting information from documents",
         "3. Do it yourself",
@@ -778,7 +785,7 @@
     {
       "id": 65,
       "file": "blocks/0065.txt",
-      "word_paragraph_index_zero_based": 1294,
+      "word_paragraph_index_zero_based": 1065,
       "heading_context": [
         "Chapter 5 — From PDF to data: extracting information from documents",
         "3. Do it yourself",
@@ -790,7 +797,7 @@
     {
       "id": 66,
       "file": "blocks/0066.txt",
-      "word_paragraph_index_zero_based": 1304,
+      "word_paragraph_index_zero_based": 1075,
       "heading_context": [
         "Chapter 5 — From PDF to data: extracting information from documents",
         "3. Do it yourself",
@@ -802,7 +809,7 @@
     {
       "id": 67,
       "file": "blocks/0067.txt",
-      "word_paragraph_index_zero_based": 1310,
+      "word_paragraph_index_zero_based": 1081,
       "heading_context": [
         "Chapter 5 — From PDF to data: extracting information from documents",
         "3. Do it yourself",
@@ -814,7 +821,7 @@
     {
       "id": 68,
       "file": "blocks/0068.txt",
-      "word_paragraph_index_zero_based": 1314,
+      "word_paragraph_index_zero_based": 1085,
       "heading_context": [
         "Chapter 5 — From PDF to data: extracting information from documents",
         "3. Do it yourself",
@@ -826,7 +833,7 @@
     {
       "id": 69,
       "file": "blocks/0069.txt",
-      "word_paragraph_index_zero_based": 1319,
+      "word_paragraph_index_zero_based": 1090,
       "heading_context": [
         "Chapter 5 — From PDF to data: extracting information from documents",
         "3. Do it yourself",
@@ -838,7 +845,7 @@
     {
       "id": 70,
       "file": "blocks/0070.txt",
-      "word_paragraph_index_zero_based": 1325,
+      "word_paragraph_index_zero_based": 1096,
       "heading_context": [
         "Chapter 5 — From PDF to data: extracting information from documents",
         "3. Do it yourself",
@@ -850,7 +857,7 @@
     {
       "id": 71,
       "file": "blocks/0071.txt",
-      "word_paragraph_index_zero_based": 1334,
+      "word_paragraph_index_zero_based": 1105,
       "heading_context": [
         "Chapter 5 — From PDF to data: extracting information from documents",
         "3. Do it yourself",
@@ -862,7 +869,7 @@
     {
       "id": 72,
       "file": "blocks/0072.txt",
-      "word_paragraph_index_zero_based": 1339,
+      "word_paragraph_index_zero_based": 1110,
       "heading_context": [
         "Chapter 5 — From PDF to data: extracting information from documents",
         "3. Do it yourself",
@@ -874,7 +881,7 @@
     {
       "id": 73,
       "file": "blocks/0073.txt",
-      "word_paragraph_index_zero_based": 1351,
+      "word_paragraph_index_zero_based": 1122,
       "heading_context": [
         "Chapter 5 — From PDF to data: extracting information from documents",
         "3. Do it yourself",
@@ -886,7 +893,7 @@
     {
       "id": 74,
       "file": "blocks/0074.txt",
-      "word_paragraph_index_zero_based": 1353,
+      "word_paragraph_index_zero_based": 1124,
       "heading_context": [
         "Chapter 5 — From PDF to data: extracting information from documents",
         "3. Do it yourself",
@@ -898,7 +905,7 @@
     {
       "id": 75,
       "file": "blocks/0075.txt",
-      "word_paragraph_index_zero_based": 1355,
+      "word_paragraph_index_zero_based": 1126,
       "heading_context": [
         "Chapter 5 — From PDF to data: extracting information from documents",
         "3. Do it yourself",
@@ -910,7 +917,7 @@
     {
       "id": 76,
       "file": "blocks/0076.txt",
-      "word_paragraph_index_zero_based": 1400,
+      "word_paragraph_index_zero_based": 1151,
       "heading_context": [
         "Chapter 5 — From PDF to data: extracting information from documents",
         "3. Do it yourself",
@@ -922,7 +929,7 @@
     {
       "id": 77,
       "file": "blocks/0077.txt",
-      "word_paragraph_index_zero_based": 1402,
+      "word_paragraph_index_zero_based": 1153,
       "heading_context": [
         "Chapter 5 — From PDF to data: extracting information from documents",
         "3. Do it yourself",
@@ -934,7 +941,7 @@
     {
       "id": 78,
       "file": "blocks/0078.txt",
-      "word_paragraph_index_zero_based": 1406,
+      "word_paragraph_index_zero_based": 1157,
       "heading_context": [
         "Chapter 5 — From PDF to data: extracting information from documents",
         "3. Do it yourself",
@@ -946,7 +953,7 @@
     {
       "id": 79,
       "file": "blocks/0079.txt",
-      "word_paragraph_index_zero_based": 1410,
+      "word_paragraph_index_zero_based": 1161,
       "heading_context": [
         "Chapter 5 — From PDF to data: extracting information from documents",
         "3. Do it yourself",
@@ -958,7 +965,7 @@
     {
       "id": 80,
       "file": "blocks/0080.txt",
-      "word_paragraph_index_zero_based": 1507,
+      "word_paragraph_index_zero_based": 1258,
       "heading_context": [
         "Chapter 6 — Reports that write themselves",
         "3. Do it yourself",
@@ -970,7 +977,7 @@
     {
       "id": 81,
       "file": "blocks/0081.txt",
-      "word_paragraph_index_zero_based": 1512,
+      "word_paragraph_index_zero_based": 1263,
       "heading_context": [
         "Chapter 6 — Reports that write themselves",
         "3. Do it yourself",
@@ -982,7 +989,7 @@
     {
       "id": 82,
       "file": "blocks/0082.txt",
-      "word_paragraph_index_zero_based": 1514,
+      "word_paragraph_index_zero_based": 1265,
       "heading_context": [
         "Chapter 6 — Reports that write themselves",
         "3. Do it yourself",
@@ -994,7 +1001,7 @@
     {
       "id": 83,
       "file": "blocks/0083.txt",
-      "word_paragraph_index_zero_based": 1543,
+      "word_paragraph_index_zero_based": 1269,
       "heading_context": [
         "Chapter 6 — Reports that write themselves",
         "3. Do it yourself",
@@ -1006,7 +1013,7 @@
     {
       "id": 84,
       "file": "blocks/0084.txt",
-      "word_paragraph_index_zero_based": 1547,
+      "word_paragraph_index_zero_based": 1273,
       "heading_context": [
         "Chapter 6 — Reports that write themselves",
         "3. Do it yourself",
@@ -1018,7 +1025,7 @@
     {
       "id": 85,
       "file": "blocks/0085.txt",
-      "word_paragraph_index_zero_based": 1551,
+      "word_paragraph_index_zero_based": 1277,
       "heading_context": [
         "Chapter 6 — Reports that write themselves",
         "3. Do it yourself",
@@ -1030,7 +1037,7 @@
     {
       "id": 86,
       "file": "blocks/0086.txt",
-      "word_paragraph_index_zero_based": 1556,
+      "word_paragraph_index_zero_based": 1282,
       "heading_context": [
         "Chapter 6 — Reports that write themselves",
         "3. Do it yourself",
@@ -1042,7 +1049,7 @@
     {
       "id": 87,
       "file": "blocks/0087.txt",
-      "word_paragraph_index_zero_based": 1561,
+      "word_paragraph_index_zero_based": 1287,
       "heading_context": [
         "Chapter 6 — Reports that write themselves",
         "3. Do it yourself",
@@ -1054,7 +1061,7 @@
     {
       "id": 88,
       "file": "blocks/0088.txt",
-      "word_paragraph_index_zero_based": 1563,
+      "word_paragraph_index_zero_based": 1289,
       "heading_context": [
         "Chapter 6 — Reports that write themselves",
         "3. Do it yourself",
@@ -1066,7 +1073,7 @@
     {
       "id": 89,
       "file": "blocks/0089.txt",
-      "word_paragraph_index_zero_based": 1565,
+      "word_paragraph_index_zero_based": 1291,
       "heading_context": [
         "Chapter 6 — Reports that write themselves",
         "3. Do it yourself",
@@ -1078,7 +1085,7 @@
     {
       "id": 90,
       "file": "blocks/0090.txt",
-      "word_paragraph_index_zero_based": 1567,
+      "word_paragraph_index_zero_based": 1293,
       "heading_context": [
         "Chapter 6 — Reports that write themselves",
         "3. Do it yourself",
@@ -1090,7 +1097,7 @@
     {
       "id": 91,
       "file": "blocks/0091.txt",
-      "word_paragraph_index_zero_based": 1585,
+      "word_paragraph_index_zero_based": 1311,
       "heading_context": [
         "Chapter 6 — Reports that write themselves",
         "3. Do it yourself",
@@ -1102,7 +1109,7 @@
     {
       "id": 92,
       "file": "blocks/0092.txt",
-      "word_paragraph_index_zero_based": 1596,
+      "word_paragraph_index_zero_based": 1322,
       "heading_context": [
         "Chapter 6 — Reports that write themselves",
         "3. Do it yourself",
@@ -1114,7 +1121,7 @@
     {
       "id": 93,
       "file": "blocks/0093.txt",
-      "word_paragraph_index_zero_based": 1609,
+      "word_paragraph_index_zero_based": 1335,
       "heading_context": [
         "Chapter 6 — Reports that write themselves",
         "3. Do it yourself",
@@ -1126,7 +1133,7 @@
     {
       "id": 94,
       "file": "blocks/0094.txt",
-      "word_paragraph_index_zero_based": 1614,
+      "word_paragraph_index_zero_based": 1340,
       "heading_context": [
         "Chapter 6 — Reports that write themselves",
         "3. Do it yourself",
@@ -1138,7 +1145,7 @@
     {
       "id": 95,
       "file": "blocks/0095.txt",
-      "word_paragraph_index_zero_based": 1622,
+      "word_paragraph_index_zero_based": 1348,
       "heading_context": [
         "Chapter 6 — Reports that write themselves",
         "3. Do it yourself",
@@ -1150,7 +1157,7 @@
     {
       "id": 96,
       "file": "blocks/0096.txt",
-      "word_paragraph_index_zero_based": 1719,
+      "word_paragraph_index_zero_based": 1445,
       "heading_context": [
         "Chapter 7 — Presentations with structure",
         "3. Do it yourself",
@@ -1162,7 +1169,7 @@
     {
       "id": 97,
       "file": "blocks/0097.txt",
-      "word_paragraph_index_zero_based": 1728,
+      "word_paragraph_index_zero_based": 1454,
       "heading_context": [
         "Chapter 7 — Presentations with structure",
         "3. Do it yourself",
@@ -1174,7 +1181,7 @@
     {
       "id": 98,
       "file": "blocks/0098.txt",
-      "word_paragraph_index_zero_based": 1731,
+      "word_paragraph_index_zero_based": 1457,
       "heading_context": [
         "Chapter 7 — Presentations with structure",
         "3. Do it yourself",
@@ -1186,7 +1193,7 @@
     {
       "id": 99,
       "file": "blocks/0099.txt",
-      "word_paragraph_index_zero_based": 1740,
+      "word_paragraph_index_zero_based": 1466,
       "heading_context": [
         "Chapter 7 — Presentations with structure",
         "3. Do it yourself",
@@ -1198,7 +1205,7 @@
     {
       "id": 100,
       "file": "blocks/0100.txt",
-      "word_paragraph_index_zero_based": 1744,
+      "word_paragraph_index_zero_based": 1470,
       "heading_context": [
         "Chapter 7 — Presentations with structure",
         "3. Do it yourself",
@@ -1210,7 +1217,7 @@
     {
       "id": 101,
       "file": "blocks/0101.txt",
-      "word_paragraph_index_zero_based": 1748,
+      "word_paragraph_index_zero_based": 1474,
       "heading_context": [
         "Chapter 7 — Presentations with structure",
         "3. Do it yourself",
@@ -1222,7 +1229,7 @@
     {
       "id": 102,
       "file": "blocks/0102.txt",
-      "word_paragraph_index_zero_based": 1753,
+      "word_paragraph_index_zero_based": 1479,
       "heading_context": [
         "Chapter 7 — Presentations with structure",
         "3. Do it yourself",
@@ -1234,7 +1241,7 @@
     {
       "id": 103,
       "file": "blocks/0103.txt",
-      "word_paragraph_index_zero_based": 1755,
+      "word_paragraph_index_zero_based": 1481,
       "heading_context": [
         "Chapter 7 — Presentations with structure",
         "3. Do it yourself",
@@ -1246,7 +1253,7 @@
     {
       "id": 104,
       "file": "blocks/0104.txt",
-      "word_paragraph_index_zero_based": 1757,
+      "word_paragraph_index_zero_based": 1483,
       "heading_context": [
         "Chapter 7 — Presentations with structure",
         "3. Do it yourself",
@@ -1258,7 +1265,7 @@
     {
       "id": 105,
       "file": "blocks/0105.txt",
-      "word_paragraph_index_zero_based": 1761,
+      "word_paragraph_index_zero_based": 1487,
       "heading_context": [
         "Chapter 7 — Presentations with structure",
         "3. Do it yourself",
@@ -1270,7 +1277,7 @@
     {
       "id": 106,
       "file": "blocks/0106.txt",
-      "word_paragraph_index_zero_based": 1765,
+      "word_paragraph_index_zero_based": 1491,
       "heading_context": [
         "Chapter 7 — Presentations with structure",
         "3. Do it yourself",
@@ -1282,7 +1289,7 @@
     {
       "id": 107,
       "file": "blocks/0107.txt",
-      "word_paragraph_index_zero_based": 1769,
+      "word_paragraph_index_zero_based": 1495,
       "heading_context": [
         "Chapter 7 — Presentations with structure",
         "3. Do it yourself",
@@ -1294,7 +1301,7 @@
     {
       "id": 108,
       "file": "blocks/0108.txt",
-      "word_paragraph_index_zero_based": 1775,
+      "word_paragraph_index_zero_based": 1501,
       "heading_context": [
         "Chapter 7 — Presentations with structure",
         "3. Do it yourself",
@@ -1306,7 +1313,7 @@
     {
       "id": 109,
       "file": "blocks/0109.txt",
-      "word_paragraph_index_zero_based": 1780,
+      "word_paragraph_index_zero_based": 1506,
       "heading_context": [
         "Chapter 7 — Presentations with structure",
         "3. Do it yourself",
@@ -1318,7 +1325,7 @@
     {
       "id": 110,
       "file": "blocks/0110.txt",
-      "word_paragraph_index_zero_based": 1798,
+      "word_paragraph_index_zero_based": 1524,
       "heading_context": [
         "Chapter 7 — Presentations with structure",
         "3. Do it yourself",
@@ -1330,7 +1337,7 @@
     {
       "id": 111,
       "file": "blocks/0111.txt",
-      "word_paragraph_index_zero_based": 1890,
+      "word_paragraph_index_zero_based": 1601,
       "heading_context": [
         "Chapter 8 — MCP: the bridge between the agent and your tools",
         "Adapting the method to other clients"
@@ -1341,7 +1348,7 @@
     {
       "id": 112,
       "file": "blocks/0112.txt",
-      "word_paragraph_index_zero_based": 1893,
+      "word_paragraph_index_zero_based": 1604,
       "heading_context": [
         "Chapter 8 — MCP: the bridge between the agent and your tools",
         "Adapting the method to other clients"
@@ -1352,7 +1359,7 @@
     {
       "id": 113,
       "file": "blocks/0113.txt",
-      "word_paragraph_index_zero_based": 1957,
+      "word_paragraph_index_zero_based": 1668,
       "heading_context": [
         "Chapter 8 — MCP: the bridge between the agent and your tools",
         "3. Do it yourself",
@@ -1364,7 +1371,7 @@
     {
       "id": 114,
       "file": "blocks/0114.txt",
-      "word_paragraph_index_zero_based": 1959,
+      "word_paragraph_index_zero_based": 1670,
       "heading_context": [
         "Chapter 8 — MCP: the bridge between the agent and your tools",
         "3. Do it yourself",
@@ -1376,7 +1383,7 @@
     {
       "id": 115,
       "file": "blocks/0115.txt",
-      "word_paragraph_index_zero_based": 1961,
+      "word_paragraph_index_zero_based": 1672,
       "heading_context": [
         "Chapter 8 — MCP: the bridge between the agent and your tools",
         "3. Do it yourself",
@@ -1388,7 +1395,7 @@
     {
       "id": 116,
       "file": "blocks/0116.txt",
-      "word_paragraph_index_zero_based": 1963,
+      "word_paragraph_index_zero_based": 1674,
       "heading_context": [
         "Chapter 8 — MCP: the bridge between the agent and your tools",
         "3. Do it yourself",
@@ -1400,7 +1407,7 @@
     {
       "id": 117,
       "file": "blocks/0117.txt",
-      "word_paragraph_index_zero_based": 1973,
+      "word_paragraph_index_zero_based": 1684,
       "heading_context": [
         "Chapter 8 — MCP: the bridge between the agent and your tools",
         "3. Do it yourself",
@@ -1412,7 +1419,7 @@
     {
       "id": 118,
       "file": "blocks/0118.txt",
-      "word_paragraph_index_zero_based": 1975,
+      "word_paragraph_index_zero_based": 1686,
       "heading_context": [
         "Chapter 8 — MCP: the bridge between the agent and your tools",
         "3. Do it yourself",
@@ -1424,7 +1431,7 @@
     {
       "id": 119,
       "file": "blocks/0119.txt",
-      "word_paragraph_index_zero_based": 1992,
+      "word_paragraph_index_zero_based": 1703,
       "heading_context": [
         "Chapter 8 — MCP: the bridge between the agent and your tools",
         "3. Do it yourself",
@@ -1436,7 +1443,7 @@
     {
       "id": 120,
       "file": "blocks/0120.txt",
-      "word_paragraph_index_zero_based": 1995,
+      "word_paragraph_index_zero_based": 1706,
       "heading_context": [
         "Chapter 8 — MCP: the bridge between the agent and your tools",
         "3. Do it yourself",
@@ -1448,7 +1455,7 @@
     {
       "id": 121,
       "file": "blocks/0121.txt",
-      "word_paragraph_index_zero_based": 1998,
+      "word_paragraph_index_zero_based": 1709,
       "heading_context": [
         "Chapter 8 — MCP: the bridge between the agent and your tools",
         "3. Do it yourself",
@@ -1460,7 +1467,7 @@
     {
       "id": 122,
       "file": "blocks/0122.txt",
-      "word_paragraph_index_zero_based": 2003,
+      "word_paragraph_index_zero_based": 1714,
       "heading_context": [
         "Chapter 8 — MCP: the bridge between the agent and your tools",
         "3. Do it yourself",
@@ -1472,7 +1479,7 @@
     {
       "id": 123,
       "file": "blocks/0123.txt",
-      "word_paragraph_index_zero_based": 2005,
+      "word_paragraph_index_zero_based": 1716,
       "heading_context": [
         "Chapter 8 — MCP: the bridge between the agent and your tools",
         "3. Do it yourself",
@@ -1484,7 +1491,7 @@
     {
       "id": 124,
       "file": "blocks/0124.txt",
-      "word_paragraph_index_zero_based": 2007,
+      "word_paragraph_index_zero_based": 1718,
       "heading_context": [
         "Chapter 8 — MCP: the bridge between the agent and your tools",
         "3. Do it yourself",
@@ -1496,7 +1503,7 @@
     {
       "id": 125,
       "file": "blocks/0125.txt",
-      "word_paragraph_index_zero_based": 2009,
+      "word_paragraph_index_zero_based": 1720,
       "heading_context": [
         "Chapter 8 — MCP: the bridge between the agent and your tools",
         "3. Do it yourself",
@@ -1508,7 +1515,7 @@
     {
       "id": 126,
       "file": "blocks/0126.txt",
-      "word_paragraph_index_zero_based": 2015,
+      "word_paragraph_index_zero_based": 1726,
       "heading_context": [
         "Chapter 8 — MCP: the bridge between the agent and your tools",
         "3. Do it yourself",
@@ -1520,7 +1527,7 @@
     {
       "id": 127,
       "file": "blocks/0127.txt",
-      "word_paragraph_index_zero_based": 2020,
+      "word_paragraph_index_zero_based": 1731,
       "heading_context": [
         "Chapter 8 — MCP: the bridge between the agent and your tools",
         "3. Do it yourself",
@@ -1532,7 +1539,7 @@
     {
       "id": 128,
       "file": "blocks/0128.txt",
-      "word_paragraph_index_zero_based": 2025,
+      "word_paragraph_index_zero_based": 1736,
       "heading_context": [
         "Chapter 8 — MCP: the bridge between the agent and your tools",
         "3. Do it yourself",
@@ -1544,7 +1551,7 @@
     {
       "id": 129,
       "file": "blocks/0129.txt",
-      "word_paragraph_index_zero_based": 2030,
+      "word_paragraph_index_zero_based": 1741,
       "heading_context": [
         "Chapter 8 — MCP: the bridge between the agent and your tools",
         "3. Do it yourself",
@@ -1556,7 +1563,7 @@
     {
       "id": 130,
       "file": "blocks/0130.txt",
-      "word_paragraph_index_zero_based": 2035,
+      "word_paragraph_index_zero_based": 1746,
       "heading_context": [
         "Chapter 8 — MCP: the bridge between the agent and your tools",
         "3. Do it yourself",
@@ -1568,7 +1575,7 @@
     {
       "id": 131,
       "file": "blocks/0131.txt",
-      "word_paragraph_index_zero_based": 2047,
+      "word_paragraph_index_zero_based": 1758,
       "heading_context": [
         "Chapter 8 — MCP: the bridge between the agent and your tools",
         "3. Do it yourself",
@@ -1580,7 +1587,7 @@
     {
       "id": 132,
       "file": "blocks/0132.txt",
-      "word_paragraph_index_zero_based": 2057,
+      "word_paragraph_index_zero_based": 1768,
       "heading_context": [
         "Chapter 8 — MCP: the bridge between the agent and your tools",
         "3. Do it yourself",
@@ -1592,7 +1599,7 @@
     {
       "id": 133,
       "file": "blocks/0133.txt",
-      "word_paragraph_index_zero_based": 2062,
+      "word_paragraph_index_zero_based": 1773,
       "heading_context": [
         "Chapter 8 — MCP: the bridge between the agent and your tools",
         "3. Do it yourself",
@@ -1604,7 +1611,7 @@
     {
       "id": 134,
       "file": "blocks/0134.txt",
-      "word_paragraph_index_zero_based": 2164,
+      "word_paragraph_index_zero_based": 1863,
       "heading_context": [
         "Chapter 9 — Connect everything: Gmail, Slack, GitHub, Jira, and more",
         "2. The solution",
@@ -1616,7 +1623,7 @@
     {
       "id": 135,
       "file": "blocks/0135.txt",
-      "word_paragraph_index_zero_based": 2166,
+      "word_paragraph_index_zero_based": 1865,
       "heading_context": [
         "Chapter 9 — Connect everything: Gmail, Slack, GitHub, Jira, and more",
         "2. The solution",
@@ -1628,7 +1635,7 @@
     {
       "id": 136,
       "file": "blocks/0136.txt",
-      "word_paragraph_index_zero_based": 2181,
+      "word_paragraph_index_zero_based": 1880,
       "heading_context": [
         "Chapter 9 — Connect everything: Gmail, Slack, GitHub, Jira, and more",
         "2. The solution",
@@ -1640,7 +1647,7 @@
     {
       "id": 137,
       "file": "blocks/0137.txt",
-      "word_paragraph_index_zero_based": 2202,
+      "word_paragraph_index_zero_based": 1901,
       "heading_context": [
         "Chapter 9 — Connect everything: Gmail, Slack, GitHub, Jira, and more",
         "2. The solution",
@@ -1652,7 +1659,7 @@
     {
       "id": 138,
       "file": "blocks/0138.txt",
-      "word_paragraph_index_zero_based": 2224,
+      "word_paragraph_index_zero_based": 1923,
       "heading_context": [
         "Chapter 9 — Connect everything: Gmail, Slack, GitHub, Jira, and more",
         "2. The solution",
@@ -1664,7 +1671,7 @@
     {
       "id": 139,
       "file": "blocks/0139.txt",
-      "word_paragraph_index_zero_based": 2241,
+      "word_paragraph_index_zero_based": 1940,
       "heading_context": [
         "Chapter 9 — Connect everything: Gmail, Slack, GitHub, Jira, and more",
         "2. The solution",
@@ -1676,7 +1683,7 @@
     {
       "id": 140,
       "file": "blocks/0140.txt",
-      "word_paragraph_index_zero_based": 2244,
+      "word_paragraph_index_zero_based": 1943,
       "heading_context": [
         "Chapter 9 — Connect everything: Gmail, Slack, GitHub, Jira, and more",
         "2. The solution",
@@ -1688,7 +1695,7 @@
     {
       "id": 141,
       "file": "blocks/0141.txt",
-      "word_paragraph_index_zero_based": 2247,
+      "word_paragraph_index_zero_based": 1946,
       "heading_context": [
         "Chapter 9 — Connect everything: Gmail, Slack, GitHub, Jira, and more",
         "2. The solution",
@@ -1700,7 +1707,7 @@
     {
       "id": 142,
       "file": "blocks/0142.txt",
-      "word_paragraph_index_zero_based": 2260,
+      "word_paragraph_index_zero_based": 1959,
       "heading_context": [
         "Chapter 9 — Connect everything: Gmail, Slack, GitHub, Jira, and more",
         "3. Do it yourself",
@@ -1712,7 +1719,7 @@
     {
       "id": 143,
       "file": "blocks/0143.txt",
-      "word_paragraph_index_zero_based": 2267,
+      "word_paragraph_index_zero_based": 1966,
       "heading_context": [
         "Chapter 9 — Connect everything: Gmail, Slack, GitHub, Jira, and more",
         "3. Do it yourself",
@@ -1724,7 +1731,7 @@
     {
       "id": 144,
       "file": "blocks/0144.txt",
-      "word_paragraph_index_zero_based": 2273,
+      "word_paragraph_index_zero_based": 1972,
       "heading_context": [
         "Chapter 9 — Connect everything: Gmail, Slack, GitHub, Jira, and more",
         "3. Do it yourself",
@@ -1736,7 +1743,7 @@
     {
       "id": 145,
       "file": "blocks/0145.txt",
-      "word_paragraph_index_zero_based": 2277,
+      "word_paragraph_index_zero_based": 1976,
       "heading_context": [
         "Chapter 9 — Connect everything: Gmail, Slack, GitHub, Jira, and more",
         "3. Do it yourself",
@@ -1748,7 +1755,7 @@
     {
       "id": 146,
       "file": "blocks/0146.txt",
-      "word_paragraph_index_zero_based": 2281,
+      "word_paragraph_index_zero_based": 1980,
       "heading_context": [
         "Chapter 9 — Connect everything: Gmail, Slack, GitHub, Jira, and more",
         "3. Do it yourself",
@@ -1760,7 +1767,7 @@
     {
       "id": 147,
       "file": "blocks/0147.txt",
-      "word_paragraph_index_zero_based": 2285,
+      "word_paragraph_index_zero_based": 1984,
       "heading_context": [
         "Chapter 9 — Connect everything: Gmail, Slack, GitHub, Jira, and more",
         "3. Do it yourself",
@@ -1772,7 +1779,7 @@
     {
       "id": 148,
       "file": "blocks/0148.txt",
-      "word_paragraph_index_zero_based": 2288,
+      "word_paragraph_index_zero_based": 1987,
       "heading_context": [
         "Chapter 9 — Connect everything: Gmail, Slack, GitHub, Jira, and more",
         "3. Do it yourself",
@@ -1784,7 +1791,7 @@
     {
       "id": 149,
       "file": "blocks/0149.txt",
-      "word_paragraph_index_zero_based": 2290,
+      "word_paragraph_index_zero_based": 1989,
       "heading_context": [
         "Chapter 9 — Connect everything: Gmail, Slack, GitHub, Jira, and more",
         "3. Do it yourself",
@@ -1796,7 +1803,7 @@
     {
       "id": 150,
       "file": "blocks/0150.txt",
-      "word_paragraph_index_zero_based": 2313,
+      "word_paragraph_index_zero_based": 2012,
       "heading_context": [
         "Chapter 9 — Connect everything: Gmail, Slack, GitHub, Jira, and more",
         "3. Do it yourself",
@@ -1808,7 +1815,7 @@
     {
       "id": 151,
       "file": "blocks/0151.txt",
-      "word_paragraph_index_zero_based": 2315,
+      "word_paragraph_index_zero_based": 2014,
       "heading_context": [
         "Chapter 9 — Connect everything: Gmail, Slack, GitHub, Jira, and more",
         "3. Do it yourself",
@@ -1820,7 +1827,7 @@
     {
       "id": 152,
       "file": "blocks/0152.txt",
-      "word_paragraph_index_zero_based": 2317,
+      "word_paragraph_index_zero_based": 2016,
       "heading_context": [
         "Chapter 9 — Connect everything: Gmail, Slack, GitHub, Jira, and more",
         "3. Do it yourself",
@@ -1832,7 +1839,7 @@
     {
       "id": 153,
       "file": "blocks/0153.txt",
-      "word_paragraph_index_zero_based": 2395,
+      "word_paragraph_index_zero_based": 2094,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "2. The solution",
@@ -1844,7 +1851,7 @@
     {
       "id": 154,
       "file": "blocks/0154.txt",
-      "word_paragraph_index_zero_based": 2426,
+      "word_paragraph_index_zero_based": 2125,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "3. Do it yourself",
@@ -1856,7 +1863,7 @@
     {
       "id": 155,
       "file": "blocks/0155.txt",
-      "word_paragraph_index_zero_based": 2431,
+      "word_paragraph_index_zero_based": 2130,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "3. Do it yourself",
@@ -1868,7 +1875,7 @@
     {
       "id": 156,
       "file": "blocks/0156.txt",
-      "word_paragraph_index_zero_based": 2433,
+      "word_paragraph_index_zero_based": 2132,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "3. Do it yourself",
@@ -1880,7 +1887,7 @@
     {
       "id": 157,
       "file": "blocks/0157.txt",
-      "word_paragraph_index_zero_based": 2435,
+      "word_paragraph_index_zero_based": 2134,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "3. Do it yourself",
@@ -1892,7 +1899,7 @@
     {
       "id": 158,
       "file": "blocks/0158.txt",
-      "word_paragraph_index_zero_based": 2438,
+      "word_paragraph_index_zero_based": 2137,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "3. Do it yourself",
@@ -1904,7 +1911,7 @@
     {
       "id": 159,
       "file": "blocks/0159.txt",
-      "word_paragraph_index_zero_based": 2441,
+      "word_paragraph_index_zero_based": 2140,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "3. Do it yourself",
@@ -1916,7 +1923,7 @@
     {
       "id": 160,
       "file": "blocks/0160.txt",
-      "word_paragraph_index_zero_based": 2443,
+      "word_paragraph_index_zero_based": 2142,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "3. Do it yourself",
@@ -1928,7 +1935,7 @@
     {
       "id": 161,
       "file": "blocks/0161.txt",
-      "word_paragraph_index_zero_based": 2445,
+      "word_paragraph_index_zero_based": 2144,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "3. Do it yourself",
@@ -1940,7 +1947,7 @@
     {
       "id": 162,
       "file": "blocks/0162.txt",
-      "word_paragraph_index_zero_based": 2449,
+      "word_paragraph_index_zero_based": 2148,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "3. Do it yourself",
@@ -1952,7 +1959,7 @@
     {
       "id": 163,
       "file": "blocks/0163.txt",
-      "word_paragraph_index_zero_based": 2451,
+      "word_paragraph_index_zero_based": 2150,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "3. Do it yourself",
@@ -1964,7 +1971,7 @@
     {
       "id": 164,
       "file": "blocks/0164.txt",
-      "word_paragraph_index_zero_based": 2456,
+      "word_paragraph_index_zero_based": 2155,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "3. Do it yourself",
@@ -1976,7 +1983,7 @@
     {
       "id": 165,
       "file": "blocks/0165.txt",
-      "word_paragraph_index_zero_based": 2459,
+      "word_paragraph_index_zero_based": 2158,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "3. Do it yourself",
@@ -1988,7 +1995,7 @@
     {
       "id": 166,
       "file": "blocks/0166.txt",
-      "word_paragraph_index_zero_based": 2462,
+      "word_paragraph_index_zero_based": 2161,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "3. Do it yourself",
@@ -2000,7 +2007,7 @@
     {
       "id": 167,
       "file": "blocks/0167.txt",
-      "word_paragraph_index_zero_based": 2465,
+      "word_paragraph_index_zero_based": 2164,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "3. Do it yourself",
@@ -2012,7 +2019,7 @@
     {
       "id": 168,
       "file": "blocks/0168.txt",
-      "word_paragraph_index_zero_based": 2468,
+      "word_paragraph_index_zero_based": 2167,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "3. Do it yourself",
@@ -2024,7 +2031,7 @@
     {
       "id": 169,
       "file": "blocks/0169.txt",
-      "word_paragraph_index_zero_based": 2481,
+      "word_paragraph_index_zero_based": 2180,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "3. Do it yourself",
@@ -2036,7 +2043,7 @@
     {
       "id": 170,
       "file": "blocks/0170.txt",
-      "word_paragraph_index_zero_based": 2486,
+      "word_paragraph_index_zero_based": 2185,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "3. Do it yourself",
@@ -2048,7 +2055,7 @@
     {
       "id": 171,
       "file": "blocks/0171.txt",
-      "word_paragraph_index_zero_based": 2495,
+      "word_paragraph_index_zero_based": 2194,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "3. Do it yourself",
@@ -2060,7 +2067,7 @@
     {
       "id": 172,
       "file": "blocks/0172.txt",
-      "word_paragraph_index_zero_based": 2497,
+      "word_paragraph_index_zero_based": 2196,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "3. Do it yourself",
@@ -2072,7 +2079,7 @@
     {
       "id": 173,
       "file": "blocks/0173.txt",
-      "word_paragraph_index_zero_based": 2503,
+      "word_paragraph_index_zero_based": 2202,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "3. Do it yourself",
@@ -2084,7 +2091,7 @@
     {
       "id": 174,
       "file": "blocks/0174.txt",
-      "word_paragraph_index_zero_based": 2506,
+      "word_paragraph_index_zero_based": 2205,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "3. Do it yourself",
@@ -2096,7 +2103,7 @@
     {
       "id": 175,
       "file": "blocks/0175.txt",
-      "word_paragraph_index_zero_based": 2509,
+      "word_paragraph_index_zero_based": 2208,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "3. Do it yourself",
@@ -2108,7 +2115,7 @@
     {
       "id": 176,
       "file": "blocks/0176.txt",
-      "word_paragraph_index_zero_based": 2512,
+      "word_paragraph_index_zero_based": 2211,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "3. Do it yourself",
@@ -2120,7 +2127,7 @@
     {
       "id": 177,
       "file": "blocks/0177.txt",
-      "word_paragraph_index_zero_based": 2521,
+      "word_paragraph_index_zero_based": 2220,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "3. Do it yourself",
@@ -2132,7 +2139,7 @@
     {
       "id": 178,
       "file": "blocks/0178.txt",
-      "word_paragraph_index_zero_based": 2527,
+      "word_paragraph_index_zero_based": 2226,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "3. Do it yourself",
@@ -2144,7 +2151,7 @@
     {
       "id": 179,
       "file": "blocks/0179.txt",
-      "word_paragraph_index_zero_based": 2531,
+      "word_paragraph_index_zero_based": 2230,
       "heading_context": [
         "Chapter 10 — Build your own MCP connector",
         "3. Do it yourself",
@@ -2156,7 +2163,7 @@
     {
       "id": 180,
       "file": "blocks/0180.txt",
-      "word_paragraph_index_zero_based": 2610,
+      "word_paragraph_index_zero_based": 2309,
       "heading_context": [
         "Chapter 11 — Smart email: read, classify, reply, and compose",
         "2. The solution",
@@ -2168,7 +2175,7 @@
     {
       "id": 181,
       "file": "blocks/0181.txt",
-      "word_paragraph_index_zero_based": 2614,
+      "word_paragraph_index_zero_based": 2313,
       "heading_context": [
         "Chapter 11 — Smart email: read, classify, reply, and compose",
         "2. The solution",
@@ -2180,7 +2187,7 @@
     {
       "id": 182,
       "file": "blocks/0182.txt",
-      "word_paragraph_index_zero_based": 2673,
+      "word_paragraph_index_zero_based": 2343,
       "heading_context": [
         "Chapter 11 — Smart email: read, classify, reply, and compose",
         "3. Do it yourself",
@@ -2192,7 +2199,7 @@
     {
       "id": 183,
       "file": "blocks/0183.txt",
-      "word_paragraph_index_zero_based": 2675,
+      "word_paragraph_index_zero_based": 2345,
       "heading_context": [
         "Chapter 11 — Smart email: read, classify, reply, and compose",
         "3. Do it yourself",
@@ -2204,7 +2211,7 @@
     {
       "id": 184,
       "file": "blocks/0184.txt",
-      "word_paragraph_index_zero_based": 2677,
+      "word_paragraph_index_zero_based": 2347,
       "heading_context": [
         "Chapter 11 — Smart email: read, classify, reply, and compose",
         "3. Do it yourself",
@@ -2216,7 +2223,7 @@
     {
       "id": 185,
       "file": "blocks/0185.txt",
-      "word_paragraph_index_zero_based": 2689,
+      "word_paragraph_index_zero_based": 2359,
       "heading_context": [
         "Chapter 11 — Smart email: read, classify, reply, and compose",
         "3. Do it yourself",
@@ -2228,7 +2235,7 @@
     {
       "id": 186,
       "file": "blocks/0186.txt",
-      "word_paragraph_index_zero_based": 2693,
+      "word_paragraph_index_zero_based": 2363,
       "heading_context": [
         "Chapter 11 — Smart email: read, classify, reply, and compose",
         "3. Do it yourself",
@@ -2240,7 +2247,7 @@
     {
       "id": 187,
       "file": "blocks/0187.txt",
-      "word_paragraph_index_zero_based": 2695,
+      "word_paragraph_index_zero_based": 2365,
       "heading_context": [
         "Chapter 11 — Smart email: read, classify, reply, and compose",
         "3. Do it yourself",
@@ -2252,7 +2259,7 @@
     {
       "id": 188,
       "file": "blocks/0188.txt",
-      "word_paragraph_index_zero_based": 2699,
+      "word_paragraph_index_zero_based": 2369,
       "heading_context": [
         "Chapter 11 — Smart email: read, classify, reply, and compose",
         "3. Do it yourself",
@@ -2264,7 +2271,7 @@
     {
       "id": 189,
       "file": "blocks/0189.txt",
-      "word_paragraph_index_zero_based": 2702,
+      "word_paragraph_index_zero_based": 2372,
       "heading_context": [
         "Chapter 11 — Smart email: read, classify, reply, and compose",
         "3. Do it yourself",
@@ -2276,7 +2283,7 @@
     {
       "id": 190,
       "file": "blocks/0190.txt",
-      "word_paragraph_index_zero_based": 2707,
+      "word_paragraph_index_zero_based": 2377,
       "heading_context": [
         "Chapter 11 — Smart email: read, classify, reply, and compose",
         "3. Do it yourself",
@@ -2288,7 +2295,7 @@
     {
       "id": 191,
       "file": "blocks/0191.txt",
-      "word_paragraph_index_zero_based": 2711,
+      "word_paragraph_index_zero_based": 2381,
       "heading_context": [
         "Chapter 11 — Smart email: read, classify, reply, and compose",
         "3. Do it yourself",
@@ -2300,7 +2307,7 @@
     {
       "id": 192,
       "file": "blocks/0192.txt",
-      "word_paragraph_index_zero_based": 2716,
+      "word_paragraph_index_zero_based": 2386,
       "heading_context": [
         "Chapter 11 — Smart email: read, classify, reply, and compose",
         "3. Do it yourself",
@@ -2312,7 +2319,7 @@
     {
       "id": 193,
       "file": "blocks/0193.txt",
-      "word_paragraph_index_zero_based": 2728,
+      "word_paragraph_index_zero_based": 2398,
       "heading_context": [
         "Chapter 11 — Smart email: read, classify, reply, and compose",
         "3. Do it yourself",
@@ -2324,7 +2331,7 @@
     {
       "id": 194,
       "file": "blocks/0194.txt",
-      "word_paragraph_index_zero_based": 2732,
+      "word_paragraph_index_zero_based": 2402,
       "heading_context": [
         "Chapter 11 — Smart email: read, classify, reply, and compose",
         "3. Do it yourself",
@@ -2336,7 +2343,7 @@
     {
       "id": 195,
       "file": "blocks/0195.txt",
-      "word_paragraph_index_zero_based": 2736,
+      "word_paragraph_index_zero_based": 2406,
       "heading_context": [
         "Chapter 11 — Smart email: read, classify, reply, and compose",
         "3. Do it yourself",
@@ -2348,7 +2355,7 @@
     {
       "id": 196,
       "file": "blocks/0196.txt",
-      "word_paragraph_index_zero_based": 2752,
+      "word_paragraph_index_zero_based": 2422,
       "heading_context": [
         "Chapter 11 — Smart email: read, classify, reply, and compose",
         "3. Do it yourself",
@@ -2360,7 +2367,7 @@
     {
       "id": 197,
       "file": "blocks/0197.txt",
-      "word_paragraph_index_zero_based": 2756,
+      "word_paragraph_index_zero_based": 2426,
       "heading_context": [
         "Chapter 11 — Smart email: read, classify, reply, and compose",
         "3. Do it yourself",
@@ -2372,7 +2379,7 @@
     {
       "id": 198,
       "file": "blocks/0198.txt",
-      "word_paragraph_index_zero_based": 2760,
+      "word_paragraph_index_zero_based": 2430,
       "heading_context": [
         "Chapter 11 — Smart email: read, classify, reply, and compose",
         "3. Do it yourself",
@@ -2384,7 +2391,7 @@
     {
       "id": 199,
       "file": "blocks/0199.txt",
-      "word_paragraph_index_zero_based": 2778,
+      "word_paragraph_index_zero_based": 2448,
       "heading_context": [
         "Chapter 11 — Smart email: read, classify, reply, and compose",
         "3. Do it yourself",
@@ -2396,7 +2403,7 @@
     {
       "id": 200,
       "file": "blocks/0200.txt",
-      "word_paragraph_index_zero_based": 2850,
+      "word_paragraph_index_zero_based": 2520,
       "heading_context": [
         "Chapter 12 — Calendar and tasks: organizing your day with agents",
         "2. The solution",
@@ -2408,7 +2415,7 @@
     {
       "id": 201,
       "file": "blocks/0201.txt",
-      "word_paragraph_index_zero_based": 2911,
+      "word_paragraph_index_zero_based": 2548,
       "heading_context": [
         "Chapter 12 — Calendar and tasks: organizing your day with agents",
         "3. Do it yourself",
@@ -2420,7 +2427,7 @@
     {
       "id": 202,
       "file": "blocks/0202.txt",
-      "word_paragraph_index_zero_based": 2917,
+      "word_paragraph_index_zero_based": 2554,
       "heading_context": [
         "Chapter 12 — Calendar and tasks: organizing your day with agents",
         "3. Do it yourself",
@@ -2432,7 +2439,7 @@
     {
       "id": 203,
       "file": "blocks/0203.txt",
-      "word_paragraph_index_zero_based": 2921,
+      "word_paragraph_index_zero_based": 2558,
       "heading_context": [
         "Chapter 12 — Calendar and tasks: organizing your day with agents",
         "3. Do it yourself",
@@ -2444,7 +2451,7 @@
     {
       "id": 204,
       "file": "blocks/0204.txt",
-      "word_paragraph_index_zero_based": 2923,
+      "word_paragraph_index_zero_based": 2560,
       "heading_context": [
         "Chapter 12 — Calendar and tasks: organizing your day with agents",
         "3. Do it yourself",
@@ -2456,7 +2463,7 @@
     {
       "id": 205,
       "file": "blocks/0205.txt",
-      "word_paragraph_index_zero_based": 2927,
+      "word_paragraph_index_zero_based": 2564,
       "heading_context": [
         "Chapter 12 — Calendar and tasks: organizing your day with agents",
         "3. Do it yourself",
@@ -2468,7 +2475,7 @@
     {
       "id": 206,
       "file": "blocks/0206.txt",
-      "word_paragraph_index_zero_based": 2932,
+      "word_paragraph_index_zero_based": 2569,
       "heading_context": [
         "Chapter 12 — Calendar and tasks: organizing your day with agents",
         "3. Do it yourself",
@@ -2480,7 +2487,7 @@
     {
       "id": 207,
       "file": "blocks/0207.txt",
-      "word_paragraph_index_zero_based": 2935,
+      "word_paragraph_index_zero_based": 2572,
       "heading_context": [
         "Chapter 12 — Calendar and tasks: organizing your day with agents",
         "3. Do it yourself",
@@ -2492,7 +2499,7 @@
     {
       "id": 208,
       "file": "blocks/0208.txt",
-      "word_paragraph_index_zero_based": 2940,
+      "word_paragraph_index_zero_based": 2577,
       "heading_context": [
         "Chapter 12 — Calendar and tasks: organizing your day with agents",
         "3. Do it yourself",
@@ -2504,7 +2511,7 @@
     {
       "id": 209,
       "file": "blocks/0209.txt",
-      "word_paragraph_index_zero_based": 2944,
+      "word_paragraph_index_zero_based": 2581,
       "heading_context": [
         "Chapter 12 — Calendar and tasks: organizing your day with agents",
         "3. Do it yourself",
@@ -2516,7 +2523,7 @@
     {
       "id": 210,
       "file": "blocks/0210.txt",
-      "word_paragraph_index_zero_based": 2948,
+      "word_paragraph_index_zero_based": 2585,
       "heading_context": [
         "Chapter 12 — Calendar and tasks: organizing your day with agents",
         "3. Do it yourself",
@@ -2528,7 +2535,7 @@
     {
       "id": 211,
       "file": "blocks/0211.txt",
-      "word_paragraph_index_zero_based": 2950,
+      "word_paragraph_index_zero_based": 2587,
       "heading_context": [
         "Chapter 12 — Calendar and tasks: organizing your day with agents",
         "3. Do it yourself",
@@ -2540,7 +2547,7 @@
     {
       "id": 212,
       "file": "blocks/0212.txt",
-      "word_paragraph_index_zero_based": 2954,
+      "word_paragraph_index_zero_based": 2591,
       "heading_context": [
         "Chapter 12 — Calendar and tasks: organizing your day with agents",
         "3. Do it yourself",
@@ -2552,7 +2559,7 @@
     {
       "id": 213,
       "file": "blocks/0213.txt",
-      "word_paragraph_index_zero_based": 2959,
+      "word_paragraph_index_zero_based": 2596,
       "heading_context": [
         "Chapter 12 — Calendar and tasks: organizing your day with agents",
         "3. Do it yourself",
@@ -2564,7 +2571,7 @@
     {
       "id": 214,
       "file": "blocks/0214.txt",
-      "word_paragraph_index_zero_based": 2969,
+      "word_paragraph_index_zero_based": 2606,
       "heading_context": [
         "Chapter 12 — Calendar and tasks: organizing your day with agents",
         "3. Do it yourself",
@@ -2576,7 +2583,7 @@
     {
       "id": 215,
       "file": "blocks/0215.txt",
-      "word_paragraph_index_zero_based": 2975,
+      "word_paragraph_index_zero_based": 2612,
       "heading_context": [
         "Chapter 12 — Calendar and tasks: organizing your day with agents",
         "3. Do it yourself",
@@ -2588,7 +2595,7 @@
     {
       "id": 216,
       "file": "blocks/0216.txt",
-      "word_paragraph_index_zero_based": 2985,
+      "word_paragraph_index_zero_based": 2622,
       "heading_context": [
         "Chapter 12 — Calendar and tasks: organizing your day with agents",
         "3. Do it yourself",
@@ -2600,7 +2607,7 @@
     {
       "id": 217,
       "file": "blocks/0217.txt",
-      "word_paragraph_index_zero_based": 2990,
+      "word_paragraph_index_zero_based": 2627,
       "heading_context": [
         "Chapter 12 — Calendar and tasks: organizing your day with agents",
         "3. Do it yourself",
@@ -2612,7 +2619,7 @@
     {
       "id": 218,
       "file": "blocks/0218.txt",
-      "word_paragraph_index_zero_based": 3015,
+      "word_paragraph_index_zero_based": 2652,
       "heading_context": [
         "Chapter 12 — Calendar and tasks: organizing your day with agents",
         "3. Do it yourself",
@@ -2624,7 +2631,7 @@
     {
       "id": 219,
       "file": "blocks/0219.txt",
-      "word_paragraph_index_zero_based": 3019,
+      "word_paragraph_index_zero_based": 2656,
       "heading_context": [
         "Chapter 12 — Calendar and tasks: organizing your day with agents",
         "3. Do it yourself",
@@ -2636,7 +2643,7 @@
     {
       "id": 220,
       "file": "blocks/0220.txt",
-      "word_paragraph_index_zero_based": 3021,
+      "word_paragraph_index_zero_based": 2658,
       "heading_context": [
         "Chapter 12 — Calendar and tasks: organizing your day with agents",
         "3. Do it yourself",
@@ -2648,7 +2655,7 @@
     {
       "id": 221,
       "file": "blocks/0221.txt",
-      "word_paragraph_index_zero_based": 3023,
+      "word_paragraph_index_zero_based": 2660,
       "heading_context": [
         "Chapter 12 — Calendar and tasks: organizing your day with agents",
         "3. Do it yourself",
@@ -2660,7 +2667,7 @@
     {
       "id": 222,
       "file": "blocks/0222.txt",
-      "word_paragraph_index_zero_based": 3123,
+      "word_paragraph_index_zero_based": 2760,
       "heading_context": [
         "Chapter 13 — Meetings: minutes, decisions, and follow-up",
         "3. Do it yourself",
@@ -2672,7 +2679,7 @@
     {
       "id": 223,
       "file": "blocks/0223.txt",
-      "word_paragraph_index_zero_based": 3125,
+      "word_paragraph_index_zero_based": 2762,
       "heading_context": [
         "Chapter 13 — Meetings: minutes, decisions, and follow-up",
         "3. Do it yourself",
@@ -2684,7 +2691,7 @@
     {
       "id": 224,
       "file": "blocks/0224.txt",
-      "word_paragraph_index_zero_based": 3134,
+      "word_paragraph_index_zero_based": 2771,
       "heading_context": [
         "Chapter 13 — Meetings: minutes, decisions, and follow-up",
         "3. Do it yourself",
@@ -2696,7 +2703,7 @@
     {
       "id": 225,
       "file": "blocks/0225.txt",
-      "word_paragraph_index_zero_based": 3138,
+      "word_paragraph_index_zero_based": 2775,
       "heading_context": [
         "Chapter 13 — Meetings: minutes, decisions, and follow-up",
         "3. Do it yourself",
@@ -2708,7 +2715,7 @@
     {
       "id": 226,
       "file": "blocks/0226.txt",
-      "word_paragraph_index_zero_based": 3140,
+      "word_paragraph_index_zero_based": 2777,
       "heading_context": [
         "Chapter 13 — Meetings: minutes, decisions, and follow-up",
         "3. Do it yourself",
@@ -2720,7 +2727,7 @@
     {
       "id": 227,
       "file": "blocks/0227.txt",
-      "word_paragraph_index_zero_based": 3144,
+      "word_paragraph_index_zero_based": 2781,
       "heading_context": [
         "Chapter 13 — Meetings: minutes, decisions, and follow-up",
         "3. Do it yourself",
@@ -2732,7 +2739,7 @@
     {
       "id": 228,
       "file": "blocks/0228.txt",
-      "word_paragraph_index_zero_based": 3148,
+      "word_paragraph_index_zero_based": 2785,
       "heading_context": [
         "Chapter 13 — Meetings: minutes, decisions, and follow-up",
         "3. Do it yourself",
@@ -2744,7 +2751,7 @@
     {
       "id": 229,
       "file": "blocks/0229.txt",
-      "word_paragraph_index_zero_based": 3150,
+      "word_paragraph_index_zero_based": 2787,
       "heading_context": [
         "Chapter 13 — Meetings: minutes, decisions, and follow-up",
         "3. Do it yourself",
@@ -2756,7 +2763,7 @@
     {
       "id": 230,
       "file": "blocks/0230.txt",
-      "word_paragraph_index_zero_based": 3154,
+      "word_paragraph_index_zero_based": 2791,
       "heading_context": [
         "Chapter 13 — Meetings: minutes, decisions, and follow-up",
         "3. Do it yourself",
@@ -2768,7 +2775,7 @@
     {
       "id": 231,
       "file": "blocks/0231.txt",
-      "word_paragraph_index_zero_based": 3160,
+      "word_paragraph_index_zero_based": 2797,
       "heading_context": [
         "Chapter 13 — Meetings: minutes, decisions, and follow-up",
         "3. Do it yourself",
@@ -2780,7 +2787,7 @@
     {
       "id": 232,
       "file": "blocks/0232.txt",
-      "word_paragraph_index_zero_based": 3163,
+      "word_paragraph_index_zero_based": 2800,
       "heading_context": [
         "Chapter 13 — Meetings: minutes, decisions, and follow-up",
         "3. Do it yourself",
@@ -2792,7 +2799,7 @@
     {
       "id": 233,
       "file": "blocks/0233.txt",
-      "word_paragraph_index_zero_based": 3168,
+      "word_paragraph_index_zero_based": 2805,
       "heading_context": [
         "Chapter 13 — Meetings: minutes, decisions, and follow-up",
         "3. Do it yourself",
@@ -2804,7 +2811,7 @@
     {
       "id": 234,
       "file": "blocks/0234.txt",
-      "word_paragraph_index_zero_based": 3193,
+      "word_paragraph_index_zero_based": 2830,
       "heading_context": [
         "Chapter 13 — Meetings: minutes, decisions, and follow-up",
         "3. Do it yourself",
@@ -2816,7 +2823,7 @@
     {
       "id": 235,
       "file": "blocks/0235.txt",
-      "word_paragraph_index_zero_based": 3197,
+      "word_paragraph_index_zero_based": 2834,
       "heading_context": [
         "Chapter 13 — Meetings: minutes, decisions, and follow-up",
         "3. Do it yourself",
@@ -2828,7 +2835,7 @@
     {
       "id": 236,
       "file": "blocks/0236.txt",
-      "word_paragraph_index_zero_based": 3215,
+      "word_paragraph_index_zero_based": 2852,
       "heading_context": [
         "Chapter 13 — Meetings: minutes, decisions, and follow-up",
         "3. Do it yourself",
@@ -2840,7 +2847,7 @@
     {
       "id": 237,
       "file": "blocks/0237.txt",
-      "word_paragraph_index_zero_based": 3217,
+      "word_paragraph_index_zero_based": 2854,
       "heading_context": [
         "Chapter 13 — Meetings: minutes, decisions, and follow-up",
         "3. Do it yourself",
@@ -2852,7 +2859,7 @@
     {
       "id": 238,
       "file": "blocks/0238.txt",
-      "word_paragraph_index_zero_based": 3294,
+      "word_paragraph_index_zero_based": 2931,
       "heading_context": [
         "Chapter 14 — Project management with agents",
         "2. The solution",
@@ -2864,7 +2871,7 @@
     {
       "id": 239,
       "file": "blocks/0239.txt",
-      "word_paragraph_index_zero_based": 3365,
+      "word_paragraph_index_zero_based": 2960,
       "heading_context": [
         "Chapter 14 — Project management with agents",
         "3. Do it yourself",
@@ -2876,7 +2883,7 @@
     {
       "id": 240,
       "file": "blocks/0240.txt",
-      "word_paragraph_index_zero_based": 3368,
+      "word_paragraph_index_zero_based": 2963,
       "heading_context": [
         "Chapter 14 — Project management with agents",
         "3. Do it yourself",
@@ -2888,7 +2895,7 @@
     {
       "id": 241,
       "file": "blocks/0241.txt",
-      "word_paragraph_index_zero_based": 3374,
+      "word_paragraph_index_zero_based": 2969,
       "heading_context": [
         "Chapter 14 — Project management with agents",
         "3. Do it yourself",
@@ -2900,7 +2907,7 @@
     {
       "id": 242,
       "file": "blocks/0242.txt",
-      "word_paragraph_index_zero_based": 3376,
+      "word_paragraph_index_zero_based": 2971,
       "heading_context": [
         "Chapter 14 — Project management with agents",
         "3. Do it yourself",
@@ -2912,7 +2919,7 @@
     {
       "id": 243,
       "file": "blocks/0243.txt",
-      "word_paragraph_index_zero_based": 3380,
+      "word_paragraph_index_zero_based": 2975,
       "heading_context": [
         "Chapter 14 — Project management with agents",
         "3. Do it yourself",
@@ -2924,7 +2931,7 @@
     {
       "id": 244,
       "file": "blocks/0244.txt",
-      "word_paragraph_index_zero_based": 3382,
+      "word_paragraph_index_zero_based": 2977,
       "heading_context": [
         "Chapter 14 — Project management with agents",
         "3. Do it yourself",
@@ -2936,7 +2943,7 @@
     {
       "id": 245,
       "file": "blocks/0245.txt",
-      "word_paragraph_index_zero_based": 3386,
+      "word_paragraph_index_zero_based": 2981,
       "heading_context": [
         "Chapter 14 — Project management with agents",
         "3. Do it yourself",
@@ -2948,7 +2955,7 @@
     {
       "id": 246,
       "file": "blocks/0246.txt",
-      "word_paragraph_index_zero_based": 3388,
+      "word_paragraph_index_zero_based": 2983,
       "heading_context": [
         "Chapter 14 — Project management with agents",
         "3. Do it yourself",
@@ -2960,7 +2967,7 @@
     {
       "id": 247,
       "file": "blocks/0247.txt",
-      "word_paragraph_index_zero_based": 3400,
+      "word_paragraph_index_zero_based": 2995,
       "heading_context": [
         "Chapter 14 — Project management with agents",
         "3. Do it yourself",
@@ -2972,7 +2979,7 @@
     {
       "id": 248,
       "file": "blocks/0248.txt",
-      "word_paragraph_index_zero_based": 3402,
+      "word_paragraph_index_zero_based": 2997,
       "heading_context": [
         "Chapter 14 — Project management with agents",
         "3. Do it yourself",
@@ -2984,7 +2991,7 @@
     {
       "id": 249,
       "file": "blocks/0249.txt",
-      "word_paragraph_index_zero_based": 3404,
+      "word_paragraph_index_zero_based": 2999,
       "heading_context": [
         "Chapter 14 — Project management with agents",
         "3. Do it yourself",
@@ -2996,7 +3003,7 @@
     {
       "id": 250,
       "file": "blocks/0250.txt",
-      "word_paragraph_index_zero_based": 3408,
+      "word_paragraph_index_zero_based": 3003,
       "heading_context": [
         "Chapter 14 — Project management with agents",
         "3. Do it yourself",
@@ -3008,7 +3015,7 @@
     {
       "id": 251,
       "file": "blocks/0251.txt",
-      "word_paragraph_index_zero_based": 3431,
+      "word_paragraph_index_zero_based": 3026,
       "heading_context": [
         "Chapter 14 — Project management with agents",
         "3. Do it yourself",
@@ -3020,7 +3027,7 @@
     {
       "id": 252,
       "file": "blocks/0252.txt",
-      "word_paragraph_index_zero_based": 3436,
+      "word_paragraph_index_zero_based": 3031,
       "heading_context": [
         "Chapter 14 — Project management with agents",
         "3. Do it yourself",
@@ -3032,7 +3039,7 @@
     {
       "id": 253,
       "file": "blocks/0253.txt",
-      "word_paragraph_index_zero_based": 3440,
+      "word_paragraph_index_zero_based": 3035,
       "heading_context": [
         "Chapter 14 — Project management with agents",
         "3. Do it yourself",
@@ -3044,7 +3051,7 @@
     {
       "id": 254,
       "file": "blocks/0254.txt",
-      "word_paragraph_index_zero_based": 3442,
+      "word_paragraph_index_zero_based": 3037,
       "heading_context": [
         "Chapter 14 — Project management with agents",
         "3. Do it yourself",
@@ -3056,7 +3063,7 @@
     {
       "id": 255,
       "file": "blocks/0255.txt",
-      "word_paragraph_index_zero_based": 3447,
+      "word_paragraph_index_zero_based": 3042,
       "heading_context": [
         "Chapter 14 — Project management with agents",
         "3. Do it yourself",
@@ -3068,7 +3075,7 @@
     {
       "id": 256,
       "file": "blocks/0256.txt",
-      "word_paragraph_index_zero_based": 3449,
+      "word_paragraph_index_zero_based": 3044,
       "heading_context": [
         "Chapter 14 — Project management with agents",
         "3. Do it yourself",
@@ -3080,7 +3087,7 @@
     {
       "id": 257,
       "file": "blocks/0257.txt",
-      "word_paragraph_index_zero_based": 3453,
+      "word_paragraph_index_zero_based": 3048,
       "heading_context": [
         "Chapter 14 — Project management with agents",
         "3. Do it yourself",
@@ -3092,7 +3099,7 @@
     {
       "id": 258,
       "file": "blocks/0258.txt",
-      "word_paragraph_index_zero_based": 3458,
+      "word_paragraph_index_zero_based": 3053,
       "heading_context": [
         "Chapter 14 — Project management with agents",
         "3. Do it yourself",
@@ -3104,7 +3111,7 @@
     {
       "id": 259,
       "file": "blocks/0259.txt",
-      "word_paragraph_index_zero_based": 3566,
+      "word_paragraph_index_zero_based": 3149,
       "heading_context": [
         "Chapter 15 — Excel and CSV at Your Service: Cleaning, Transforming, and Analyzing Data",
         "2. The solution",
@@ -3116,7 +3123,7 @@
     {
       "id": 260,
       "file": "blocks/0260.txt",
-      "word_paragraph_index_zero_based": 3568,
+      "word_paragraph_index_zero_based": 3151,
       "heading_context": [
         "Chapter 15 — Excel and CSV at Your Service: Cleaning, Transforming, and Analyzing Data",
         "2. The solution",
@@ -3128,7 +3135,7 @@
     {
       "id": 261,
       "file": "blocks/0261.txt",
-      "word_paragraph_index_zero_based": 3573,
+      "word_paragraph_index_zero_based": 3156,
       "heading_context": [
         "Chapter 15 — Excel and CSV at Your Service: Cleaning, Transforming, and Analyzing Data",
         "2. The solution",
@@ -3140,7 +3147,7 @@
     {
       "id": 262,
       "file": "blocks/0262.txt",
-      "word_paragraph_index_zero_based": 3585,
+      "word_paragraph_index_zero_based": 3168,
       "heading_context": [
         "Chapter 15 — Excel and CSV at Your Service: Cleaning, Transforming, and Analyzing Data",
         "3. Do it yourself",
@@ -3152,7 +3159,7 @@
     {
       "id": 263,
       "file": "blocks/0263.txt",
-      "word_paragraph_index_zero_based": 3588,
+      "word_paragraph_index_zero_based": 3171,
       "heading_context": [
         "Chapter 15 — Excel and CSV at Your Service: Cleaning, Transforming, and Analyzing Data",
         "3. Do it yourself",
@@ -3164,7 +3171,7 @@
     {
       "id": 264,
       "file": "blocks/0264.txt",
-      "word_paragraph_index_zero_based": 3592,
+      "word_paragraph_index_zero_based": 3175,
       "heading_context": [
         "Chapter 15 — Excel and CSV at Your Service: Cleaning, Transforming, and Analyzing Data",
         "3. Do it yourself",
@@ -3176,7 +3183,7 @@
     {
       "id": 265,
       "file": "blocks/0265.txt",
-      "word_paragraph_index_zero_based": 3597,
+      "word_paragraph_index_zero_based": 3180,
       "heading_context": [
         "Chapter 15 — Excel and CSV at Your Service: Cleaning, Transforming, and Analyzing Data",
         "3. Do it yourself",
@@ -3188,7 +3195,7 @@
     {
       "id": 266,
       "file": "blocks/0266.txt",
-      "word_paragraph_index_zero_based": 3606,
+      "word_paragraph_index_zero_based": 3189,
       "heading_context": [
         "Chapter 15 — Excel and CSV at Your Service: Cleaning, Transforming, and Analyzing Data",
         "3. Do it yourself",
@@ -3200,7 +3207,7 @@
     {
       "id": 267,
       "file": "blocks/0267.txt",
-      "word_paragraph_index_zero_based": 3608,
+      "word_paragraph_index_zero_based": 3191,
       "heading_context": [
         "Chapter 15 — Excel and CSV at Your Service: Cleaning, Transforming, and Analyzing Data",
         "3. Do it yourself",
@@ -3212,7 +3219,7 @@
     {
       "id": 268,
       "file": "blocks/0268.txt",
-      "word_paragraph_index_zero_based": 3611,
+      "word_paragraph_index_zero_based": 3194,
       "heading_context": [
         "Chapter 15 — Excel and CSV at Your Service: Cleaning, Transforming, and Analyzing Data",
         "3. Do it yourself",
@@ -3224,7 +3231,7 @@
     {
       "id": 269,
       "file": "blocks/0269.txt",
-      "word_paragraph_index_zero_based": 3615,
+      "word_paragraph_index_zero_based": 3198,
       "heading_context": [
         "Chapter 15 — Excel and CSV at Your Service: Cleaning, Transforming, and Analyzing Data",
         "3. Do it yourself",
@@ -3236,7 +3243,7 @@
     {
       "id": 270,
       "file": "blocks/0270.txt",
-      "word_paragraph_index_zero_based": 3623,
+      "word_paragraph_index_zero_based": 3206,
       "heading_context": [
         "Chapter 15 — Excel and CSV at Your Service: Cleaning, Transforming, and Analyzing Data",
         "3. Do it yourself",
@@ -3248,7 +3255,7 @@
     {
       "id": 271,
       "file": "blocks/0271.txt",
-      "word_paragraph_index_zero_based": 3625,
+      "word_paragraph_index_zero_based": 3208,
       "heading_context": [
         "Chapter 15 — Excel and CSV at Your Service: Cleaning, Transforming, and Analyzing Data",
         "3. Do it yourself",
@@ -3260,7 +3267,7 @@
     {
       "id": 272,
       "file": "blocks/0272.txt",
-      "word_paragraph_index_zero_based": 3627,
+      "word_paragraph_index_zero_based": 3210,
       "heading_context": [
         "Chapter 15 — Excel and CSV at Your Service: Cleaning, Transforming, and Analyzing Data",
         "3. Do it yourself",
@@ -3272,7 +3279,7 @@
     {
       "id": 273,
       "file": "blocks/0273.txt",
-      "word_paragraph_index_zero_based": 3629,
+      "word_paragraph_index_zero_based": 3212,
       "heading_context": [
         "Chapter 15 — Excel and CSV at Your Service: Cleaning, Transforming, and Analyzing Data",
         "3. Do it yourself",
@@ -3284,7 +3291,7 @@
     {
       "id": 274,
       "file": "blocks/0274.txt",
-      "word_paragraph_index_zero_based": 3634,
+      "word_paragraph_index_zero_based": 3217,
       "heading_context": [
         "Chapter 15 — Excel and CSV at Your Service: Cleaning, Transforming, and Analyzing Data",
         "3. Do it yourself",
@@ -3296,7 +3303,7 @@
     {
       "id": 275,
       "file": "blocks/0275.txt",
-      "word_paragraph_index_zero_based": 3637,
+      "word_paragraph_index_zero_based": 3220,
       "heading_context": [
         "Chapter 15 — Excel and CSV at Your Service: Cleaning, Transforming, and Analyzing Data",
         "3. Do it yourself",
@@ -3308,7 +3315,7 @@
     {
       "id": 276,
       "file": "blocks/0276.txt",
-      "word_paragraph_index_zero_based": 3654,
+      "word_paragraph_index_zero_based": 3237,
       "heading_context": [
         "Chapter 15 — Excel and CSV at Your Service: Cleaning, Transforming, and Analyzing Data",
         "3. Do it yourself",
@@ -3320,7 +3327,7 @@
     {
       "id": 277,
       "file": "blocks/0277.txt",
-      "word_paragraph_index_zero_based": 3774,
+      "word_paragraph_index_zero_based": 3339,
       "heading_context": [
         "Chapter 16 — Financial Data: Budgets, Expenses, and Reporting",
         "2. The solution",
@@ -3332,7 +3339,7 @@
     {
       "id": 278,
       "file": "blocks/0278.txt",
-      "word_paragraph_index_zero_based": 3776,
+      "word_paragraph_index_zero_based": 3341,
       "heading_context": [
         "Chapter 16 — Financial Data: Budgets, Expenses, and Reporting",
         "2. The solution",
@@ -3344,7 +3351,7 @@
     {
       "id": 279,
       "file": "blocks/0279.txt",
-      "word_paragraph_index_zero_based": 3780,
+      "word_paragraph_index_zero_based": 3345,
       "heading_context": [
         "Chapter 16 — Financial Data: Budgets, Expenses, and Reporting",
         "2. The solution",
@@ -3356,7 +3363,7 @@
     {
       "id": 280,
       "file": "blocks/0280.txt",
-      "word_paragraph_index_zero_based": 3782,
+      "word_paragraph_index_zero_based": 3347,
       "heading_context": [
         "Chapter 16 — Financial Data: Budgets, Expenses, and Reporting",
         "2. The solution",
@@ -3368,7 +3375,7 @@
     {
       "id": 281,
       "file": "blocks/0281.txt",
-      "word_paragraph_index_zero_based": 3800,
+      "word_paragraph_index_zero_based": 3365,
       "heading_context": [
         "Chapter 16 — Financial Data: Budgets, Expenses, and Reporting",
         "3. Do it yourself",
@@ -3380,7 +3387,7 @@
     {
       "id": 282,
       "file": "blocks/0282.txt",
-      "word_paragraph_index_zero_based": 3804,
+      "word_paragraph_index_zero_based": 3369,
       "heading_context": [
         "Chapter 16 — Financial Data: Budgets, Expenses, and Reporting",
         "3. Do it yourself",
@@ -3392,7 +3399,7 @@
     {
       "id": 283,
       "file": "blocks/0283.txt",
-      "word_paragraph_index_zero_based": 3811,
+      "word_paragraph_index_zero_based": 3376,
       "heading_context": [
         "Chapter 16 — Financial Data: Budgets, Expenses, and Reporting",
         "3. Do it yourself",
@@ -3404,7 +3411,7 @@
     {
       "id": 284,
       "file": "blocks/0284.txt",
-      "word_paragraph_index_zero_based": 3813,
+      "word_paragraph_index_zero_based": 3378,
       "heading_context": [
         "Chapter 16 — Financial Data: Budgets, Expenses, and Reporting",
         "3. Do it yourself",
@@ -3416,7 +3423,7 @@
     {
       "id": 285,
       "file": "blocks/0285.txt",
-      "word_paragraph_index_zero_based": 3816,
+      "word_paragraph_index_zero_based": 3381,
       "heading_context": [
         "Chapter 16 — Financial Data: Budgets, Expenses, and Reporting",
         "3. Do it yourself",
@@ -3428,7 +3435,7 @@
     {
       "id": 286,
       "file": "blocks/0286.txt",
-      "word_paragraph_index_zero_based": 3820,
+      "word_paragraph_index_zero_based": 3385,
       "heading_context": [
         "Chapter 16 — Financial Data: Budgets, Expenses, and Reporting",
         "3. Do it yourself",
@@ -3440,7 +3447,7 @@
     {
       "id": 287,
       "file": "blocks/0287.txt",
-      "word_paragraph_index_zero_based": 3828,
+      "word_paragraph_index_zero_based": 3393,
       "heading_context": [
         "Chapter 16 — Financial Data: Budgets, Expenses, and Reporting",
         "3. Do it yourself",
@@ -3452,7 +3459,7 @@
     {
       "id": 288,
       "file": "blocks/0288.txt",
-      "word_paragraph_index_zero_based": 3832,
+      "word_paragraph_index_zero_based": 3397,
       "heading_context": [
         "Chapter 16 — Financial Data: Budgets, Expenses, and Reporting",
         "3. Do it yourself",
@@ -3464,7 +3471,7 @@
     {
       "id": 289,
       "file": "blocks/0289.txt",
-      "word_paragraph_index_zero_based": 3838,
+      "word_paragraph_index_zero_based": 3403,
       "heading_context": [
         "Chapter 16 — Financial Data: Budgets, Expenses, and Reporting",
         "3. Do it yourself",
@@ -3476,7 +3483,7 @@
     {
       "id": 290,
       "file": "blocks/0290.txt",
-      "word_paragraph_index_zero_based": 3840,
+      "word_paragraph_index_zero_based": 3405,
       "heading_context": [
         "Chapter 16 — Financial Data: Budgets, Expenses, and Reporting",
         "3. Do it yourself",
@@ -3488,7 +3495,7 @@
     {
       "id": 291,
       "file": "blocks/0291.txt",
-      "word_paragraph_index_zero_based": 3842,
+      "word_paragraph_index_zero_based": 3407,
       "heading_context": [
         "Chapter 16 — Financial Data: Budgets, Expenses, and Reporting",
         "3. Do it yourself",
@@ -3500,7 +3507,7 @@
     {
       "id": 292,
       "file": "blocks/0292.txt",
-      "word_paragraph_index_zero_based": 3844,
+      "word_paragraph_index_zero_based": 3409,
       "heading_context": [
         "Chapter 16 — Financial Data: Budgets, Expenses, and Reporting",
         "3. Do it yourself",
@@ -3512,7 +3519,7 @@
     {
       "id": 293,
       "file": "blocks/0293.txt",
-      "word_paragraph_index_zero_based": 3856,
+      "word_paragraph_index_zero_based": 3421,
       "heading_context": [
         "Chapter 16 — Financial Data: Budgets, Expenses, and Reporting",
         "3. Do it yourself",
@@ -3524,7 +3531,7 @@
     {
       "id": 294,
       "file": "blocks/0294.txt",
-      "word_paragraph_index_zero_based": 3859,
+      "word_paragraph_index_zero_based": 3424,
       "heading_context": [
         "Chapter 16 — Financial Data: Budgets, Expenses, and Reporting",
         "3. Do it yourself",
@@ -3536,7 +3543,7 @@
     {
       "id": 295,
       "file": "blocks/0295.txt",
-      "word_paragraph_index_zero_based": 3891,
+      "word_paragraph_index_zero_based": 3435,
       "heading_context": [
         "Chapter 16 — Financial Data: Budgets, Expenses, and Reporting",
         "3. Do it yourself",
@@ -3548,7 +3555,7 @@
     {
       "id": 296,
       "file": "blocks/0296.txt",
-      "word_paragraph_index_zero_based": 3953,
+      "word_paragraph_index_zero_based": 3497,
       "heading_context": [
         "Chapter 17 — Databases Without Fear: Querying, Monitoring, and Maintaining",
         "2. The solution",
@@ -3560,7 +3567,7 @@
     {
       "id": 297,
       "file": "blocks/0297.txt",
-      "word_paragraph_index_zero_based": 3956,
+      "word_paragraph_index_zero_based": 3500,
       "heading_context": [
         "Chapter 17 — Databases Without Fear: Querying, Monitoring, and Maintaining",
         "2. The solution",
@@ -3572,7 +3579,7 @@
     {
       "id": 298,
       "file": "blocks/0298.txt",
-      "word_paragraph_index_zero_based": 3970,
+      "word_paragraph_index_zero_based": 3514,
       "heading_context": [
         "Chapter 17 — Databases Without Fear: Querying, Monitoring, and Maintaining",
         "2. The solution",
@@ -3584,7 +3591,7 @@
     {
       "id": 299,
       "file": "blocks/0299.txt",
-      "word_paragraph_index_zero_based": 3972,
+      "word_paragraph_index_zero_based": 3516,
       "heading_context": [
         "Chapter 17 — Databases Without Fear: Querying, Monitoring, and Maintaining",
         "2. The solution",
@@ -3596,7 +3603,7 @@
     {
       "id": 300,
       "file": "blocks/0300.txt",
-      "word_paragraph_index_zero_based": 3976,
+      "word_paragraph_index_zero_based": 3520,
       "heading_context": [
         "Chapter 17 — Databases Without Fear: Querying, Monitoring, and Maintaining",
         "2. The solution",
@@ -3608,7 +3615,7 @@
     {
       "id": 301,
       "file": "blocks/0301.txt",
-      "word_paragraph_index_zero_based": 3978,
+      "word_paragraph_index_zero_based": 3522,
       "heading_context": [
         "Chapter 17 — Databases Without Fear: Querying, Monitoring, and Maintaining",
         "2. The solution",
@@ -3620,7 +3627,7 @@
     {
       "id": 302,
       "file": "blocks/0302.txt",
-      "word_paragraph_index_zero_based": 3981,
+      "word_paragraph_index_zero_based": 3525,
       "heading_context": [
         "Chapter 17 — Databases Without Fear: Querying, Monitoring, and Maintaining",
         "2. The solution",
@@ -3632,7 +3639,7 @@
     {
       "id": 303,
       "file": "blocks/0303.txt",
-      "word_paragraph_index_zero_based": 4016,
+      "word_paragraph_index_zero_based": 3539,
       "heading_context": [
         "Chapter 17 — Databases Without Fear: Querying, Monitoring, and Maintaining",
         "3. Do it yourself",
@@ -3644,7 +3651,7 @@
     {
       "id": 304,
       "file": "blocks/0304.txt",
-      "word_paragraph_index_zero_based": 4020,
+      "word_paragraph_index_zero_based": 3543,
       "heading_context": [
         "Chapter 17 — Databases Without Fear: Querying, Monitoring, and Maintaining",
         "3. Do it yourself",
@@ -3656,7 +3663,7 @@
     {
       "id": 305,
       "file": "blocks/0305.txt",
-      "word_paragraph_index_zero_based": 4024,
+      "word_paragraph_index_zero_based": 3547,
       "heading_context": [
         "Chapter 17 — Databases Without Fear: Querying, Monitoring, and Maintaining",
         "3. Do it yourself",
@@ -3668,7 +3675,7 @@
     {
       "id": 306,
       "file": "blocks/0306.txt",
-      "word_paragraph_index_zero_based": 4027,
+      "word_paragraph_index_zero_based": 3550,
       "heading_context": [
         "Chapter 17 — Databases Without Fear: Querying, Monitoring, and Maintaining",
         "3. Do it yourself",
@@ -3680,7 +3687,7 @@
     {
       "id": 307,
       "file": "blocks/0307.txt",
-      "word_paragraph_index_zero_based": 4029,
+      "word_paragraph_index_zero_based": 3552,
       "heading_context": [
         "Chapter 17 — Databases Without Fear: Querying, Monitoring, and Maintaining",
         "3. Do it yourself",
@@ -3692,7 +3699,7 @@
     {
       "id": 308,
       "file": "blocks/0308.txt",
-      "word_paragraph_index_zero_based": 4033,
+      "word_paragraph_index_zero_based": 3556,
       "heading_context": [
         "Chapter 17 — Databases Without Fear: Querying, Monitoring, and Maintaining",
         "3. Do it yourself",
@@ -3704,7 +3711,7 @@
     {
       "id": 309,
       "file": "blocks/0309.txt",
-      "word_paragraph_index_zero_based": 4035,
+      "word_paragraph_index_zero_based": 3558,
       "heading_context": [
         "Chapter 17 — Databases Without Fear: Querying, Monitoring, and Maintaining",
         "3. Do it yourself",
@@ -3716,7 +3723,7 @@
     {
       "id": 310,
       "file": "blocks/0310.txt",
-      "word_paragraph_index_zero_based": 4038,
+      "word_paragraph_index_zero_based": 3561,
       "heading_context": [
         "Chapter 17 — Databases Without Fear: Querying, Monitoring, and Maintaining",
         "3. Do it yourself",
@@ -3728,7 +3735,7 @@
     {
       "id": 311,
       "file": "blocks/0311.txt",
-      "word_paragraph_index_zero_based": 4040,
+      "word_paragraph_index_zero_based": 3563,
       "heading_context": [
         "Chapter 17 — Databases Without Fear: Querying, Monitoring, and Maintaining",
         "3. Do it yourself",
@@ -3740,7 +3747,7 @@
     {
       "id": 312,
       "file": "blocks/0312.txt",
-      "word_paragraph_index_zero_based": 4043,
+      "word_paragraph_index_zero_based": 3566,
       "heading_context": [
         "Chapter 17 — Databases Without Fear: Querying, Monitoring, and Maintaining",
         "3. Do it yourself",
@@ -3752,7 +3759,7 @@
     {
       "id": 313,
       "file": "blocks/0313.txt",
-      "word_paragraph_index_zero_based": 4047,
+      "word_paragraph_index_zero_based": 3570,
       "heading_context": [
         "Chapter 17 — Databases Without Fear: Querying, Monitoring, and Maintaining",
         "3. Do it yourself",
@@ -3764,7 +3771,7 @@
     {
       "id": 314,
       "file": "blocks/0314.txt",
-      "word_paragraph_index_zero_based": 4051,
+      "word_paragraph_index_zero_based": 3574,
       "heading_context": [
         "Chapter 17 — Databases Without Fear: Querying, Monitoring, and Maintaining",
         "3. Do it yourself",
@@ -3776,7 +3783,7 @@
     {
       "id": 315,
       "file": "blocks/0315.txt",
-      "word_paragraph_index_zero_based": 4053,
+      "word_paragraph_index_zero_based": 3576,
       "heading_context": [
         "Chapter 17 — Databases Without Fear: Querying, Monitoring, and Maintaining",
         "3. Do it yourself",
@@ -3788,7 +3795,7 @@
     {
       "id": 316,
       "file": "blocks/0316.txt",
-      "word_paragraph_index_zero_based": 4055,
+      "word_paragraph_index_zero_based": 3578,
       "heading_context": [
         "Chapter 17 — Databases Without Fear: Querying, Monitoring, and Maintaining",
         "3. Do it yourself",
@@ -3800,7 +3807,7 @@
     {
       "id": 317,
       "file": "blocks/0317.txt",
-      "word_paragraph_index_zero_based": 4057,
+      "word_paragraph_index_zero_based": 3580,
       "heading_context": [
         "Chapter 17 — Databases Without Fear: Querying, Monitoring, and Maintaining",
         "3. Do it yourself",
@@ -3812,7 +3819,7 @@
     {
       "id": 318,
       "file": "blocks/0318.txt",
-      "word_paragraph_index_zero_based": 4070,
+      "word_paragraph_index_zero_based": 3593,
       "heading_context": [
         "Chapter 17 — Databases Without Fear: Querying, Monitoring, and Maintaining",
         "3. Do it yourself",
@@ -3824,7 +3831,7 @@
     {
       "id": 319,
       "file": "blocks/0319.txt",
-      "word_paragraph_index_zero_based": 4072,
+      "word_paragraph_index_zero_based": 3595,
       "heading_context": [
         "Chapter 17 — Databases Without Fear: Querying, Monitoring, and Maintaining",
         "3. Do it yourself",
@@ -3836,7 +3843,7 @@
     {
       "id": 320,
       "file": "blocks/0320.txt",
-      "word_paragraph_index_zero_based": 4074,
+      "word_paragraph_index_zero_based": 3597,
       "heading_context": [
         "Chapter 17 — Databases Without Fear: Querying, Monitoring, and Maintaining",
         "3. Do it yourself",
@@ -3848,7 +3855,7 @@
     {
       "id": 321,
       "file": "blocks/0321.txt",
-      "word_paragraph_index_zero_based": 4082,
+      "word_paragraph_index_zero_based": 3605,
       "heading_context": [
         "Chapter 17 — Databases Without Fear: Querying, Monitoring, and Maintaining",
         "3. Do it yourself",
@@ -3860,7 +3867,7 @@
     {
       "id": 322,
       "file": "blocks/0322.txt",
-      "word_paragraph_index_zero_based": 4165,
+      "word_paragraph_index_zero_based": 3670,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "2. The solution",
@@ -3872,7 +3879,7 @@
     {
       "id": 323,
       "file": "blocks/0323.txt",
-      "word_paragraph_index_zero_based": 4204,
+      "word_paragraph_index_zero_based": 3676,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "2. The solution",
@@ -3884,7 +3891,7 @@
     {
       "id": 324,
       "file": "blocks/0324.txt",
-      "word_paragraph_index_zero_based": 4206,
+      "word_paragraph_index_zero_based": 3678,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "2. The solution",
@@ -3896,7 +3903,7 @@
     {
       "id": 325,
       "file": "blocks/0325.txt",
-      "word_paragraph_index_zero_based": 4210,
+      "word_paragraph_index_zero_based": 3682,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "2. The solution",
@@ -3908,7 +3915,7 @@
     {
       "id": 326,
       "file": "blocks/0326.txt",
-      "word_paragraph_index_zero_based": 4214,
+      "word_paragraph_index_zero_based": 3686,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "2. The solution",
@@ -3920,7 +3927,7 @@
     {
       "id": 327,
       "file": "blocks/0327.txt",
-      "word_paragraph_index_zero_based": 4216,
+      "word_paragraph_index_zero_based": 3688,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "2. The solution",
@@ -3932,7 +3939,7 @@
     {
       "id": 328,
       "file": "blocks/0328.txt",
-      "word_paragraph_index_zero_based": 4255,
+      "word_paragraph_index_zero_based": 3706,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "3. Do it yourself",
@@ -3944,7 +3951,7 @@
     {
       "id": 329,
       "file": "blocks/0329.txt",
-      "word_paragraph_index_zero_based": 4258,
+      "word_paragraph_index_zero_based": 3709,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "3. Do it yourself",
@@ -3956,7 +3963,7 @@
     {
       "id": 330,
       "file": "blocks/0330.txt",
-      "word_paragraph_index_zero_based": 4260,
+      "word_paragraph_index_zero_based": 3711,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "3. Do it yourself",
@@ -3968,7 +3975,7 @@
     {
       "id": 331,
       "file": "blocks/0331.txt",
-      "word_paragraph_index_zero_based": 4264,
+      "word_paragraph_index_zero_based": 3715,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "3. Do it yourself",
@@ -3980,7 +3987,7 @@
     {
       "id": 332,
       "file": "blocks/0332.txt",
-      "word_paragraph_index_zero_based": 4268,
+      "word_paragraph_index_zero_based": 3719,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "3. Do it yourself",
@@ -3992,7 +3999,7 @@
     {
       "id": 333,
       "file": "blocks/0333.txt",
-      "word_paragraph_index_zero_based": 4272,
+      "word_paragraph_index_zero_based": 3723,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "3. Do it yourself",
@@ -4004,7 +4011,7 @@
     {
       "id": 334,
       "file": "blocks/0334.txt",
-      "word_paragraph_index_zero_based": 4274,
+      "word_paragraph_index_zero_based": 3725,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "3. Do it yourself",
@@ -4016,7 +4023,7 @@
     {
       "id": 335,
       "file": "blocks/0335.txt",
-      "word_paragraph_index_zero_based": 4277,
+      "word_paragraph_index_zero_based": 3728,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "3. Do it yourself",
@@ -4028,7 +4035,7 @@
     {
       "id": 336,
       "file": "blocks/0336.txt",
-      "word_paragraph_index_zero_based": 4281,
+      "word_paragraph_index_zero_based": 3732,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "3. Do it yourself",
@@ -4040,7 +4047,7 @@
     {
       "id": 337,
       "file": "blocks/0337.txt",
-      "word_paragraph_index_zero_based": 4286,
+      "word_paragraph_index_zero_based": 3737,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "3. Do it yourself",
@@ -4052,7 +4059,7 @@
     {
       "id": 338,
       "file": "blocks/0338.txt",
-      "word_paragraph_index_zero_based": 4289,
+      "word_paragraph_index_zero_based": 3740,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "3. Do it yourself",
@@ -4064,7 +4071,7 @@
     {
       "id": 339,
       "file": "blocks/0339.txt",
-      "word_paragraph_index_zero_based": 4292,
+      "word_paragraph_index_zero_based": 3743,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "3. Do it yourself",
@@ -4076,7 +4083,7 @@
     {
       "id": 340,
       "file": "blocks/0340.txt",
-      "word_paragraph_index_zero_based": 4294,
+      "word_paragraph_index_zero_based": 3745,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "3. Do it yourself",
@@ -4088,7 +4095,7 @@
     {
       "id": 341,
       "file": "blocks/0341.txt",
-      "word_paragraph_index_zero_based": 4297,
+      "word_paragraph_index_zero_based": 3748,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "3. Do it yourself",
@@ -4100,7 +4107,7 @@
     {
       "id": 342,
       "file": "blocks/0342.txt",
-      "word_paragraph_index_zero_based": 4302,
+      "word_paragraph_index_zero_based": 3753,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "3. Do it yourself",
@@ -4112,7 +4119,7 @@
     {
       "id": 343,
       "file": "blocks/0343.txt",
-      "word_paragraph_index_zero_based": 4305,
+      "word_paragraph_index_zero_based": 3756,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "3. Do it yourself",
@@ -4124,7 +4131,7 @@
     {
       "id": 344,
       "file": "blocks/0344.txt",
-      "word_paragraph_index_zero_based": 4308,
+      "word_paragraph_index_zero_based": 3759,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "3. Do it yourself",
@@ -4136,7 +4143,7 @@
     {
       "id": 345,
       "file": "blocks/0345.txt",
-      "word_paragraph_index_zero_based": 4313,
+      "word_paragraph_index_zero_based": 3764,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "3. Do it yourself",
@@ -4148,7 +4155,7 @@
     {
       "id": 346,
       "file": "blocks/0346.txt",
-      "word_paragraph_index_zero_based": 4318,
+      "word_paragraph_index_zero_based": 3769,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "3. Do it yourself",
@@ -4160,7 +4167,7 @@
     {
       "id": 347,
       "file": "blocks/0347.txt",
-      "word_paragraph_index_zero_based": 4320,
+      "word_paragraph_index_zero_based": 3771,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "3. Do it yourself",
@@ -4172,7 +4179,7 @@
     {
       "id": 348,
       "file": "blocks/0348.txt",
-      "word_paragraph_index_zero_based": 4322,
+      "word_paragraph_index_zero_based": 3773,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "3. Do it yourself",
@@ -4184,7 +4191,7 @@
     {
       "id": 349,
       "file": "blocks/0349.txt",
-      "word_paragraph_index_zero_based": 4326,
+      "word_paragraph_index_zero_based": 3777,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "3. Do it yourself",
@@ -4196,7 +4203,7 @@
     {
       "id": 350,
       "file": "blocks/0350.txt",
-      "word_paragraph_index_zero_based": 4328,
+      "word_paragraph_index_zero_based": 3779,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "3. Do it yourself",
@@ -4208,7 +4215,7 @@
     {
       "id": 351,
       "file": "blocks/0351.txt",
-      "word_paragraph_index_zero_based": 4330,
+      "word_paragraph_index_zero_based": 3781,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "3. Do it yourself",
@@ -4220,7 +4227,7 @@
     {
       "id": 352,
       "file": "blocks/0352.txt",
-      "word_paragraph_index_zero_based": 4332,
+      "word_paragraph_index_zero_based": 3783,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "3. Do it yourself",
@@ -4232,7 +4239,7 @@
     {
       "id": 353,
       "file": "blocks/0353.txt",
-      "word_paragraph_index_zero_based": 4377,
+      "word_paragraph_index_zero_based": 3804,
       "heading_context": [
         "Chapter 18 — Instant Visualization: From Data to Charts with a Prompt",
         "3. Do it yourself",
@@ -4244,7 +4251,7 @@
     {
       "id": 354,
       "file": "blocks/0354.txt",
-      "word_paragraph_index_zero_based": 4474,
+      "word_paragraph_index_zero_based": 3889,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4256,7 +4263,7 @@
     {
       "id": 355,
       "file": "blocks/0355.txt",
-      "word_paragraph_index_zero_based": 4476,
+      "word_paragraph_index_zero_based": 3891,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4268,7 +4275,7 @@
     {
       "id": 356,
       "file": "blocks/0356.txt",
-      "word_paragraph_index_zero_based": 4479,
+      "word_paragraph_index_zero_based": 3894,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4280,7 +4287,7 @@
     {
       "id": 357,
       "file": "blocks/0357.txt",
-      "word_paragraph_index_zero_based": 4482,
+      "word_paragraph_index_zero_based": 3897,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4292,7 +4299,7 @@
     {
       "id": 358,
       "file": "blocks/0358.txt",
-      "word_paragraph_index_zero_based": 4487,
+      "word_paragraph_index_zero_based": 3902,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4304,7 +4311,7 @@
     {
       "id": 359,
       "file": "blocks/0359.txt",
-      "word_paragraph_index_zero_based": 4490,
+      "word_paragraph_index_zero_based": 3905,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4316,7 +4323,7 @@
     {
       "id": 360,
       "file": "blocks/0360.txt",
-      "word_paragraph_index_zero_based": 4496,
+      "word_paragraph_index_zero_based": 3911,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4328,7 +4335,7 @@
     {
       "id": 361,
       "file": "blocks/0361.txt",
-      "word_paragraph_index_zero_based": 4498,
+      "word_paragraph_index_zero_based": 3913,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4340,7 +4347,7 @@
     {
       "id": 362,
       "file": "blocks/0362.txt",
-      "word_paragraph_index_zero_based": 4504,
+      "word_paragraph_index_zero_based": 3919,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4352,7 +4359,7 @@
     {
       "id": 363,
       "file": "blocks/0363.txt",
-      "word_paragraph_index_zero_based": 4506,
+      "word_paragraph_index_zero_based": 3921,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4364,7 +4371,7 @@
     {
       "id": 364,
       "file": "blocks/0364.txt",
-      "word_paragraph_index_zero_based": 4509,
+      "word_paragraph_index_zero_based": 3924,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4376,7 +4383,7 @@
     {
       "id": 365,
       "file": "blocks/0365.txt",
-      "word_paragraph_index_zero_based": 4513,
+      "word_paragraph_index_zero_based": 3928,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4388,7 +4395,7 @@
     {
       "id": 366,
       "file": "blocks/0366.txt",
-      "word_paragraph_index_zero_based": 4515,
+      "word_paragraph_index_zero_based": 3930,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4400,7 +4407,7 @@
     {
       "id": 367,
       "file": "blocks/0367.txt",
-      "word_paragraph_index_zero_based": 4519,
+      "word_paragraph_index_zero_based": 3934,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4412,7 +4419,7 @@
     {
       "id": 368,
       "file": "blocks/0368.txt",
-      "word_paragraph_index_zero_based": 4523,
+      "word_paragraph_index_zero_based": 3938,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4424,7 +4431,7 @@
     {
       "id": 369,
       "file": "blocks/0369.txt",
-      "word_paragraph_index_zero_based": 4525,
+      "word_paragraph_index_zero_based": 3940,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4436,7 +4443,7 @@
     {
       "id": 370,
       "file": "blocks/0370.txt",
-      "word_paragraph_index_zero_based": 4530,
+      "word_paragraph_index_zero_based": 3945,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4448,7 +4455,7 @@
     {
       "id": 371,
       "file": "blocks/0371.txt",
-      "word_paragraph_index_zero_based": 4534,
+      "word_paragraph_index_zero_based": 3949,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4460,7 +4467,7 @@
     {
       "id": 372,
       "file": "blocks/0372.txt",
-      "word_paragraph_index_zero_based": 4536,
+      "word_paragraph_index_zero_based": 3951,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4472,7 +4479,7 @@
     {
       "id": 373,
       "file": "blocks/0373.txt",
-      "word_paragraph_index_zero_based": 4539,
+      "word_paragraph_index_zero_based": 3954,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4484,7 +4491,7 @@
     {
       "id": 374,
       "file": "blocks/0374.txt",
-      "word_paragraph_index_zero_based": 4543,
+      "word_paragraph_index_zero_based": 3958,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4496,7 +4503,7 @@
     {
       "id": 375,
       "file": "blocks/0375.txt",
-      "word_paragraph_index_zero_based": 4547,
+      "word_paragraph_index_zero_based": 3962,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4508,7 +4515,7 @@
     {
       "id": 376,
       "file": "blocks/0376.txt",
-      "word_paragraph_index_zero_based": 4549,
+      "word_paragraph_index_zero_based": 3964,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4520,7 +4527,7 @@
     {
       "id": 377,
       "file": "blocks/0377.txt",
-      "word_paragraph_index_zero_based": 4554,
+      "word_paragraph_index_zero_based": 3969,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4532,7 +4539,7 @@
     {
       "id": 378,
       "file": "blocks/0378.txt",
-      "word_paragraph_index_zero_based": 4556,
+      "word_paragraph_index_zero_based": 3971,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4544,7 +4551,7 @@
     {
       "id": 379,
       "file": "blocks/0379.txt",
-      "word_paragraph_index_zero_based": 4560,
+      "word_paragraph_index_zero_based": 3975,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4556,7 +4563,7 @@
     {
       "id": 380,
       "file": "blocks/0380.txt",
-      "word_paragraph_index_zero_based": 4561,
+      "word_paragraph_index_zero_based": 3976,
       "heading_context": [
         "Chapter 19 — Your supercharged terminal: shell scripting with an agent",
         "3. Do it yourself",
@@ -4568,7 +4575,7 @@
     {
       "id": 381,
       "file": "blocks/0381.txt",
-      "word_paragraph_index_zero_based": 4633,
+      "word_paragraph_index_zero_based": 4048,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "2. The solution",
@@ -4580,7 +4587,7 @@
     {
       "id": 382,
       "file": "blocks/0382.txt",
-      "word_paragraph_index_zero_based": 4639,
+      "word_paragraph_index_zero_based": 4054,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "2. The solution",
@@ -4592,7 +4599,7 @@
     {
       "id": 383,
       "file": "blocks/0383.txt",
-      "word_paragraph_index_zero_based": 4641,
+      "word_paragraph_index_zero_based": 4056,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "2. The solution",
@@ -4604,7 +4611,7 @@
     {
       "id": 384,
       "file": "blocks/0384.txt",
-      "word_paragraph_index_zero_based": 4654,
+      "word_paragraph_index_zero_based": 4069,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "2. The solution",
@@ -4616,7 +4623,7 @@
     {
       "id": 385,
       "file": "blocks/0385.txt",
-      "word_paragraph_index_zero_based": 4656,
+      "word_paragraph_index_zero_based": 4071,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "2. The solution",
@@ -4628,7 +4635,7 @@
     {
       "id": 386,
       "file": "blocks/0386.txt",
-      "word_paragraph_index_zero_based": 4670,
+      "word_paragraph_index_zero_based": 4085,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4640,7 +4647,7 @@
     {
       "id": 387,
       "file": "blocks/0387.txt",
-      "word_paragraph_index_zero_based": 4672,
+      "word_paragraph_index_zero_based": 4087,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4652,7 +4659,7 @@
     {
       "id": 388,
       "file": "blocks/0388.txt",
-      "word_paragraph_index_zero_based": 4675,
+      "word_paragraph_index_zero_based": 4090,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4664,7 +4671,7 @@
     {
       "id": 389,
       "file": "blocks/0389.txt",
-      "word_paragraph_index_zero_based": 4677,
+      "word_paragraph_index_zero_based": 4092,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4676,7 +4683,7 @@
     {
       "id": 390,
       "file": "blocks/0390.txt",
-      "word_paragraph_index_zero_based": 4681,
+      "word_paragraph_index_zero_based": 4096,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4688,7 +4695,7 @@
     {
       "id": 391,
       "file": "blocks/0391.txt",
-      "word_paragraph_index_zero_based": 4683,
+      "word_paragraph_index_zero_based": 4098,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4700,7 +4707,7 @@
     {
       "id": 392,
       "file": "blocks/0392.txt",
-      "word_paragraph_index_zero_based": 4685,
+      "word_paragraph_index_zero_based": 4100,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4712,7 +4719,7 @@
     {
       "id": 393,
       "file": "blocks/0393.txt",
-      "word_paragraph_index_zero_based": 4687,
+      "word_paragraph_index_zero_based": 4102,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4724,7 +4731,7 @@
     {
       "id": 394,
       "file": "blocks/0394.txt",
-      "word_paragraph_index_zero_based": 4689,
+      "word_paragraph_index_zero_based": 4104,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4736,7 +4743,7 @@
     {
       "id": 395,
       "file": "blocks/0395.txt",
-      "word_paragraph_index_zero_based": 4692,
+      "word_paragraph_index_zero_based": 4107,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4748,7 +4755,7 @@
     {
       "id": 396,
       "file": "blocks/0396.txt",
-      "word_paragraph_index_zero_based": 4693,
+      "word_paragraph_index_zero_based": 4108,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4760,7 +4767,7 @@
     {
       "id": 397,
       "file": "blocks/0397.txt",
-      "word_paragraph_index_zero_based": 4694,
+      "word_paragraph_index_zero_based": 4109,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4772,7 +4779,7 @@
     {
       "id": 398,
       "file": "blocks/0398.txt",
-      "word_paragraph_index_zero_based": 4696,
+      "word_paragraph_index_zero_based": 4111,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4784,7 +4791,7 @@
     {
       "id": 399,
       "file": "blocks/0399.txt",
-      "word_paragraph_index_zero_based": 4697,
+      "word_paragraph_index_zero_based": 4112,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4796,7 +4803,7 @@
     {
       "id": 400,
       "file": "blocks/0400.txt",
-      "word_paragraph_index_zero_based": 4702,
+      "word_paragraph_index_zero_based": 4117,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4808,7 +4815,7 @@
     {
       "id": 401,
       "file": "blocks/0401.txt",
-      "word_paragraph_index_zero_based": 4704,
+      "word_paragraph_index_zero_based": 4119,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4820,7 +4827,7 @@
     {
       "id": 402,
       "file": "blocks/0402.txt",
-      "word_paragraph_index_zero_based": 4706,
+      "word_paragraph_index_zero_based": 4121,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4832,7 +4839,7 @@
     {
       "id": 403,
       "file": "blocks/0403.txt",
-      "word_paragraph_index_zero_based": 4710,
+      "word_paragraph_index_zero_based": 4125,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4844,7 +4851,7 @@
     {
       "id": 404,
       "file": "blocks/0404.txt",
-      "word_paragraph_index_zero_based": 4712,
+      "word_paragraph_index_zero_based": 4127,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4856,7 +4863,7 @@
     {
       "id": 405,
       "file": "blocks/0405.txt",
-      "word_paragraph_index_zero_based": 4717,
+      "word_paragraph_index_zero_based": 4132,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4868,7 +4875,7 @@
     {
       "id": 406,
       "file": "blocks/0406.txt",
-      "word_paragraph_index_zero_based": 4722,
+      "word_paragraph_index_zero_based": 4137,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4880,7 +4887,7 @@
     {
       "id": 407,
       "file": "blocks/0407.txt",
-      "word_paragraph_index_zero_based": 4724,
+      "word_paragraph_index_zero_based": 4139,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4892,7 +4899,7 @@
     {
       "id": 408,
       "file": "blocks/0408.txt",
-      "word_paragraph_index_zero_based": 4728,
+      "word_paragraph_index_zero_based": 4143,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4904,7 +4911,7 @@
     {
       "id": 409,
       "file": "blocks/0409.txt",
-      "word_paragraph_index_zero_based": 4732,
+      "word_paragraph_index_zero_based": 4147,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4916,7 +4923,7 @@
     {
       "id": 410,
       "file": "blocks/0410.txt",
-      "word_paragraph_index_zero_based": 4733,
+      "word_paragraph_index_zero_based": 4148,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4928,7 +4935,7 @@
     {
       "id": 411,
       "file": "blocks/0411.txt",
-      "word_paragraph_index_zero_based": 4734,
+      "word_paragraph_index_zero_based": 4149,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4940,7 +4947,7 @@
     {
       "id": 412,
       "file": "blocks/0412.txt",
-      "word_paragraph_index_zero_based": 4739,
+      "word_paragraph_index_zero_based": 4154,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4952,7 +4959,7 @@
     {
       "id": 413,
       "file": "blocks/0413.txt",
-      "word_paragraph_index_zero_based": 4740,
+      "word_paragraph_index_zero_based": 4155,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4964,7 +4971,7 @@
     {
       "id": 414,
       "file": "blocks/0414.txt",
-      "word_paragraph_index_zero_based": 4741,
+      "word_paragraph_index_zero_based": 4156,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4976,7 +4983,7 @@
     {
       "id": 415,
       "file": "blocks/0415.txt",
-      "word_paragraph_index_zero_based": 4744,
+      "word_paragraph_index_zero_based": 4159,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -4988,7 +4995,7 @@
     {
       "id": 416,
       "file": "blocks/0416.txt",
-      "word_paragraph_index_zero_based": 4746,
+      "word_paragraph_index_zero_based": 4161,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -5000,7 +5007,7 @@
     {
       "id": 417,
       "file": "blocks/0417.txt",
-      "word_paragraph_index_zero_based": 4755,
+      "word_paragraph_index_zero_based": 4170,
       "heading_context": [
         "Chapter 20 — Servers and services: monitor, diagnose, and act",
         "3. Do it yourself",
@@ -5012,7 +5019,7 @@
     {
       "id": 418,
       "file": "blocks/0418.txt",
-      "word_paragraph_index_zero_based": 4822,
+      "word_paragraph_index_zero_based": 4237,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "2. The solution",
@@ -5024,7 +5031,7 @@
     {
       "id": 419,
       "file": "blocks/0419.txt",
-      "word_paragraph_index_zero_based": 4833,
+      "word_paragraph_index_zero_based": 4248,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "2. The solution",
@@ -5036,7 +5043,7 @@
     {
       "id": 420,
       "file": "blocks/0420.txt",
-      "word_paragraph_index_zero_based": 4837,
+      "word_paragraph_index_zero_based": 4252,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "2. The solution",
@@ -5048,7 +5055,7 @@
     {
       "id": 421,
       "file": "blocks/0421.txt",
-      "word_paragraph_index_zero_based": 4848,
+      "word_paragraph_index_zero_based": 4263,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "2. The solution",
@@ -5060,7 +5067,7 @@
     {
       "id": 422,
       "file": "blocks/0422.txt",
-      "word_paragraph_index_zero_based": 4856,
+      "word_paragraph_index_zero_based": 4271,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5072,7 +5079,7 @@
     {
       "id": 423,
       "file": "blocks/0423.txt",
-      "word_paragraph_index_zero_based": 4858,
+      "word_paragraph_index_zero_based": 4273,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5084,7 +5091,7 @@
     {
       "id": 424,
       "file": "blocks/0424.txt",
-      "word_paragraph_index_zero_based": 4860,
+      "word_paragraph_index_zero_based": 4275,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5096,7 +5103,7 @@
     {
       "id": 425,
       "file": "blocks/0425.txt",
-      "word_paragraph_index_zero_based": 4864,
+      "word_paragraph_index_zero_based": 4279,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5108,7 +5115,7 @@
     {
       "id": 426,
       "file": "blocks/0426.txt",
-      "word_paragraph_index_zero_based": 4865,
+      "word_paragraph_index_zero_based": 4280,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5120,7 +5127,7 @@
     {
       "id": 427,
       "file": "blocks/0427.txt",
-      "word_paragraph_index_zero_based": 4868,
+      "word_paragraph_index_zero_based": 4283,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5132,7 +5139,7 @@
     {
       "id": 428,
       "file": "blocks/0428.txt",
-      "word_paragraph_index_zero_based": 4869,
+      "word_paragraph_index_zero_based": 4284,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5144,7 +5151,7 @@
     {
       "id": 429,
       "file": "blocks/0429.txt",
-      "word_paragraph_index_zero_based": 4870,
+      "word_paragraph_index_zero_based": 4285,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5156,7 +5163,7 @@
     {
       "id": 430,
       "file": "blocks/0430.txt",
-      "word_paragraph_index_zero_based": 4872,
+      "word_paragraph_index_zero_based": 4287,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5168,7 +5175,7 @@
     {
       "id": 431,
       "file": "blocks/0431.txt",
-      "word_paragraph_index_zero_based": 4873,
+      "word_paragraph_index_zero_based": 4288,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5180,7 +5187,7 @@
     {
       "id": 432,
       "file": "blocks/0432.txt",
-      "word_paragraph_index_zero_based": 4875,
+      "word_paragraph_index_zero_based": 4290,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5192,7 +5199,7 @@
     {
       "id": 433,
       "file": "blocks/0433.txt",
-      "word_paragraph_index_zero_based": 4880,
+      "word_paragraph_index_zero_based": 4295,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5204,7 +5211,7 @@
     {
       "id": 434,
       "file": "blocks/0434.txt",
-      "word_paragraph_index_zero_based": 4881,
+      "word_paragraph_index_zero_based": 4296,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5216,7 +5223,7 @@
     {
       "id": 435,
       "file": "blocks/0435.txt",
-      "word_paragraph_index_zero_based": 4882,
+      "word_paragraph_index_zero_based": 4297,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5228,7 +5235,7 @@
     {
       "id": 436,
       "file": "blocks/0436.txt",
-      "word_paragraph_index_zero_based": 4887,
+      "word_paragraph_index_zero_based": 4302,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5240,7 +5247,7 @@
     {
       "id": 437,
       "file": "blocks/0437.txt",
-      "word_paragraph_index_zero_based": 4889,
+      "word_paragraph_index_zero_based": 4304,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5252,7 +5259,7 @@
     {
       "id": 438,
       "file": "blocks/0438.txt",
-      "word_paragraph_index_zero_based": 4891,
+      "word_paragraph_index_zero_based": 4306,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5264,7 +5271,7 @@
     {
       "id": 439,
       "file": "blocks/0439.txt",
-      "word_paragraph_index_zero_based": 4895,
+      "word_paragraph_index_zero_based": 4310,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5276,7 +5283,7 @@
     {
       "id": 440,
       "file": "blocks/0440.txt",
-      "word_paragraph_index_zero_based": 4896,
+      "word_paragraph_index_zero_based": 4311,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5288,7 +5295,7 @@
     {
       "id": 441,
       "file": "blocks/0441.txt",
-      "word_paragraph_index_zero_based": 4898,
+      "word_paragraph_index_zero_based": 4313,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5300,7 +5307,7 @@
     {
       "id": 442,
       "file": "blocks/0442.txt",
-      "word_paragraph_index_zero_based": 4899,
+      "word_paragraph_index_zero_based": 4314,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5312,7 +5319,7 @@
     {
       "id": 443,
       "file": "blocks/0443.txt",
-      "word_paragraph_index_zero_based": 4902,
+      "word_paragraph_index_zero_based": 4317,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5324,7 +5331,7 @@
     {
       "id": 444,
       "file": "blocks/0444.txt",
-      "word_paragraph_index_zero_based": 4904,
+      "word_paragraph_index_zero_based": 4319,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5336,7 +5343,7 @@
     {
       "id": 445,
       "file": "blocks/0445.txt",
-      "word_paragraph_index_zero_based": 4909,
+      "word_paragraph_index_zero_based": 4324,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5348,7 +5355,7 @@
     {
       "id": 446,
       "file": "blocks/0446.txt",
-      "word_paragraph_index_zero_based": 4910,
+      "word_paragraph_index_zero_based": 4325,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5360,7 +5367,7 @@
     {
       "id": 447,
       "file": "blocks/0447.txt",
-      "word_paragraph_index_zero_based": 4915,
+      "word_paragraph_index_zero_based": 4330,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5372,7 +5379,7 @@
     {
       "id": 448,
       "file": "blocks/0448.txt",
-      "word_paragraph_index_zero_based": 4917,
+      "word_paragraph_index_zero_based": 4332,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5384,7 +5391,7 @@
     {
       "id": 449,
       "file": "blocks/0449.txt",
-      "word_paragraph_index_zero_based": 4918,
+      "word_paragraph_index_zero_based": 4333,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5396,7 +5403,7 @@
     {
       "id": 450,
       "file": "blocks/0450.txt",
-      "word_paragraph_index_zero_based": 4921,
+      "word_paragraph_index_zero_based": 4336,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5408,7 +5415,7 @@
     {
       "id": 451,
       "file": "blocks/0451.txt",
-      "word_paragraph_index_zero_based": 4929,
+      "word_paragraph_index_zero_based": 4344,
       "heading_context": [
         "Chapter 21 — Cloud from the CLI: AWS, Azure, and GCP with agents",
         "3. Do it yourself",
@@ -5420,7 +5427,7 @@
     {
       "id": 452,
       "file": "blocks/0452.txt",
-      "word_paragraph_index_zero_based": 5029,
+      "word_paragraph_index_zero_based": 4444,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5432,7 +5439,7 @@
     {
       "id": 453,
       "file": "blocks/0453.txt",
-      "word_paragraph_index_zero_based": 5032,
+      "word_paragraph_index_zero_based": 4447,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5444,7 +5451,7 @@
     {
       "id": 454,
       "file": "blocks/0454.txt",
-      "word_paragraph_index_zero_based": 5033,
+      "word_paragraph_index_zero_based": 4448,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5456,7 +5463,7 @@
     {
       "id": 455,
       "file": "blocks/0455.txt",
-      "word_paragraph_index_zero_based": 5034,
+      "word_paragraph_index_zero_based": 4449,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5468,7 +5475,7 @@
     {
       "id": 456,
       "file": "blocks/0456.txt",
-      "word_paragraph_index_zero_based": 5035,
+      "word_paragraph_index_zero_based": 4450,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5480,7 +5487,7 @@
     {
       "id": 457,
       "file": "blocks/0457.txt",
-      "word_paragraph_index_zero_based": 5036,
+      "word_paragraph_index_zero_based": 4451,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5492,7 +5499,7 @@
     {
       "id": 458,
       "file": "blocks/0458.txt",
-      "word_paragraph_index_zero_based": 5037,
+      "word_paragraph_index_zero_based": 4452,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5504,7 +5511,7 @@
     {
       "id": 459,
       "file": "blocks/0459.txt",
-      "word_paragraph_index_zero_based": 5041,
+      "word_paragraph_index_zero_based": 4456,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5516,7 +5523,7 @@
     {
       "id": 460,
       "file": "blocks/0460.txt",
-      "word_paragraph_index_zero_based": 5043,
+      "word_paragraph_index_zero_based": 4458,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5528,7 +5535,7 @@
     {
       "id": 461,
       "file": "blocks/0461.txt",
-      "word_paragraph_index_zero_based": 5044,
+      "word_paragraph_index_zero_based": 4459,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5540,7 +5547,7 @@
     {
       "id": 462,
       "file": "blocks/0462.txt",
-      "word_paragraph_index_zero_based": 5045,
+      "word_paragraph_index_zero_based": 4460,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5552,7 +5559,7 @@
     {
       "id": 463,
       "file": "blocks/0463.txt",
-      "word_paragraph_index_zero_based": 5046,
+      "word_paragraph_index_zero_based": 4461,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5564,7 +5571,7 @@
     {
       "id": 464,
       "file": "blocks/0464.txt",
-      "word_paragraph_index_zero_based": 5050,
+      "word_paragraph_index_zero_based": 4465,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5576,7 +5583,7 @@
     {
       "id": 465,
       "file": "blocks/0465.txt",
-      "word_paragraph_index_zero_based": 5052,
+      "word_paragraph_index_zero_based": 4467,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5588,7 +5595,7 @@
     {
       "id": 466,
       "file": "blocks/0466.txt",
-      "word_paragraph_index_zero_based": 5053,
+      "word_paragraph_index_zero_based": 4468,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5600,7 +5607,7 @@
     {
       "id": 467,
       "file": "blocks/0467.txt",
-      "word_paragraph_index_zero_based": 5055,
+      "word_paragraph_index_zero_based": 4470,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5612,7 +5619,7 @@
     {
       "id": 468,
       "file": "blocks/0468.txt",
-      "word_paragraph_index_zero_based": 5056,
+      "word_paragraph_index_zero_based": 4471,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5624,7 +5631,7 @@
     {
       "id": 469,
       "file": "blocks/0469.txt",
-      "word_paragraph_index_zero_based": 5058,
+      "word_paragraph_index_zero_based": 4473,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5636,7 +5643,7 @@
     {
       "id": 470,
       "file": "blocks/0470.txt",
-      "word_paragraph_index_zero_based": 5059,
+      "word_paragraph_index_zero_based": 4474,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5648,7 +5655,7 @@
     {
       "id": 471,
       "file": "blocks/0471.txt",
-      "word_paragraph_index_zero_based": 5061,
+      "word_paragraph_index_zero_based": 4476,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5660,7 +5667,7 @@
     {
       "id": 472,
       "file": "blocks/0472.txt",
-      "word_paragraph_index_zero_based": 5062,
+      "word_paragraph_index_zero_based": 4477,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5672,7 +5679,7 @@
     {
       "id": 473,
       "file": "blocks/0473.txt",
-      "word_paragraph_index_zero_based": 5063,
+      "word_paragraph_index_zero_based": 4478,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5684,7 +5691,7 @@
     {
       "id": 474,
       "file": "blocks/0474.txt",
-      "word_paragraph_index_zero_based": 5066,
+      "word_paragraph_index_zero_based": 4481,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5696,7 +5703,7 @@
     {
       "id": 475,
       "file": "blocks/0475.txt",
-      "word_paragraph_index_zero_based": 5071,
+      "word_paragraph_index_zero_based": 4486,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5708,7 +5715,7 @@
     {
       "id": 476,
       "file": "blocks/0476.txt",
-      "word_paragraph_index_zero_based": 5072,
+      "word_paragraph_index_zero_based": 4487,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5720,7 +5727,7 @@
     {
       "id": 477,
       "file": "blocks/0477.txt",
-      "word_paragraph_index_zero_based": 5073,
+      "word_paragraph_index_zero_based": 4488,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5732,7 +5739,7 @@
     {
       "id": 478,
       "file": "blocks/0478.txt",
-      "word_paragraph_index_zero_based": 5076,
+      "word_paragraph_index_zero_based": 4491,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5744,7 +5751,7 @@
     {
       "id": 479,
       "file": "blocks/0479.txt",
-      "word_paragraph_index_zero_based": 5077,
+      "word_paragraph_index_zero_based": 4492,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5756,7 +5763,7 @@
     {
       "id": 480,
       "file": "blocks/0480.txt",
-      "word_paragraph_index_zero_based": 5079,
+      "word_paragraph_index_zero_based": 4494,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5768,7 +5775,7 @@
     {
       "id": 481,
       "file": "blocks/0481.txt",
-      "word_paragraph_index_zero_based": 5084,
+      "word_paragraph_index_zero_based": 4499,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5780,7 +5787,7 @@
     {
       "id": 482,
       "file": "blocks/0482.txt",
-      "word_paragraph_index_zero_based": 5085,
+      "word_paragraph_index_zero_based": 4500,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5792,7 +5799,7 @@
     {
       "id": 483,
       "file": "blocks/0483.txt",
-      "word_paragraph_index_zero_based": 5087,
+      "word_paragraph_index_zero_based": 4502,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5804,7 +5811,7 @@
     {
       "id": 484,
       "file": "blocks/0484.txt",
-      "word_paragraph_index_zero_based": 5089,
+      "word_paragraph_index_zero_based": 4504,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5816,7 +5823,7 @@
     {
       "id": 485,
       "file": "blocks/0485.txt",
-      "word_paragraph_index_zero_based": 5090,
+      "word_paragraph_index_zero_based": 4505,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5828,7 +5835,7 @@
     {
       "id": 486,
       "file": "blocks/0486.txt",
-      "word_paragraph_index_zero_based": 5091,
+      "word_paragraph_index_zero_based": 4506,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5840,7 +5847,7 @@
     {
       "id": 487,
       "file": "blocks/0487.txt",
-      "word_paragraph_index_zero_based": 5094,
+      "word_paragraph_index_zero_based": 4509,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5852,7 +5859,7 @@
     {
       "id": 488,
       "file": "blocks/0488.txt",
-      "word_paragraph_index_zero_based": 5095,
+      "word_paragraph_index_zero_based": 4510,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5864,7 +5871,7 @@
     {
       "id": 489,
       "file": "blocks/0489.txt",
-      "word_paragraph_index_zero_based": 5098,
+      "word_paragraph_index_zero_based": 4513,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5876,7 +5883,7 @@
     {
       "id": 490,
       "file": "blocks/0490.txt",
-      "word_paragraph_index_zero_based": 5099,
+      "word_paragraph_index_zero_based": 4514,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5888,7 +5895,7 @@
     {
       "id": 491,
       "file": "blocks/0491.txt",
-      "word_paragraph_index_zero_based": 5100,
+      "word_paragraph_index_zero_based": 4515,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5900,7 +5907,7 @@
     {
       "id": 492,
       "file": "blocks/0492.txt",
-      "word_paragraph_index_zero_based": 5102,
+      "word_paragraph_index_zero_based": 4517,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5912,7 +5919,7 @@
     {
       "id": 493,
       "file": "blocks/0493.txt",
-      "word_paragraph_index_zero_based": 5103,
+      "word_paragraph_index_zero_based": 4518,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5924,7 +5931,7 @@
     {
       "id": 494,
       "file": "blocks/0494.txt",
-      "word_paragraph_index_zero_based": 5104,
+      "word_paragraph_index_zero_based": 4519,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5936,7 +5943,7 @@
     {
       "id": 495,
       "file": "blocks/0495.txt",
-      "word_paragraph_index_zero_based": 5106,
+      "word_paragraph_index_zero_based": 4521,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5948,7 +5955,7 @@
     {
       "id": 496,
       "file": "blocks/0496.txt",
-      "word_paragraph_index_zero_based": 5107,
+      "word_paragraph_index_zero_based": 4522,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5960,7 +5967,7 @@
     {
       "id": 497,
       "file": "blocks/0497.txt",
-      "word_paragraph_index_zero_based": 5108,
+      "word_paragraph_index_zero_based": 4523,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5972,7 +5979,7 @@
     {
       "id": 498,
       "file": "blocks/0498.txt",
-      "word_paragraph_index_zero_based": 5112,
+      "word_paragraph_index_zero_based": 4527,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5984,7 +5991,7 @@
     {
       "id": 499,
       "file": "blocks/0499.txt",
-      "word_paragraph_index_zero_based": 5113,
+      "word_paragraph_index_zero_based": 4528,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -5996,7 +6003,7 @@
     {
       "id": 500,
       "file": "blocks/0500.txt",
-      "word_paragraph_index_zero_based": 5115,
+      "word_paragraph_index_zero_based": 4530,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -6008,7 +6015,7 @@
     {
       "id": 501,
       "file": "blocks/0501.txt",
-      "word_paragraph_index_zero_based": 5119,
+      "word_paragraph_index_zero_based": 4534,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -6020,7 +6027,7 @@
     {
       "id": 502,
       "file": "blocks/0502.txt",
-      "word_paragraph_index_zero_based": 5121,
+      "word_paragraph_index_zero_based": 4536,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -6032,7 +6039,7 @@
     {
       "id": 503,
       "file": "blocks/0503.txt",
-      "word_paragraph_index_zero_based": 5122,
+      "word_paragraph_index_zero_based": 4537,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -6044,7 +6051,7 @@
     {
       "id": 504,
       "file": "blocks/0504.txt",
-      "word_paragraph_index_zero_based": 5145,
+      "word_paragraph_index_zero_based": 4545,
       "heading_context": [
         "Chapter 22 — Containers and deployments: Docker and Kubernetes without memorizing",
         "3. Do it yourself",
@@ -6056,7 +6063,7 @@
     {
       "id": 505,
       "file": "blocks/0505.txt",
-      "word_paragraph_index_zero_based": 5189,
+      "word_paragraph_index_zero_based": 4589,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "2. The solution",
@@ -6068,7 +6075,7 @@
     {
       "id": 506,
       "file": "blocks/0506.txt",
-      "word_paragraph_index_zero_based": 5197,
+      "word_paragraph_index_zero_based": 4597,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "2. The solution",
@@ -6080,7 +6087,7 @@
     {
       "id": 507,
       "file": "blocks/0507.txt",
-      "word_paragraph_index_zero_based": 5215,
+      "word_paragraph_index_zero_based": 4603,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "2. The solution",
@@ -6092,7 +6099,7 @@
     {
       "id": 508,
       "file": "blocks/0508.txt",
-      "word_paragraph_index_zero_based": 5217,
+      "word_paragraph_index_zero_based": 4605,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "2. The solution",
@@ -6104,7 +6111,7 @@
     {
       "id": 509,
       "file": "blocks/0509.txt",
-      "word_paragraph_index_zero_based": 5221,
+      "word_paragraph_index_zero_based": 4609,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "2. The solution",
@@ -6116,7 +6123,7 @@
     {
       "id": 510,
       "file": "blocks/0510.txt",
-      "word_paragraph_index_zero_based": 5233,
+      "word_paragraph_index_zero_based": 4621,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "2. The solution",
@@ -6128,7 +6135,7 @@
     {
       "id": 511,
       "file": "blocks/0511.txt",
-      "word_paragraph_index_zero_based": 5257,
+      "word_paragraph_index_zero_based": 4645,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "3. Do it yourself",
@@ -6140,7 +6147,7 @@
     {
       "id": 512,
       "file": "blocks/0512.txt",
-      "word_paragraph_index_zero_based": 5259,
+      "word_paragraph_index_zero_based": 4647,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "3. Do it yourself",
@@ -6152,7 +6159,7 @@
     {
       "id": 513,
       "file": "blocks/0513.txt",
-      "word_paragraph_index_zero_based": 5261,
+      "word_paragraph_index_zero_based": 4649,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "3. Do it yourself",
@@ -6164,7 +6171,7 @@
     {
       "id": 514,
       "file": "blocks/0514.txt",
-      "word_paragraph_index_zero_based": 5263,
+      "word_paragraph_index_zero_based": 4651,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "3. Do it yourself",
@@ -6176,7 +6183,7 @@
     {
       "id": 515,
       "file": "blocks/0515.txt",
-      "word_paragraph_index_zero_based": 5266,
+      "word_paragraph_index_zero_based": 4654,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "3. Do it yourself",
@@ -6188,7 +6195,7 @@
     {
       "id": 516,
       "file": "blocks/0516.txt",
-      "word_paragraph_index_zero_based": 5269,
+      "word_paragraph_index_zero_based": 4657,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "3. Do it yourself",
@@ -6200,7 +6207,7 @@
     {
       "id": 517,
       "file": "blocks/0517.txt",
-      "word_paragraph_index_zero_based": 5272,
+      "word_paragraph_index_zero_based": 4660,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "3. Do it yourself",
@@ -6212,7 +6219,7 @@
     {
       "id": 518,
       "file": "blocks/0518.txt",
-      "word_paragraph_index_zero_based": 5274,
+      "word_paragraph_index_zero_based": 4662,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "3. Do it yourself",
@@ -6224,7 +6231,7 @@
     {
       "id": 519,
       "file": "blocks/0519.txt",
-      "word_paragraph_index_zero_based": 5279,
+      "word_paragraph_index_zero_based": 4667,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "3. Do it yourself",
@@ -6236,7 +6243,7 @@
     {
       "id": 520,
       "file": "blocks/0520.txt",
-      "word_paragraph_index_zero_based": 5281,
+      "word_paragraph_index_zero_based": 4669,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "3. Do it yourself",
@@ -6248,7 +6255,7 @@
     {
       "id": 521,
       "file": "blocks/0521.txt",
-      "word_paragraph_index_zero_based": 5284,
+      "word_paragraph_index_zero_based": 4672,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "3. Do it yourself",
@@ -6260,7 +6267,7 @@
     {
       "id": 522,
       "file": "blocks/0522.txt",
-      "word_paragraph_index_zero_based": 5296,
+      "word_paragraph_index_zero_based": 4684,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "3. Do it yourself",
@@ -6272,7 +6279,7 @@
     {
       "id": 523,
       "file": "blocks/0523.txt",
-      "word_paragraph_index_zero_based": 5299,
+      "word_paragraph_index_zero_based": 4687,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "3. Do it yourself",
@@ -6284,7 +6291,7 @@
     {
       "id": 524,
       "file": "blocks/0524.txt",
-      "word_paragraph_index_zero_based": 5304,
+      "word_paragraph_index_zero_based": 4692,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "3. Do it yourself",
@@ -6296,7 +6303,7 @@
     {
       "id": 525,
       "file": "blocks/0525.txt",
-      "word_paragraph_index_zero_based": 5306,
+      "word_paragraph_index_zero_based": 4694,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "3. Do it yourself",
@@ -6308,7 +6315,7 @@
     {
       "id": 526,
       "file": "blocks/0526.txt",
-      "word_paragraph_index_zero_based": 5312,
+      "word_paragraph_index_zero_based": 4700,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "3. Do it yourself",
@@ -6320,7 +6327,7 @@
     {
       "id": 527,
       "file": "blocks/0527.txt",
-      "word_paragraph_index_zero_based": 5314,
+      "word_paragraph_index_zero_based": 4702,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "3. Do it yourself",
@@ -6332,7 +6339,7 @@
     {
       "id": 528,
       "file": "blocks/0528.txt",
-      "word_paragraph_index_zero_based": 5318,
+      "word_paragraph_index_zero_based": 4706,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "3. Do it yourself",
@@ -6344,7 +6351,7 @@
     {
       "id": 529,
       "file": "blocks/0529.txt",
-      "word_paragraph_index_zero_based": 5320,
+      "word_paragraph_index_zero_based": 4708,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "3. Do it yourself",
@@ -6356,7 +6363,7 @@
     {
       "id": 530,
       "file": "blocks/0530.txt",
-      "word_paragraph_index_zero_based": 5325,
+      "word_paragraph_index_zero_based": 4713,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "3. Do it yourself",
@@ -6368,7 +6375,7 @@
     {
       "id": 531,
       "file": "blocks/0531.txt",
-      "word_paragraph_index_zero_based": 5332,
+      "word_paragraph_index_zero_based": 4720,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "3. Do it yourself",
@@ -6380,7 +6387,7 @@
     {
       "id": 532,
       "file": "blocks/0532.txt",
-      "word_paragraph_index_zero_based": 5337,
+      "word_paragraph_index_zero_based": 4725,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "3. Do it yourself",
@@ -6392,7 +6399,7 @@
     {
       "id": 533,
       "file": "blocks/0533.txt",
-      "word_paragraph_index_zero_based": 5344,
+      "word_paragraph_index_zero_based": 4732,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "3. Do it yourself",
@@ -6404,7 +6411,7 @@
     {
       "id": 534,
       "file": "blocks/0534.txt",
-      "word_paragraph_index_zero_based": 5362,
+      "word_paragraph_index_zero_based": 4740,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "3. Do it yourself",
@@ -6416,7 +6423,7 @@
     {
       "id": 535,
       "file": "blocks/0535.txt",
-      "word_paragraph_index_zero_based": 5370,
+      "word_paragraph_index_zero_based": 4748,
       "heading_context": [
         "Chapter 23 — Recurring tasks: hooks, cron, and automated workflows",
         "3. Do it yourself",
@@ -6428,7 +6435,7 @@
     {
       "id": 536,
       "file": "blocks/0536.txt",
-      "word_paragraph_index_zero_based": 5473,
+      "word_paragraph_index_zero_based": 4803,
       "heading_context": [
         "Chapter 24 — Data pipelines: from source to result without intervention",
         "2. The solution",
@@ -6440,7 +6447,7 @@
     {
       "id": 537,
       "file": "blocks/0537.txt",
-      "word_paragraph_index_zero_based": 5487,
+      "word_paragraph_index_zero_based": 4817,
       "heading_context": [
         "Chapter 24 — Data pipelines: from source to result without intervention",
         "2. The solution",
@@ -6452,7 +6459,7 @@
     {
       "id": 538,
       "file": "blocks/0538.txt",
-      "word_paragraph_index_zero_based": 5515,
+      "word_paragraph_index_zero_based": 4845,
       "heading_context": [
         "Chapter 24 — Data pipelines: from source to result without intervention",
         "3. Do it yourself",
@@ -6464,7 +6471,7 @@
     {
       "id": 539,
       "file": "blocks/0539.txt",
-      "word_paragraph_index_zero_based": 5517,
+      "word_paragraph_index_zero_based": 4847,
       "heading_context": [
         "Chapter 24 — Data pipelines: from source to result without intervention",
         "3. Do it yourself",
@@ -6476,7 +6483,7 @@
     {
       "id": 540,
       "file": "blocks/0540.txt",
-      "word_paragraph_index_zero_based": 5519,
+      "word_paragraph_index_zero_based": 4849,
       "heading_context": [
         "Chapter 24 — Data pipelines: from source to result without intervention",
         "3. Do it yourself",
@@ -6488,7 +6495,7 @@
     {
       "id": 541,
       "file": "blocks/0541.txt",
-      "word_paragraph_index_zero_based": 5521,
+      "word_paragraph_index_zero_based": 4851,
       "heading_context": [
         "Chapter 24 — Data pipelines: from source to result without intervention",
         "3. Do it yourself",
@@ -6500,7 +6507,7 @@
     {
       "id": 542,
       "file": "blocks/0542.txt",
-      "word_paragraph_index_zero_based": 5523,
+      "word_paragraph_index_zero_based": 4853,
       "heading_context": [
         "Chapter 24 — Data pipelines: from source to result without intervention",
         "3. Do it yourself",
@@ -6512,7 +6519,7 @@
     {
       "id": 543,
       "file": "blocks/0543.txt",
-      "word_paragraph_index_zero_based": 5525,
+      "word_paragraph_index_zero_based": 4855,
       "heading_context": [
         "Chapter 24 — Data pipelines: from source to result without intervention",
         "3. Do it yourself",
@@ -6524,7 +6531,7 @@
     {
       "id": 544,
       "file": "blocks/0544.txt",
-      "word_paragraph_index_zero_based": 5528,
+      "word_paragraph_index_zero_based": 4858,
       "heading_context": [
         "Chapter 24 — Data pipelines: from source to result without intervention",
         "3. Do it yourself",
@@ -6536,7 +6543,7 @@
     {
       "id": 545,
       "file": "blocks/0545.txt",
-      "word_paragraph_index_zero_based": 5541,
+      "word_paragraph_index_zero_based": 4871,
       "heading_context": [
         "Chapter 24 — Data pipelines: from source to result without intervention",
         "3. Do it yourself",
@@ -6548,7 +6555,7 @@
     {
       "id": 546,
       "file": "blocks/0546.txt",
-      "word_paragraph_index_zero_based": 5543,
+      "word_paragraph_index_zero_based": 4873,
       "heading_context": [
         "Chapter 24 — Data pipelines: from source to result without intervention",
         "3. Do it yourself",
@@ -6560,7 +6567,7 @@
     {
       "id": 547,
       "file": "blocks/0547.txt",
-      "word_paragraph_index_zero_based": 5547,
+      "word_paragraph_index_zero_based": 4877,
       "heading_context": [
         "Chapter 24 — Data pipelines: from source to result without intervention",
         "3. Do it yourself",
@@ -6572,7 +6579,7 @@
     {
       "id": 548,
       "file": "blocks/0548.txt",
-      "word_paragraph_index_zero_based": 5549,
+      "word_paragraph_index_zero_based": 4879,
       "heading_context": [
         "Chapter 24 — Data pipelines: from source to result without intervention",
         "3. Do it yourself",
@@ -6584,7 +6591,7 @@
     {
       "id": 549,
       "file": "blocks/0549.txt",
-      "word_paragraph_index_zero_based": 5562,
+      "word_paragraph_index_zero_based": 4892,
       "heading_context": [
         "Chapter 24 — Data pipelines: from source to result without intervention",
         "3. Do it yourself",
@@ -6596,7 +6603,7 @@
     {
       "id": 550,
       "file": "blocks/0550.txt",
-      "word_paragraph_index_zero_based": 5564,
+      "word_paragraph_index_zero_based": 4894,
       "heading_context": [
         "Chapter 24 — Data pipelines: from source to result without intervention",
         "3. Do it yourself",
@@ -6608,7 +6615,7 @@
     {
       "id": 551,
       "file": "blocks/0551.txt",
-      "word_paragraph_index_zero_based": 5566,
+      "word_paragraph_index_zero_based": 4896,
       "heading_context": [
         "Chapter 24 — Data pipelines: from source to result without intervention",
         "3. Do it yourself",
@@ -6620,7 +6627,7 @@
     {
       "id": 552,
       "file": "blocks/0552.txt",
-      "word_paragraph_index_zero_based": 5568,
+      "word_paragraph_index_zero_based": 4898,
       "heading_context": [
         "Chapter 24 — Data pipelines: from source to result without intervention",
         "3. Do it yourself",
@@ -6632,7 +6639,7 @@
     {
       "id": 553,
       "file": "blocks/0553.txt",
-      "word_paragraph_index_zero_based": 5570,
+      "word_paragraph_index_zero_based": 4900,
       "heading_context": [
         "Chapter 24 — Data pipelines: from source to result without intervention",
         "3. Do it yourself",
@@ -6644,7 +6651,7 @@
     {
       "id": 554,
       "file": "blocks/0554.txt",
-      "word_paragraph_index_zero_based": 5572,
+      "word_paragraph_index_zero_based": 4902,
       "heading_context": [
         "Chapter 24 — Data pipelines: from source to result without intervention",
         "3. Do it yourself",
@@ -6656,7 +6663,7 @@
     {
       "id": 555,
       "file": "blocks/0555.txt",
-      "word_paragraph_index_zero_based": 5577,
+      "word_paragraph_index_zero_based": 4907,
       "heading_context": [
         "Chapter 24 — Data pipelines: from source to result without intervention",
         "3. Do it yourself",
@@ -6668,7 +6675,7 @@
     {
       "id": 556,
       "file": "blocks/0556.txt",
-      "word_paragraph_index_zero_based": 5579,
+      "word_paragraph_index_zero_based": 4909,
       "heading_context": [
         "Chapter 24 — Data pipelines: from source to result without intervention",
         "3. Do it yourself",
@@ -6680,7 +6687,7 @@
     {
       "id": 557,
       "file": "blocks/0557.txt",
-      "word_paragraph_index_zero_based": 5583,
+      "word_paragraph_index_zero_based": 4913,
       "heading_context": [
         "Chapter 24 — Data pipelines: from source to result without intervention",
         "3. Do it yourself",
@@ -6692,7 +6699,7 @@
     {
       "id": 558,
       "file": "blocks/0558.txt",
-      "word_paragraph_index_zero_based": 5587,
+      "word_paragraph_index_zero_based": 4917,
       "heading_context": [
         "Chapter 24 — Data pipelines: from source to result without intervention",
         "3. Do it yourself",
@@ -6704,7 +6711,7 @@
     {
       "id": 559,
       "file": "blocks/0559.txt",
-      "word_paragraph_index_zero_based": 5648,
+      "word_paragraph_index_zero_based": 4978,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "2. The solution",
@@ -6716,7 +6723,7 @@
     {
       "id": 560,
       "file": "blocks/0560.txt",
-      "word_paragraph_index_zero_based": 5650,
+      "word_paragraph_index_zero_based": 4980,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "2. The solution",
@@ -6728,7 +6735,7 @@
     {
       "id": 561,
       "file": "blocks/0561.txt",
-      "word_paragraph_index_zero_based": 5653,
+      "word_paragraph_index_zero_based": 4983,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "2. The solution",
@@ -6740,7 +6747,7 @@
     {
       "id": 562,
       "file": "blocks/0562.txt",
-      "word_paragraph_index_zero_based": 5656,
+      "word_paragraph_index_zero_based": 4986,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "2. The solution",
@@ -6752,7 +6759,7 @@
     {
       "id": 563,
       "file": "blocks/0563.txt",
-      "word_paragraph_index_zero_based": 5662,
+      "word_paragraph_index_zero_based": 4992,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "2. The solution",
@@ -6764,7 +6771,7 @@
     {
       "id": 564,
       "file": "blocks/0564.txt",
-      "word_paragraph_index_zero_based": 5667,
+      "word_paragraph_index_zero_based": 4997,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "2. The solution",
@@ -6776,7 +6783,7 @@
     {
       "id": 565,
       "file": "blocks/0565.txt",
-      "word_paragraph_index_zero_based": 5669,
+      "word_paragraph_index_zero_based": 4999,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "2. The solution",
@@ -6788,7 +6795,7 @@
     {
       "id": 566,
       "file": "blocks/0566.txt",
-      "word_paragraph_index_zero_based": 5671,
+      "word_paragraph_index_zero_based": 5001,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "2. The solution",
@@ -6800,7 +6807,7 @@
     {
       "id": 567,
       "file": "blocks/0567.txt",
-      "word_paragraph_index_zero_based": 5674,
+      "word_paragraph_index_zero_based": 5004,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "2. The solution",
@@ -6812,7 +6819,7 @@
     {
       "id": 568,
       "file": "blocks/0568.txt",
-      "word_paragraph_index_zero_based": 5687,
+      "word_paragraph_index_zero_based": 5017,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "2. The solution",
@@ -6824,7 +6831,7 @@
     {
       "id": 569,
       "file": "blocks/0569.txt",
-      "word_paragraph_index_zero_based": 5689,
+      "word_paragraph_index_zero_based": 5019,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "2. The solution",
@@ -6836,7 +6843,7 @@
     {
       "id": 570,
       "file": "blocks/0570.txt",
-      "word_paragraph_index_zero_based": 5725,
+      "word_paragraph_index_zero_based": 5055,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "3. Do it yourself",
@@ -6848,7 +6855,7 @@
     {
       "id": 571,
       "file": "blocks/0571.txt",
-      "word_paragraph_index_zero_based": 5727,
+      "word_paragraph_index_zero_based": 5057,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "3. Do it yourself",
@@ -6860,7 +6867,7 @@
     {
       "id": 572,
       "file": "blocks/0572.txt",
-      "word_paragraph_index_zero_based": 5729,
+      "word_paragraph_index_zero_based": 5059,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "3. Do it yourself",
@@ -6872,7 +6879,7 @@
     {
       "id": 573,
       "file": "blocks/0573.txt",
-      "word_paragraph_index_zero_based": 5732,
+      "word_paragraph_index_zero_based": 5062,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "3. Do it yourself",
@@ -6884,7 +6891,7 @@
     {
       "id": 574,
       "file": "blocks/0574.txt",
-      "word_paragraph_index_zero_based": 5736,
+      "word_paragraph_index_zero_based": 5066,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "3. Do it yourself",
@@ -6896,7 +6903,7 @@
     {
       "id": 575,
       "file": "blocks/0575.txt",
-      "word_paragraph_index_zero_based": 5738,
+      "word_paragraph_index_zero_based": 5068,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "3. Do it yourself",
@@ -6908,7 +6915,7 @@
     {
       "id": 576,
       "file": "blocks/0576.txt",
-      "word_paragraph_index_zero_based": 5740,
+      "word_paragraph_index_zero_based": 5070,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "3. Do it yourself",
@@ -6920,7 +6927,7 @@
     {
       "id": 577,
       "file": "blocks/0577.txt",
-      "word_paragraph_index_zero_based": 5742,
+      "word_paragraph_index_zero_based": 5072,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "3. Do it yourself",
@@ -6932,7 +6939,7 @@
     {
       "id": 578,
       "file": "blocks/0578.txt",
-      "word_paragraph_index_zero_based": 5753,
+      "word_paragraph_index_zero_based": 5083,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "3. Do it yourself",
@@ -6944,7 +6951,7 @@
     {
       "id": 579,
       "file": "blocks/0579.txt",
-      "word_paragraph_index_zero_based": 5755,
+      "word_paragraph_index_zero_based": 5085,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "3. Do it yourself",
@@ -6956,7 +6963,7 @@
     {
       "id": 580,
       "file": "blocks/0580.txt",
-      "word_paragraph_index_zero_based": 5757,
+      "word_paragraph_index_zero_based": 5087,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "3. Do it yourself",
@@ -6968,7 +6975,7 @@
     {
       "id": 581,
       "file": "blocks/0581.txt",
-      "word_paragraph_index_zero_based": 5759,
+      "word_paragraph_index_zero_based": 5089,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "3. Do it yourself",
@@ -6980,7 +6987,7 @@
     {
       "id": 582,
       "file": "blocks/0582.txt",
-      "word_paragraph_index_zero_based": 5766,
+      "word_paragraph_index_zero_based": 5096,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "3. Do it yourself",
@@ -6992,7 +6999,7 @@
     {
       "id": 583,
       "file": "blocks/0583.txt",
-      "word_paragraph_index_zero_based": 5768,
+      "word_paragraph_index_zero_based": 5098,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "3. Do it yourself",
@@ -7004,7 +7011,7 @@
     {
       "id": 584,
       "file": "blocks/0584.txt",
-      "word_paragraph_index_zero_based": 5781,
+      "word_paragraph_index_zero_based": 5111,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "3. Do it yourself",
@@ -7016,7 +7023,7 @@
     {
       "id": 585,
       "file": "blocks/0585.txt",
-      "word_paragraph_index_zero_based": 5786,
+      "word_paragraph_index_zero_based": 5116,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "3. Do it yourself",
@@ -7028,7 +7035,7 @@
     {
       "id": 586,
       "file": "blocks/0586.txt",
-      "word_paragraph_index_zero_based": 5789,
+      "word_paragraph_index_zero_based": 5119,
       "heading_context": [
         "Chapter 25 — Agent teams: orchestrating multiple agents in parallel",
         "3. Do it yourself",
@@ -7040,7 +7047,7 @@
     {
       "id": 587,
       "file": "blocks/0587.txt",
-      "word_paragraph_index_zero_based": 5890,
+      "word_paragraph_index_zero_based": 5199,
       "heading_context": [
         "Chapter 26 — What NOT to delegate: permissions, oversight, and common sense",
         "2. The solution",
@@ -7052,7 +7059,7 @@
     {
       "id": 588,
       "file": "blocks/0588.txt",
-      "word_paragraph_index_zero_based": 5945,
+      "word_paragraph_index_zero_based": 5244,
       "heading_context": [
         "Chapter 26 — What NOT to delegate: permissions, oversight, and common sense",
         "3. Do it yourself",
@@ -7064,7 +7071,7 @@
     {
       "id": 589,
       "file": "blocks/0589.txt",
-      "word_paragraph_index_zero_based": 5949,
+      "word_paragraph_index_zero_based": 5248,
       "heading_context": [
         "Chapter 26 — What NOT to delegate: permissions, oversight, and common sense",
         "3. Do it yourself",
@@ -7076,7 +7083,7 @@
     {
       "id": 590,
       "file": "blocks/0590.txt",
-      "word_paragraph_index_zero_based": 5955,
+      "word_paragraph_index_zero_based": 5254,
       "heading_context": [
         "Chapter 26 — What NOT to delegate: permissions, oversight, and common sense",
         "3. Do it yourself",
@@ -7088,7 +7095,7 @@
     {
       "id": 591,
       "file": "blocks/0591.txt",
-      "word_paragraph_index_zero_based": 5960,
+      "word_paragraph_index_zero_based": 5259,
       "heading_context": [
         "Chapter 26 — What NOT to delegate: permissions, oversight, and common sense",
         "3. Do it yourself",
@@ -7100,7 +7107,7 @@
     {
       "id": 592,
       "file": "blocks/0592.txt",
-      "word_paragraph_index_zero_based": 5964,
+      "word_paragraph_index_zero_based": 5263,
       "heading_context": [
         "Chapter 26 — What NOT to delegate: permissions, oversight, and common sense",
         "3. Do it yourself",
@@ -7112,7 +7119,7 @@
     {
       "id": 593,
       "file": "blocks/0593.txt",
-      "word_paragraph_index_zero_based": 5968,
+      "word_paragraph_index_zero_based": 5267,
       "heading_context": [
         "Chapter 26 — What NOT to delegate: permissions, oversight, and common sense",
         "3. Do it yourself",
@@ -7124,7 +7131,7 @@
     {
       "id": 594,
       "file": "blocks/0594.txt",
-      "word_paragraph_index_zero_based": 5973,
+      "word_paragraph_index_zero_based": 5272,
       "heading_context": [
         "Chapter 26 — What NOT to delegate: permissions, oversight, and common sense",
         "3. Do it yourself",
@@ -7136,7 +7143,7 @@
     {
       "id": 595,
       "file": "blocks/0595.txt",
-      "word_paragraph_index_zero_based": 5980,
+      "word_paragraph_index_zero_based": 5279,
       "heading_context": [
         "Chapter 26 — What NOT to delegate: permissions, oversight, and common sense",
         "3. Do it yourself",
@@ -7148,7 +7155,7 @@
     {
       "id": 596,
       "file": "blocks/0596.txt",
-      "word_paragraph_index_zero_based": 5987,
+      "word_paragraph_index_zero_based": 5286,
       "heading_context": [
         "Chapter 26 — What NOT to delegate: permissions, oversight, and common sense",
         "3. Do it yourself",
@@ -7160,7 +7167,7 @@
     {
       "id": 597,
       "file": "blocks/0597.txt",
-      "word_paragraph_index_zero_based": 5990,
+      "word_paragraph_index_zero_based": 5289,
       "heading_context": [
         "Chapter 26 — What NOT to delegate: permissions, oversight, and common sense",
         "3. Do it yourself",
@@ -7172,7 +7179,7 @@
     {
       "id": 598,
       "file": "blocks/0598.txt",
-      "word_paragraph_index_zero_based": 5996,
+      "word_paragraph_index_zero_based": 5295,
       "heading_context": [
         "Chapter 26 — What NOT to delegate: permissions, oversight, and common sense",
         "External content and instructions"
@@ -7183,7 +7190,7 @@
     {
       "id": 599,
       "file": "blocks/0599.txt",
-      "word_paragraph_index_zero_based": 6000,
+      "word_paragraph_index_zero_based": 5299,
       "heading_context": [
         "Chapter 26 — What NOT to delegate: permissions, oversight, and common sense",
         "External content and instructions",
@@ -7195,7 +7202,7 @@
     {
       "id": 600,
       "file": "blocks/0600.txt",
-      "word_paragraph_index_zero_based": 6025,
+      "word_paragraph_index_zero_based": 5304,
       "heading_context": [
         "Chapter 26 — What NOT to delegate: permissions, oversight, and common sense",
         "External content and instructions",
@@ -7207,7 +7214,7 @@
     {
       "id": 601,
       "file": "blocks/0601.txt",
-      "word_paragraph_index_zero_based": 6030,
+      "word_paragraph_index_zero_based": 5309,
       "heading_context": [
         "Chapter 26 — What NOT to delegate: permissions, oversight, and common sense",
         "External content and instructions",
@@ -7219,7 +7226,7 @@
     {
       "id": 602,
       "file": "blocks/0602.txt",
-      "word_paragraph_index_zero_based": 6054,
+      "word_paragraph_index_zero_based": 5333,
       "heading_context": [
         "Chapter 26 — What NOT to delegate: permissions, oversight, and common sense",
         "External content and instructions",
@@ -7231,7 +7238,7 @@
     {
       "id": 603,
       "file": "blocks/0603.txt",
-      "word_paragraph_index_zero_based": 6211,
+      "word_paragraph_index_zero_based": 5490,
       "heading_context": [
         "Chapter 27 — Privacy and sensitive data: what the agent sees and what it shouldn’t see",
         "3. Do it yourself",
@@ -7243,7 +7250,7 @@
     {
       "id": 604,
       "file": "blocks/0604.txt",
-      "word_paragraph_index_zero_based": 6221,
+      "word_paragraph_index_zero_based": 5500,
       "heading_context": [
         "Chapter 27 — Privacy and sensitive data: what the agent sees and what it shouldn’t see",
         "3. Do it yourself",
@@ -7255,7 +7262,7 @@
     {
       "id": 605,
       "file": "blocks/0605.txt",
-      "word_paragraph_index_zero_based": 6230,
+      "word_paragraph_index_zero_based": 5509,
       "heading_context": [
         "Chapter 27 — Privacy and sensitive data: what the agent sees and what it shouldn’t see",
         "3. Do it yourself",
@@ -7267,7 +7274,7 @@
     {
       "id": 606,
       "file": "blocks/0606.txt",
-      "word_paragraph_index_zero_based": 6268,
+      "word_paragraph_index_zero_based": 5547,
       "heading_context": [
         "Chapter 27 — Privacy and sensitive data: what the agent sees and what it shouldn’t see",
         "3. Do it yourself",
@@ -7279,7 +7286,7 @@
     {
       "id": 607,
       "file": "blocks/0607.txt",
-      "word_paragraph_index_zero_based": 6271,
+      "word_paragraph_index_zero_based": 5550,
       "heading_context": [
         "Chapter 27 — Privacy and sensitive data: what the agent sees and what it shouldn’t see",
         "3. Do it yourself",
@@ -7291,7 +7298,7 @@
     {
       "id": 608,
       "file": "blocks/0608.txt",
-      "word_paragraph_index_zero_based": 6274,
+      "word_paragraph_index_zero_based": 5553,
       "heading_context": [
         "Chapter 27 — Privacy and sensitive data: what the agent sees and what it shouldn’t see",
         "3. Do it yourself",
@@ -7303,7 +7310,7 @@
     {
       "id": 609,
       "file": "blocks/0609.txt",
-      "word_paragraph_index_zero_based": 6374,
+      "word_paragraph_index_zero_based": 5653,
       "heading_context": [
         "Chapter 28 — Building your second operational brain",
         "2. The solution",
@@ -7315,7 +7322,7 @@
     {
       "id": 610,
       "file": "blocks/0610.txt",
-      "word_paragraph_index_zero_based": 6381,
+      "word_paragraph_index_zero_based": 5660,
       "heading_context": [
         "Chapter 28 — Building your second operational brain",
         "3. Do it yourself",
@@ -7327,7 +7334,7 @@
     {
       "id": 611,
       "file": "blocks/0611.txt",
-      "word_paragraph_index_zero_based": 6384,
+      "word_paragraph_index_zero_based": 5663,
       "heading_context": [
         "Chapter 28 — Building your second operational brain",
         "3. Do it yourself",
@@ -7339,7 +7346,7 @@
     {
       "id": 612,
       "file": "blocks/0612.txt",
-      "word_paragraph_index_zero_based": 6391,
+      "word_paragraph_index_zero_based": 5670,
       "heading_context": [
         "Chapter 28 — Building your second operational brain",
         "3. Do it yourself",
@@ -7351,7 +7358,7 @@
     {
       "id": 613,
       "file": "blocks/0613.txt",
-      "word_paragraph_index_zero_based": 6402,
+      "word_paragraph_index_zero_based": 5681,
       "heading_context": [
         "Chapter 28 — Building your second operational brain",
         "3. Do it yourself",
@@ -7363,7 +7370,7 @@
     {
       "id": 614,
       "file": "blocks/0614.txt",
-      "word_paragraph_index_zero_based": 6428,
+      "word_paragraph_index_zero_based": 5691,
       "heading_context": [
         "Chapter 28 — Building your second operational brain",
         "3. Do it yourself",
@@ -7375,7 +7382,7 @@
     {
       "id": 615,
       "file": "blocks/0615.txt",
-      "word_paragraph_index_zero_based": 6433,
+      "word_paragraph_index_zero_based": 5696,
       "heading_context": [
         "Chapter 28 — Building your second operational brain",
         "3. Do it yourself",
@@ -7387,7 +7394,7 @@
     {
       "id": 616,
       "file": "blocks/0616.txt",
-      "word_paragraph_index_zero_based": 6436,
+      "word_paragraph_index_zero_based": 5699,
       "heading_context": [
         "Chapter 28 — Building your second operational brain",
         "3. Do it yourself",
@@ -7399,7 +7406,7 @@
     {
       "id": 617,
       "file": "blocks/0617.txt",
-      "word_paragraph_index_zero_based": 6439,
+      "word_paragraph_index_zero_based": 5702,
       "heading_context": [
         "Chapter 28 — Building your second operational brain",
         "3. Do it yourself",
@@ -7411,7 +7418,7 @@
     {
       "id": 618,
       "file": "blocks/0618.txt",
-      "word_paragraph_index_zero_based": 6442,
+      "word_paragraph_index_zero_based": 5705,
       "heading_context": [
         "Chapter 28 — Building your second operational brain",
         "3. Do it yourself",
@@ -7423,7 +7430,7 @@
     {
       "id": 619,
       "file": "blocks/0619.txt",
-      "word_paragraph_index_zero_based": 6445,
+      "word_paragraph_index_zero_based": 5708,
       "heading_context": [
         "Chapter 28 — Building your second operational brain",
         "3. Do it yourself",
@@ -7435,7 +7442,7 @@
     {
       "id": 620,
       "file": "blocks/0620.txt",
-      "word_paragraph_index_zero_based": 6448,
+      "word_paragraph_index_zero_based": 5711,
       "heading_context": [
         "Chapter 28 — Building your second operational brain",
         "3. Do it yourself",
@@ -7447,7 +7454,7 @@
     {
       "id": 621,
       "file": "blocks/0621.txt",
-      "word_paragraph_index_zero_based": 6451,
+      "word_paragraph_index_zero_based": 5714,
       "heading_context": [
         "Chapter 28 — Building your second operational brain",
         "3. Do it yourself",
@@ -7459,7 +7466,7 @@
     {
       "id": 622,
       "file": "blocks/0622.txt",
-      "word_paragraph_index_zero_based": 6457,
+      "word_paragraph_index_zero_based": 5720,
       "heading_context": [
         "Chapter 28 — Building your second operational brain",
         "3. Do it yourself",
@@ -7471,7 +7478,7 @@
     {
       "id": 623,
       "file": "blocks/0623.txt",
-      "word_paragraph_index_zero_based": 6464,
+      "word_paragraph_index_zero_based": 5727,
       "heading_context": [
         "Chapter 28 — Building your second operational brain",
         "3. Do it yourself",
@@ -7483,7 +7490,7 @@
     {
       "id": 624,
       "file": "blocks/0624.txt",
-      "word_paragraph_index_zero_based": 6469,
+      "word_paragraph_index_zero_based": 5732,
       "heading_context": [
         "Chapter 28 — Building your second operational brain",
         "3. Do it yourself",
@@ -7495,7 +7502,7 @@
     {
       "id": 625,
       "file": "blocks/0625.txt",
-      "word_paragraph_index_zero_based": 6472,
+      "word_paragraph_index_zero_based": 5735,
       "heading_context": [
         "Chapter 28 — Building your second operational brain",
         "3. Do it yourself",
@@ -7507,7 +7514,7 @@
     {
       "id": 626,
       "file": "blocks/0626.txt",
-      "word_paragraph_index_zero_based": 6515,
+      "word_paragraph_index_zero_based": 5742,
       "heading_context": [
         "Chapter 28 — Building your second operational brain",
         "3. Do it yourself",
@@ -7519,7 +7526,7 @@
     {
       "id": 627,
       "file": "blocks/0627.txt",
-      "word_paragraph_index_zero_based": 6517,
+      "word_paragraph_index_zero_based": 5744,
       "heading_context": [
         "Chapter 28 — Building your second operational brain",
         "3. Do it yourself",
@@ -7531,7 +7538,7 @@
     {
       "id": 628,
       "file": "blocks/0628.txt",
-      "word_paragraph_index_zero_based": 6522,
+      "word_paragraph_index_zero_based": 5749,
       "heading_context": [
         "Chapter 28 — Building your second operational brain",
         "3. Do it yourself",
@@ -7543,7 +7550,7 @@
     {
       "id": 629,
       "file": "blocks/0629.txt",
-      "word_paragraph_index_zero_based": 6525,
+      "word_paragraph_index_zero_based": 5752,
       "heading_context": [
         "Chapter 28 — Building your second operational brain",
         "3. Do it yourself",
@@ -7555,7 +7562,7 @@
     {
       "id": 630,
       "file": "blocks/0630.txt",
-      "word_paragraph_index_zero_based": 6531,
+      "word_paragraph_index_zero_based": 5758,
       "heading_context": [
         "Chapter 28 — Building your second operational brain",
         "3. Do it yourself",

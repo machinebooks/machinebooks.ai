@@ -1,0 +1,15 @@
+Resultados de fuzzing AsIO3.sys:
+
+IOCTL 0x222400 + buf(16B: phys=0x1000, size=0x1000, cache=0)
+  → ok=True, ret=8B, output=dirección virtual
+
+IOCTL 0x222400 + buf(4B: truncated)
+  → ok=True, ret=8B (!!! debería fallar por buffer corto)
+
+IOCTL 0x22b807 + buf(16B)
+  → ok=False, err=87 (INVALID_PARAMETER)
+
+IOCTL 0x22b807 + buf(0B: vacío)
+  → BSOD: PAGE_FAULT_IN_NONPAGED_AREA en AsIO3+0x2A30
+
+¿Qué conclusiones extraes?

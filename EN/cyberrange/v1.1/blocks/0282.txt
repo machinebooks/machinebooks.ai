@@ -1,0 +1,20 @@
+# CORS configuration
+# File: cyber-range-builder/backend/main.py
+
+from urllib.parse import urlsplit
+origins = [value.strip() for value in os.environ["CORS_ORIGINS"].split(",")]
+for origin in origins:
+    parsed = urlsplit(origin)
+    if (not origin or parsed.scheme not in {"http", "https"} or not parsed.hostname
+            or parsed.username or parsed.password or parsed.path or parsed.query or parsed.fragment):
+        raise ValueError("exact configured frontend origins required")
+    if parsed.scheme == "http" and parsed.hostname not in {"localhost", "127.0.0.1"}:
+        raise ValueError("HTTPS required outside loopback")
+# Development may explicitly set http://localhost:5173; production sets its exact HTTPS origin.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)

@@ -1,0 +1,7 @@
+# Visibility model per challenge
+# Each challenge defines which roles can see and play it
+visibility = {
+    "red_team": True,    # Visible to red teams
+    "blue_team": False,  # Not visible to blue teams
+    "purple_team": True  # Visible to purple teams
+}

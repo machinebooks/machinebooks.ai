@@ -1,0 +1,59 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+def generate_maturity_roadmap(
+    assessment: MaturityAssessment,
+    benchmarks: list[BenchmarkComparison],
+    client_constraints: dict  # budget, timelines, resources
+) -> dict:
+    """Generates improvement roadmap based on assessment and constraints."""
+
+    # Identify the weakest dimension as priority
+    weakest = min(assessment.dimensions, key=lambda d: d.level)
+
+    # Build prompt with complete context
+    roadmap_prompt = f"""Generate an AI maturity improvement roadmap for:
+
+Organization: sector {assessment.sector}, {assessment.size_band} employees
+Overall level: {assessment.overall_level_weighted}
+
+Scores by dimension:
+{_format_dimension_scores(assessment.dimensions)}
+
+Sector benchmarks:
+{_format_benchmarks(benchmarks)}
+
+Client constraints:
+- Annual AI budget available: {client_constraints.get('budget', 'Not defined')}
+- AI technical profiles available: {client_constraints.get('ai_headcount', 0)}
+- Nearest regulatory deadline: {client_constraints.get('regulatory_deadline', 'None')}
+- Risk appetite: {client_constraints.get('risk_appetite', 'Moderate')}
+
+Weakest dimension: {weakest.dimension.value} ({weakest.level})
+Main gaps: {'; '.join(weakest.gaps)}
+
+Generate a roadmap with three horizons:
+1. Quick wins (0-3 months): low-cost, high-impact actions
+2. Consolidation (3-12 months): capability building
+3. Transformation (12-24 months): structural change
+
+For each action include:
+- Concrete description (what to do, not what to aspire to)
+- Dimension it improves and estimated level impact
+- Dependencies (what must be completed first)
+- Estimated cost range (low/medium/high)
+- Suggested responsible profile
+
+Prioritize: weakest dimensions first, no-cost actions before
+those requiring investment, governance before technology
+(because without governance, projects stall).
+
+Include a "DO NOT do yet" section — actions the client
+will want to do but that require prior foundations."""
+
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        messages=[{"role": "user", "content": roadmap_prompt}]
+    )
+
+    return _parse_roadmap(response.content[0].text)

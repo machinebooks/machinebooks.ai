@@ -1,0 +1,38 @@
+## Title
+
+DLL Sideloading in [AppName] allows arbitrary code execution
+in user context
+
+## Weakness
+
+CWE-426: Untrusted Search Path
+
+## Severity
+
+High (CVSS:3.1/AV:L/AC:L/PR:L/UI:R/S:U/C:H/I:H/A:H — 7.3)
+
+## Description
+
+The [AppName] application version [X.Y.Z] loads the VERSION.dll
+library from its installation directory without verifying the
+integrity or digital signature of the file. The default installation
+directory (`C:\Users\<user>\AppData\Local\[AppName]`) has write
+permissions for the standard user.
+
+An attacker with access to the local filesystem (or via another
+vector such as phishing with an attached file) can place a
+malicious DLL named VERSION.dll in the installation directory.
+The next time the user runs [AppName], the malicious DLL is
+loaded in the process context, allowing arbitrary code execution
+with the user's privileges.
+
+### Root cause
+
+[AppName] uses the LoadLibrary Windows API function without
+specifying an absolute path for VERSION.dll. The Windows DLL
+search order prioritizes the application directory, which in
+this case is writable by the user.
+
+## Steps to Reproduce
+
+1. Identify the vulnerable DLL:

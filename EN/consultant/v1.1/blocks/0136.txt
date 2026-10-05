@@ -1,0 +1,30 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+from dataclasses import dataclass, field
+from enum import Enum
+
+class ContentCategory(Enum):
+    METHODOLOGY = "methodology"          # How we do things
+    STANDARDS = "standards"              # What standards we apply
+    TEMPLATES = "templates"              # Deliverable formats
+    CASE_STUDIES = "case_studies"        # Examples from past projects
+    TOOLS = "tools"                      # Tools and configurations
+    CLIENT_PROTOCOLS = "client_protocols"  # Client interaction protocols
+
+class DifficultyLevel(Enum):
+    FOUNDATIONAL = 1    # What you need to know in the first week
+    INTERMEDIATE = 2    # What you need for your first task
+    ADVANCED = 3        # What you need to work unsupervised
+
+@dataclass
+class OnboardingDocument:
+    """Document indexed for the onboarding program."""
+    doc_id: str
+    title: str
+    category: ContentCategory
+    difficulty: DifficultyLevel
+    summary: str                              # 2-3 sentence summary
+    prerequisites: list[str] = field(default_factory=list)  # IDs of prior docs
+    estimated_read_time_min: int = 10
+    last_updated: str = ""                    # Date of last review
+    verified_by: str = ""                     # Senior who validated the content

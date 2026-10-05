@@ -1,0 +1,64 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+def analizar_rfp_completo(
+    ruta_pdf: str,
+    perfil_firma: PerfilFirma
+) -> dict:
+    """Complete RFP analysis pipeline.
+
+    Returns the structured analysis with go/no-go score.
+    Typical time: 12-18 minutes for a 200-350 page RFP.
+    Typical cost: $5-15 in API tokens.
+    """
+    # 1. Preprocess document
+    documento = preprocesar_rfp(ruta_pdf)
+    print(f"Document: {documento.num_paginas} pages processed")
+
+    # 2. Extract by categories (in parallel if context allows)
+    resultados_extraccion = {}
+    coste_total_tokens = 0
+
+    for cat, config in CATEGORIAS_EXTRACCION.items():
+        print(f"Extracting: {cat}...")
+        resultado = extraer_categoria(
+            documento.texto_completo, cat, config
+        )
+        resultados_extraccion[cat] = resultado
+        coste_total_tokens += (
+            resultado["tokens_entrada"]
+            + resultado["tokens_salida"]
+        )
+
+    # 3. Cross-reference with practice capabilities
+    print("Cross-referencing with internal capabilities...")
+    cruce = cruzar_requisitos_capacidades(
+        resultados_extraccion["requisitos_obligatorios"],
+        perfil_firma
+    )
+
+    # 4. Generate go/no-go score
+    print("Generating go/no-go score...")
+    analisis = {
+        "requisitos_cumplimiento": cruce,
+        "criterios_encaje": resultados_extraccion["criterios_valoracion"],
+        "riesgos": resultados_extraccion["riesgos_penalizaciones"],
+        "plazos": resultados_extraccion["plazos_calendario"],
+        "normativo": resultados_extraccion["cumplimiento_normativo"]
+    }
+    score = generar_score_go_nogo(analisis)
+
+    # 5. Analysis cost summary
+    coste_api = coste_total_tokens * 0.000003  # Approximation
+    print(f"\nAnalysis completed. Tokens: {coste_total_tokens:,}")
+    print(f"Estimated API cost: ${coste_api:.2f}")
+    print(f"Recommendation: {score.recomendacion} "
+          f"({score.puntuacion_global}/100)")
+
+    return {
+        "documento": documento,
+        "extracciones": resultados_extraccion,
+        "cruce_capacidades": cruce,
+        "score": score,
+        "coste_tokens": coste_total_tokens,
+        "coste_api_usd": coste_api
+    }

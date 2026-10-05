@@ -1,0 +1,63 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+# pipeline/ingest.py — Document ingestion pipeline
+from dataclasses import dataclass
+from pathlib import Path
+from datetime import datetime
+import hashlib
+
+@dataclass
+class DocumentChunk:
+    """Document fragment ready for extraction."""
+    doc_id: str
+    chunk_index: int
+    text: str
+    source_file: str
+    section_title: str  # Section title from the original document
+    project_code: str
+    author: str
+    created_at: datetime
+
+class DocumentIngester:
+    """Ingests documents and produces chunks for extraction."""
+
+    SUPPORTED_FORMATS = {".pdf", ".docx", ".pptx", ".md", ".eml"}
+    MAX_CHUNK_WORDS = 800    # Fragments of ~800 words
+    OVERLAP_WORDS = 100      # Overlap between fragments
+
+    def __init__(self, extractors: dict, queue):
+        self.extractors = extractors  # {".pdf": PdfExtractor, ...}
+        self.queue = queue            # Celery queue for async processing
+
+    def ingest(self, file_path: Path, metadata: dict) -> list[DocumentChunk]:
+        """Ingests a document and enqueues chunks for extraction."""
+        # Verify supported format
+        if file_path.suffix.lower() not in self.SUPPORTED_FORMATS:
+            raise ValueError(f"Unsupported format: {file_path.suffix}")
+
+        # Verify sharing permissions
+        sharing_level = metadata.get("sharing", "personal")
+        if sharing_level == "personal":
+            return []  # Not ingested without authorization
+
+        # Extract plain text with sections
+        extractor = self.extractors[file_path.suffix.lower()]
+        sections = extractor.extract_sections(file_path)
+
+        # Generate unique document ID
+        doc_id = hashlib.sha256(
+            f"{file_path.name}:{metadata['project']}:{metadata['author']}".encode()
+        ).hexdigest()[:16]
+
+        # Segment into chunks with overlap
+        chunks = self._chunk_sections(sections, doc_id, metadata)
+
+        # Enqueue each chunk for extraction + tagging
+        for chunk in chunks:
+            self.queue.send_task(
+                "extraction.process_chunk",
+                args=[chunk],
+                queue="knowledge_extraction"
+            )
+
+        return chunks

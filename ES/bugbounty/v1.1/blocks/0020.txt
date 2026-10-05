@@ -1,0 +1,6 @@
+Día 0: Envío del report al canal primario
+Día 7: Reenvío si no hay confirmación de recepción
+Día 14: Intento de contacto por canal alternativo (PSIRT, LinkedIn del CISO, Twitter/X del equipo de seguridad)
+Día 30: Segundo reenvío con nota de que se publicará advisory limitado en 60 días
+Día 60: Advisory público sin exploit (descripción de la vulnerabilidad, impacto, recomendaciones de mitigación para usuarios)
+Día 90: Disclosure completo (técnica, PoC sanitizado, timeline)

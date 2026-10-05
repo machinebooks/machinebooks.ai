@@ -1,0 +1,80 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import json
+from pathlib import Path
+
+@dataclass
+class RegistroPropuesta:
+    id_propuesta: str
+    cliente: str
+    fecha_generacion: datetime
+    secciones: list[SeccionGenerada]
+    coste_total_ia: float
+    horas_humanas: float           # Recorded upon completion
+    resultado: str | None = None   # "won", "lost", "void"
+    puntuacion_tecnica: float | None = None
+
+    def guardar(self, directorio: Path) -> None:
+        """Persists the record for later analysis."""
+        ruta = directorio / f"{self.id_propuesta}.json"
+        data = {
+            "id": self.id_propuesta,
+            "cliente": self.cliente,
+            "fecha": self.fecha_generacion.isoformat(),
+            "coste_ia": self.coste_total_ia,
+            "horas_humanas": self.horas_humanas,
+            "resultado": self.resultado,
+            "puntuacion_tecnica": self.puntuacion_tecnica,
+            "secciones": [
+                {
+                    "tipo": s.tipo.value,
+                    "version_final": s.version,
+                    "score_quality": s.score_quality,
+                    "tokens": s.tokens_consumidos,
+                    "coste": s.coste_generacion,
+                    "notas_revision": s.notas_revision
+                }
+                for s in self.secciones
+            ],
+            "metricas": {
+                "ratio_horas": self.horas_humanas / 120,  # vs baseline
+                "coste_por_seccion": self.coste_total_ia / len(self.secciones),
+                "score_medio": sum(s.score_quality for s in self.secciones)
+                               / len(self.secciones)
+            }
+        }
+        ruta.write_text(json.dumps(data, indent=2, ensure_ascii=False))
+
+    def calcular_roi(self) -> dict:
+        """Calculates ROI of assisted generation."""
+        horas_baseline = 120  # Hours without AI assistance
+        coste_hora_senior = 95.0  # EUR/hour (scaled)
+        ahorro_horas = horas_baseline - self.horas_humanas
+        ahorro_eur = ahorro_horas * coste_hora_senior
+        self.__post_init__()
+        if self.coste_total_ia <= 0:
+            raise ValueError("Capacity/cost ratio requires positive AI cost")
+        roi = ahorro_eur / (self.coste_total_ia * 0.92)  # USD→EUR approx
+        return {
+            "horas_ahorradas": ahorro_horas,
+            "ahorro_estimado_eur": ahorro_eur,
+            "coste_ia_eur": self.coste_total_ia * 0.92,
+            "roi_x": round(roi, 1),
+            "metric_kind": "gross_capacity_to_ai_cost_ratio",
+            "cash_roi": None
+        }
+    def __post_init__(self):
+        from math import isfinite
+        from datetime import datetime
+        if type(self.id_propuesta) is not str or not self.id_propuesta or any(c in self.id_propuesta for c in "/\\:") or self.id_propuesta in (".", ".."):
+            raise ValueError("Proposal ID must be a safe filename component")
+        if not isinstance(self.fecha_generacion, datetime) or self.fecha_generacion.tzinfo is None:
+            raise ValueError("Proposal date must be timezone aware")
+        if not isinstance(self.secciones, list) or not self.secciones:
+            raise ValueError("At least one validated section is required")
+        if any(type(v) not in (int, float) or not isfinite(v) or v < 0 for v in (self.coste_total_ia, self.horas_humanas)):
+            raise ValueError("Proposal costs and hours must be finite and nonnegative")
+        for section in self.secciones:
+            if type(section.score_quality) not in (int, float) or not isfinite(section.score_quality) or not 0 <= section.score_quality <= 100:
+                raise ValueError("Invalid section quality score")
+

@@ -1,0 +1,11 @@
+┌───────────────────────────────────────────────────────┐
+│ Agentic SOC: proposed taxonomy, no universal standard │
+│ Management: governance, coverage, metrics and policy  │
+│ Tier 2: investigation and defined high-impact cases   │
+│ Tier 1: assigned detection, hunting and supervision   │
+│ Tier 0: optional triage and enrichment                │
+│ Alert → permission, evidence, risk and uncertainty    │
+│ ↓ Policy decision and applicable human approval       │
+│ Record instrumented events and loss                   │
+│ Confidence alone authorizes no response or escalation │
+└───────────────────────────────────────────────────────┘

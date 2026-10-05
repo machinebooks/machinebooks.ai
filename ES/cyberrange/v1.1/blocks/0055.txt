@@ -1,0 +1,19 @@
+# Didactic finite aggregator; absent/invalid observations remain unknown.
+import math
+
+def aggregate_nodes(nodes):
+    if not nodes:
+        return {"coverage": "unknown", "cpu_percent": None, "memory_percent": None}
+    cores = total = used = weighted = 0
+    for node in nodes:
+        c, t, u, load = (node.get(k) for k in ("maxcpu", "maxmem", "mem", "cpu"))
+        if type(c) is not int or c <= 0 or type(t) is not int or t <= 0:
+            raise ValueError("invalid capacity")
+        if type(u) is not int or not 0 <= u <= t or type(load) not in (int, float):
+            raise ValueError("invalid observation")
+        if not math.isfinite(load) or not 0 <= load <= 1:
+            raise ValueError("invalid load")
+        cores += c; total += t; used += u; weighted += load*c
+    return {"coverage": "observed_nodes_only", "cpu_percent": weighted/cores*100,
+            "memory_percent": used/total*100, "memory_bytes": total}
+# Deployment capacity also requires node/storage eligibility, timestamp and atomic leases.

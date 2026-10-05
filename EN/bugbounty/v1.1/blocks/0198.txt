@@ -1,0 +1,11 @@
+# MinGW installation on Windows (via MSYS2)
+pacman -S mingw-w64-x86_64-gcc
+
+# Proxy DLL compilation (64-bit)
+x86_64-w64-mingw32-gcc -shared -o VERSION.dll version_proxy.c -lkernel32
+
+# Service payload compilation (64-bit)
+x86_64-w64-mingw32-gcc -o payload.exe payload_service.c -ladvapi32
+
+# Static compilation (no runtime dependencies)
+x86_64-w64-mingw32-gcc -static -o exploit.exe exploit.c -ladvapi32

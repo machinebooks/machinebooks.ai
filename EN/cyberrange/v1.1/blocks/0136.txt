@@ -1,0 +1,31 @@
+# Bounded authorized provisioning contract; adapters await actual task completion
+import asyncio
+from datetime import datetime, timezone
+
+async def deploy_challenge_instance(adapter,actor,challenge_id,deadline_seconds=180):
+    adapter.authorize(actor.id,"challenge_deploy",challenge_id)
+    instance=await adapter.reserve_unique_owned_instance(actor.id,challenge_id)
+    try:
+        async with asyncio.timeout(deadline_seconds):
+            await adapter.validate_approved_template(instance)
+            clone_task=await adapter.clone_owned(instance)
+            resource=await adapter.wait_successful_owned_task(instance,clone_task)
+            await adapter.record_owned_resource(instance,resource)
+            start_task=await adapter.start_owned(instance,resource)
+            await adapter.wait_successful_owned_task(instance,start_task)
+            address=await adapter.wait_authorized_address(instance,resource)
+            if not address:
+                raise RuntimeError("address unconfirmed")
+            await adapter.inject_instance_flag(instance,resource)
+            if not await adapter.verify_instance_ready(instance,resource):
+                raise RuntimeError("readiness unconfirmed")
+            return await adapter.mark_ready(instance,address,datetime.now(timezone.utc))
+    except BaseException:
+        await adapter.cancel_and_join_owned_tasks(instance)
+        await adapter.mark_failed_retaining_inventory(instance)
+        raise
+
+# Reservations, secret injection, task ownership, TTL and compensation are
+# adapter contracts. Do not publish management credentials or declare running
+# merely because a start request was accepted. Async cancellation must stop
+# remote operations; a timeout around a blocking SDK alone does not do that.

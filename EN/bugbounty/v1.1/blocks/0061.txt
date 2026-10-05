@@ -1,0 +1,12 @@
+Step 1: DLL sideloading candidate
+  → Verify permissions, resolution and loading in the case version.
+Step 2: ASAR alteration candidate
+  → Verify path, integrity reference and authorized execution.
+Step 3: Squirrel update
+  → Verify the new executable and whether altered content persists.
+Step 4: Trust and integrity
+  → Assess signature, resources, policy and security signals.
+
+These blocks do not demonstrate the combined chain.
+Persistence and absence of alerts are not assumed.
+CVSS requires an explicit version, vector and preconditions.

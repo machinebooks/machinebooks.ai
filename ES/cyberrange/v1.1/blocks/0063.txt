@@ -1,0 +1,11 @@
+# Didactic versioned egress request; NAT alone does not authorize or block traffic.
+async def toggle_internet(actor, workzone_ref, enable, access, firewall, store):
+    if type(enable) is not bool:
+        raise ValueError("enable must be boolean")
+    scope = await access.authorized_egress_change(actor, workzone_ref)
+    intent = await store.record_egress_intent(scope, enable)
+    receipt = await firewall.apply_reviewed_egress(scope, enable,
+        include_ipv6=True, reconcile_states=True, timeout=30)
+    confirmed = await firewall.verify_egress(scope, enable, timeout=30)
+    await store.record_egress_result(intent, receipt, confirmed)
+    return {"requested": enable, "status": "confirmed" if confirmed else "pending"}

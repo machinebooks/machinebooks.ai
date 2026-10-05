@@ -1,0 +1,57 @@
+// Injected API exchanges authenticated access for a short-lived scoped WebSocket grant
+import React, {useEffect, useRef, useState} from 'react';
+
+export function RealTimeExecutionViewer({executionId, api}) {
+  const [events, setEvents] = useState([]);
+  const [paused, setPaused] = useState(false);
+  const [status, setStatus] = useState('Conectando');
+  const latest = useRef([]);
+  useEffect(() => {
+    let stopped = false, socket;
+    const controller = new AbortController();
+    latest.current = [];
+    setEvents([]);
+    setStatus('Conectando');
+    async function connect() {
+      try {
+        const grant = await api.issueStreamGrant(executionId, controller.signal);
+        const url = new URL(grant.url, window.location.href);
+        if (url.protocol !== 'wss:' || url.host !== window.location.host)
+          throw new Error('Canal no permitido');
+        if (stopped) return;
+        socket = new WebSocket(url.href);
+        socket.onopen = () => !stopped && setStatus('Conectado');
+        socket.onmessage = event => {
+          if (stopped) return;
+          try {
+            if (typeof event.data !== 'string' || event.data.length > 16384)
+              throw new Error('Evento inválido');
+            const value = JSON.parse(event.data);
+            if (typeof value.event_id !== 'string' || !Number.isSafeInteger(value.sequence)
+                || value.sequence < 1 || typeof value.line !== 'string')
+              throw new Error('Evento inválido');
+            const prior = latest.current;
+            if (prior.some(item => item.event_id === value.event_id)) return;
+            if (prior.length && value.sequence !== prior.at(-1).sequence + 1)
+              setStatus('Hueco detectado: recuperar desde el servidor');
+            latest.current = [...prior, value].slice(-500);
+            setEvents(latest.current);
+          } catch { setStatus('Evento rechazado; recuperar desde el servidor'); }
+        };
+        socket.onerror = () => !stopped && setStatus('Error de conexión');
+        socket.onclose = () => !stopped && setStatus('Desconectado; recuperación pendiente');
+      } catch { if (!stopped) setStatus('No se pudo abrir el canal'); }
+    }
+    connect();
+    return () => { stopped = true; controller.abort(); socket?.close(); };
+  }, [executionId, api]);
+  return <section aria-label="Salida de ejecución">
+    <p role="status">{status}</p>
+    <button onClick={() => setPaused(value => !value)}>
+      {paused ? 'Mostrar salida' : 'Pausar presentación'}</button>
+    {!paused && <ol>{events.map(item => <li key={item.event_id}>{item.line}</li>)}</ol>}
+    <p>Ventana local: {events.length} eventos. El historial y la recuperación se consultan al servidor.</p>
+  </section>;
+}
+
+// Pausing hides presentation only. Automatic replay/reconnection needs the API adapter.

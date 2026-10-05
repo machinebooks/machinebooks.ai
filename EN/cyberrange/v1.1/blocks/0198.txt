@@ -1,0 +1,32 @@
+# Didactic proposal service; generated content is never linted on the control host.
+import asyncio
+import hashlib
+
+class PlaybookGeneratorService:
+    def __init__(self,generate_text,isolated_validator,adapter):
+        self.generate_text=generate_text
+        self.validator=isolated_validator
+        self.adapter=adapter
+
+    async def generate_playbook(self,actor_id,workzone_id,description,target_os,target_role):
+        await self.adapter.authorize(actor_id,"artifact_propose",workzone_id)
+        if target_os not in ("linux","windows") or not 20<=len(description)<=5000:
+            raise ValueError("invalid_proposal")
+        context=await self.adapter.minimized_catalog_context(actor_id,workzone_id)
+        async with asyncio.timeout(90):
+            text=await self.generate_text(description,target_os,target_role,context)
+        if not isinstance(text,str) or not 1<=len(text.encode("utf-8"))<=131072:
+            raise ValueError("invalid_artifact")
+        digest=hashlib.sha256(text.encode("utf-8")).hexdigest()
+        # Isolated worker: no secrets/host mounts/network; parser/lint has a
+        # deadline and output bound. YAML/lint success is not semantic safety.
+        checks=await self.validator.parse_and_lint(text,deadline_seconds=30)
+        if checks.get("completed") is not True:
+            raise ValueError("validation_incomplete")
+        artifact_id=await self.adapter.store_private_artifact(actor_id,workzone_id,
+            text,digest,checks,approval=None)
+        return {"artifact_id":artifact_id,"digest":digest,"checks":checks,
+                "requires_human_review":True,"execution_authorized":False}
+
+# String blacklists cannot prove containment. Execution requires a digest-bound
+# catalog approval and an owned, isolated target with scoped credentials.

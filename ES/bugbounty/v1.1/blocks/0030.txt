@@ -1,0 +1,6 @@
+Bytes 0-3:   Payload del Pickle de tamaño: 4
+Bytes 4-7:   Longitud total del Pickle del header (header_size)
+Bytes 8-11:  Longitud del payload del Pickle del header
+Bytes 12-15: Longitud en bytes del JSON (json_size)
+Bytes 16+:   JSON UTF-8 y padding hasta múltiplo de 4
+Bytes 8 + header_size: inicio de los datos de archivos

@@ -1,0 +1,15 @@
+.claude/
+├── CLAUDE.md                      ← Project context, stack, conventions
+├── rules/
+│   ├── security-posture.md        ← Security rules for Cyber Range code
+│   ├── proxmox-patterns.md        ← Integration patterns with Proxmox VE
+│   ├── ansible-conventions.md     ← Playbook format and validation
+│   └── naming-conventions.md      ← Naming for endpoints, models, schemas
+├── commands/
+│   ├── new-router.md              ← Template for creating a new FastAPI router
+│   ├── new-scenario.md            ← Template for defining a scenario
+│   └── security-review.md         ← Security review checklist
+└── memory/
+    ├── MEMORY.md                  ← Index of active memories
+    ├── architecture_decisions.md  ← Design decisions and rationale
+    └── proxmox_quirks.md          ← Proxmox SDK quirks

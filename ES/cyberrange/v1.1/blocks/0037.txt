@@ -1,0 +1,9 @@
+# JSON: proposed optional service configuration; no SDK integration claim.
+{
+  "ai_enabled": false,
+  "provider_adapter": "reviewed-messages-or-agent-sdk",
+  "services": ["scenario_proposal", "approved_hint", "exercise_review"],
+  "deployment_requires": ["human_review", "resource_authorization", "atomic_reservation"],
+  "execution": "approved_catalog_only",
+  "unavailable_result": "abstain_or_approved_fallback"
+}

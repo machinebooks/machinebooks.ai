@@ -1,0 +1,54 @@
+// frontend/src/components/WorkzoneCanvas.tsx — Canvas node types
+interface CanvasNode {
+  // UTC remote observation; unknown/partial coverage remains visible.
+  observed_at: string | null;
+  coverage: 'complete' | 'partial' | 'unknown';
+  observation_status: 'observed' | 'stale' | 'unknown';
+
+  id: string;
+  name: string;
+  type: 'vm' | 'network' | 'firewall' | 'router';
+  x: number;
+  y: number;
+
+  // VM resources
+  cpu?: number;
+  memory_mb?: number;
+  template?: string;           // Source Proxmox template
+  os_type?: string;
+
+  // Network configuration
+  vlan_id?: number;
+  networks?: string[];         // Networks it is connected to
+  ip_address?: string;
+  bridge?: string;             // Proxmox bridge (vmbr0, vmbr1...)
+  network_cidr?: string;       // Subnet CIDR
+
+  // Real-time state (updated via WebSocket)
+  status?: 'connected' | 'disconnected' | 'deploying' | 'new';
+  power_state?: 'poweredOn' | 'poweredOff' | 'suspended';
+
+  // Proxmox identifiers
+  vmid?: number;
+  node_id?: number;
+
+  // Available operations based on current state
+  available_operations?: {
+    power_on?: boolean;
+    power_off?: boolean;
+    restart?: boolean;
+    connect_console?: boolean;  // Open VNC in browser
+    get_info?: boolean;
+  };
+
+  // Scenario context
+  deployed?: boolean;
+  scenario_id?: number;
+  scenario_machine_name?: string;
+
+  // Networks as visual containers
+  is_container?: boolean;       // Networks are container rectangles
+  size?: { width: number; height: number };
+  vm_count?: number;
+  description?: string;
+}

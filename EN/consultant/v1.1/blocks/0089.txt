@@ -1,0 +1,45 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+# Additional tools for architecture audit
+def analyze_architecture_doc(doc_content: str, criteria: list[str]) -> dict:
+    """Analyzes architecture documentation against criteria."""
+    client = anthropic.Anthropic()
+
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=3000,
+        messages=[{
+            "role": "user",
+            "content": f"""Analyze this architecture documentation
+against the following quality criteria:
+
+Criteria to evaluate:
+{json.dumps(criteria, indent=2)}
+
+Documentation:
+{doc_content}
+
+For each criterion, evaluate:
+1. Is the criterion addressed in the documentation?
+2. Is the proposed solution adequate? Why?
+3. Are there unmitigated risks?
+4. Are there better alternatives?
+
+Respond in JSON with an array of evaluations."""
+        }]
+    )
+    return json.loads(response.content[0].text)
+
+# Standard architecture audit criteria
+ARCHITECTURE_CRITERIA = [
+    "Separation of concerns and modularity",
+    "Horizontal and vertical scalability",
+    "Resilience and fault tolerance",
+    "Secrets and credential management",
+    "Observability: logs, metrics, and traces",
+    "Backup and recovery strategy",
+    "Dependency management and updates",
+    "Inter-service communication security",
+    "Deployment and rollback strategy",
+    "Architecture Decision Records (ADR)"
+]

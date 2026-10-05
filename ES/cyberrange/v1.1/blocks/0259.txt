@@ -1,0 +1,10 @@
+# Durable bounded replay; caller-supplied cursor is checked against authorized scope.
+async def recover_session_messages(self, session_id, websocket):
+    metadata = self.connection_metadata[websocket]
+    snapshot = await self.record.authorized_replay(metadata, max_events=200, max_bytes=65536)
+    await self.send_personal_message(websocket, {"type": "session_recovered",
+        "session_id": session_id, "status": snapshot.status,
+        "coverage": snapshot.coverage, "next_cursor": snapshot.next_cursor})
+    for event in snapshot.events:
+        await self.send_personal_message(websocket, event)
+# Sending does not advance durable acknowledgement; the receiver deduplicates IDs/sequences.

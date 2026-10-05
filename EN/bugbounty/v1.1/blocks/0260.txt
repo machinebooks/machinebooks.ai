@@ -1,0 +1,17 @@
+anim = win32com.client.Dispatch(CLSID_AURA)
+anim.init(10, 10)
+
+# Create and add 5 layers
+layers = [anim.CreateLayer() for _ in range(5)]
+for layer in layers:
+    anim.AddLayer(layer)
+
+# ClearLayers: frees internal resources
+anim.ClearLayers()
+
+# Re-add stale references: ALL accepted
+for layer in layers:
+    anim.AddLayer(layer)  # Stale reference accepted
+
+# Operate with stale layers -> undefined behavior
+anim.Update()  # Operates on already-disposed Bitmaps

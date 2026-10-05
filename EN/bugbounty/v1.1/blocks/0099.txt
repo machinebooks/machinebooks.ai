@@ -1,0 +1,6 @@
+import win32com.client
+
+# Instantiate without administrator privileges
+anim = win32com.client.Dispatch(
+    "{756E6C18-79CC-3842-9E47-7C80011D303A}"
+)

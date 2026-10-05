@@ -1,0 +1,25 @@
+PLANTILLA_ESTIMACION = """
+I need to estimate the effort for the following consulting project:
+
+## Project context
+- **Service type**: {tipo_servicio}
+- **Client sector**: {sector}
+- **Regulatory complexity**: {complejidad}
+- **Technologies in scope**: {tecnologias}
+- **Planned team size**: {equipo} consultants
+
+## Scope description
+{descripcion_alcance}
+
+## Known constraints
+{restricciones}
+
+## My initial estimate (uncalibrated)
+{horas_base} hours, {duracion_semanas} weeks
+
+## What I need
+1. Similar historical projects with their actual deviation.
+2. Calibrated estimate with P10-P50-P90 interval.
+3. Risk factors specific to this project.
+4. Recommendation on where to add buffer.
+"""

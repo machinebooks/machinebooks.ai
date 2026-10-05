@@ -1,0 +1,32 @@
+// Didactic scoreboard with visible failure, cleanup and snapshot freshness.
+import React,{useEffect,useState} from 'react';
+type Score={id:string;name:string;points:number;rank:number};
+export const Scoreboard=({api}:{api:any})=>{
+  const [mode,setMode]=useState<'individual'|'team'>('individual');
+  const [rows,setRows]=useState<Score[]>([]);const [error,setError]=useState(false);
+  const [loading,setLoading]=useState(false);const [cutoff,setCutoff]=useState('');
+  useEffect(()=>{
+    const controller=new AbortController();let active=true;
+    setLoading(true);setError(false);setRows([]);setCutoff('');
+    (async()=>{
+      try{
+        const snapshot=api.validateSnapshot(await api.getLeaderboard(mode,{signal:controller.signal}));
+        if(active){setRows(snapshot.rows);setCutoff(snapshot.cutoff);}
+      }catch {if(active)setError(true);}
+      finally {if(active)setLoading(false);}
+    })();
+    return ()=>{active=false;controller.abort();};
+  },[api,mode]);
+  return <section aria-busy={loading}>
+    <label>Leaderboard <select value={mode} onChange={e=>setMode(e.target.value as 'individual'|'team')}>
+      <option value="individual">Individual</option><option value="team">Team</option>
+    </select></label>
+    {error&&<p role="alert">Leaderboard unavailable</p>}
+    {cutoff&&<p>Snapshot: {cutoff}</p>}
+    <table><thead><tr><th>Rank</th><th>Name</th><th>Points</th></tr></thead>
+      <tbody>{rows.map(r=><tr key={r.id}><td>{r.rank}</td><td>{r.name}</td><td>{r.points}</td></tr>)}</tbody>
+    </table>
+  </section>;
+};
+// Server supplies rubric/version/tie policy and a consistent scoped snapshot.
+// This component fetches on mode change; no automatic refresh is claimed.

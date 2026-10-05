@@ -1,0 +1,17 @@
+// Browser contract: fetchTicket uses an authenticated request to our server
+export async function requestConsole(vmId, type, fetchTicket) {
+  if (!Number.isSafeInteger(vmId) || vmId <= 0 || !['terminal', 'novnc'].includes(type)) {
+    throw new Error('Invalid console request');
+  }
+  const grant = await fetchTicket(vmId, type);
+  const url = new URL(grant.gateway_url);
+  if (url.protocol !== 'wss:' || url.host !== window.location.host) {
+    throw new Error('Gateway de consola no autorizado');
+  }
+  const expiration = Date.parse(grant.expires_at);
+  if (!Number.isFinite(expiration) || expiration <= Date.now()) {
+    throw new Error('Ticket de consola caducado');
+  }
+  // Keep this one-use URL in memory only; obtain a new grant to reconnect.
+  return { type, url: url.href };
+}

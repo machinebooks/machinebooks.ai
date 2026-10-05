@@ -1,0 +1,21 @@
+# Local permission gate; effect adapters revalidate session and ownership.
+ROLE_ACTIONS = {
+    "admin": {"scenario.deploy", "workzone.manage", "report.view"},
+    "organizer": {"scenario.deploy", "workzone.manage", "report.view"},
+    "red": {"flag.submit", "console.open", "scoreboard.view"},
+    "blue": {"flag.submit", "console.open", "scoreboard.view"},
+    "purple": {"flag.submit", "console.open", "scoreboard.view"},
+    "viewer": {"scoreboard.view", "report.view"},
+}
+
+def require_permission(actor, permission, resource_ref, access, handler, *args, **kwargs):
+    if permission not in ROLE_ACTIONS.get(actor.role, set()):
+        raise PermissionError("role permission denied")
+    if access.session_current(actor) is not True:
+        raise PermissionError("session unavailable")
+    if access.object_allowed(actor, resource_ref, permission) is not True:
+        raise PermissionError("object permission denied")
+    return handler(*args, **kwargs)
+
+# This is a finite role subset, not a Flask/FastAPI authentication integration.
+# Admin has no wildcard. Reference lookup and effect scope remain adapter duties.

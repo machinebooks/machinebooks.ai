@@ -1,0 +1,11 @@
+Genera un writeup de vulnerabilidad para ASUS-2026-001:
+- Tipo: Use-After-Free (CWE-416)
+- Componente: AsusAuraAnimation.dll, clase AuraAnimation
+- CLSID: {756E6C18-79CC-3842-9E47-7C80011D303A}
+- Método afectado: RemoveLayer
+- PoC: [código Python de 5 líneas]
+- Crash: NullReferenceException en AuraLayer.Finalize(), exit code 139
+- Impacto: crash de proceso, potencial code execution si SYSTEM
+
+Formato: Overview table, Description, Root Cause, Reproduction,
+Impact, Additional Context, PoC reference.

@@ -1,0 +1,38 @@
+# Step 1: Extract exports from the original DLL
+# Run with Claude Code (public data)
+import pefile
+
+def get_dll_exports(dll_path: str) -> list[dict]:
+    """Extracts all exports from a DLL."""
+    pe = pefile.PE(dll_path)
+    exports = []
+
+    if hasattr(pe, 'DIRECTORY_ENTRY_EXPORT'):
+        for exp in pe.DIRECTORY_ENTRY_EXPORT.symbols:
+            if exp.name:
+                exports.append({
+                    "name": exp.name.decode(),
+                    "ordinal": exp.ordinal,
+                    "address": hex(exp.address),
+                })
+
+    return exports
+
+# VERSION.dll exports:
+# GetFileVersionInfoA
+# GetFileVersionInfoByHandle
+# GetFileVersionInfoExA
+# GetFileVersionInfoExW
+# GetFileVersionInfoSizeA
+# GetFileVersionInfoSizeExA
+# GetFileVersionInfoSizeExW
+# GetFileVersionInfoSizeW
+# GetFileVersionInfoW
+# VerFindFileA
+# VerFindFileW
+# VerInstallFileA
+# VerInstallFileW
+# VerLanguageNameA
+# VerLanguageNameW
+# VerQueryValueA
+# VerQueryValueW

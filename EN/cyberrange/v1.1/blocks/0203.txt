@@ -1,0 +1,25 @@
+# Didactic CTF draft service; scoped adapter and text generator injected.
+import asyncio
+import json
+
+async def generate_ctf_challenge(adapter,generate_text,actor_id,workzone_id,
+                                 category,difficulty,topic=""):
+    if category not in {"web","crypto","forensics","pwn","reverse","misc","network"}:
+        raise ValueError("invalid_category")
+    if difficulty not in {"beginner","easy","medium","hard","extreme"}:
+        raise ValueError("invalid_difficulty")
+    if not isinstance(topic,str) or len(topic)>2000:
+        raise ValueError("invalid_topic")
+    await adapter.authorize(actor_id,"ctf_propose",workzone_id)
+    context=await adapter.minimized_catalog_context(actor_id,workzone_id)
+    async with asyncio.timeout(90):
+        text=await generate_text(category,difficulty,topic,context)
+    if not isinstance(text,str) or len(text.encode("utf-8"))>65536:
+        raise ValueError("invalid_output")
+    draft=json.loads(text)
+    await adapter.validate_ctf_schema_references_and_secrets(draft)
+    return await adapter.store_private_ctf_draft(actor_id,workzone_id,draft,
+        approval=None,writeup_access="organizers",flag_values=None)
+
+# Instructor calibrates points/difficulty and tests artifacts. Dynamic values
+# are created per authorized instance by Chapter 12, never supplied by the LLM.

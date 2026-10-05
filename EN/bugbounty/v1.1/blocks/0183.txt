@@ -1,0 +1,17 @@
+1. Hypothesis: DLL sideloading in Steam (Ch 6)
+   → Possible execution in steam.exe if loading is established
+
+2. Hypothesis: ASAR tampering in Discord (Ch 5)
+   → Possible execution in Discord if modification is established
+
+3. Hypothesis: cookie/token theft (this chapter)
+   → Possible credential access depending on session and controls
+
+4. Hypothesis: Squirrel persistence (this chapter)
+   → Execution at the studied startup, if verified
+
+5. Possible effects requiring verification:
+   → User impersonation if the session remains valid
+   → Message sending if session and permissions allow it
+   → Signing does not establish EDR/antivirus evasion
+   → Review session revocation and persistence separately

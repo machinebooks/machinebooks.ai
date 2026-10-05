@@ -1,0 +1,70 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+from datetime import date
+
+SECTOR_BENCHMARKS = {
+    "financiero": {"datos": 3.8, "talento": 3.2, "gobernanza": 3.5,
+                   "infraestructura": 3.6, "casos_uso": 3.1, "cultura": 2.8},
+    "sector_publico": {"datos": 2.4, "talento": 2.1, "gobernanza": 2.8,
+                       "infraestructura": 2.5, "casos_uso": 1.9, "cultura": 2.0},
+    "industrial": {"datos": 2.9, "talento": 2.5, "gobernanza": 2.2,
+                   "infraestructura": 3.0, "casos_uso": 2.6, "cultura": 2.3},
+    "retail": {"datos": 3.2, "talento": 2.7, "gobernanza": 2.4,
+               "infraestructura": 3.1, "casos_uso": 3.0, "cultura": 2.9},
+}
+
+def generate_executive_report(
+    result: AssessmentResult,
+    client_name: str,
+    sector: str
+) -> str:
+    """Generates executive report with sector benchmarks."""
+    benchmarks = SECTOR_BENCHMARKS.get(sector, {})
+
+    comparisons = []
+    for dim in result.dimensions:
+        bench = benchmarks.get(dim.dimension, 0)
+        delta = dim.score - bench
+        position = "above" if delta > 0.3 else (
+            "below" if delta < -0.3 else "in line with"
+        )
+        comparisons.append(
+            f"- **{dim.dimension.capitalize()}**: {dim.score:.1f}/5.0 "
+            f"({position} the sector average: {bench:.1f})"
+        )
+
+    comparisons_text = "\n".join(comparisons)
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        system=(
+            "You are a senior consultant specialized in AI adoption. "
+            "Generate an executive AI maturity assessment report. "
+            "Tone: professional, direct, action-oriented. "
+            "Structure: executive summary (1 paragraph), findings per "
+            "dimension (2-3 sentences each), top 3 recommendations "
+            "prioritized by impact, and suggested next steps. "
+            "Do NOT use empty jargon. Every recommendation must include "
+            "an effort estimate (low/medium/high) and timeline."
+        ),
+        messages=[{
+            "role": "user",
+            "content": (
+                f"Client: {client_name}\n"
+                f"Sector: {sector}\n"
+                f"Overall level: {result.overall_level.name} "
+                f"({result.overall_level.value}/5)\n"
+                f"Date: {date.today().isoformat()}\n\n"
+                f"Scores vs sector benchmark:\n"
+                f"{comparisons_text}\n\n"
+                f"Inconsistencies detected:\n"
+                + ("\n".join(result.flags_for_consultant)
+                   if result.flags_for_consultant
+                   else "None detected")
+                + "\n\nGenerate the executive report."
+            )
+        }]
+    )
+
+    return message.content[0].text

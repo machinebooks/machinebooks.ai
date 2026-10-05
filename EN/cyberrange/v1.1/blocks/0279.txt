@@ -1,0 +1,14 @@
+# Trust the raw transport peer only; ingress replaces X-Forwarded-For
+from ipaddress import ip_address, ip_network
+
+def client_address(transport_peer,forwarded_for,trusted_proxy_cidrs):
+    peer=ip_address(transport_peer)
+    trusted=any(peer in ip_network(cidr) for cidr in trusted_proxy_cidrs)
+    if not trusted or not forwarded_for:
+        return str(peer)
+    if "," in forwarded_for or len(forwarded_for)>45:
+        raise ValueError("single ingress-assigned address required")
+    return str(ip_address(forwarded_for.strip()))
+
+# Use the raw socket peer before middleware rewrites request.client.
+# Forwarded headers from arbitrary clients are ignored, not authentication.

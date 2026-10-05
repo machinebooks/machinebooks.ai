@@ -1,0 +1,37 @@
+#!/usr/bin/env python3
+"""Read one packed ASAR file using the preceding parse_asar_header reader."""
+from pathlib import Path
+
+def extract_file_from_asar(asar_path: str, target_file: str) -> bytes:
+    header = parse_asar_header(asar_path)
+    parts = target_file.split("/")
+    if not parts or any(part in ("", ".", "..") or "\\" in part for part in parts):
+        raise ValueError("Invalid archive-relative file path")
+    node = header["structure"]
+    for part in parts:
+        children = node.get("files")
+        if not isinstance(children, dict) or part not in children:
+            raise FileNotFoundError(target_file)
+        node = children[part]
+        if not isinstance(node, dict):
+            raise ValueError("Invalid ASAR entry")
+    if node.get("unpacked") or "link" in node or "files" in node:
+        raise ValueError("Only packed regular file entries are supported")
+    offset, size = node.get("offset"), node.get("size")
+    if not isinstance(offset, str) or not offset.isascii() or not offset.isdigit():
+        raise ValueError("Invalid ASAR file offset")
+    if type(size) is not int or size < 0:
+        raise ValueError("Invalid ASAR file size")
+    file_offset = header["data_offset"] + int(offset)
+    path = Path(asar_path)
+    if file_offset + size > path.stat().st_size:
+        raise ValueError("ASAR file exceeds archive bounds")
+    with path.open("rb") as stream:
+        stream.seek(file_offset)
+        content = stream.read(size)
+    if len(content) != size:
+        raise ValueError("Short ASAR file read")
+    return content
+
+# Read only authorized artifacts. Unpacked files and links need separate handling.
+# Main/preload configuration, IPC and update logic require contextual review.

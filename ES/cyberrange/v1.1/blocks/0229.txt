@@ -1,0 +1,54 @@
+# YAML: proposed private catalog contract, not an accepted deployment.
+workzone:
+  name: soc-enterprise-medium
+  requires_approved_isolation_policy: true
+  catalog_release: required
+  networks:
+    - {name: corporate, vlan_id: 100, subnet: 10.100.0.0/24}
+    - {name: dmz, vlan_id: 200, subnet: 10.200.0.0/24}
+    - {name: soc, vlan_id: 300, subnet: 10.30.0.0/24}
+    - {name: attacker, vlan_id: 666, subnet: 172.16.0.0/24}
+  machines:
+    - name: elastic-stack
+      network: soc
+      ip: 10.30.0.10
+      approved_template_ref: required_elastic_security_release
+      resources: {vcpu: 4, ram_gb: 16, disk_gb: 100}
+    - name: wazuh-stack
+      network: soc
+      ip: 10.30.0.20
+      approved_template_ref: required_manager_indexer_dashboard_release
+      resources: {vcpu: 4, ram_gb: 8, disk_gb: 100}
+    - name: syslog-receiver
+      network: soc
+      ip: 10.30.0.30
+      approved_template_ref: required_syslog_parser_release
+      resources: {vcpu: 2, ram_gb: 4, disk_gb: 40}
+    - name: dc01
+      network: corporate
+      ip: 10.100.0.10
+      approved_template_ref: required_isolated_ad_release
+      resources: {vcpu: 4, ram_gb: 8, disk_gb: 60}
+    - name: fs01
+      network: corporate
+      ip: 10.100.0.20
+      approved_template_ref: required_synthetic_file_server_release
+      resources: {vcpu: 2, ram_gb: 4, disk_gb: 40}
+      data: {source: synthetic, entity_scope_assumption: requires_review}
+    - name: ws-analyst
+      network: soc
+      ip: 10.30.0.100
+      approved_template_ref: required_analyst_workstation_release
+      resources: {vcpu: 2, ram_gb: 4, disk_gb: 40}
+  telemetry:
+    pfSense_logs: scoped_syslog_receiver_and_parser
+    packetbeat: network_protocol_observations
+    wazuh: authorized_endpoint_agents_to_compatible_stack
+    elastic: approved_minimized_ingestion_adapter
+  acceptance:
+    checks: [template_digests, network_policy, positive_and_negative_controls,
+             inventory_leases, credentials, telemetry_provenance, cleanup_receipts]
+
+# Pin/test catalog versions and firewall flows; resolve all required references.
+# Flags are per authorized instance. NIS2 applies to entities/obligations, not
+# a nis2_regulated data boolean. The contract alone creates no machines or agents.

@@ -1,0 +1,33 @@
+# Didactic read-only assistant; injected agent uses the bounded Messages loop.
+from collections import deque
+from datetime import datetime,timezone
+
+class BlueTeamAssistant:
+    def __init__(self,agent,adapter,actor_id,workzone_id):
+        if not adapter.catalog_is_read_only(agent.tools):
+            raise ValueError("read_only_catalog_required")
+        self.agent=agent;self.adapter=adapter
+        self.actor_id=actor_id;self.workzone_id=workzone_id
+        self.alert_history=deque(maxlen=100)
+
+    async def analyze_alert(self,alert_id):
+        await self.adapter.authorize_read(self.actor_id,self.workzone_id)
+        observation=await self.adapter.minimized_owned_alert(self.actor_id,self.workzone_id,alert_id)
+        self.alert_history.append(alert_id)
+        proposal=await self.agent.execute_step(observation)
+        return {"alert_id":alert_id,"proposal":proposal,"human_review":"pending",
+                "timestamp":datetime.now(timezone.utc).isoformat().replace("+00:00","Z")}
+
+    async def deep_investigation(self,hypothesis):
+        await self.adapter.authorize_read(self.actor_id,self.workzone_id)
+        request=await self.adapter.minimized_investigation_request(hypothesis,
+            self.actor_id,self.workzone_id,list(self.alert_history))
+        return await self.agent.execute_step(request)
+
+    async def generate_incident_timeline(self):
+        evidence=await self.adapter.minimized_evidence_with_coverage(
+            self.actor_id,self.workzone_id,limit=100)
+        return await self.adapter.propose_and_validate_timeline(evidence)
+
+# Read permissions include query limits and object scope. Evidence coverage and
+# unknowns remain explicit; no complete-history or calibrated-confidence claim.

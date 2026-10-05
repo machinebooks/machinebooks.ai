@@ -1,0 +1,60 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+@dataclass
+class EstimacionPropuesta:
+    """Estimation of effort to prepare the proposal."""
+    horas_analisis_profundo: int    # In-depth reading post go
+    horas_redaccion_tecnica: int    # Technical proposal
+    horas_documentacion: int         # CVs, references, certificates
+    horas_revision_calidad: int      # Peer and management review
+    horas_maquetacion: int           # Final formatting and signing
+    horas_coordinacion_ute: int      # If applicable
+    total_horas: int
+    perfiles_necesarios: list[str]   # Who needs to participate
+    coste_estimado_euros: float      # Hours * average internal rate
+    plazo_critico: bool              # Whether the deadline is tight
+
+def estimar_esfuerzo_propuesta(
+    score: ScoreGoNoGo,
+    extracciones: dict,
+    tarifa_interna_hora: float = 85.0
+) -> EstimacionPropuesta:
+    """Estimates the effort of preparing the proposal."""
+
+    prompt = f"""Based on the analysis of this RFP, estimate the
+proposal preparation effort.
+
+SCORE: {score.puntuacion_global}/100
+EVALUATION CRITERIA: {extracciones['criterios_valoracion']}
+DEADLINES: {extracciones['plazos_calendario']}
+REGULATORY REQUIREMENTS: {extracciones['cumplimiento_normativo']}
+
+Return the estimation in JSON format with fields:
+horas_analisis_profundo, horas_redaccion_tecnica,
+horas_documentacion, horas_revision_calidad,
+horas_maquetacion, horas_coordinacion_ute,
+total_horas, perfiles_necesarios, plazo_critico.
+
+Base the estimation on:
+- 60-80 page proposals require 80-120 total hours
+- 30-50 page proposals require 40-80 hours
+- Judgment-based criteria increase writing by 30-50%
+- Joint ventures add 15-25 hours of coordination
+- Deadlines under 15 days increase hours by 20% due
+  to compression and parallel work"""
+
+    mensaje = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=1500,
+        system="You are a consulting operations director "
+               "who estimates proposal preparation efforts "
+               "with precision. Prefer overestimating to underestimating.",
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    import json
+    datos = json.loads(mensaje.content[0].text)
+    datos["coste_estimado_euros"] = (
+        datos["total_horas"] * tarifa_interna_hora
+    )
+    return EstimacionPropuesta(**datos)

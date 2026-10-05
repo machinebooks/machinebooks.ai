@@ -1,0 +1,7 @@
+void Read(const QString &path) {
+    auto file = QFile(path);
+    const auto parsed = QJsonDocument::fromJson(file.readAll(), &error);
+    // No signature verification
+    // No integrity check
+    j->second->set(value.toBool());  // Sets the toggle directly
+}

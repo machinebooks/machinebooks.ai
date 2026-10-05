@@ -1,0 +1,38 @@
+"""
+teamviewer_cdp_connect.py -- CDP connection to TeamViewer
+Enumerates targets and connects to the main WebView2 context.
+"""
+import requests
+import websocket
+import json
+
+CDP_PORT = 9229
+CDP_URL = f"http://127.0.0.1:{CDP_PORT}/json"
+
+def connect_to_teamviewer():
+    """Connect to the TeamViewer main target via CDP."""
+    response = requests.get(CDP_URL, timeout=5)
+    targets = response.json()
+
+    print(f"[+] {len(targets)} targets found")
+    for t in targets:
+        print(f"    {t['type']}: {t['url'][:80]}")
+
+    # Find the main target (page type)
+    main_target = next(
+        (t for t in targets if t["type"] == "page"),
+        None
+    )
+    if not main_target:
+        print("[-] Main target not found")
+        return None
+
+    ws_url = main_target["webSocketDebuggerUrl"]
+    print(f"[+] Connecting to: {ws_url}")
+    ws = websocket.create_connection(ws_url)
+    return ws
+
+# Typical output: 3 targets
+# page: https://teamviewer-internal-b1f1235a/...
+# service_worker: ...
+# worker: ...

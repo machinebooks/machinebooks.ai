@@ -1,0 +1,15 @@
+# Didactic catalog-bounded proposal; no execution from model output.
+import asyncio
+import json
+
+async def plan_attack_sequence(actor, request, access, catalog, provider, validator):
+    scope = await access.authorized_planning(actor, request)
+    available = await catalog.minimized_approved_actions(scope)
+    if provider is None:
+        return {"status": "manual_review_required"}
+    raw = await asyncio.wait_for(provider.propose_sequence(scope, available), 20)
+    if not isinstance(raw, str) or len(raw.encode("utf-8")) > 65536:
+        raise ValueError("invalid provider response")
+    plan = validator.validate_catalog_sequence(json.loads(raw), scope, available)
+    return {"status": "pending_review", "plan": plan}
+# Reviewed deployment still rechecks targets, leases, versions and executor limits.

@@ -1,0 +1,77 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import anthropic
+from qdrant_client import QdrantClient
+
+# Connection to onboarding RAG
+qdrant = QdrantClient(url="http://localhost:6333")
+client = anthropic.Anthropic(api_key="<YOUR_ANTHROPIC_KEY>")
+
+MENTOR_SYSTEM_PROMPT = """You are a technology consulting mentor. Your role is to help
+junior consultants understand the consulting firm's methodologies, standards, and practices.
+
+Rules:
+1. Respond ONLY with information from the provided context (practice documents).
+2. If you don't have sufficient information, say "I don't have documentation on this —
+   ask your assigned mentor" and log the gap.
+3. When citing a procedure, indicate the source document so the junior
+   can read it in full.
+4. Adapt the depth of the response to the junior's level (foundational,
+   intermediate, advanced).
+5. After answering, suggest 1-2 related documents that expand on the topic.
+6. NEVER invent procedures or standards. If something isn't documented,
+   it's a gap that should be escalated.
+7. Include concrete examples when possible.
+
+Junior's level: {difficulty_level}
+Onboarding week: {onboarding_week}
+Assigned project: {assigned_project_type}
+"""
+
+def query_mentor(
+    question: str,
+    junior_profile: dict,
+    collection: str = "onboarding_docs"
+) -> dict:
+    """Queries the mentoring agent with RAG context."""
+    # Search relevant documents in the onboarding index
+    search_results = qdrant.search(
+        collection_name=collection,
+        query_vector=get_embedding(question),
+        query_filter={
+            "must": [
+                {"key": "difficulty",
+                 "range": {"lte": junior_profile["current_level"]}}
+            ]
+        },
+        limit=5
+    )
+
+    # Build context from retrieved documents
+    context_docs = "\n\n---\n\n".join([
+        f"[{r.payload['title']}] (Category: {r.payload['category']}, "
+        f"Level: {r.payload['difficulty']})\n{r.payload['content']}"
+        for r in search_results
+    ])
+
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=2048,
+        system=MENTOR_SYSTEM_PROMPT.format(
+            difficulty_level=junior_profile["current_level"],
+            onboarding_week=junior_profile["week"],
+            assigned_project_type=junior_profile["project_type"]
+        ),
+        messages=[{
+            "role": "user",
+            "content": f"Practice context:\n{context_docs}\n\n"
+                       f"Junior's question:\n{question}"
+        }]
+    )
+
+    return {
+        "answer": response.content[0].text,
+        "sources": [r.payload["title"] for r in search_results],
+        "tokens_used": response.usage.input_tokens + response.usage.output_tokens,
+        "gap_detected": "I don't have documentation" in response.content[0].text
+    }

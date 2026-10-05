@@ -1,0 +1,14 @@
+# Didactic async contract: an accepted UPID is not a completed start.
+async def request_vm_start(actor, cluster_id, vmid, access, api, store):
+    scope = await access.owned_vm(actor, cluster_id, vmid, "start")
+    intent = await store.record_intent(scope, "start")
+    upid = await api.request_start(scope)
+    await store.record_task(intent, upid, status="starting")
+    result = await api.wait_task(scope, upid, timeout=60)
+    if result.get("exitstatus") != "OK":
+        await store.record_state(intent, "failed_or_pending")
+        return {"status": "failed_or_pending", "task_ref": intent.id}
+    observed = await api.current_state(scope)
+    status = "running" if observed.get("status") == "running" else "pending"
+    await store.record_observation(intent, observed, status)
+    return {"status": status, "task_ref": intent.id}

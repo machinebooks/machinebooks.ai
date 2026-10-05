@@ -1,0 +1,57 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+@dataclass
+class PerfilFirma:
+    """Capabilities and experience of the consulting practice."""
+    certificaciones: list[str]
+    # Example: ["ISO 27001", "ISO 9001", "ENS medium level"]
+    experiencia_sectorial: dict[str, int]
+    # Example: {"public_sector_health": 8, "banking": 12}
+    proyectos_referencia: list[dict]
+    # Each: {sector, amount, duration, year, description}
+    perfiles_disponibles: list[dict]
+    # Each: {role, certifications, years_exp, availability}
+    facturacion_media_anual: float
+    clasificaciones_empresariales: list[str]
+
+def cruzar_requisitos_capacidades(
+    requisitos: list[dict],
+    perfil: PerfilFirma
+) -> list[dict]:
+    """Cross-references each mandatory requirement with the
+    practice's capabilities and generates a compliance assessment."""
+
+    prompt_cruce = """Given the following mandatory requirements
+from an RFP and the consulting practice's capability profile,
+assess compliance for EACH requirement.
+
+For each requirement indicate:
+- complies: yes / no / partial
+- evidence: what data from the profile demonstrates compliance
+- gap: if non-compliant, what exactly is missing
+- mitigation: if there's a gap, options to resolve it
+  (joint venture, subcontracting, obtaining certification, etc.)
+- exclusion_risk: high / medium / low
+
+RFP REQUIREMENTS:
+{requisitos}
+
+FIRM PROFILE:
+{perfil}"""
+
+    mensaje = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        system="You are a pre-sales analyst evaluating the fit "
+               "between RFP requirements and practice capabilities. "
+               "Be conservative: when in doubt, mark as 'partial' "
+               "and document the gap.",
+        messages=[{
+            "role": "user",
+            "content": prompt_cruce.format(
+                requisitos=str(requisitos),
+                perfil=str(perfil.__dict__)
+            )
+        }]
+    )
+    return mensaje.content[0].text

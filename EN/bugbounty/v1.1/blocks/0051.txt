@@ -1,0 +1,19 @@
+# Analysis of CoworkVMService.exe load chain
+# (Local model — pre-disclosure material for Anthropic)
+
+# The identified bypass flow:
+#
+# 1. CoworkVMService.exe starts as SYSTEM
+# 2. Loads DLLs from the application directory
+#    (directory with user-writable permissions)
+# 3. Among those DLLs, a proxy DLL can be loaded
+# 4. The proxy DLL intercepts WinVerifyTrust in ntdll/wintrust.dll
+# 5. From this point on, any call to WinVerifyTrust
+#    returns ERROR_SUCCESS
+# 6. The service verifies the "signature" of a malicious binary
+# 7. WinVerifyTrust (intercepted) returns "valid"
+# 8. The service executes the malicious binary as SYSTEM
+
+# Impact: privilege escalation from user to SYSTEM
+# via signature verification bypass in a service
+# running with maximum privileges

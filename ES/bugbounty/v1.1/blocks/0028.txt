@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+"""Collect unverified version strings; do not infer platform feature support."""
+import re
+from pathlib import Path
+
+def detect_electron_version(exe_path: str) -> dict:
+    content = Path(exe_path).read_bytes().decode("latin-1")
+    patterns = {
+        "electron": r"Electron/(\d+\.\d+\.\d+)",
+        "chromium": r"Chrome/(\d+\.\d+\.\d+\.\d+)",
+        "node": r"Node\.js/v(\d+\.\d+\.\d+)",
+    }
+    result = {}
+    for name, pattern in patterns.items():
+        match = re.search(pattern, content)
+        result[name] = match.group(1) if match else None
+    result["evidence"] = "UNVERIFIED_BINARY_STRINGS"
+    result["support_status"] = "Check dated platform/build documentation separately"
+    return result
+
+# Historical strings attributed by the narrative:
+# Discord: Electron 28.2.10, Chromium 120, Node 18.18.2
+# Wand: Electron 27.1.0, Chromium 118, Node 18.17.1
+# VS Code: Electron 28.2.8, Chromium 120, Node 18.18.2
+# Signal: Electron 28.0.0, Chromium 120, Node 18.18.2

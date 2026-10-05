@@ -1,0 +1,17 @@
+# backend/auth/mfa.py — TOTP with pyotp
+import pyotp
+from backend.config import settings
+
+def generate_mfa_secret() -> str:
+    """Generates a random TOTP secret in Base32."""
+    return pyotp.random_base32()
+
+def verify_mfa_code(secret: str, code: str) -> bool:
+    """Verifies a TOTP code. Allows 1 drift window (+-30 seconds)."""
+    totp = pyotp.TOTP(secret)
+    return totp.verify(code, valid_window=1)
+
+def get_provisioning_uri(secret: str, email: str) -> str:
+    """URI to generate QR code in the authenticator application."""
+    totp = pyotp.TOTP(secret)
+    return totp.provisioning_uri(name=email, issuer_name=settings.mfa_issuer)

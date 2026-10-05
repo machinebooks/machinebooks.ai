@@ -1,0 +1,10 @@
+# Simplified runtime schema
+electron-main (UI)
+  └─ ipc → preload → renderer (React)
+        └─ HTTP → backend Express :3001
+              ├─ openai SDK → LM Studio :1234
+              ├─ tools (rev_*, fs_*, shell_*)
+              ├─ subagent.ts (sub-agents)
+              ├─ mcp-client.ts (MCP servers)
+              ├─ plugins.ts (Plugin SDK loader)
+              └─ slash-commands.ts

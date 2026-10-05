@@ -1,0 +1,47 @@
+# Didactic text adapter: clients are injected after configuration validation.
+import asyncio
+from enum import Enum
+
+class LLMProvider(str, Enum):
+    CLAUDE="claude"
+    OPENAI="openai"
+    AZURE_OPENAI="azure_openai"
+    OLLAMA="ollama"
+
+class LLMService:
+    def __init__(self, provider, model, async_client):
+        if provider not in (LLMProvider.CLAUDE,LLMProvider.OPENAI,LLMProvider.OLLAMA):
+            raise ValueError("provider_adapter_not_implemented")
+        if not isinstance(model,str) or not model or async_client is None:
+            raise ValueError("invalid_configuration")
+        self.provider=provider
+        self.model=model
+        self.client=async_client
+
+    async def generate(self, system, prompt, max_tokens=4096):
+        if not all(isinstance(t,str) and 0 < len(t) <= 16000 for t in (system,prompt)):
+            raise ValueError("invalid_input")
+        if type(max_tokens) is not int or not 1 <= max_tokens <= 8192:
+            raise ValueError("invalid_token_limit")
+        async with asyncio.timeout(60):
+            if self.provider == LLMProvider.CLAUDE:
+                response=await self.client.messages.create(model=self.model,
+                    max_tokens=max_tokens,system=system,
+                    messages=[{"role":"user","content":prompt}])
+                if response.stop_reason != "end_turn":
+                    raise ValueError("incomplete_output")
+                text="".join(b.text for b in response.content if b.type=="text")
+            else:
+                response=await self.client.chat.completions.create(model=self.model,
+                    max_tokens=max_tokens,messages=[{"role":"system","content":system},
+                                                   {"role":"user","content":prompt}])
+                if len(response.choices)!=1 or response.choices[0].finish_reason!="stop":
+                    raise ValueError("incomplete_output")
+                text=response.choices[0].message.content
+        if not isinstance(text,str) or not text or len(text)>64000:
+            raise ValueError("invalid_output")
+        return text
+
+# Text-only contract; client versions, local endpoint policy and retry/budget
+# enforcement are integration responsibilities. No tool history equivalence,
+# air-gap claim or Azure fallback is implied. Secrets stay in configuration.

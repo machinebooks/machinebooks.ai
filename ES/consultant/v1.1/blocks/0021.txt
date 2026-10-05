@@ -1,0 +1,27 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# The corpus adapter must derive tenant/ACL filters from authenticated server identity and exclude obsolete versions.
+from math import isfinite
+
+def search_knowledge(query, identity, corpus_adapter, embedding_adapter, filter_adapter, top_k=5):
+    if type(top_k) is not int or not 1 <= top_k <= 100:
+        raise ValueError("Invalid retrieval limit")
+    corpus_adapter.require_read_authorization(identity)
+    mandatory = corpus_adapter.tenant_and_acl_filter(identity)
+    if not isinstance(mandatory, dict) or not mandatory:
+        raise ValueError("Missing mandatory authenticated scope")
+    filters = extract_search_filters(query, filter_adapter)
+    vectors = embedding_adapter.embed([query], model=EMBEDDING_MODEL)
+    if len(vectors) != 1 or len(vectors[0]) != 1024 or any(type(v) not in (int, float) or not isfinite(v) for v in vectors[0]):
+        raise ValueError("Invalid query embedding")
+    hits = corpus_adapter.search_authorized(identity, vectors[0], mandatory, filters, top_k)
+    if not isinstance(hits, list) or len(hits) > top_k:
+        raise ValueError("Invalid retrieval result count")
+    for hit in hits:
+        required = ("tenant_id", "doc_id", "doc_hash", "version", "source_uri", "text", "section")
+        if not isinstance(hit, dict) or any(type(hit.get(k)) is not str or not hit[k] for k in required) or not isinstance(hit.get("metadata"), dict):
+            raise ValueError("Invalid source provenance")
+        if hit["tenant_id"] != identity.tenant_id or corpus_adapter.authorize_hit(identity, hit) is not True:
+            raise ValueError("Unauthorized result")
+        if type(hit.get("score")) not in (int, float) or not isfinite(hit["score"]):
+            raise ValueError("Invalid similarity score")
+    return hits

@@ -1,0 +1,32 @@
+# extract_all.py — Intercepts Claude Code requests
+from http.server import HTTPServer, BaseHTTPRequestHandler
+import json
+
+class InterceptHandler(BaseHTTPRequestHandler):
+    def do_POST(self):
+        length = int(self.headers['Content-Length'])
+        body = json.loads(self.rfile.read(length))
+
+        # Extract system prompt
+        system = body.get("system", "")
+        print(f"System prompt: {len(system)} chars")
+
+        # Extract tool definitions
+        tools = body.get("tools", [])
+        print(f"Tools: {len(tools)} definitions")
+
+        for tool in tools:
+            print(f"  - {tool['name']}: {tool.get('description','')[:80]}")
+
+        # Save everything
+        with open("extracted_prompt.json", "w") as f:
+            json.dump({"system": system, "tools": tools}, f, indent=2)
+
+        # Respond with error so Claude Code doesn't crash
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        self.wfile.write(b'{"error":"intercepted"}')
+
+# Usage: ANTHROPIC_BASE_URL=http://127.0.0.1:8888 claude --print "hello"
+HTTPServer(("127.0.0.1", 8888), InterceptHandler).serve_forever()

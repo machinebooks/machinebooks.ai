@@ -1,0 +1,47 @@
+@dataclass
+class ProductizationCandidate:
+    service_name: str
+    repetition_score: float    # 0-1: how many times have we done it?
+    variability_score: float   # 0-1: how much does it change between clients?
+    automation_potential: float # 0-1: what % of work is mechanical?
+    demand_signal: float       # 0-1: do clients ask for it spontaneously?[^senal_demanda]
+
+    @property
+    def productization_score(self) -> float:
+        """Productization index. >0.6 = viable candidate."""
+        return (
+            self.repetition_score * 0.30
+            + (1 - self.variability_score) * 0.25  # Less variability = better
+            + self.automation_potential * 0.25
+            + self.demand_signal * 0.20
+        )
+
+candidates = [
+    ProductizationCandidate(
+        service_name="AI maturity assessment",
+        repetition_score=0.9,     # 23 times in 18 months
+        variability_score=0.3,    # Stable framework, minor adaptation
+        automation_potential=0.75, # 38/60 hours automatable
+        demand_signal=0.8,        # Clients proactively request it
+    ),
+    ProductizationCandidate(
+        service_name="Compliance audit",
+        repetition_score=0.85,
+        variability_score=0.7,    # High: varies greatly by regulatory framework
+        automation_potential=0.60,
+        demand_signal=0.6,
+    ),
+    ProductizationCandidate(
+        service_name="Continuous monitoring",
+        repetition_score=0.2,     # Low: never sold it as such
+        variability_score=0.5,
+        automation_potential=0.85,
+        demand_signal=0.9,        # Highly requested but didn't exist
+    ),
+]
+
+for c in candidates:
+    print(f"{c.service_name}: {c.productization_score:.2f}")
+# AI maturity assessment: 0.79
+# Compliance audit: 0.60
+# Continuous monitoring: 0.58

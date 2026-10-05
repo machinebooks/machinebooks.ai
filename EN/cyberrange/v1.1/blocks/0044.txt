@@ -1,0 +1,11 @@
+# Didactic explicit client factory; renew only typed authentication failures.
+from proxmoxer import ProxmoxAPI
+
+def create_client(config, secrets):
+    value = secrets.resolve(config.token_secret_ref)
+    if not value:
+        raise ValueError("missing credential")
+    return ProxmoxAPI(config.host, port=config.port, user=config.user,
+        token_name=config.token_name, token_value=value,
+        verify_ssl=True, timeout=30)
+# API permissions, expiry and cluster identity are checked per authorized operation.

@@ -1,0 +1,44 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+def generate_executive_report(
+    compliance_matrix: list[ControlMapping],
+    org_context: dict,
+    risk_summary: dict
+) -> str:
+    """Generates executive report from the compliance matrix."""
+
+    # Calculate summary metrics
+    total = len(compliance_matrix)
+    compliant = sum(1 for c in compliance_matrix if c.status == "compliant")
+    partial = sum(1 for c in compliance_matrix if c.status == "partial")
+    non_compliant = sum(1 for c in compliance_matrix if c.status == "non_compliant")
+
+    compliance_rate = (compliant / total) * 100
+
+    response = client.messages.create(
+        model="claude-opus-4-6",
+        max_tokens=4096,
+        system="""Generate an ISO 27001 audit executive report
+        for a Management Committee. Maximum 12 pages.
+        Include: executive summary, overall compliance level,
+        critical findings (max 5), risk map, action plan
+        with priorities and timelines.
+        Tone: professional, direct, decision-oriented.
+        Do NOT include technical details — those go in the technical report.
+        Language: English.""",
+        messages=[{"role": "user", "content": f"""
+        Organization context:
+        {json.dumps(org_context, ensure_ascii=False)}
+
+        Overall compliance: {compliance_rate:.1f}%
+        Compliant: {compliant}, Partial: {partial}, Non-compliant: {non_compliant}
+
+        Risk summary:
+        {json.dumps(risk_summary, ensure_ascii=False)}
+
+        Non-compliant findings (detail):
+        {json.dumps([c.__dict__ for c in compliance_matrix
+                     if c.status != "compliant"],
+                    ensure_ascii=False, indent=2)}"""}]
+    )
+    return response.content[0].text

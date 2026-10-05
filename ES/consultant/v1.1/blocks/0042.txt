@@ -1,0 +1,35 @@
+# CLAUDE.md — Práctica de Consultoría Tecnológica
+
+## Contexto de la práctica
+Consultoría tecnológica especializada en:
+- Seguridad de la información (ISO 27001, ENS, NIS2, DORA)
+- Arquitectura de sistemas y cloud
+- Adopción de IA y gobernanza de modelos (ISO 42001, AI Act)
+- FinOps y optimización de costes cloud
+
+Equipo: 8 consultores (4 senior, 3 semi-senior, 1 junior).
+Clientes: sector público (60%), financiero (25%), industrial (15%).
+
+## Estándares de entregables
+- Informe de auditoría: hallazgo → evidencia → riesgo → recomendación → prioridad
+- Gap analysis: control → estado → gap → acción → responsable → plazo
+- Propuesta técnica: contexto → enfoque → equipo → plan → estimación → diferencial
+- Todo entregable incluye sección de limitaciones y asunciones explícitas
+
+## Restricciones (CRÍTICO)
+- NUNCA mencionar nombres de clientes en documentos intermedios
+- NUNCA incluir datos financieros sin anonimizar (escalar con factor 0.7-1.3)
+- Usar "la entidad" o "el organismo" para referirse a clientes
+- Idioma: español técnico, sin anglicismos evitables
+- Voz: directa, datos antes que opinión, limitaciones antes que promesas
+
+## Stack de herramientas
+- Repositorio documental: accesible vía MCP (server doc-repository)
+- CRM: accesible vía MCP (server crm-connector)
+- Gestor de proyectos: accesible vía MCP (server pm-tools)
+- RAG normativo: Qdrant con embeddings de ISO, ENS, NIS2, DORA, AI Act
+
+## Datos de referencia
+- Coste medio por hora consultor senior: €95-120 (rango de mercado)
+- Duración media auditoría ISO 27001: 15-25 jornadas según alcance
+- Tasa de éxito en propuestas (win rate): 35-40% del mercado, 52% nuestra

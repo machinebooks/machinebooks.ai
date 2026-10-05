@@ -1,0 +1,8 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+from pathlib import Path
+
+def export_to_docx(artifact_bytes, output_path, quality_checker):
+    # Conversion precedes this step. Approval applies to these exact DOCX bytes.
+    quality_checker.require_ready(artifact_bytes)
+    Path(output_path).write_bytes(artifact_bytes)

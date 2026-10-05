@@ -1,0 +1,22 @@
+// Educational preload example: limited channel exposure.
+// Main-process handlers must still validate sender, inputs and authorization.
+{
+    const { contextBridge, ipcRenderer } = require('electron');
+    const validChannels = ['get-config', 'save-file'];
+    contextBridge.exposeInMainWorld('api', {
+        sendMessage: (channel, data) => {
+            if (validChannels.includes(channel)) {
+                ipcRenderer.send(channel, data);
+            }
+        }
+    });
+}
+
+// Separate unsafe illustration; do not combine this exposure with the example above.
+{
+    const { contextBridge } = require('electron');
+    contextBridge.exposeInMainWorld('nodeRequire', require);
+    contextBridge.exposeInMainWorld('exec', require('child_process').exec);
+}
+// Execution/transfer support varies by Electron version and preload context.
+// Exposing generic privileged functions requires review; this is not a PoC run.

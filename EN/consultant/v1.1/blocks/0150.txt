@@ -1,0 +1,51 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+# Partial pricing simulation; monthly retainers require duration and capacity inputs
+import anthropic
+from typing import Optional
+
+client = anthropic.Anthropic()
+
+SYSTEM_PROMPT = """You are a financial analyst specialized in technology consulting.
+You receive a project pipeline with calculated pricing and must:
+1. Project annual revenue under each pricing model.
+2. Calculate gross and net margin (assuming 22% general fixed costs).
+3. Identify the optimal model combination by project type.
+4. Flag risks: revenue concentration, variable dependency, etc.
+Respond in structured JSON with fields: facturacion_total, margen_bruto,
+margen_neto, mix_recomendado, riesgos, and narrativa (3-5 sentence explanatory text)."""
+
+def simular_pipeline_anual(
+    proyectos: list[dict],
+    modelo_pricing: str = "hybrid"
+) -> str:
+    """Simulates annual profitability of a project pipeline."""
+    if not isinstance(proyectos, list) or not proyectos or modelo_pricing not in ("cost_plus", "value_based", "hybrid", "retainer"):
+        raise ValueError("Invalid pipeline or canonical pricing model")
+
+    resumen = []
+    for p in proyectos:
+        pricing = calcular_pricing(ProyectoInput(**p))
+        if pricing.modelo_recomendado == "retainer":
+            raise ValueError("Annual retainer projection requires explicit duration and delivery capacity; absent in this fragment")
+        resumen.append({
+            "tipo": p["tipo"],
+            "sector": p["sector"],
+            "precio_recomendado": getattr(pricing, "precio_retainer_mensual" if pricing.modelo_recomendado == "retainer" else f"precio_{pricing.modelo_recomendado}"),
+            "margen_recomendado": getattr(pricing, f"margen_{pricing.modelo_recomendado}"),
+            "modelo": pricing.modelo_recomendado,
+            "horas_equipo": p["horas_estimadas_sin_ia"] * p["factor_reduccion_ia"],
+        })
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=2048,
+        system=SYSTEM_PROMPT,
+        messages=[{
+            "role": "user",
+            "content": f"Project pipeline for the year:\n{resumen}\n\n"
+                       f"Requested base model: {modelo_pricing}\n"
+                       f"Calculate annual projection and optimal mix."
+        }]
+    )
+    return message.content[0].text

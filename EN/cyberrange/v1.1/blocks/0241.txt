@@ -1,0 +1,7 @@
+// MachineProvider — With configurable auto-refresh
+<MachineProvider autoRefreshInterval={30000}>
+  {/* The entire application has access to machine state */}
+  <Router>
+    <AppRoutes />
+  </Router>
+</MachineProvider>

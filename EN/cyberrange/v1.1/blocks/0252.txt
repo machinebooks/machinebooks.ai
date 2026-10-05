@@ -1,0 +1,10 @@
+// Loopback-only development proxy; it never calls Proxmox directly.
+import {defineConfig} from 'vite';
+import react from '@vitejs/plugin-react';
+export default defineConfig({
+  plugins:[react()],
+  server:{host:'127.0.0.1',port:5173,
+    proxy:{'/api':{target:'http://127.0.0.1:8000',changeOrigin:true,secure:true}}}
+});
+// Production uses an approved HTTPS reverse proxy. If the API target is HTTPS,
+// configure trusted CA verification; this does not configure backend-to-PVE TLS.

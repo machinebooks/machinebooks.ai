@@ -1,0 +1,28 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+proyecto_nuevo = PLANTILLA_ESTIMACION.format(
+    tipo_servicio="auditoria",
+    sector="financiero",
+    complejidad="alta",
+    tecnologias="ISO 27001, DORA, SIEM, IAM, hybrid cloud",
+    equipo="3",
+    descripcion_alcance=(
+        "Combined ISO 27001 and DORA audit for financial entity. "
+        "45 security controls evaluated, 12 systems in scope, "
+        "3 physical locations. Includes review of continuity plans, "
+        "incident management and digital operational resilience. "
+        "The client has current ISO 27001 certification and needs "
+        "to assess the gap for DORA compliance before January 2027."
+    ),
+    restricciones=(
+        "- Client with slow interview approval process "
+        "(prior experience: 2 weeks to schedule).\n"
+        "- One team consultant is junior (first year).\n"
+        "- Client documentation partially in English."
+    ),
+    horas_base="1,200",
+    duracion_semanas="8"
+)
+
+resultado = ejecutar_estimacion(proyecto_nuevo)
+print(resultado["estimacion"])

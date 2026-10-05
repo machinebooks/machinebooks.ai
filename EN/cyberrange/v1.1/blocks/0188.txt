@@ -1,0 +1,14 @@
+# Score only verified objective evidence, attributed to an authorized actor
+def record_objective_score(adapter,event):
+    adapter.authorize(event.actor_id,"objective_score",event.execution_id)
+    if event.objective_verified is not True:
+        return {"status":"no_verified_objective","points":0}
+    with adapter.score_transaction(event.exercise_id,event.execution_id) as transaction:
+        prior=transaction.get_unique_objective_event(event.evidence_id)
+        if prior is not None:
+            return prior
+        points=transaction.approved_rubric_points(event.objective_id)
+        return transaction.append_unique_actor_score(event.actor_id,event.evidence_id,points)
+
+# Adapter verifies evidence provenance and uniqueness. Exit code, host ID and
+# a text assertion are not substitutes for participant identity/objective proof.

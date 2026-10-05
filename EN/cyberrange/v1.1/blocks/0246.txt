@@ -1,0 +1,21 @@
+// UTC timestamps; presentation locale/time zone are explicit participant choices.
+import React from 'react';
+import {LineChart,Line,XAxis,YAxis,CartesianGrid,Tooltip,ResponsiveContainer} from 'recharts';
+
+export function ClusterMetricsChart({data,locale,timeZone}) {
+  const format = new Intl.DateTimeFormat(locale,{timeZone,hour:'2-digit',minute:'2-digit'});
+  const tick = value => {
+    const date=new Date(value);
+    return Number.isFinite(date.valueOf()) ? format.format(date) : '—';
+  };
+  return <ResponsiveContainer width="100%" height={300}>
+    <LineChart data={data} margin={{top:5,right:30,left:20,bottom:5}}>
+      <CartesianGrid strokeDasharray="3 3" stroke="#374151"/>
+      <XAxis dataKey="timestamp" tickFormatter={tick}/>
+      <YAxis domain={[0,100]}/><Tooltip labelFormatter={tick}/>
+      <Line dataKey="cpu" stroke="#3b82f6" name="CPU %" dot={false}/>
+      <Line dataKey="memory" stroke="#10b981" name="RAM %" dot={false}/>
+    </LineChart>
+  </ResponsiveContainer>;
+}
+// The containing page supplies a supported locale/timeZone and schema-validated data.

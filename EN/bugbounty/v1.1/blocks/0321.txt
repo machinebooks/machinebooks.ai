@@ -1,0 +1,82 @@
+#!/usr/bin/env python3
+"""
+WebView2 MassTest: verification of simultaneous CDP exposure.
+Detects which WebView2 applications expose targets on the CDP port.
+ONLY FOR USE IN AN AUTHORIZED RESEARCH LAB.
+"""
+
+import json
+import urllib.request
+import subprocess
+import time
+import os
+
+CDP_PORT = 9222
+APPS_TO_TEST = {
+    "Teams": r"%LOCALAPPDATA%\Microsoft\Teams\current\Teams.exe",
+    "Outlook": r"%LOCALAPPDATA%\Microsoft\Olk\olk.exe",
+    "Acrobat": r"%ProgramFiles%\Adobe\Acrobat DC\Acrobat\Acrobat.exe",
+}
+
+def check_cdp_targets() -> list:
+    """Query the CDP endpoint and return the active targets."""
+    try:
+        url = f"http://127.0.0.1:{CDP_PORT}/json"
+        with urllib.request.urlopen(url, timeout=3) as resp:
+            return json.loads(resp.read().decode())
+    except Exception:
+        return []
+
+def run_masstest():
+    """Run the CDP exposure test across multiple applications."""
+    print("[*] WebView2 MassTest — CDP multiplex verification")
+    print(f"[*] CDP port: {CDP_PORT}")
+    print()
+    
+    # Verify the environment variable is configured
+    env_val = os.environ.get("WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS", "")
+    if "--remote-debugging-port" not in env_val:
+        print("[!] Environment variable not configured. Aborting.")
+        return
+    
+    # Wait for applications to start (in manual test)
+    print("[*] Verifying active CDP targets...")
+    targets = check_cdp_targets()
+    
+    if not targets:
+        print("[!] No active CDP targets found.")
+        return
+    
+    # Classify targets by application
+    apps_found = {}
+    for t in targets:
+        url = t.get("url", "")
+        title = t.get("title", "")
+        
+        if "teams" in url.lower() or "teams" in title.lower():
+            app = "Teams"
+        elif "outlook" in url.lower() or "mail" in title.lower():
+            app = "Outlook"
+        elif "acrobat" in url.lower() or "adobe" in url.lower():
+            app = "Acrobat"
+        else:
+            app = "Other"
+        
+        if app not in apps_found:
+            apps_found[app] = []
+        apps_found[app].append(t)
+    
+    # Summary
+    print(f"\n[+] {len(targets)} targets across {len(apps_found)} applications:\n")
+    for app, app_targets in apps_found.items():
+        print(f"  {app}: {len(app_targets)} targets")
+        for at in app_targets:
+            print(f"    - {at.get('title', 'No title')[:50]}")
+    
+    # Multiplex verification
+    if len(apps_found) > 1:
+        print(f"\n[!!] MULTIPLEX CONFIRMED: {len(apps_found)} applications")
+        print("     exposed on the same CDP port.")
+
+if __name__ == "__main__":
+    run_masstest()

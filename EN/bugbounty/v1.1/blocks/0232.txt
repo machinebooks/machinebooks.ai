@@ -1,0 +1,5 @@
+1. Backup: copy original EpicGamesUpdater.exe to %TEMP%
+2. Replacement: copy payload over EpicGamesUpdater.exe (FULL CONTROL)
+3. Start: sc start EpicGamesUpdater
+4. Execution: payload runs as NT AUTHORITY\SYSTEM
+5. Restoration: copy backup over EpicGamesUpdater.exe

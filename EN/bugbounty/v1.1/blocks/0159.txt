@@ -1,0 +1,14 @@
+// Pseudocode of the Operon classifier (reconstructed from the ASAR)
+async function classifyArtifact(code) {
+    if (!process.env.OPERON_ENABLE_LLM_CLASSIFIER) {
+        return { safe: true };  // Disabled = allow everything
+    }
+    try {
+        const result = await callClassifierModel(code);
+        return result;
+    } catch (error) {
+        // FAIL OPEN: any error = allow
+        console.warn("Classifier error:", error);
+        return { safe: true };
+    }
+}

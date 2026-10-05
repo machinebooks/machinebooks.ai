@@ -1,0 +1,19 @@
+# Evidence summary distinguishes intended action, process result and objective
+def generate_mitre_report(executions,detection_events,release):
+    by_id={execution["id"]:execution for execution in executions}
+    if len(by_id)!=len(executions):
+        raise ValueError("duplicate execution")
+    detections={}
+    for event in detection_events:
+        if event["execution_id"] not in by_id:
+            raise ValueError("unrelated detection")
+        detections.setdefault(event["execution_id"],[]).append(event["evidence_id"])
+    return {"release":release,"executions":[{
+        "id":key,"intended_technique":execution["technique_id"],
+        "process_exit_code":execution["exit_code"],
+        "objective_verified":execution["objective_verified"],
+        "detection_evidence":detections.get(key,[])} for key,execution in by_id.items()]}
+
+# Input is an authorized versioned snapshot with provenance and defined
+# observation window. Missing detection records are unobserved, not proof
+# that the blue team missed an attack. The function makes no certification.

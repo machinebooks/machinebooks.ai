@@ -1,0 +1,17 @@
+00:00 - Start Docker lab, copy AsIO3.sys to /lab/drivers/
+00:02 - Run 08_asio3_ioctl_bruteforce.py → 16 IOCTLs in 47s
+00:03 - Run 04_ioctl_mapper.py → DEVICE_CONTROL handler identified
+00:05 - Send JSON to LM Studio: "What buffer structure for mapping?"
+00:08 - LM Studio responds: 16-byte struct (PhysAddr, Size, Cache)
+00:10 - Switch to Windows. Run 12_device_dacl_probe.py
+00:12 - DACL blocked. Note device EXISTS but ACCESS_DENIED
+00:15 - Hypothesis: if we have a handle (via bypass), what happens?
+00:17 - Simulate with admin handle (to validate the IOCTLs)
+00:20 - Send discovered IOCTLs with variable-size buffers
+00:25 - IOCTL 0x222400 responds successfully (8-byte output)
+00:27 - Confirm output is the mapped virtual address
+00:30 - Test IOCTL 0x22b807 (METHOD_NEITHER) with empty buffer → BSOD
+00:35 - Restore VM from snapshot. Analyze minidump
+00:40 - BSOD at AsIO3+0x2A30: null dereference in Type3InputBuffer
+00:45 - Document findings in session JSON
+00:50 - Complete session: 5 findings, 1 controlled BSOD

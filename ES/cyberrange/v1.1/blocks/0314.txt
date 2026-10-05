@@ -1,0 +1,26 @@
+# Proposed contract, not an implemented autonomous pipeline
+# "from agents" denotes OpenAI Agents SDK. Supply a configured Model;
+# a Claude model-name string alone does not install a provider adapter.
+def fetch_threat_intelligence(sector, days=7):
+    raise NotImplementedError("authorized dated feed adapter required")
+
+def get_player_profile(player_id):
+    raise NotImplementedError("authorized minimal profile adapter required")
+
+def generate_ansible_playbook(scenario_spec):
+    raise NotImplementedError("schema, catalog and bounded generation required")
+
+def validate_scenario(scenario_id):
+    raise NotImplementedError("owned isolated validation and evidence required")
+
+def build_scenario_agent(configured_model):
+    from agents import Agent, function_tool
+    return Agent(name="scenario_orchestrator", model=configured_model,
+        instructions="Propose a scenario inside the authorized scope. "
+                     "Human approval and verified validation precede deployment.",
+        tools=[function_tool(fetch_threat_intelligence),
+               function_tool(get_player_profile),
+               function_tool(generate_ansible_playbook),
+               function_tool(validate_scenario)])
+
+# Runner invocation, adapters, approvals and recovery are not implemented.

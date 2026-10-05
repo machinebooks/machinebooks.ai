@@ -1,0 +1,115 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import anthropic
+import json
+from datetime import datetime
+
+client = anthropic.Anthropic()
+
+def search_knowledge_base(query: str, filters: dict = None) -> list[dict]:
+    """Searches the practice RAG for relevant documents.
+
+    In production, this function queries Qdrant with embeddings.
+    Here we simplify the interface for didactic clarity.
+    """
+    # Actual implementation: generates embedding of the query,
+    # searches for the K nearest documents in Qdrant,
+    # filters by metadata (client, type, date)
+    # and returns text + score + metadata
+    raise NotImplementedError("Required adapter not provided in this educational fragment")
+def get_client_history(client_ref: str) -> dict:
+    """Retrieves complete history with a client."""
+    results = search_knowledge_base(
+        query=f"projects with {client_ref}",
+        filters={"type": ["proposal", "report", "lessons_learned"]}
+    )
+    return {
+        "projects": [r for r in results if r["type"] == "project"],
+        "deliverables": [r for r in results if r["type"] == "report"],
+        "lessons": [r for r in results if r["type"] == "lessons_learned"],
+        "last_contact": max(
+            (r["date"] for r in results), default=None
+        )
+    }
+
+BRIEFING_SYSTEM_PROMPT = """You are a technology consulting analyst
+who prepares briefings for client meetings.
+
+Your job: given the client context, meeting objective, and
+relationship history, generate a structured briefing that
+allows the senior consultant to arrive at the meeting prepared
+to add value from the first minute.
+
+Rules:
+- Be specific, not generic. "The client has concerns about DORA"
+  is not useful. "DORA applies from 17 January 2025; January 2027 is the client remediation target
+  and their main gap is ICT third-party risk management" is.
+- Include questions the client may ask and prepare answers.
+- Flag known friction points from previous projects.
+- If there is no history, indicate it and suggest discovery questions.
+- The tone is internal: direct, without unnecessary diplomacy.
+- Maximum 3 pages. The consultant will read it in 10 minutes."""
+
+def prepare_meeting_briefing(
+    client_ref: str,
+    meeting_objective: str,
+    attendees: list[dict],
+    additional_context: str = ""
+) -> str:
+    """Generates a complete briefing for a client meeting."""
+
+    # 1. Retrieve client history
+    history = get_client_history(client_ref)
+
+    # 2. Search for regulations relevant to the sector
+    regulatory_context = search_knowledge_base(
+        query=f"applicable regulation sector {client_ref}",
+        filters={"type": ["regulation", "standard"]}
+    )
+
+    # 3. Build enriched context for the agent
+    context = f"""
+CLIENT: {client_ref}
+MEETING OBJECTIVE: {meeting_objective}
+DATE: {datetime.now().strftime('%Y-%m-%d')}
+
+ATTENDEES:
+{json.dumps(attendees, indent=2, ensure_ascii=False)}
+
+CLIENT HISTORY:
+- Previous projects: {len(history['projects'])}
+- Last contact: {history['last_contact']}
+- Relevant lessons learned:
+{json.dumps(history['lessons'][:5], indent=2, ensure_ascii=False)}
+
+RELEVANT REGULATORY CONTEXT:
+{json.dumps(regulatory_context[:3], indent=2, ensure_ascii=False)}
+
+ADDITIONAL CONTEXT:
+{additional_context}
+"""
+
+    # 4. Generate briefing with Claude
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        system=BRIEFING_SYSTEM_PROMPT,
+        messages=[{
+            "role": "user",
+            "content": f"""Generate the briefing for this meeting:
+
+{context}
+
+Briefing structure:
+1. Client context (sector, size, regulation, relationship)
+2. Objective and suggested agenda (60 min)
+3. Current state: what we know and what we don't
+4. Our position and preliminary recommendation
+5. Questions we should ask
+6. Questions we'll be asked and prepared answers
+7. Risks and sensitive topics
+8. Suggested next steps"""
+        }]
+    )
+
+    return message.content[0].text

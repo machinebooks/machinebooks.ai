@@ -1,0 +1,8 @@
+# Scope-filtered bounded list; role never grants an unfiltered query.
+import asyncio
+
+async def list_workzones(actor, access, store):
+    scope = await asyncio.wait_for(access.workzone_list_scope(actor), 10)
+    values = await asyncio.wait_for(store.list_authorized(scope, limit=100), 20)
+    return store.validate_workzone_dtos(values, scope, limit=100)
+# The query adapter uses parameterized SQL and server-owned pagination.

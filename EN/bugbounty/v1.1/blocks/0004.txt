@@ -1,0 +1,20 @@
+# Fragment of PE analysis executed in the Docker container
+# Claude identifies dangerous imports in the driver
+
+DANGEROUS_IMPORTS = {
+    "MmMapIoSpace":
+        "Maps physical to virtual memory — arbitrary read/write",
+    "ZwMapViewOfSection":
+        "Maps section in process — potential arbitrary mapping",
+    "MmCopyMemory":
+        "Copies from physical/virtual memory — read primitive",
+    "IoCreateDevice":
+        "Creates device object — verify DACL",
+}
+
+# Analysis result: AsIO3.sys
+# - MmMapIoSpace: PRESENT (no SeSinglePrivilegeCheck)
+# - ZwMapViewOfSection: PRESENT
+# - IoCreateDevice: PRESENT (with permissive DACL)
+# - Risk Score: 14/15 - CRITICAL
+# - Reason: "Memory operations WITHOUT privilege verification"

@@ -1,0 +1,7 @@
+[Sources]           [Pipeline]         [Store]           [Query]
+ Proposals ──┐
+ Reports ────┤     Ingestion ──→ Extraction ──→ Tagging ──→ Qdrant
+ Notes ──────┤         │                                       │
+ Emails ─────┘    (Celery/Redis)                          Search API
+                                                               │
+                                                    Natural language interface

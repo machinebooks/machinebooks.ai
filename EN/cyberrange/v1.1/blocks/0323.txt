@@ -1,0 +1,8 @@
+# Reuse chapter 12's random scoped token service; never send final tokens to a model
+async def seed_exercise_flags(actor, instance_id, api, request_id):
+    objectives = await api.approved_objectives(actor, instance_id)
+    if {item.id for item in objectives} != {"obj-1", "obj-2"}:
+        raise ValueError("unexpected objectives")
+    return await api.seed_and_verify_flags_once(actor, instance_id, objectives, request_id)
+
+# Rubric weights and hint percentages are approved separately, before capture opens.

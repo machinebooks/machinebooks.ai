@@ -1,0 +1,61 @@
+# Finite synthetic alert fixture and closed-window triage evaluation
+import random
+from datetime import datetime, timedelta, timezone
+
+def generate_alert_storm(total_alerts=200, duration_minutes=30,
+                         true_positive_count=12, seed=1):
+    if type(total_alerts) is not int or not 1<=total_alerts<=2000:
+        raise ValueError("invalid alert count")
+    if type(true_positive_count) is not int or not 0<=true_positive_count<=total_alerts:
+        raise ValueError("invalid truth count")
+    if type(duration_minutes) not in (int,float) or not 0<duration_minutes<float("inf"):
+        raise ValueError("invalid generation bounds")
+    positions=set(random.Random(seed).sample(range(total_alerts),true_positive_count))
+    start=datetime.now(timezone.utc)
+    return [{"id":str(i), "event_time":(start+timedelta(minutes=duration_minutes*i/total_alerts)).isoformat(),
+             "description":"synthetic exercise fixture", "_meta":{
+               "ground_truth":"true_positive" if i in positions else "benign",
+               "truth_source":"fixture_assignment", "seed":seed, "version":"1"}}
+            for i in range(total_alerts)]
+
+def evaluate_triage_performance(analyst_decisions, ground_truth, time_limit_minutes=30):
+    if type(time_limit_minutes) not in (int,float) or not 0<time_limit_minutes<float("inf"):
+        raise ValueError("invalid observation window")
+    truth={}
+    for alert in ground_truth:
+        key=alert["id"]; label=alert["_meta"]["ground_truth"]
+        if key in truth or label not in {"true_positive","benign"}:
+            raise ValueError("duplicate alert or unsupported truth label")
+        truth[key]=label
+    decisions={};late=0
+    for decision in analyst_decisions:
+        key=decision["alert_id"]
+        if key not in truth or key in decisions:
+            raise ValueError("unknown or duplicate decision")
+        if decision["action"] not in {"escalate","dismiss"}:
+            raise ValueError("resolved decision required")
+        elapsed=decision["elapsed_seconds"]
+        if type(elapsed) not in (int,float) or not 0<=elapsed<float("inf"):
+            raise ValueError("invalid decision time")
+        decisions[key]=decision
+        late+=elapsed>time_limit_minutes*60
+    tp=fp=tn=fn=0
+    for key,label in truth.items():
+        decision=decisions.get(key)
+        positive=bool(decision and decision["elapsed_seconds"]<=time_limit_minutes*60
+                      and decision["action"]=="escalate")
+        if label=="true_positive":
+            tp+=positive;fn+=not positive
+        else:
+            fp+=positive;tn+=not positive
+    def ratio(numerator,denominator):
+        return numerator/denominator if denominator else None
+    return {"alerts":len(truth),"reviewed":len(decisions),"late":late,
+            "unreviewed":len(truth)-len(decisions),"tp":tp,"fp":fp,"tn":tn,"fn":fn,
+            "coverage":ratio(len(decisions),len(truth)),
+            "detection_rate":ratio(tp,tp+fn),"false_positive_rate":ratio(fp,fp+tn),
+            "escalation_precision":ratio(tp,tp+fp)}
+
+# Evaluate after the observation window closes. Unreviewed or late alerts
+# count as not escalated; report coverage beside rates. Fixture labels are
+# assigned synthetic truth, not proof of impact/detection in real systems.

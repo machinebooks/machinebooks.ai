@@ -1,0 +1,19 @@
+# JSON: nonsecret configuration; translate keys through the configured runtime adapter
+{
+  "configuration_example": true,
+  "database_secret_ref": "range/database",
+  "redis_secret_ref": "range/redis",
+  "jwt_secret_ref": "range/jwt",
+  "jwt_exp_hours": 4,
+  "proxmox_management_credential_ref": "range/proxmox-management",
+  "console_gateway_credential_ref": "range/console-gateway",
+  "proxmox_ssl_verify": true,
+  "max_workzones": 16,
+  "workzone_network_base": "10.0.0.0/8",
+  "password_min_length_single_factor": 15,
+  "password_min_length_mfa": 8,
+  "password_max_length": 128,
+  "ai_enabled": false,
+  "ai_provider": null,
+  "ai_model": null
+}

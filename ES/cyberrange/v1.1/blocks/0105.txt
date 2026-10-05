@@ -1,0 +1,10 @@
+# No global probing or guessed type; resolve within authorized owned inventory.
+import asyncio
+
+async def resolve_owned_resource(actor, cluster_id, vm_type, vmid, access, inventory):
+    if vm_type not in {"qemu", "lxc"} or type(vmid) is not int or vmid <= 0:
+        raise ValueError("invalid resource")
+    scope = await asyncio.wait_for(access.owned_resource(actor, cluster_id, vm_type, vmid), 10)
+    observation = await asyncio.wait_for(inventory.resolve_exact(scope), 20)
+    return inventory.validate_resource_observation(observation, scope)
+# Missing, ambiguous and stale observations are explicit; callers reauthorize mutations.

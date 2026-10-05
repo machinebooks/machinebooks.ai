@@ -1,0 +1,75 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+# query/knowledge_search.py — Search interface for consultants
+import anthropic
+import json
+
+client = anthropic.Anthropic()
+
+QUERY_ANALYSIS_PROMPT = """Analyze the user's query and extract:
+1. intent: what they're looking for (precedent, pattern, decision, lesson, technology)
+2. filters: implicit filters (sector, domain, project type)
+3. refined_query: the query reformulated for semantic search
+
+Return JSON: {"intent": "...", "filters": {...}, "refined_query": "..."}"""
+
+SYNTHESIS_PROMPT = """You are the knowledge assistant of a consulting practice.
+The user has made a query and these are the most relevant fragments
+from the knowledge base.
+
+Respond helpfully:
+- Summarize the most relevant findings
+- Indicate which project/context each piece of data comes from
+- If there are contradictions between fragments, flag them
+- If evidence is scarce, say so explicitly
+- Never invent information not in the fragments"""
+
+def search_and_synthesize(user_query: str, project_context: dict = None) -> str:
+    """Searches for relevant knowledge and synthesizes a response."""
+    # Step 1: Analyze the query to extract implicit filters
+    analysis = client.messages.create(
+        model="claude-haiku-4-5",
+        max_tokens=256,
+        messages=[{"role": "user", "content": user_query}],
+        system=QUERY_ANALYSIS_PROMPT,
+        temperature=0.0
+    )
+    parsed = json.loads(analysis.content[0].text)
+
+    # Step 2: Generate embedding for the refined query
+    query_embedding = generate_embedding(parsed["refined_query"])
+
+    # Step 3: Search Qdrant with extracted filters
+    from storage.knowledge_store import search_knowledge
+    results = search_knowledge(
+        query=parsed["refined_query"],
+        query_embedding=query_embedding,
+        filters=parsed.get("filters"),
+        top_k=8
+    )
+
+    if not results:
+        return ("No relevant precedents found in the knowledge "
+                "base. Consider consulting directly with "
+                "the senior team.")
+
+    # Step 4: Synthesize response with context
+    context = "\n\n".join([
+        f"**Fragment {i+1}** (type: {r['type']}, "
+        f"sector: {r.get('sector', 'N/A')}, "
+        f"relevance: {r.get('relevancia', 'N/A')}/5):\n{r['content']}"
+        for i, r in enumerate(results)
+    ])
+
+    synthesis = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=2048,
+        messages=[{
+            "role": "user",
+            "content": f"Query: {user_query}\n\nFragments:\n{context}"
+        }],
+        system=SYNTHESIS_PROMPT,
+        temperature=0.2
+    )
+
+    return synthesis.content[0].text

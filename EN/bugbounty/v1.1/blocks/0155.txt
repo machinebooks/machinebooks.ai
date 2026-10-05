@@ -1,0 +1,2 @@
+send_rpc(pipe, "deleteSessionDirs", "");
+// {"success":true}

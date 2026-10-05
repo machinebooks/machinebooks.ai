@@ -1,0 +1,36 @@
+"""
+teams_cdp_enum.py -- CDP target enumeration in Teams
+Connects to the debug port and lists available contexts.
+"""
+import requests
+import json
+
+CDP_URL = "http://127.0.0.1:9222/json"
+
+def enumerate_targets():
+    """Enumerate all Teams WebView2 targets."""
+    try:
+        response = requests.get(CDP_URL, timeout=5)
+        targets = response.json()
+
+        print(f"[+] {len(targets)} targets found:\n")
+        for i, target in enumerate(targets):
+            print(f"  Target {i+1}:")
+            print(f"    Type:   {target.get('type', 'unknown')}")
+            print(f"    Title:  {target.get('title', 'no title')}")
+            print(f"    URL:    {target.get('url', 'N/A')}")
+            print(f"    WS:     {target.get('webSocketDebuggerUrl', 'N/A')}")
+            print()
+
+        return targets
+    except requests.ConnectionError:
+        print("[-] CDP not available on port 9222")
+        return []
+
+if __name__ == "__main__":
+    targets = enumerate_targets()
+    # Typical output: 4 targets
+    # 1. Main UI (page)
+    # 2. teams.live.com (page)
+    # 3. Service Worker (service_worker)
+    # 4. Web Worker (worker)

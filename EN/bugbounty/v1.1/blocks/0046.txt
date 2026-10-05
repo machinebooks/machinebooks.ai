@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+"""
+Automated DLL hijacking triage for multiple applications.
+Claude generates this script and runs it against each target.
+"""
+import pefile
+import json
+from pathlib import Path
+
+# Directory containing executables for each app
+TARGETS = {
+    "Discord": r"C:\Users\researcher\AppData\Local\Discord\app-1.0.9045\Discord.exe",
+    "Steam": r"C:\Program Files (x86)\Steam\Steam.exe",
+    "Wand": r"C:\Users\researcher\AppData\Local\Programs\wand\Wand.exe",
+}
+
+def triage_dll_hijacking(targets: dict) -> dict:
+    """Comparative DLL hijacking triage across applications."""
+    results = {}
+
+    for name, exe_path in targets.items():
+        if not Path(exe_path).exists():
+            results[name] = {"error": "Not found"}
+            continue
+
+        pe = pefile.PE(exe_path)
+        exe_dir = Path(exe_path).parent
+
+        # Is the directory writable without admin?
+        writable = not str(exe_dir).startswith("C:\\Program Files")
+
+        candidates = []
+        if hasattr(pe, 'DIRECTORY_ENTRY_IMPORT'):
+            for entry in pe.DIRECTORY_ENTRY_IMPORT:
+                dll_name = entry.dll.decode()
+                local = (exe_dir / dll_name).exists()
+                # If the DLL isn't in the local directory,
+                # it's a sideloading candidate
+                if not local:
+                    candidates.append({
+                        "dll": dll_name,
+                        "exports": len(entry.imports),
+                    })
+
+        results[name] = {
+            "writable_dir": writable,
+            "total_imports": len(pe.DIRECTORY_ENTRY_IMPORT)
+                            if hasattr(pe, 'DIRECTORY_ENTRY_IMPORT') else 0,
+            "hijack_candidates": len(candidates),
+            "top_candidates": sorted(
+                candidates, key=lambda x: x["exports"]
+            )[:5],  # The 5 DLLs with fewest exports (easiest)
+            "risk": "CRITICAL" if writable and candidates
+                    else "HIGH" if candidates
+                    else "LOW",
+        }
+
+    return results

@@ -1,0 +1,5 @@
+/lab/
+├── drivers/    ← .sys binaries to analyze
+├── scripts/    ← analysis scripts (Python)
+├── results/    ← JSON results
+└── symbols/    ← PDB symbols if available

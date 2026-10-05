@@ -1,0 +1,29 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import hashlib
+from pathlib import Path
+from dataclasses import dataclass, field
+from qdrant_client import QdrantClient, models
+import voyageai
+import anthropic
+
+# Configuration
+COLLECTION_NAME = "knowledge_base"
+CHUNK_SIZE = 500       # tokens per fragment
+CHUNK_OVERLAP = 100    # overlap tokens
+EMBEDDING_MODEL = "voyage-3"
+
+voyage = voyageai.Client(api_key="<YOUR_VOYAGE_KEY>")
+qdrant = QdrantClient(host="localhost", port=6333)
+
+
+@dataclass
+class DocumentMetadata:
+    """Structured metadata for each document."""
+    doc_type: str          # proposal, report, methodology, lesson
+    sector: str            # public, financial, industrial, technology
+    year: int              # document year
+    framework: str = ""    # ISO_27001, ENS, DORA, NIS2, AI_Act
+    outcome: str = ""      # won, lost, cancelled (proposals only)
+    project_id: str = ""   # generic project identifier
+    tags: list[str] = field(default_factory=list)

@@ -1,0 +1,31 @@
+# Bounded local failed-login observations; not a distributed attack detector.
+from collections import deque
+import math
+import time
+
+class SecurityEventDetector:
+    def __init__(self, clock=time.monotonic):
+        self.clock=clock
+        self.entries={}
+        self.last_time=None
+
+    def observe(self, actor_ref, success):
+        if not isinstance(actor_ref,str) or not 1<=len(actor_ref)<=128 or type(success) is not bool:
+            raise ValueError("opaque actor reference and boolean required")
+        now=self.clock()
+        if type(now) not in {int,float} or not math.isfinite(now) or (self.last_time is not None and now<self.last_time):
+            raise ValueError("finite monotonic clock required")
+        self.last_time=now
+        for key in list(self.entries):
+            events=self.entries[key]
+            while events and now-events[0]>=900: events.popleft()
+            if not events: del self.entries[key]
+        if success: return {"status":"observed", "threshold_reached":False}
+        if actor_ref not in self.entries:
+            if len(self.entries)>=128: return {"status":"coverage_gap", "threshold_reached":False}
+            self.entries[actor_ref]=deque(maxlen=5)
+        self.entries[actor_ref].append(now)
+        return {"status":"observed", "threshold_reached":len(self.entries[actor_ref])>=5}
+
+# At most 128 opaque references and five timestamps each, retained for 900 seconds.
+# A threshold is a heuristic signal; atomic shared admission is a separate contract.

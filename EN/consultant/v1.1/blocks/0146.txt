@@ -1,0 +1,102 @@
+# embedding_adapter is a required conceptual interface, not an Anthropic API.
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+from qdrant_client.models import Filter, FieldCondition, MatchValue
+
+def find_relevant_lessons(
+    project_context: dict,
+    qdrant: QdrantClient,
+    anthropic_client: anthropic.Anthropic,
+    top_k: int = 5,
+    min_score: float = 0.72
+) -> list[dict]:
+    """Finds lessons relevant to the current project context."""
+
+    # Build semantic query from project context
+    context_text = (
+        f"Project of {project_context['type']} for client in sector "
+        f"{project_context['sector']}. "
+        f"Current phase: {project_context['phase']}. "
+        f"Current challenge: {project_context.get('current_challenge', '')}. "
+        f"Team: {project_context.get('team_size', 'unspecified')} people."
+    )
+
+    # Generate query embedding
+    query_embedding = embedding_adapter.create(
+        model="voyage-3",
+        input=context_text
+    ).data[0].embedding
+
+    # Semantic search with structural filters
+    search_filter = Filter(must=[
+        FieldCondition(
+            key="validation_status",
+            match=MatchValue(value="validated")
+        )
+    ])
+
+    # Add project type filter if available
+    if project_context.get("type"):
+        search_filter.must.append(
+            FieldCondition(
+                key="project_type",
+                match=MatchValue(value=project_context["type"])
+            )
+        )
+
+    results = qdrant.search(
+        collection_name=COLLECTION_NAME,
+        query_vector=query_embedding,
+        query_filter=search_filter,
+        limit=top_k * 2,  # Request double to filter by score
+        score_threshold=min_score,
+        with_payload=True
+    )
+
+    # Filter and enrich results
+    relevant_lessons = []
+    for result in results[:top_k]:
+        lesson = result.payload
+        lesson["relevance_score"] = round(result.score, 3)
+        lesson["alert_text"] = generate_alert_text(
+            lesson, project_context, anthropic_client
+        )
+        relevant_lessons.append(lesson)
+
+        # Increment surfaced counter
+        qdrant.set_payload(
+            collection_name=COLLECTION_NAME,
+            payload={"times_surfaced": lesson["times_surfaced"] + 1},
+            points=[result.id]
+        )
+
+    return relevant_lessons
+
+
+def generate_alert_text(
+    lesson: dict,
+    project_context: dict,
+    anthropic_client: anthropic.Anthropic
+) -> str:
+    """Generates contextualized alert text for the team."""
+    message = anthropic_client.messages.create(
+        model="claude-haiku-4-5",
+        max_tokens=300,
+        messages=[{
+            "role": "user",
+            "content": f"""Write a brief alert (3-4 sentences) for a consulting
+team that is on a {project_context['type']} project
+in the {project_context['phase']} phase.
+
+The relevant lesson learned is:
+- Summary: {lesson['summary']}
+- Original context: {lesson['context']}
+- Recommendation: {lesson['recommendation']}
+
+The alert must:
+1. Explain WHY it's relevant to their current project
+2. Include the concrete recommendation
+3. Be direct, without preambles or courtesy formulas"""
+        }]
+    )
+    return message.content[0].text

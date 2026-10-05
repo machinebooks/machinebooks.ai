@@ -1,0 +1,5 @@
+# Finite authorized evidence with a common UTC cutoff and rubric version
+async def read_final_results(actor, instance_id, api):
+    await api.require_capture_window_closed(actor, instance_id)
+    return await api.final_ledger_report(actor, instance_id,
+                                       include_coverage=True, include_pending=True)

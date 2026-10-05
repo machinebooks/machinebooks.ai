@@ -1,0 +1,19 @@
+PROMPT_SEÑALES_DIRECCIONAMIENTO = """Analyze the following RFP
+looking for signals that suggest steering toward a
+specific provider.
+
+Signals to look for:
+1. Unusually specific experience requirements
+2. References to specific products/technologies without alternatives
+3. Short submission deadlines for the project's complexity
+4. Evaluation criteria that favor a very specific profile
+5. Budget misaligned with scope (too low or too high)
+6. Requirements that combined can only be met by one market player
+
+IMPORTANT: Do not accuse of steering — flag objective risk
+factors. Indicate the risk level (high/medium/low)
+and textual evidence with pages.
+
+Many legitimate RFPs have demanding requirements. The steering
+signal is the combination of multiple factors that
+individually would be normal but together prove restrictive."""

@@ -1,0 +1,11 @@
+# SDN attachment is a reviewed owned mutation, never an arbitrary bridge parameter.
+async def connect_owned_network(actor, resource_ref, network_ref, access, inventory, api, store):
+    scope = await access.authorized_network_attachment(actor, resource_ref, network_ref)
+    lease = await inventory.exact_owned_network_lease(scope)
+    intent = await store.record_attachment_intent(scope, lease)
+    task = await api.attach_reviewed_network(scope, lease)
+    await store.record_task(intent, task, status="pending")
+    receipt = await api.wait_and_verify_attachment(scope, task, timeout=60)
+    await store.record_attachment_receipt(intent, receipt)
+    return receipt
+# ACL, node, bridge, VLAN, route and guest configuration are verified by the adapter.

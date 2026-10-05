@@ -1,0 +1,18 @@
+# Illustrative bounty scenarios; not market statistics
+bounty_ranges = {
+    "CRITICAL (9.0-10.0)": {
+        "Scenario_A": "$10,000-$50,000",
+        "Scenario_B": "$5,000-$15,000",
+        "Scenario_C": "$8,000-$30,000",
+    },
+    "HIGH (7.0-8.9)": {
+        "Scenario_A": "$2,500-$10,000",
+        "Scenario_B": "$1,000-$5,000",
+        "Scenario_C": "$2,000-$8,000",
+    },
+    "MEDIUM (4.0-6.9)": {
+        "Scenario_A": "$500-$2,500",
+        "Scenario_B": "$250-$1,000",
+        "Scenario_C": "$500-$2,000",
+    },
+}

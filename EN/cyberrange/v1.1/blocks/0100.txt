@@ -1,0 +1,30 @@
+# Pydantic 2 teaching DTOs; membership/labels are rechecked against a pinned catalog.
+from typing import Literal
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+class MitreTacticOut(BaseModel):
+    model_config=ConfigDict(from_attributes=True,extra="forbid")
+    tactic_id: str=Field(pattern=r"^TA[0-9]{4}$")
+    name: str
+    description: str | None=None
+
+class MitreTechniqueOut(BaseModel):
+    model_config=ConfigDict(from_attributes=True,extra="forbid")
+    technique_id: str=Field(pattern=r"^T[0-9]{4}(?:\.[0-9]{3})?$")
+    name: str
+    platforms: list[str]=Field(default_factory=list)
+
+class ChallengeMitreIn(BaseModel):
+    model_config=ConfigDict(extra="forbid",strict=True)
+    challenge_id: int=Field(gt=0)
+    release_ref: str=Field(min_length=1,max_length=80)
+    technique_id: str=Field(pattern=r"^T[0-9]{4}$")
+    subtechnique_id: str | None=Field(default=None,pattern=r"^T[0-9]{4}\.[0-9]{3}$")
+    skill_level: Literal["beginner","intermediate","advanced"]="beginner"
+    rubric_ref: str=Field(min_length=1,max_length=80)
+    @model_validator(mode="after")
+    def consistent_parent(self):
+        if self.subtechnique_id and not self.subtechnique_id.startswith(self.technique_id+"."):
+            raise ValueError("sub-technique parent mismatch")
+        return self
+# Skill labels are local rubric choices, not certificates or organizational SOC maturity.

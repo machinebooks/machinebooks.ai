@@ -1,0 +1,19 @@
+class Badge(Base):
+    """Badge awarded upon meeting criteria."""
+    __tablename__ = "badges"
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), nullable=False)
+    description = Column(Text)
+    difficulty = Column(Enum('beginner', 'intermediate', 'advanced', 'expert'))
+    points_reward = Column(Integer, default=100)
+    requirements = Column(JSON)     # Configurable criteria for earning the badge
+    is_active = Column(Boolean, default=True)
+
+class BadgeChallenge(Base):
+    """Relationship between badges and challenges: which challenges must be completed."""
+    __tablename__ = "badge_challenges"
+    id = Column(Integer, primary_key=True)
+    badge_id = Column(Integer, ForeignKey("badges.id", ondelete="CASCADE"))
+    challenge_id = Column(Integer, ForeignKey("challenge.id", ondelete="CASCADE"))
+    is_required = Column(Boolean, default=True)  # Required or optional
+    order_index = Column(Integer, default=0)      # Suggested order

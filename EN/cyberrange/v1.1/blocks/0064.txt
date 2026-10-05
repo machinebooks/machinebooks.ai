@@ -1,0 +1,17 @@
+# Didactic controlled capture interface; executor owns process and bounded output.
+async def capture_workzone(actor, capture_plan_ref, access, executor, store):
+    plan = await access.approved_capture(actor, capture_plan_ref)
+    if type(plan.duration_seconds) is not int or not 1 <= plan.duration_seconds <= 300:
+        raise ValueError("invalid capture duration")
+    if type(plan.max_packets) is not int or not 1 <= plan.max_packets <= 10000:
+        raise ValueError("invalid packet bound")
+    intent = await store.record_capture_intent(plan)
+    try:
+        # Approved interface, filter digest, bytes quota and output containment are enforced here.
+        result = await executor.run_owned_capture(plan, deadline=plan.duration_seconds)
+        await store.record_capture_result(intent, result)
+        return result
+    except BaseException:
+        await executor.cancel_and_reconcile(intent, timeout=10)
+        await store.record_capture_pending(intent)
+        raise

@@ -1,0 +1,17 @@
+// src/server/plugins.ts (schematic)
+import { glob } from "glob";
+
+export async function loadUserPlugins() {
+  const dir = path.join(os.homedir(), ".sylvarsec", "skills");
+  const files = await glob("**/*.{js,mjs}", { cwd: dir });
+
+  const plugins = [];
+  for (const f of files) {
+    const mod = await import(path.join(dir, f));
+    if (typeof mod.register === "function") {
+      const tools = await mod.register({ logger, fs, http });
+      plugins.push(...tools);
+    }
+  }
+  return plugins;
+}

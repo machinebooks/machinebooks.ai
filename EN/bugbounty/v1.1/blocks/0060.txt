@@ -1,0 +1,16 @@
+// WinVerifyTrust hook concept (simplified)
+// The injected DLL replaces the original function
+
+// Save pointer to the original function
+typedef LONG (WINAPI *WinVerifyTrust_t)(HWND, GUID*, LPVOID);
+WinVerifyTrust_t Original_WinVerifyTrust = NULL;
+
+// Hook function that always returns "valid signature"
+LONG WINAPI Hooked_WinVerifyTrust(HWND hwnd, GUID *pgActionID,
+                                   LPVOID pWVTData) {
+    // Ignore actual verification, return success
+    return ERROR_SUCCESS;  // 0 = valid signature
+}
+
+// The hook is installed in DllMain of the injected DLL
+// using IAT patching or inline hooking

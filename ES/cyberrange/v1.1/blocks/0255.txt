@@ -1,0 +1,16 @@
+# Packet replay is a preapproved guest catalog action, never arbitrary host argv
+import asyncio
+
+async def replay_packets(actor, execution_id, approved_action_ref, adapter):
+    action = await adapter.resolve_authorized_action(actor, execution_id,
+                                                    approved_action_ref)
+    if action.kind != "bounded_packet_replay" or not action.packet_limit:
+        raise ValueError("approved bounded replay required")
+    try:
+        return await asyncio.wait_for(adapter.run_in_owned_guest(action),
+                                      timeout=action.timeout_seconds)
+    finally:
+        receipt = await asyncio.wait_for(adapter.cancel_join_and_inventory(action), 15)
+        if receipt.get("all_confirmed") is not True:
+            await adapter.retain_pending_inventory(execution_id, receipt)
+            raise RuntimeError("cleanup_unverified")

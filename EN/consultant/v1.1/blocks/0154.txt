@@ -1,0 +1,46 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import anthropic
+from dataclasses import dataclass, field
+from enum import Enum
+
+class MaturityLevel(Enum):
+    AD_HOC = 1       # No defined processes
+    EXPERIMENTAL = 2  # Isolated pilots
+    OPERATIONAL = 3   # AI in production, specific cases
+    OPTIMIZED = 4     # Integrated AI, metrics, governance
+    TRANSFORMATIVE = 5 # AI as systemic competitive advantage
+
+@dataclass
+class DimensionScore:
+    dimension: str          # "data", "talent", "governance", etc.
+    score: float            # 1.0 to 5.0
+    confidence: float       # 0.0 to 1.0 — low if inconsistencies
+    inconsistencies: list   # Contradictory responses detected
+    evidence_gaps: list     # Missing evidence for validation
+
+@dataclass
+class AssessmentResult:
+    client_id: str
+    dimensions: list[DimensionScore] = field(default_factory=list)
+    overall_level: MaturityLevel = MaturityLevel.AD_HOC
+    flags_for_consultant: list[str] = field(default_factory=list)
+
+    def calculate_overall(self):
+        """Overall level = weighted average, penalized by inconsistencies."""
+        if not self.dimensions:
+            return
+        weighted_sum = sum(
+            d.score * d.confidence for d in self.dimensions
+        )
+        total_confidence = sum(d.confidence for d in self.dimensions)
+        avg = weighted_sum / total_confidence if total_confidence > 0 else 1.0
+        self.overall_level = MaturityLevel(min(5, max(1, round(avg))))
+
+        # Flag low-confidence dimensions for human review
+        for d in self.dimensions:
+            if d.confidence < 0.6:
+                self.flags_for_consultant.append(
+                    f"Dimension '{d.dimension}': confidence {d.confidence:.0%}. "
+                    f"Inconsistencies: {', '.join(d.inconsistencies[:3])}"
+                )

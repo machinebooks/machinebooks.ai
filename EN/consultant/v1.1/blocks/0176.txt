@@ -1,0 +1,82 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+from enum import Enum
+from dataclasses import dataclass
+
+class AIZone(Enum):
+    GREEN = "green"    # AI recommended: data analysis, drafts, search
+    YELLOW = "yellow"  # AI as draft, mandatory deep human review
+    ORANGE = "orange"  # AI only for supporting data, 100% human narrative
+    RED = "red"        # AI prohibited: complete human presence
+
+@dataclass
+class TaskAssessment:
+    zone: AIZone
+    rationale: str
+    review_required: str  # "none", "peer", "senior", "partner"
+
+def assess_task(
+    involves_crisis: bool,
+    politically_sensitive: bool,
+    ethical_ambiguity: bool,
+    client_facing: bool,
+    precedent_exists: bool,
+    contractual_restriction: bool,
+    data_verification_possible: bool
+) -> TaskAssessment:
+    """Evaluates the AI usage zone for a consulting task.
+
+    Rule: a single red criterion sends the entire task to the red zone.
+    Yellow criteria accumulate: two yellows bump up to orange."""
+    if any(type(v) is not bool for v in (involves_crisis, politically_sensitive, ethical_ambiguity, client_facing, precedent_exists, contractual_restriction, data_verification_possible)):
+        raise ValueError("Unknown risk criteria must be resolved before classification")
+
+
+    # Red zone criteria (any one activates red zone)
+    if contractual_restriction:
+        return TaskAssessment(
+            AIZone.RED,
+            "Contractual restriction: AI prohibited",
+            "partner"
+        )
+    if involves_crisis and client_facing:
+        return TaskAssessment(
+            AIZone.RED,
+            "Crisis communication: human presence required",
+            "partner"
+        )
+    if ethical_ambiguity and not precedent_exists:
+        return TaskAssessment(
+            AIZone.RED,
+            "Ethical dilemma without precedent: exclusive human judgment",
+            "partner"
+        )
+
+    # Orange zone criteria
+    yellow_count = sum([
+        politically_sensitive,
+        client_facing and not data_verification_possible,
+        not precedent_exists
+    ])
+
+    if yellow_count >= 2:
+        return TaskAssessment(
+            AIZone.ORANGE,
+            "Multiple risk factors: AI only for data",
+            "senior"
+        )
+
+    # Yellow zone criteria
+    if yellow_count == 1 or politically_sensitive or client_facing:
+        return TaskAssessment(
+            AIZone.YELLOW,
+            "Moderate sensitivity: AI draft + deep review",
+            "senior"
+        )
+
+    # Green zone by default
+    return TaskAssessment(
+        AIZone.GREEN,
+        "Standard analytical task: AI recommended",
+        "peer"
+    )

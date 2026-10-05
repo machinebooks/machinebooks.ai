@@ -1,0 +1,11 @@
+1. Proceso cliente abre \\.\pipe\asuscert
+2. Cliente envia 4 bytes: DWORD con su propio PID
+3. AsusCertService recibe el PID
+4. AsusCertService obtiene la ruta del ejecutable del PID
+   (via NtQueryInformationProcess o GetModuleFileNameEx)
+5. Ejecuta WinVerifyTrust sobre la ruta del ejecutable
+6. Verifica que el certificado de firma pertenece a ASUS
+7. Si valida: responde "OK!" (3 bytes) + anade PID a lista
+8. Si falla: cierra la conexion sin respuesta
+9. Driver AsIO3.sys consulta la lista de PIDs autorizados
+   antes de procesar cada IOCTL

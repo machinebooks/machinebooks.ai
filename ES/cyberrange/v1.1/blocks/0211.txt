@@ -1,0 +1,35 @@
+# Didactic report prompt and parser; evidence IDs/coverage are server supplied.
+import json
+
+def get_evaluation_system_prompt():
+    schema={"summary":"","evidence_ids":[],"coverage":{},"strengths":[],
+            "gaps":[],"recommended_exercises":[],"human_review":"pending"}
+    return ("Propose learning observations under this JSON shape: "+json.dumps(schema)+
+            ". Use only supplied evidence IDs; distinguish missing observation "
+            "from failure. Do not infer mastery or cause from scores alone.")
+
+def build_evaluation_prompt(minimized_evidence):
+    text=json.dumps(minimized_evidence,ensure_ascii=False,allow_nan=False)
+    if len(text.encode("utf-8"))>64000:
+        raise ValueError("oversized_evidence")
+    return text
+
+def parse_evaluation_response(text):
+    if not isinstance(text,str) or len(text.encode("utf-8"))>65536:
+        raise ValueError("invalid_report")
+    proposal=json.loads(text)
+    required={"summary","evidence_ids","coverage","strengths","gaps",
+              "recommended_exercises","human_review"}
+    if not isinstance(proposal,dict) or set(proposal)!=required or proposal["human_review"]!="pending":
+        raise ValueError("invalid_report_schema")
+    if not isinstance(proposal["summary"],str) or len(proposal["summary"])>4000:
+        raise ValueError("invalid_summary")
+    for key in ("evidence_ids","strengths","gaps","recommended_exercises"):
+        if not isinstance(proposal[key],list) or len(proposal[key])>100:
+            raise ValueError("invalid_report_list")
+    if not isinstance(proposal["coverage"],dict):
+        raise ValueError("invalid_coverage")
+    return proposal
+
+# Application validates nested schemas, evidence membership, capture UTC dates,
+# permitted catalog recommendations and redaction before storage/delivery.

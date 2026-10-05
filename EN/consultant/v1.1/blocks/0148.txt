@@ -1,0 +1,44 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import anthropic
+from dataclasses import dataclass, field
+
+@dataclass
+class ProyectoInput:
+    """Input parameters for pricing calculation."""
+    tipo: str                    # "auditoria", "gap_analysis", "roadmap", "assessment"
+    sector: str                  # "financiero", "publico", "energia", "salud"
+    alcance: str                 # Free-text scope description
+    frameworks: list[str]        # ["ISO27001", "ENS", "NIS2", "DORA"]
+    horas_estimadas_sin_ia: int  # Traditional estimate
+    factor_reduccion_ia: float   # 0.4 = 60% reduction
+    valor_cliente_estimado: float  # Estimated result value for the client
+    es_licitacion_publica: bool
+    cliente_recurrente: bool
+    num_retainers_activos: int = 0  # For subscription viability calculation
+
+    def __post_init__(self):
+        from math import isfinite
+        values = (self.horas_estimadas_sin_ia, self.factor_reduccion_ia, self.valor_cliente_estimado)
+        if any(type(v) not in (int, float) or not isfinite(v) or v < 0 for v in values):
+            raise ValueError("Pricing values must be finite and nonnegative")
+        if self.horas_estimadas_sin_ia <= 0 or self.factor_reduccion_ia <= 0:
+            raise ValueError("Pricing requires positive hours and reduction factor")
+        if any(type(v) is not bool for v in (self.es_licitacion_publica, self.cliente_recurrente)) or type(self.num_retainers_activos) is not int or self.num_retainers_activos < 0:
+            raise ValueError("Invalid pricing flags or retainer count")
+
+
+@dataclass
+class PricingResult:
+    """Pricing calculation result."""
+    modelo_recomendado: str
+    precio_cost_plus: float
+    precio_value_based: float
+    precio_hybrid: float
+    precio_retainer_mensual: float
+    margen_cost_plus: float
+    margen_value_based: float
+    margen_hybrid: float
+    margen_retainer: float
+    justificacion: str
+    riesgos: list[str] = field(default_factory=list)

@@ -1,0 +1,22 @@
+# Pseudocode of an EDR evaluation logic
+def evaluate_process(process):
+    """Decides whether a process is trustworthy."""
+    # Step 1: Verify digital signature
+    if process.is_signed and process.signer in TRUSTED_PUBLISHERS:
+        trust_score = 80  # High base trust
+    else:
+        trust_score = 20  # Low trust — intensive monitoring
+
+    # Step 2: Verify path reputation
+    if process.path.startswith(KNOWN_INSTALL_DIRS):
+        trust_score += 10
+
+    # Step 3: Verify behavior
+    if trust_score >= 70:
+        # Light monitoring: only high-severity alerts
+        monitoring_level = "LOW"
+    else:
+        # Intensive monitoring: every syscall logged
+        monitoring_level = "HIGH"
+
+    return trust_score, monitoring_level

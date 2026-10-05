@@ -1,0 +1,34 @@
+// copilot_2026_002_ext_tamper.js
+// Verifies that there is no code integrity in the extension
+
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
+
+// Locate the Copilot Chat extension
+const extensionDir = path.join(
+    process.env.USERPROFILE,
+    '.vscode', 'extensions'
+);
+
+// Find extension.js
+const copilotDirs = fs.readdirSync(extensionDir)
+    .filter(d => d.startsWith('github.copilot-chat'));
+
+for (const dir of copilotDirs) {
+    const extJs = path.join(extensionDir, dir, 'dist', 'extension.js');
+    if (fs.existsSync(extJs)) {
+        // Calculate original hash
+        const original = fs.readFileSync(extJs);
+        const hash = crypto.createHash('sha256')
+            .update(original).digest('hex');
+        console.log(`Original hash: ${hash}`);
+
+        // Modify (innocuous append)
+        fs.appendFileSync(extJs, '\n// tampered');
+        console.log('Modified extension.js — no error from VS Code');
+
+        // VS Code still loads the modified extension
+        // No signature or hash verification
+    }
+}

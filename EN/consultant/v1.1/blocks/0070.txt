@@ -1,0 +1,91 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+from dataclasses import dataclass
+import statistics
+
+@dataclass
+class EstimacionCalibrada:
+    horas_base: float            # consultant's estimate
+    horas_calibrada: float       # adjusted by historical bias
+    intervalo_p10: float         # percentile 10 (optimistic)
+    intervalo_p50: float         # percentile 50 (most likely)
+    intervalo_p90: float         # percentile 90 (pessimistic)
+    confianza: str               # "alta", "media", "baja"
+    n_proyectos_referencia: int
+    ratio_desviacion_medio: float
+    factores_riesgo: list[str]
+
+def calibrar_estimacion(
+    horas_base: float,
+    proyectos_referencia: list[ProyectoHistorico],
+    nivel_confianza: float = 0.80
+) -> EstimacionCalibrada:
+    """
+    Calibrates the base estimate using historical deviations.
+
+    Logic: if similar projects deviated 35% on average,
+    the base estimate is adjusted 35% upward. Percentiles
+    are calculated from the actual distribution of deviations.
+    """
+    from math import isfinite
+    if type(horas_base) not in (int, float) or not isfinite(horas_base) or horas_base <= 0:
+        raise ValueError("Baseline hours must be finite and positive")
+    if type(nivel_confianza) not in (int, float) or not isfinite(nivel_confianza) or not 0 < nivel_confianza < 1:
+        raise ValueError("Invalid confidence parameter; this example retains fixed empirical P10/P90")
+    if not isinstance(proyectos_referencia, list) or not proyectos_referencia or len({p.id for p in proyectos_referencia}) != len(proyectos_referencia):
+        raise ValueError("Reference projects must be nonempty and unique")
+    for project in proyectos_referencia:
+        if any(type(v) not in (int, float) or not isfinite(v) or v <= 0 for v in (project.horas_estimadas, project.horas_reales)):
+            raise ValueError("Observed and estimated reference hours must be positive finite numbers")
+
+    if len(proyectos_referencia) < 3:
+        confianza = "baja"
+    elif len(proyectos_referencia) < 7:
+        confianza = "media"
+    else:
+        confianza = "alta"
+
+    # Extract actual deviation ratios
+    ratios = [p.horas_reales / p.horas_estimadas for p in proyectos_referencia]
+
+    ratio_medio = statistics.mean(ratios)
+    ratio_mediana = statistics.median(ratios)
+
+    # Adjust the base estimate by the historical bias
+    # We use the median (more resistant to outliers than the mean)
+    horas_calibrada = horas_base * ratio_mediana
+
+    # Calculate percentiles for the confidence interval
+    ratios_ordenados = sorted(ratios)
+    n = len(ratios_ordenados)
+
+    def percentil(datos, p):
+        k = (len(datos) - 1) * p / 100
+        f = int(k)
+        c = f + 1 if f + 1 < len(datos) else f
+        d = k - f
+        return datos[f] + d * (datos[c] - datos[f])
+
+    p10 = horas_base * percentil(ratios_ordenados, 10)
+    p50 = horas_base * percentil(ratios_ordenados, 50)
+    p90 = horas_base * percentil(ratios_ordenados, 90)
+
+    # Identify risk factors from projects that deviated more
+    factores = []
+    for p in proyectos_referencia:
+        if p.horas_reales / p.horas_estimadas > 1.3 and p.factores_desviacion:
+            factores.append(
+                f"{p.nombre}: {p.factores_desviacion}"
+            )
+
+    return EstimacionCalibrada(
+        horas_base=horas_base,
+        horas_calibrada=round(horas_calibrada, 0),
+        intervalo_p10=round(p10, 0),
+        intervalo_p50=round(p50, 0),
+        intervalo_p90=round(p90, 0),
+        confianza=confianza,
+        n_proyectos_referencia=n,
+        ratio_desviacion_medio=round(ratio_medio, 2),
+        factores_riesgo=factores
+    )

@@ -1,0 +1,11 @@
+# Didactic offline DNS profile; emission needs an authorized contained executor.
+import random
+
+def synthetic_dns_queries(count=100, seed=1):
+    if type(count) is not int or not 1 <= count <= 10000:
+        raise ValueError("invalid query count")
+    rng = random.Random(seed)
+    return [{"qname": "suspicious.example.invalid" if rng.random() < .05
+             else "intranet.example.invalid", "synthetic": True}
+            for _ in range(count)]
+# Labels and the illustrative 5% mix are not a production detector benchmark.

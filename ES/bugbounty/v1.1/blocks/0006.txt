@@ -1,0 +1,22 @@
+# ~/.sylvarsec/config.yaml
+llm:
+  provider: lmstudio
+  base_url: http://localhost:1234/v1
+  model: qwen2.5-coder-32b-instruct-q4_k_m
+  temperature: 0.1
+  max_tokens: 8192
+
+cloud_llm:
+  provider: anthropic
+  model: claude-sonnet-4-6
+  enabled: true
+  require_confirmation: true   # Confirm each authorized external request
+  block_on_workspace_tags: ["pre-disclosure", "private-program"]
+
+memory:
+  path: ~/.sylvarsec/memories
+  index: qdrant
+  retention_days: 730
+
+workspace:
+  default_root: ~/bugbounty

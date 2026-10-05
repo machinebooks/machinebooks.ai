@@ -1,0 +1,31 @@
+[*] Targets CDP encontrados: 5
+
+--- Target 1 ---
+  Title:       TASK-HANDLER
+  URL:         https://rna-resource.acrobat.com/task_handler
+  Type:        page
+  WebSocket:   ws://localhost:9222/devtools/page/AAA...
+
+--- Target 2 ---
+  Title:       MAIN-RNA
+  URL:         https://rna-resource.acrobat.com/index.html
+  Type:        page
+  WebSocket:   ws://localhost:9222/devtools/page/BBB...
+
+--- Target 3 ---
+  Title:       DESKTOP-VERBS
+  URL:         https://rna-v2-resource.acrobat.com/ (desktop-verbs dropin)
+  Type:        page
+  WebSocket:   ws://localhost:9222/devtools/page/CCC...
+
+--- Target 4 ---
+  Title:       GENTECH-AI
+  URL:         https://rna-v2-resource.acrobat.com/ (gentech dropin)
+  Type:        page
+  WebSocket:   ws://localhost:9222/devtools/page/DDD...
+
+--- Target 5 ---
+  Title:       MAIN-v2
+  URL:         https://rna-v2-resource.acrobat.com/
+  Type:        page
+  WebSocket:   ws://localhost:9222/devtools/page/EEE...

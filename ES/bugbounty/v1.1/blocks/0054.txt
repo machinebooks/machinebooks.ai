@@ -1,0 +1,19 @@
+# Análisis del flujo de actualización de Squirrel en Discord
+# (Claude Code — código de Squirrel es público)
+
+# Squirrel ejecuta Update.exe con argumentos especiales:
+# --squirrel-install       â†’ primera instalación
+# --squirrel-updated       â†’ después de cada actualización
+# --squirrel-obsolete      â†’ al eliminar versión antigua
+# --squirrel-uninstall     â†’ al desinstalar
+
+# El ejecutable principal de la app recibe estos argumentos
+# y debe procesarlos. Si el main.js de Electron procesa
+# --squirrel-updated, puede ejecutar código en cada update.
+
+# Discord main.js (extracto del análisis del ASAR):
+# if (process.argv.includes('--squirrel-updated')) {
+#     // Código que se ejecuta después de cada actualización
+#     // Si este código está en un ASAR tampered, se ejecuta
+#     // con cada actualización, creando persistencia
+# }

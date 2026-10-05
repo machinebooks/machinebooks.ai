@@ -1,0 +1,16 @@
+Este driver es un candidato de alta prioridad para investigación.
+
+1. PRIMITIVAS: MmMapIoSpace + ausencia de privilege checks sugiere que
+   los IOCTLs permiten mapear memoria física arbitraria sin verificar
+   que el caller tenga privilegios adecuados.
+
+2. IMPACTO: Si un IOCTL acepta dirección física y tamaño:
+   a) Leer toda la memoria física (incluido el kernel)
+   b) Escribir en memoria del kernel (token stealing para LPE)
+   c) Leer/escribir MSRs, puertos I/O, PCI config space
+
+3. PLAN DE INVESTIGACIÓN:
+   - Fase 1: Brute-force de IOCTLs para encontrar cuáles responden
+   - Fase 2: Variar tamaño de buffer por IOCTL activo
+   - Fase 3: Buscar IOCTLs METHOD_NEITHER (punteros sin validar)
+   - Fase 4: Mapeo de dirección física conocida (0x1000)

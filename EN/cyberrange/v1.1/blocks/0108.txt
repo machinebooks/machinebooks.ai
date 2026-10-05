@@ -1,0 +1,13 @@
+# Didactic snapshot adapter; version/storage-specific safety is external.
+async def snapshot_operation(actor, resource_ref, snapshot_ref, operation, access, api, store):
+    if operation not in {"create", "restore"}:
+        raise ValueError("unsupported snapshot operation")
+    scope = await access.authorized_snapshot(actor, resource_ref, snapshot_ref, operation)
+    await api.check_snapshot_support_and_consistency(scope)
+    intent = await store.record_intent(scope, operation)
+    upid = await api.request_snapshot(scope, operation)
+    await store.record_task(intent, upid, "pending")
+    result = await api.wait_task(scope, upid, timeout=120)
+    verified = result.get("exitstatus") == "OK" and await api.verify_snapshot_result(scope, operation)
+    await store.record_state(intent, "confirmed" if verified else "pending_or_failed")
+    return {"confirmed": bool(verified)}

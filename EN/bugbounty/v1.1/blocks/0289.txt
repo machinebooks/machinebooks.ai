@@ -1,0 +1,7 @@
+1. Parse ASAR header (Chromium Pickle format)
+2. Locate index.html inside the ASAR
+3. Inject payload in the exact space of index.html
+4. Pad with spaces/comments to maintain size
+5. Compute new SHA256
+6. Locate and replace old hash in Wand.exe
+7. Launch Wand

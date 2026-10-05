@@ -1,0 +1,17 @@
+# CLAUDE.md para proyecto de kernel driver analysis
+
+## Contexto
+Investigación de seguridad en drivers de kernel de Windows.
+Los binarios .sys se analizan en Docker (radare2, Capstone, pefile).
+Los resultados se almacenan como JSON en /lab/results/.
+
+## Reglas
+- NUNCA enviar binarios de drivers directamente a la API.
+- Trabajar con los JSON de resultados, no con los binarios.
+- Los hallazgos pre-disclosure NO se mencionan fuera del proyecto.
+- Formato de hallazgo: VENDOR-YYYY-NNN (ej: ASUS-2026-001).
+
+## Comandos del proyecto
+- `/analyze <driver.sys>` — Ejecuta pipeline completo en Docker
+- `/risk <driver.sys>` — Solo clasificación de riesgo (YARA + PE)
+- `/ioctl <driver.sys>` — Mapeo de IOCTLs con Capstone

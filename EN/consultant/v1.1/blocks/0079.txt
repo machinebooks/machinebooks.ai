@@ -1,0 +1,105 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+# Pseudocode only; not an executable SDK example
+# Pseudocode: Agent and tool are conceptual interfaces, not SDK imports
+from dataclasses import dataclass
+
+@dataclass
+class CompetitiveReport:
+    """Periodic competitive intelligence report."""
+    date: str
+    executive_summary: str
+    competitor_movements: list[dict]
+    market_trends: list[dict]
+    detected_opportunities: list[dict]
+    pricing_alerts: list[dict]
+    recommendations: list[dict]
+
+@tool
+def cross_reference_competitive_sources(
+    awards: list[dict],
+    employment_signals: dict,
+    technology_radar: dict,
+    proposal_history: list[dict]
+) -> CompetitiveReport:
+    """
+    Cross-references information from all sources to generate
+    an integrated competitive report.
+
+    Correlations it seeks:
+    - Competitor hires X profiles + appears in Y awards
+    - Technology trend Z + client tendering in that domain
+    - Award price vs our historical price
+    """
+    # Cross-referencing logic is the system's core:
+    # 1. Map competitor -> services -> prices -> trend
+    # 2. Map client -> history -> probable needs
+    # 3. Map trend -> opportunity -> positioned competitors
+
+    correlations = _execute_correlations(
+        awards, employment_signals,
+        technology_radar, proposal_history
+    )
+
+    return CompetitiveReport(
+        date=datetime.now().isoformat(),
+        executive_summary=correlations["summary"],
+        competitor_movements=correlations["competitors"],
+        market_trends=correlations["trends"],
+        detected_opportunities=correlations["opportunities"],
+        pricing_alerts=correlations["pricing"],
+        recommendations=correlations["recommendations"]
+    )
+
+@tool
+def evaluate_competitive_position(
+    opportunity: dict,
+    probable_competitors: list[str],
+    historical_data: dict
+) -> dict:
+    """
+    For a concrete opportunity, evaluates our competitive
+    position against probable competitors.
+    """
+    return {
+        "opportunity": opportunity["title"],
+        "competitors": [
+            {
+                "name": comp,
+                "strengths": historical_data[comp]["strengths"],
+                "estimated_price": historical_data[comp]["average_price"],
+                "client_history": historical_data[comp].get(
+                    "client_awards", 0
+                )
+            }
+            for comp in probable_competitors
+        ],
+        "our_position": {
+            "differentiator": _calculate_differentiator(opportunity),
+            "recommended_price": _recommend_price(
+                opportunity, historical_data
+            ),
+            "risk": _evaluate_competitive_risk(
+                probable_competitors, historical_data
+            )
+        }
+    }
+
+market_agent = Agent(
+    model="claude-opus-4-6",
+    tools=[cross_reference_competitive_sources, evaluate_competitive_position],
+    system="""You are a senior market analyst for a technology
+    consultancy. Your job is to cross data from multiple public
+    sources and generate actionable competitive intelligence.
+
+    Principles:
+    - Distinguish facts from inferences. Mark each conclusion with
+      its confidence level: high (direct data), medium (inference
+      with 2+ signals), low (inference with 1 signal).
+    - Pricing recommendations are based on real public awards,
+      not assumptions.
+    - Never recommend predatory pricing. The goal is sustainable
+      positioning, not winning at any cost.
+    - Always indicate what information is missing to improve analysis.
+    """
+)

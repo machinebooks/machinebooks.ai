@@ -1,0 +1,18 @@
+# Record before fan-out; configured adapters validate scope, redact and assign sequence
+import asyncio
+
+async def stream_to_websocket(actor, session_id, line, stream_type, record, manager):
+    if stream_type not in {"playbook", "powershell", "ansible", "error"}:
+        raise ValueError("unsupported stream type")
+    event = await record.append_authorized_redacted_event(actor, session_id,
+                                                         line, stream_type)
+    for attempt in range(3):
+        receipt = await manager.send_to_session(session_id, event)
+        if receipt["sent"] > 0 and receipt["failed"] == 0:
+            return {**receipt, "event_id": event["event_id"], "persisted": True}
+        if attempt < 2:
+            await asyncio.sleep(0.25 * 2 ** attempt)
+    return {**receipt, "event_id": event["event_id"], "persisted": True,
+            "recovery_required": True}
+
+# Repeated sends can duplicate an event; clients deduplicate its server event_id.

@@ -1,0 +1,26 @@
+# Configured catalog runner: no host shell and no actor inferred from a host ID
+import asyncio
+
+async def run_attack(actor, execution_id, request, adapters):
+    execution = await adapters.claim_approved_execution(actor, execution_id, request)
+    if execution.actor_id != actor.id:
+        raise PermissionError("actor mismatch")
+    await adapters.record_state(execution_id, "running")
+    try:
+        result = await asyncio.wait_for(
+            adapters.run_owned_catalog_action(execution), timeout=execution.timeout_seconds)
+        await adapters.record_redacted_result(execution_id, result)
+        verified = await adapters.verify_objective(execution, result)
+        if verified is not True:
+            await adapters.record_state(execution_id, "objective_unverified")
+            return {"objective_verified": False, "score_awarded": False}
+        await adapters.award_once(actor.id, execution.instance_id,
+                                  execution.objective_id, execution_id)
+        await adapters.record_state(execution_id, "objective_verified")
+        return {"objective_verified": True, "score_awarded": True}
+    finally:
+        receipt = await asyncio.wait_for(
+            adapters.cancel_join_and_inventory(execution), timeout=15)
+        if receipt.get("all_confirmed") is not True:
+            await adapters.retain_pending_inventory(execution_id, receipt)
+            raise RuntimeError("cleanup_unverified")

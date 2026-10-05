@@ -1,0 +1,16 @@
+# Didactic network lifecycle; never mark ready after a partial apply.
+async def setup_workzone_network(actor, proposal_ref, access, leases, firewall, store):
+    scope = await access.reviewed_network(actor, proposal_ref)
+    lease = await leases.reserve_atomic(scope)
+    intent = await store.record_network_intent(scope, lease, "configuring")
+    try:
+        receipt = await firewall.apply_owned_plan(scope, lease, timeout=30)
+        await store.record_owned_network_receipt(intent, receipt)
+        if not await firewall.verify_isolation(scope, lease, timeout=30):
+            raise RuntimeError("isolation unconfirmed")
+        await store.record_network_state(intent, "ready")
+        return {"status": "ready", "network_ref": intent.id}
+    except BaseException:
+        await store.record_network_state(intent, "configuration_pending")
+        raise
+# Leases remain reserved on failure until resource absence is confirmed.

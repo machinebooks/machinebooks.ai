@@ -1,0 +1,38 @@
+# Bounded serializer for the authorized, redacted AuditLog DTO.
+import csv
+import io
+import json
+from datetime import datetime
+
+def audit_export(rows, format, max_records=10000, max_bytes=20*1024*1024):
+    if format not in {"csv", "json"}:
+        raise ValueError("unsupported export format")
+    if type(max_records) is not int or not 1 <= max_records <= 50000 or len(rows) > max_records:
+        raise ValueError("invalid record limit")
+    fields = ("created_at", "actor_ref", "request_ref", "event_type", "category", "severity", "status", "reason_code")
+    normalized = []
+    for row in rows:
+        if not isinstance(row, dict) or any(field not in row for field in fields):
+            raise ValueError("incomplete audit DTO")
+        value = {field: row[field] for field in fields}
+        if any(not isinstance(cell, str) or len(cell) > 2048 for cell in value.values()):
+            raise ValueError("invalid audit field")
+        timestamp = datetime.fromisoformat(value["created_at"].replace("Z", "+00:00"))
+        if timestamp.tzinfo is None or timestamp.utcoffset().total_seconds() != 0:
+            raise ValueError("UTC timestamp required")
+        normalized.append(value)
+    if format == "json":
+        data = json.dumps(normalized, ensure_ascii=False).encode("utf-8")
+    else:
+        buffer = io.StringIO(newline="")
+        writer = csv.DictWriter(buffer, fieldnames=fields)
+        writer.writeheader()
+        for row in normalized:
+            safe = {key: ("'" + cell if cell.lstrip(" \t\r\n")[:1] in ("=", "+", "-", "@")
+                or cell[:1] in ("\t", "\r") else cell) for key, cell in row.items()}
+            writer.writerow(safe)
+        data = buffer.getvalue().encode("utf-8")
+    if len(data) > max_bytes:
+        raise ValueError("export byte limit")
+    return data
+# Query, permissions, redaction, snapshot cutoff and export receipt precede serialization.

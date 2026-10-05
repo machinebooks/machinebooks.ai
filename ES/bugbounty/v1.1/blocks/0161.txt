@@ -1,0 +1,4 @@
+// Claude Code extension sets this globally
+vscode.workspace.getConfiguration('http').update(
+    'proxyStrictSSL', false, vscode.ConfigurationTarget.Global
+);

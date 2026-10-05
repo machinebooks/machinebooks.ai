@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+"""
+Enumerador de targets CDP para WebView2.
+Consulta el endpoint de depuración y lista los contextos disponibles.
+USO EXCLUSIVO EN ENTORNO DE LABORATORIO AUTORIZADO.
+"""
+
+import json
+import urllib.request
+import sys
+
+CDP_HOST = "127.0.0.1"
+CDP_PORT = 9222
+
+def enumerate_targets(host: str = CDP_HOST, port: int = CDP_PORT) -> list:
+    """Consulta el endpoint /json y devuelve la lista de targets."""
+    url = f"http://{host}:{port}/json"
+    try:
+        with urllib.request.urlopen(url, timeout=5) as resp:
+            data = json.loads(resp.read().decode())
+            return data
+    except ConnectionRefusedError:
+        print(f"[!] No hay servidor CDP en {host}:{port}")
+        return []
+    except Exception as e:
+        print(f"[!] Error al conectar: {e}")
+        return []
+
+def classify_target(target: dict) -> str:
+    """Clasifica un target por su URL para identificar la aplicación."""
+    url = target.get("url", "")
+    if "teams.microsoft.com" in url or "teams.live.com" in url:
+        return "Microsoft Teams"
+    elif "outlook.live.com" in url or "outlook.office" in url:
+        return "Microsoft Outlook"
+    elif "acrobat.adobe.com" in url or "documentcloud" in url:
+        return "Adobe Acrobat"
+    elif "web.telegram.org" in url or "tg-webview" in url:
+        return "Telegram"
+    elif "teamviewer" in url.lower():
+        return "TeamViewer"
+    else:
+        return f"Desconocido ({url[:60]})"
+
+if __name__ == "__main__":
+    targets = enumerate_targets()
+    if not targets:
+        sys.exit(1)
+    
+    print(f"[+] {len(targets)} targets CDP encontrados:\n")
+    for i, t in enumerate(targets):
+        app = classify_target(t)
+        print(f"  [{i}] {app}")
+        print(f"      Título: {t.get('title', 'N/A')}")
+        print(f"      URL:    {t.get('url', 'N/A')[:80]}")
+        print(f"      Tipo:   {t.get('type', 'N/A')}")
+        print(f"      WS:     {t.get('webSocketDebuggerUrl', 'N/A')[:80]}")
+        print()

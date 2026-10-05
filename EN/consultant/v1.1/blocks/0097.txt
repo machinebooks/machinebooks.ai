@@ -1,0 +1,58 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+from pathlib import Path
+
+
+class EvidenceProcessor:
+    """Processes client documentation and extracts facts."""
+
+    def __init__(self):
+        self.client = anthropic.Anthropic()
+        self.evidence_index: dict[str, list[str]] = {}
+
+    def process_document(
+        self, doc_path: str, doc_type: str = "policy"
+    ) -> dict:
+        """Extracts relevant facts from a document."""
+        content = self._read_document(doc_path)
+
+        response = self.client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=4096,
+            system="""You are a compliance analyst. Extract
+objective facts from the document: what exists, who approved it,
+when it was reviewed, what it covers, what it excludes. Do NOT
+evaluate or opine. Only extract verifiable facts.""",
+            messages=[{"role": "user", "content": f"""
+Document type: {doc_type}
+Content:
+{content[:12000]}
+
+Extract facts in structured format:
+- approval_date: if mentioned
+- scope: what the document covers
+- responsible: who is responsible
+- review: last review date
+- relevant_facts: list of concrete facts
+- related_controls: which ISO/ENS controls it might cover
+- detected_gaps: which areas the document omits"""}],
+        )
+        facts = self._parse_facts(response)
+        # Index facts by potentially related controls
+        for control_id in facts.get("related_controls", []):
+            self.evidence_index.setdefault(
+                control_id, []
+            ).append(facts)
+        return facts
+
+    def get_evidence_for_control(
+        self, control_id: str
+    ) -> str:
+        """Gets indexed evidence for a control."""
+        evidence_items = self.evidence_index.get(
+            control_id, []
+        )
+        if not evidence_items:
+            return "No documentary evidence was found."
+        # Consolidate and summarize relevant evidence
+        return self._summarize_evidence(evidence_items)

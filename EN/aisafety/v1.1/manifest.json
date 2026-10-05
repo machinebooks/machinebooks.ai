@@ -1,17 +1,24 @@
 {
   "editorial_version": "1.1",
-  "source_word_sha256": "d29c5cfc4157273265aa9fb481f3b596f4ee5769d55e0f140634687c29149418",
+  "source_word_sha256": "e231c37638db8233f3ae165ccff336b03077529118e1992da005c1520baa8df7",
   "source_file": "AI-Safety-Engineer-and-the-Machine.docx",
   "language": "en",
   "scope": "educational SourceCode blocks; private desktop and core excluded",
   "extraction": "literal w:t, line breaks w:br/w:cr and tabs w:tab in document order; UTF-8 without added headers",
   "block_count": 115,
   "execution_status": "not established by extraction",
+  "manuscript_final_four_sha256": {
+    "AI-Safety-Engineer-and-the-Machine.docx": "e231c37638db8233f3ae165ccff336b03077529118e1992da005c1520baa8df7",
+    "AI-Safety-Engineer-and-the-Machine.epub": "06a4c1a0b2ae683e02eaca044a0f02f08b79c58548fa1226ee0aa7018dfbab7f",
+    "AI-Safety-Engineer-y-la-Maquina.docx": "8a511ab759749e4b5c27c235eae975c61d8f78a4f2d536a14ce45616a9da4485",
+    "AI-Safety-Engineer-y-la-Maquina.epub": "7471811c41f9860380f3c1dc459f3e4ed503082946ba027f12e4c8f37981aa19"
+  },
+  "canonical_promotion_receipt_sha256": "2aa76abc7983e203acc6f0a99acab70f239f4d668899077d793a72f14e19e42d",
   "blocks": [
     {
       "id": 1,
       "file": "blocks/0001.txt",
-      "word_paragraph_index_zero_based": 671,
+      "word_paragraph_index_zero_based": 482,
       "heading_context": [
         "Chapter 2 — Model Cards: benchmarks, evaluations, and what they do not measure",
         "3. Implementation",
@@ -23,7 +30,7 @@
     {
       "id": 2,
       "file": "blocks/0002.txt",
-      "word_paragraph_index_zero_based": 727,
+      "word_paragraph_index_zero_based": 488,
       "heading_context": [
         "Chapter 2 — Model Cards: benchmarks, evaluations, and what they do not measure",
         "3. Implementation",
@@ -35,7 +42,7 @@
     {
       "id": 3,
       "file": "blocks/0003.txt",
-      "word_paragraph_index_zero_based": 861,
+      "word_paragraph_index_zero_based": 536,
       "heading_context": [
         "Chapter 2 — Model Cards: benchmarks, evaluations, and what they do not measure",
         "3. Implementation",
@@ -47,7 +54,7 @@
     {
       "id": 4,
       "file": "blocks/0004.txt",
-      "word_paragraph_index_zero_based": 935,
+      "word_paragraph_index_zero_based": 610,
       "heading_context": [
         "Chapter 3 — Inside the model: tokenization, context, and attack surfaces",
         "3. Implementation",
@@ -59,7 +66,7 @@
     {
       "id": 5,
       "file": "blocks/0005.txt",
-      "word_paragraph_index_zero_based": 942,
+      "word_paragraph_index_zero_based": 617,
       "heading_context": [
         "Chapter 3 — Inside the model: tokenization, context, and attack surfaces",
         "3. Implementation",
@@ -71,7 +78,7 @@
     {
       "id": 6,
       "file": "blocks/0006.txt",
-      "word_paragraph_index_zero_based": 949,
+      "word_paragraph_index_zero_based": 624,
       "heading_context": [
         "Chapter 3 — Inside the model: tokenization, context, and attack surfaces",
         "3. Implementation",
@@ -83,7 +90,7 @@
     {
       "id": 7,
       "file": "blocks/0007.txt",
-      "word_paragraph_index_zero_based": 992,
+      "word_paragraph_index_zero_based": 643,
       "heading_context": [
         "Chapter 3 — Inside the model: tokenization, context, and attack surfaces",
         "3. Implementation",
@@ -95,7 +102,7 @@
     {
       "id": 8,
       "file": "blocks/0008.txt",
-      "word_paragraph_index_zero_based": 1008,
+      "word_paragraph_index_zero_based": 659,
       "heading_context": [
         "Chapter 3 — Inside the model: tokenization, context, and attack surfaces",
         "3. Implementation",
@@ -107,7 +114,7 @@
     {
       "id": 9,
       "file": "blocks/0009.txt",
-      "word_paragraph_index_zero_based": 1163,
+      "word_paragraph_index_zero_based": 761,
       "heading_context": [
         "Chapter 4 — Constitutional AI: from paper to practice",
         "3. Implementation",
@@ -119,7 +126,7 @@
     {
       "id": 10,
       "file": "blocks/0010.txt",
-      "word_paragraph_index_zero_based": 1281,
+      "word_paragraph_index_zero_based": 849,
       "heading_context": [
         "Chapter 5 — The system prompt as a security contract",
         "2. The decision",
@@ -131,7 +138,7 @@
     {
       "id": 11,
       "file": "blocks/0011.txt",
-      "word_paragraph_index_zero_based": 1325,
+      "word_paragraph_index_zero_based": 893,
       "heading_context": [
         "Chapter 5 — The system prompt as a security contract",
         "3. Implementation",
@@ -143,7 +150,7 @@
     {
       "id": 12,
       "file": "blocks/0012.txt",
-      "word_paragraph_index_zero_based": 1328,
+      "word_paragraph_index_zero_based": 896,
       "heading_context": [
         "Chapter 5 — The system prompt as a security contract",
         "3. Implementation",
@@ -155,7 +162,7 @@
     {
       "id": 13,
       "file": "blocks/0013.txt",
-      "word_paragraph_index_zero_based": 1332,
+      "word_paragraph_index_zero_based": 900,
       "heading_context": [
         "Chapter 5 — The system prompt as a security contract",
         "3. Implementation",
@@ -167,7 +174,7 @@
     {
       "id": 14,
       "file": "blocks/0014.txt",
-      "word_paragraph_index_zero_based": 1383,
+      "word_paragraph_index_zero_based": 921,
       "heading_context": [
         "Chapter 5 — The system prompt as a security contract",
         "3. Implementation",
@@ -179,7 +186,7 @@
     {
       "id": 15,
       "file": "blocks/0015.txt",
-      "word_paragraph_index_zero_based": 1388,
+      "word_paragraph_index_zero_based": 926,
       "heading_context": [
         "Chapter 5 — The system prompt as a security contract",
         "3. Implementation",
@@ -191,7 +198,7 @@
     {
       "id": 16,
       "file": "blocks/0016.txt",
-      "word_paragraph_index_zero_based": 1406,
+      "word_paragraph_index_zero_based": 944,
       "heading_context": [
         "Chapter 5 — The system prompt as a security contract",
         "3. Implementation",
@@ -203,7 +210,7 @@
     {
       "id": 17,
       "file": "blocks/0017.txt",
-      "word_paragraph_index_zero_based": 1490,
+      "word_paragraph_index_zero_based": 1001,
       "heading_context": [
         "Chapter 6 — Guardrails: the last line of defense",
         "3. Implementation",
@@ -215,7 +222,7 @@
     {
       "id": 18,
       "file": "blocks/0018.txt",
-      "word_paragraph_index_zero_based": 1495,
+      "word_paragraph_index_zero_based": 1006,
       "heading_context": [
         "Chapter 6 — Guardrails: the last line of defense",
         "3. Implementation",
@@ -227,7 +234,7 @@
     {
       "id": 19,
       "file": "blocks/0019.txt",
-      "word_paragraph_index_zero_based": 1500,
+      "word_paragraph_index_zero_based": 1011,
       "heading_context": [
         "Chapter 6 — Guardrails: the last line of defense",
         "3. Implementation",
@@ -239,7 +246,7 @@
     {
       "id": 20,
       "file": "blocks/0020.txt",
-      "word_paragraph_index_zero_based": 1517,
+      "word_paragraph_index_zero_based": 1028,
       "heading_context": [
         "Chapter 6 — Guardrails: the last line of defense",
         "3. Implementation",
@@ -251,7 +258,7 @@
     {
       "id": 21,
       "file": "blocks/0021.txt",
-      "word_paragraph_index_zero_based": 1602,
+      "word_paragraph_index_zero_based": 1065,
       "heading_context": [
         "Chapter 6 — Guardrails: the last line of defense",
         "3. Implementation",
@@ -263,7 +270,7 @@
     {
       "id": 22,
       "file": "blocks/0022.txt",
-      "word_paragraph_index_zero_based": 1780,
+      "word_paragraph_index_zero_based": 1191,
       "heading_context": [
         "Chapter 7 — Risk and scaling policies: comparison and verifiable controls",
         "3. Implementation",
@@ -275,7 +282,7 @@
     {
       "id": 23,
       "file": "blocks/0023.txt",
-      "word_paragraph_index_zero_based": 1786,
+      "word_paragraph_index_zero_based": 1197,
       "heading_context": [
         "Chapter 7 — Risk and scaling policies: comparison and verifiable controls",
         "3. Implementation",
@@ -287,7 +294,7 @@
     {
       "id": 24,
       "file": "blocks/0024.txt",
-      "word_paragraph_index_zero_based": 1790,
+      "word_paragraph_index_zero_based": 1201,
       "heading_context": [
         "Chapter 7 — Risk and scaling policies: comparison and verifiable controls",
         "3. Implementation",
@@ -299,7 +306,7 @@
     {
       "id": 25,
       "file": "blocks/0025.txt",
-      "word_paragraph_index_zero_based": 1923,
+      "word_paragraph_index_zero_based": 1275,
       "heading_context": [
         "Chapter 8 — Transparency and accountability: beyond compliance",
         "3. Implementation",
@@ -311,7 +318,7 @@
     {
       "id": 26,
       "file": "blocks/0026.txt",
-      "word_paragraph_index_zero_based": 1929,
+      "word_paragraph_index_zero_based": 1281,
       "heading_context": [
         "Chapter 8 — Transparency and accountability: beyond compliance",
         "3. Implementation",
@@ -323,7 +330,7 @@
     {
       "id": 27,
       "file": "blocks/0027.txt",
-      "word_paragraph_index_zero_based": 1980,
+      "word_paragraph_index_zero_based": 1292,
       "heading_context": [
         "Chapter 8 — Transparency and accountability: beyond compliance",
         "3. Implementation",
@@ -335,7 +342,7 @@
     {
       "id": 28,
       "file": "blocks/0028.txt",
-      "word_paragraph_index_zero_based": 2206,
+      "word_paragraph_index_zero_based": 1410,
       "heading_context": [
         "Chapter 9 — Applied regulation: AI Act, NIST, and the regulatory landscape",
         "3. Implementation",
@@ -347,7 +354,7 @@
     {
       "id": 29,
       "file": "blocks/0029.txt",
-      "word_paragraph_index_zero_based": 2212,
+      "word_paragraph_index_zero_based": 1416,
       "heading_context": [
         "Chapter 9 — Applied regulation: AI Act, NIST, and the regulatory landscape",
         "3. Implementation",
@@ -359,7 +366,7 @@
     {
       "id": 30,
       "file": "blocks/0030.txt",
-      "word_paragraph_index_zero_based": 2406,
+      "word_paragraph_index_zero_based": 1555,
       "heading_context": [
         "Chapter 10 — Operational governance: policies, audits, and metrics",
         "3. Implementation",
@@ -371,7 +378,7 @@
     {
       "id": 31,
       "file": "blocks/0031.txt",
-      "word_paragraph_index_zero_based": 2413,
+      "word_paragraph_index_zero_based": 1562,
       "heading_context": [
         "Chapter 10 — Operational governance: policies, audits, and metrics",
         "3. Implementation",
@@ -383,7 +390,7 @@
     {
       "id": 32,
       "file": "blocks/0032.txt",
-      "word_paragraph_index_zero_based": 2415,
+      "word_paragraph_index_zero_based": 1564,
       "heading_context": [
         "Chapter 10 — Operational governance: policies, audits, and metrics",
         "3. Implementation",
@@ -395,7 +402,7 @@
     {
       "id": 33,
       "file": "blocks/0033.txt",
-      "word_paragraph_index_zero_based": 2456,
+      "word_paragraph_index_zero_based": 1584,
       "heading_context": [
         "Chapter 10 — Operational governance: policies, audits, and metrics",
         "3. Implementation",
@@ -407,7 +414,7 @@
     {
       "id": 34,
       "file": "blocks/0034.txt",
-      "word_paragraph_index_zero_based": 2581,
+      "word_paragraph_index_zero_based": 1631,
       "heading_context": [
         "Chapter 10 — Operational governance: policies, audits, and metrics",
         "3. Implementation",
@@ -419,7 +426,7 @@
     {
       "id": 35,
       "file": "blocks/0035.txt",
-      "word_paragraph_index_zero_based": 2684,
+      "word_paragraph_index_zero_based": 1710,
       "heading_context": [
         "Chapter 11 — Red Teaming Language Models",
         "3. Implementation",
@@ -431,7 +438,7 @@
     {
       "id": 36,
       "file": "blocks/0036.txt",
-      "word_paragraph_index_zero_based": 2699,
+      "word_paragraph_index_zero_based": 1725,
       "heading_context": [
         "Chapter 11 — Red Teaming Language Models",
         "3. Implementation",
@@ -443,7 +450,7 @@
     {
       "id": 37,
       "file": "blocks/0037.txt",
-      "word_paragraph_index_zero_based": 2720,
+      "word_paragraph_index_zero_based": 1746,
       "heading_context": [
         "Chapter 11 — Red Teaming Language Models",
         "3. Implementation",
@@ -455,7 +462,7 @@
     {
       "id": 38,
       "file": "blocks/0038.txt",
-      "word_paragraph_index_zero_based": 2732,
+      "word_paragraph_index_zero_based": 1758,
       "heading_context": [
         "Chapter 11 — Red Teaming Language Models",
         "3. Implementation",
@@ -467,7 +474,7 @@
     {
       "id": 39,
       "file": "blocks/0039.txt",
-      "word_paragraph_index_zero_based": 2742,
+      "word_paragraph_index_zero_based": 1768,
       "heading_context": [
         "Chapter 11 — Red Teaming Language Models",
         "3. Implementation",
@@ -479,7 +486,7 @@
     {
       "id": 40,
       "file": "blocks/0040.txt",
-      "word_paragraph_index_zero_based": 2855,
+      "word_paragraph_index_zero_based": 1881,
       "heading_context": [
         "Chapter 12 — Many-Shot Jailbreaking and Evasion Techniques",
         "3. Implementation",
@@ -491,7 +498,7 @@
     {
       "id": 41,
       "file": "blocks/0041.txt",
-      "word_paragraph_index_zero_based": 2866,
+      "word_paragraph_index_zero_based": 1892,
       "heading_context": [
         "Chapter 12 — Many-Shot Jailbreaking and Evasion Techniques",
         "3. Implementation",
@@ -503,7 +510,7 @@
     {
       "id": 42,
       "file": "blocks/0042.txt",
-      "word_paragraph_index_zero_based": 3046,
+      "word_paragraph_index_zero_based": 2012,
       "heading_context": [
         "Chapter 13 — Prompt Injection: From Theory to RCE",
         "3. Implementation",
@@ -515,7 +522,7 @@
     {
       "id": 43,
       "file": "blocks/0043.txt",
-      "word_paragraph_index_zero_based": 3053,
+      "word_paragraph_index_zero_based": 2019,
       "heading_context": [
         "Chapter 13 — Prompt Injection: From Theory to RCE",
         "3. Implementation",
@@ -527,7 +534,7 @@
     {
       "id": 44,
       "file": "blocks/0044.txt",
-      "word_paragraph_index_zero_based": 3062,
+      "word_paragraph_index_zero_based": 2028,
       "heading_context": [
         "Chapter 13 — Prompt Injection: From Theory to RCE",
         "3. Implementation",
@@ -539,7 +546,7 @@
     {
       "id": 45,
       "file": "blocks/0045.txt",
-      "word_paragraph_index_zero_based": 3095,
+      "word_paragraph_index_zero_based": 2061,
       "heading_context": [
         "Chapter 13 — Prompt Injection: From Theory to RCE",
         "3. Implementation",
@@ -551,7 +558,7 @@
     {
       "id": 46,
       "file": "blocks/0046.txt",
-      "word_paragraph_index_zero_based": 3139,
+      "word_paragraph_index_zero_based": 2105,
       "heading_context": [
         "Chapter 13 — Prompt Injection: From Theory to RCE",
         "3. Implementation",
@@ -563,7 +570,7 @@
     {
       "id": 47,
       "file": "blocks/0047.txt",
-      "word_paragraph_index_zero_based": 3220,
+      "word_paragraph_index_zero_based": 2186,
       "heading_context": [
         "Chapter 14 — Attacking the model’s infrastructure",
         "2. The decision",
@@ -575,7 +582,7 @@
     {
       "id": 48,
       "file": "blocks/0048.txt",
-      "word_paragraph_index_zero_based": 3248,
+      "word_paragraph_index_zero_based": 2214,
       "heading_context": [
         "Chapter 14 — Attacking the model’s infrastructure",
         "3. Implementation",
@@ -587,7 +594,7 @@
     {
       "id": 49,
       "file": "blocks/0049.txt",
-      "word_paragraph_index_zero_based": 3252,
+      "word_paragraph_index_zero_based": 2218,
       "heading_context": [
         "Chapter 14 — Attacking the model’s infrastructure",
         "3. Implementation",
@@ -599,7 +606,7 @@
     {
       "id": 50,
       "file": "blocks/0050.txt",
-      "word_paragraph_index_zero_based": 3271,
+      "word_paragraph_index_zero_based": 2237,
       "heading_context": [
         "Chapter 14 — Attacking the model’s infrastructure",
         "3. Implementation",
@@ -611,7 +618,7 @@
     {
       "id": 51,
       "file": "blocks/0051.txt",
-      "word_paragraph_index_zero_based": 3410,
+      "word_paragraph_index_zero_based": 2349,
       "heading_context": [
         "Chapter 15 — Sabotage, manipulation, and emerging risks",
         "3. Implementation",
@@ -623,7 +630,7 @@
     {
       "id": 52,
       "file": "blocks/0052.txt",
-      "word_paragraph_index_zero_based": 3420,
+      "word_paragraph_index_zero_based": 2359,
       "heading_context": [
         "Chapter 15 — Sabotage, manipulation, and emerging risks",
         "3. Implementation",
@@ -635,7 +642,7 @@
     {
       "id": 53,
       "file": "blocks/0053.txt",
-      "word_paragraph_index_zero_based": 3428,
+      "word_paragraph_index_zero_based": 2367,
       "heading_context": [
         "Chapter 15 — Sabotage, manipulation, and emerging risks",
         "3. Implementation",
@@ -647,7 +654,7 @@
     {
       "id": 54,
       "file": "blocks/0054.txt",
-      "word_paragraph_index_zero_based": 3511,
+      "word_paragraph_index_zero_based": 2450,
       "heading_context": [
         "Chapter 15 — Sabotage, manipulation, and emerging risks",
         "3. Implementation",
@@ -659,7 +666,7 @@
     {
       "id": 55,
       "file": "blocks/0055.txt",
-      "word_paragraph_index_zero_based": 3589,
+      "word_paragraph_index_zero_based": 2513,
       "heading_context": [
         "Chapter 16 — Security of autonomous agents",
         "3. Implementation",
@@ -671,7 +678,7 @@
     {
       "id": 56,
       "file": "blocks/0056.txt",
-      "word_paragraph_index_zero_based": 3593,
+      "word_paragraph_index_zero_based": 2517,
       "heading_context": [
         "Chapter 16 — Security of autonomous agents",
         "3. Implementation",
@@ -683,7 +690,7 @@
     {
       "id": 57,
       "file": "blocks/0057.txt",
-      "word_paragraph_index_zero_based": 3597,
+      "word_paragraph_index_zero_based": 2521,
       "heading_context": [
         "Chapter 16 — Security of autonomous agents",
         "3. Implementation",
@@ -695,7 +702,7 @@
     {
       "id": 58,
       "file": "blocks/0058.txt",
-      "word_paragraph_index_zero_based": 3601,
+      "word_paragraph_index_zero_based": 2525,
       "heading_context": [
         "Chapter 16 — Security of autonomous agents",
         "3. Implementation",
@@ -707,7 +714,7 @@
     {
       "id": 59,
       "file": "blocks/0059.txt",
-      "word_paragraph_index_zero_based": 3609,
+      "word_paragraph_index_zero_based": 2533,
       "heading_context": [
         "Chapter 16 — Security of autonomous agents",
         "3. Implementation",
@@ -719,7 +726,7 @@
     {
       "id": 60,
       "file": "blocks/0060.txt",
-      "word_paragraph_index_zero_based": 3696,
+      "word_paragraph_index_zero_based": 2566,
       "heading_context": [
         "Chapter 16 — Security of autonomous agents",
         "3. Implementation",
@@ -731,7 +738,7 @@
     {
       "id": 61,
       "file": "blocks/0061.txt",
-      "word_paragraph_index_zero_based": 3733,
+      "word_paragraph_index_zero_based": 2575,
       "heading_context": [
         "Chapter 16 — Security of autonomous agents",
         "3. Implementation",
@@ -743,7 +750,7 @@
     {
       "id": 62,
       "file": "blocks/0062.txt",
-      "word_paragraph_index_zero_based": 3817,
+      "word_paragraph_index_zero_based": 2641,
       "heading_context": [
         "Chapter 17 — MCP: security of the context protocol",
         "3. Implementation",
@@ -755,7 +762,7 @@
     {
       "id": 63,
       "file": "blocks/0063.txt",
-      "word_paragraph_index_zero_based": 3821,
+      "word_paragraph_index_zero_based": 2645,
       "heading_context": [
         "Chapter 17 — MCP: security of the context protocol",
         "3. Implementation",
@@ -767,7 +774,7 @@
     {
       "id": 64,
       "file": "blocks/0064.txt",
-      "word_paragraph_index_zero_based": 3825,
+      "word_paragraph_index_zero_based": 2649,
       "heading_context": [
         "Chapter 17 — MCP: security of the context protocol",
         "3. Implementation",
@@ -779,7 +786,7 @@
     {
       "id": 65,
       "file": "blocks/0065.txt",
-      "word_paragraph_index_zero_based": 3829,
+      "word_paragraph_index_zero_based": 2653,
       "heading_context": [
         "Chapter 17 — MCP: security of the context protocol",
         "3. Implementation",
@@ -791,7 +798,7 @@
     {
       "id": 66,
       "file": "blocks/0066.txt",
-      "word_paragraph_index_zero_based": 3884,
+      "word_paragraph_index_zero_based": 2687,
       "heading_context": [
         "Chapter 17 — MCP: security of the context protocol",
         "3. Implementation",
@@ -803,7 +810,7 @@
     {
       "id": 67,
       "file": "blocks/0067.txt",
-      "word_paragraph_index_zero_based": 3889,
+      "word_paragraph_index_zero_based": 2692,
       "heading_context": [
         "Chapter 17 — MCP: security of the context protocol",
         "3. Implementation",
@@ -815,7 +822,7 @@
     {
       "id": 68,
       "file": "blocks/0068.txt",
-      "word_paragraph_index_zero_based": 3892,
+      "word_paragraph_index_zero_based": 2695,
       "heading_context": [
         "Chapter 17 — MCP: security of the context protocol",
         "3. Implementation",
@@ -827,7 +834,7 @@
     {
       "id": 69,
       "file": "blocks/0069.txt",
-      "word_paragraph_index_zero_based": 3906,
+      "word_paragraph_index_zero_based": 2709,
       "heading_context": [
         "Chapter 17 — MCP: security of the context protocol",
         "3. Implementation",
@@ -839,7 +846,7 @@
     {
       "id": 70,
       "file": "blocks/0070.txt",
-      "word_paragraph_index_zero_based": 4011,
+      "word_paragraph_index_zero_based": 2786,
       "heading_context": [
         "Chapter 18 — Security of RAG and vector databases",
         "3. Implementation",
@@ -851,7 +858,7 @@
     {
       "id": 71,
       "file": "blocks/0071.txt",
-      "word_paragraph_index_zero_based": 4015,
+      "word_paragraph_index_zero_based": 2790,
       "heading_context": [
         "Chapter 18 — Security of RAG and vector databases",
         "3. Implementation",
@@ -863,7 +870,7 @@
     {
       "id": 72,
       "file": "blocks/0072.txt",
-      "word_paragraph_index_zero_based": 4019,
+      "word_paragraph_index_zero_based": 2794,
       "heading_context": [
         "Chapter 18 — Security of RAG and vector databases",
         "3. Implementation",
@@ -875,7 +882,7 @@
     {
       "id": 73,
       "file": "blocks/0073.txt",
-      "word_paragraph_index_zero_based": 4041,
+      "word_paragraph_index_zero_based": 2816,
       "heading_context": [
         "Chapter 18 — Security of RAG and vector databases",
         "3. Implementation",
@@ -887,7 +894,7 @@
     {
       "id": 74,
       "file": "blocks/0074.txt",
-      "word_paragraph_index_zero_based": 4107,
+      "word_paragraph_index_zero_based": 2832,
       "heading_context": [
         "Chapter 18 — Security of RAG and vector databases",
         "3. Implementation",
@@ -899,7 +906,7 @@
     {
       "id": 75,
       "file": "blocks/0075.txt",
-      "word_paragraph_index_zero_based": 4128,
+      "word_paragraph_index_zero_based": 2853,
       "heading_context": [
         "Chapter 18 — Security of RAG and vector databases",
         "3. Implementation",
@@ -911,7 +918,7 @@
     {
       "id": 76,
       "file": "blocks/0076.txt",
-      "word_paragraph_index_zero_based": 4285,
+      "word_paragraph_index_zero_based": 2923,
       "heading_context": [
         "Chapter 19 — Security observability for AI",
         "3. Implementation",
@@ -923,7 +930,7 @@
     {
       "id": 77,
       "file": "blocks/0077.txt",
-      "word_paragraph_index_zero_based": 4289,
+      "word_paragraph_index_zero_based": 2927,
       "heading_context": [
         "Chapter 19 — Security observability for AI",
         "3. Implementation",
@@ -935,7 +942,7 @@
     {
       "id": 78,
       "file": "blocks/0078.txt",
-      "word_paragraph_index_zero_based": 4293,
+      "word_paragraph_index_zero_based": 2931,
       "heading_context": [
         "Chapter 19 — Security observability for AI",
         "3. Implementation",
@@ -947,7 +954,7 @@
     {
       "id": 79,
       "file": "blocks/0079.txt",
-      "word_paragraph_index_zero_based": 4297,
+      "word_paragraph_index_zero_based": 2935,
       "heading_context": [
         "Chapter 19 — Security observability for AI",
         "3. Implementation",
@@ -959,7 +966,7 @@
     {
       "id": 80,
       "file": "blocks/0080.txt",
-      "word_paragraph_index_zero_based": 4324,
+      "word_paragraph_index_zero_based": 2944,
       "heading_context": [
         "Chapter 19 — Security observability for AI",
         "3. Implementation",
@@ -971,7 +978,7 @@
     {
       "id": 81,
       "file": "blocks/0081.txt",
-      "word_paragraph_index_zero_based": 4327,
+      "word_paragraph_index_zero_based": 2947,
       "heading_context": [
         "Chapter 19 — Security observability for AI",
         "3. Implementation",
@@ -983,7 +990,7 @@
     {
       "id": 82,
       "file": "blocks/0082.txt",
-      "word_paragraph_index_zero_based": 4330,
+      "word_paragraph_index_zero_based": 2950,
       "heading_context": [
         "Chapter 19 — Security observability for AI",
         "3. Implementation",
@@ -995,7 +1002,7 @@
     {
       "id": 83,
       "file": "blocks/0083.txt",
-      "word_paragraph_index_zero_based": 4333,
+      "word_paragraph_index_zero_based": 2953,
       "heading_context": [
         "Chapter 19 — Security observability for AI",
         "3. Implementation",
@@ -1007,7 +1014,7 @@
     {
       "id": 84,
       "file": "blocks/0084.txt",
-      "word_paragraph_index_zero_based": 4339,
+      "word_paragraph_index_zero_based": 2959,
       "heading_context": [
         "Chapter 19 — Security observability for AI",
         "3. Implementation",
@@ -1019,7 +1026,7 @@
     {
       "id": 85,
       "file": "blocks/0085.txt",
-      "word_paragraph_index_zero_based": 4415,
+      "word_paragraph_index_zero_based": 2991,
       "heading_context": [
         "Chapter 19 — Security observability for AI",
         "3. Implementation",
@@ -1031,7 +1038,7 @@
     {
       "id": 86,
       "file": "blocks/0086.txt",
-      "word_paragraph_index_zero_based": 4422,
+      "word_paragraph_index_zero_based": 2998,
       "heading_context": [
         "Chapter 19 — Security observability for AI",
         "3. Implementation",
@@ -1043,7 +1050,7 @@
     {
       "id": 87,
       "file": "blocks/0087.txt",
-      "word_paragraph_index_zero_based": 4524,
+      "word_paragraph_index_zero_based": 3079,
       "heading_context": [
         "Chapter 20 – Case 1: Copilot – from the system prompt to RCE",
         "3. Implementation",
@@ -1055,7 +1062,7 @@
     {
       "id": 88,
       "file": "blocks/0088.txt",
-      "word_paragraph_index_zero_based": 4527,
+      "word_paragraph_index_zero_based": 3082,
       "heading_context": [
         "Chapter 20 – Case 1: Copilot – from the system prompt to RCE",
         "3. Implementation",
@@ -1067,7 +1074,7 @@
     {
       "id": 89,
       "file": "blocks/0089.txt",
-      "word_paragraph_index_zero_based": 4530,
+      "word_paragraph_index_zero_based": 3085,
       "heading_context": [
         "Chapter 20 – Case 1: Copilot – from the system prompt to RCE",
         "3. Implementation",
@@ -1079,7 +1086,7 @@
     {
       "id": 90,
       "file": "blocks/0090.txt",
-      "word_paragraph_index_zero_based": 4689,
+      "word_paragraph_index_zero_based": 3178,
       "heading_context": [
         "Chapter 20 – Case 1: Copilot – from the system prompt to RCE",
         "3. Implementation",
@@ -1091,7 +1098,7 @@
     {
       "id": 91,
       "file": "blocks/0091.txt",
-      "word_paragraph_index_zero_based": 4732,
+      "word_paragraph_index_zero_based": 3221,
       "heading_context": [
         "Chapter 21 — Case 2: Claude Desktop—isolation boundaries",
         "2. The decision",
@@ -1103,7 +1110,7 @@
     {
       "id": 92,
       "file": "blocks/0092.txt",
-      "word_paragraph_index_zero_based": 4742,
+      "word_paragraph_index_zero_based": 3231,
       "heading_context": [
         "Chapter 21 — Case 2: Claude Desktop—isolation boundaries",
         "3. Implementation",
@@ -1115,7 +1122,7 @@
     {
       "id": 93,
       "file": "blocks/0093.txt",
-      "word_paragraph_index_zero_based": 4747,
+      "word_paragraph_index_zero_based": 3236,
       "heading_context": [
         "Chapter 21 — Case 2: Claude Desktop—isolation boundaries",
         "3. Implementation",
@@ -1127,7 +1134,7 @@
     {
       "id": 94,
       "file": "blocks/0094.txt",
-      "word_paragraph_index_zero_based": 4749,
+      "word_paragraph_index_zero_based": 3238,
       "heading_context": [
         "Chapter 21 — Case 2: Claude Desktop—isolation boundaries",
         "3. Implementation",
@@ -1139,7 +1146,7 @@
     {
       "id": 95,
       "file": "blocks/0095.txt",
-      "word_paragraph_index_zero_based": 4752,
+      "word_paragraph_index_zero_based": 3241,
       "heading_context": [
         "Chapter 21 — Case 2: Claude Desktop—isolation boundaries",
         "3. Implementation",
@@ -1151,7 +1158,7 @@
     {
       "id": 96,
       "file": "blocks/0096.txt",
-      "word_paragraph_index_zero_based": 4766,
+      "word_paragraph_index_zero_based": 3255,
       "heading_context": [
         "Chapter 21 — Case 2: Claude Desktop—isolation boundaries",
         "3. Implementation",
@@ -1163,7 +1170,7 @@
     {
       "id": 97,
       "file": "blocks/0097.txt",
-      "word_paragraph_index_zero_based": 5016,
+      "word_paragraph_index_zero_based": 3370,
       "heading_context": [
         "Chapter 22 — Security architecture for AI systems",
         "3. Implementation",
@@ -1175,7 +1182,7 @@
     {
       "id": 98,
       "file": "blocks/0098.txt",
-      "word_paragraph_index_zero_based": 5019,
+      "word_paragraph_index_zero_based": 3373,
       "heading_context": [
         "Chapter 22 — Security architecture for AI systems",
         "3. Implementation",
@@ -1187,7 +1194,7 @@
     {
       "id": 99,
       "file": "blocks/0099.txt",
-      "word_paragraph_index_zero_based": 5025,
+      "word_paragraph_index_zero_based": 3379,
       "heading_context": [
         "Chapter 22 — Security architecture for AI systems",
         "3. Implementation",
@@ -1199,7 +1206,7 @@
     {
       "id": 100,
       "file": "blocks/0100.txt",
-      "word_paragraph_index_zero_based": 5029,
+      "word_paragraph_index_zero_based": 3383,
       "heading_context": [
         "Chapter 22 — Security architecture for AI systems",
         "3. Implementation",
@@ -1211,7 +1218,7 @@
     {
       "id": 101,
       "file": "blocks/0101.txt",
-      "word_paragraph_index_zero_based": 5033,
+      "word_paragraph_index_zero_based": 3387,
       "heading_context": [
         "Chapter 22 — Security architecture for AI systems",
         "3. Implementation",
@@ -1223,7 +1230,7 @@
     {
       "id": 102,
       "file": "blocks/0102.txt",
-      "word_paragraph_index_zero_based": 5051,
+      "word_paragraph_index_zero_based": 3405,
       "heading_context": [
         "Chapter 22 — Security architecture for AI systems",
         "3. Implementation",
@@ -1235,7 +1242,7 @@
     {
       "id": 103,
       "file": "blocks/0103.txt",
-      "word_paragraph_index_zero_based": 5086,
+      "word_paragraph_index_zero_based": 3419,
       "heading_context": [
         "Chapter 22 — Security architecture for AI systems",
         "3. Implementation",
@@ -1247,7 +1254,7 @@
     {
       "id": 104,
       "file": "blocks/0104.txt",
-      "word_paragraph_index_zero_based": 5238,
+      "word_paragraph_index_zero_based": 3530,
       "heading_context": [
         "Chapter 23 — The AI Safety programme in the organisation",
         "3. Implementation",
@@ -1259,7 +1266,7 @@
     {
       "id": 105,
       "file": "blocks/0105.txt",
-      "word_paragraph_index_zero_based": 5274,
+      "word_paragraph_index_zero_based": 3542,
       "heading_context": [
         "Chapter 23 — The AI Safety programme in the organisation",
         "3. Implementation",
@@ -1271,7 +1278,7 @@
     {
       "id": 106,
       "file": "blocks/0106.txt",
-      "word_paragraph_index_zero_based": 5277,
+      "word_paragraph_index_zero_based": 3545,
       "heading_context": [
         "Chapter 23 — The AI Safety programme in the organisation",
         "3. Implementation",
@@ -1283,7 +1290,7 @@
     {
       "id": 107,
       "file": "blocks/0107.txt",
-      "word_paragraph_index_zero_based": 5285,
+      "word_paragraph_index_zero_based": 3553,
       "heading_context": [
         "Chapter 23 — The AI Safety programme in the organisation",
         "3. Implementation",
@@ -1295,7 +1302,7 @@
     {
       "id": 108,
       "file": "blocks/0108.txt",
-      "word_paragraph_index_zero_based": 5384,
+      "word_paragraph_index_zero_based": 3604,
       "heading_context": [
         "Chapter 23 — The AI Safety programme in the organisation",
         "3. Implementation",
@@ -1307,7 +1314,7 @@
     {
       "id": 109,
       "file": "blocks/0109.txt",
-      "word_paragraph_index_zero_based": 5577,
+      "word_paragraph_index_zero_based": 3725,
       "heading_context": [
         "Chapter 24 — Autonomous AI risks: scenarios and evaluation",
         "3. Implementation",
@@ -1319,7 +1326,7 @@
     {
       "id": 110,
       "file": "blocks/0110.txt",
-      "word_paragraph_index_zero_based": 6203,
+      "word_paragraph_index_zero_based": 3996,
       "heading_context": [
         "Appendix B – AI Safety Engineer tools",
         "1. Red teaming and offensive security tools",
@@ -1331,7 +1338,7 @@
     {
       "id": 111,
       "file": "blocks/0111.txt",
-      "word_paragraph_index_zero_based": 6221,
+      "word_paragraph_index_zero_based": 4014,
       "heading_context": [
         "Appendix B – AI Safety Engineer tools",
         "1. Red teaming and offensive security tools",
@@ -1343,7 +1350,7 @@
     {
       "id": 112,
       "file": "blocks/0112.txt",
-      "word_paragraph_index_zero_based": 6234,
+      "word_paragraph_index_zero_based": 4027,
       "heading_context": [
         "Appendix B – AI Safety Engineer tools",
         "2. Model evaluation frameworks",
@@ -1355,7 +1362,7 @@
     {
       "id": 113,
       "file": "blocks/0113.txt",
-      "word_paragraph_index_zero_based": 6241,
+      "word_paragraph_index_zero_based": 4034,
       "heading_context": [
         "Appendix B – AI Safety Engineer tools",
         "2. Model evaluation frameworks",
@@ -1367,7 +1374,7 @@
     {
       "id": 114,
       "file": "blocks/0114.txt",
-      "word_paragraph_index_zero_based": 6278,
+      "word_paragraph_index_zero_based": 4071,
       "heading_context": [
         "Appendix B – AI Safety Engineer tools",
         "4. Monitoring and observability",
@@ -1379,7 +1386,7 @@
     {
       "id": 115,
       "file": "blocks/0115.txt",
-      "word_paragraph_index_zero_based": 6295,
+      "word_paragraph_index_zero_based": 4088,
       "heading_context": [
         "Appendix B – AI Safety Engineer tools",
         "5. Lab environment",

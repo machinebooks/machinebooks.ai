@@ -1,0 +1,21 @@
+# Scoped flag submission contract; configured ledger performs one locked transaction
+import hashlib
+import hmac
+import re
+
+async def submit_flag(actor,instance_id,flag_id,candidate,request_id,adapter):
+    await adapter.authorize_and_limit_submission(actor,instance_id,flag_id)
+    if not isinstance(candidate,str) or re.fullmatch(
+            r"CYBERRANGE\{[0-9a-f]{16}_[0-9a-f]{16}\}",candidate) is None:
+        raise ValueError("invalid flag format")
+    flag=await adapter.require_active_seeded_flag(actor,instance_id,flag_id)
+    calculated=hmac.new(await adapter.flag_verifier_key(flag),
+        candidate.encode("ascii"),hashlib.sha256).digest()
+    if not isinstance(flag.verifier,bytes):
+        raise ValueError("invalid verifier")
+    correct=hmac.compare_digest(calculated,flag.verifier)
+    return await adapter.record_and_award_once(actor,instance_id,flag_id,request_id,
+        correct=correct,require_open_unexpired_window=True)
+
+# The ledger rechecks scope/expiry and preserves unique capture/request constraints.
+# Never log the candidate. This endpoint is not claimed to run in constant time.

@@ -1,0 +1,53 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+def run_gap_analysis(
+    evidence_dir: str,
+    frameworks: list[str],
+    org_profile: str,
+    target_level: MaturityLevel = MaturityLevel.MANAGED,
+) -> dict:
+    """Executes a complete multi-framework gap analysis."""
+    # 1. Initialize agent and processor
+    agent = GapAnalysisAgent(org_profile, target_level)
+    processor = EvidenceProcessor()
+
+    # 2. Load requested frameworks
+    for fw in frameworks:
+        agent.load_framework(f"frameworks/{fw}.yaml")
+    agent.load_criteria(f"criteria/{org_profile}.yaml")
+
+    # 3. Process all client documentation
+    for doc_path in Path(evidence_dir).glob("**/*"):
+        if doc_path.suffix in (".pdf", ".docx", ".xlsx"):
+            processor.process_document(str(doc_path))
+
+    # 4. Execute deduplicated multi-framework analysis
+    analyzer = MultiFrameworkAnalyzer(agent)
+    gaps = analyzer.run_unified_analysis(processor)
+
+    # 5. Generate remediation roadmap
+    roadmap_gen = RoadmapGenerator()
+    roadmap = roadmap_gen.generate(
+        gaps,
+        start=date.today(),
+        available_capacity_days_month=20,
+    )
+
+    # 6. Generate executive summary with Opus
+    executive_summary = generate_executive_summary(
+        gaps, roadmap, org_profile
+    )
+
+    # 7. Calculate compliance metrics
+    metrics = calculate_compliance_metrics(gaps, frameworks)
+
+    return {
+        "gaps": gaps,
+        "roadmap": roadmap,
+        "executive_summary": executive_summary,
+        "metrics": metrics,
+        "total_effort_days": sum(g.effort_days for g in gaps),
+        "low_confidence_items": [
+            g for g in gaps if g.confidence < 0.6
+        ],
+    }

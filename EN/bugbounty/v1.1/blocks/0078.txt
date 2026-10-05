@@ -1,0 +1,10 @@
+Driver: AsIO3.sys v1.2.41.0
+Imports from ntoskrnl.exe:
+  - MmMapIoSpace, MmUnmapIoSpace
+  - ZwMapViewOfSection, ZwUnmapViewOfSection
+  - MmGetPhysicalAddress
+  - IoCreateDevice, IoCreateSymbolicLink
+  - IoCompleteRequest, IoGetCurrentIrpStackLocation
+NOT imported: SePrivilegeCheck, SeSinglePrivilegeCheck, SeAccessCheck
+Strings: \Device\Asusgio3, \Device\PhysicalMemory
+Security: ASLR=Yes, DEP=Yes, CFG=No

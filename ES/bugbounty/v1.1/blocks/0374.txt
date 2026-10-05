@@ -1,0 +1,18 @@
+// src/server/subagent.ts (esquemático)
+export async function spawnSubagent({
+  task,
+  allowedTools,                // ej: ["fs_read", "rev_disasm"]
+  workspaceSubdir,             // jaula de filesystem
+  maxIterations = 10,
+}) {
+  const sub = createAgent({
+    tools: pickTools(allowedTools),
+    permissions: scopedPermissions(workspaceSubdir),
+    parentSession: currentSession.id,
+  });
+
+  const result = await sub.run(task, { maxIterations });
+  // Solo el resumen vuelve al agente principal,
+  // no los miles de tokens intermedios
+  return result.summary;
+}

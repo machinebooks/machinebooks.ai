@@ -1,0 +1,21 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+# Pseudocode for MCP tools; authentication and schemas are server contracts.
+async def search_documents(query, doc_type, max_results, identity, embedding_adapter, repository):
+    require_allowed_doc_type(doc_type)
+    vector = embedding_adapter.encode(query)
+    require_finite_vector(vector, embedding_adapter.dimension)
+    filters = AND(tenant_and_acl_filter(identity), structured_doc_type_filter(doc_type))
+    hits = repository.query(vector, filters, bounded_limit(max_results))
+    require_authorized_provenance(hits, identity, required_fields=("doc_id", "doc_hash", "version"))
+    return [TextContent(type="text", text=render_authorized_hit(hit)) for hit in hits]
+
+async def get_project_history(identity, sector=None, service_type=None):
+    filters = AND(tenant_and_acl_filter(identity), structured_filters(sector, service_type))
+    cursor = None
+    while True:
+        points, cursor = repository.scroll(filters, limit=20, offset=cursor)
+        for point in points:
+            yield authorized_project_summary(point)
+        if cursor is None:
+            break

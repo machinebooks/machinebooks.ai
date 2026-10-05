@@ -1,0 +1,6 @@
+# Scenario reference and approval are server-validated; raw YAML is not application/json
+async def deploy_first_scenario(actor, workzone_id, scenario_ref, api, request_id):
+    approved = await api.require_validated_approved_scenario(actor, workzone_id, scenario_ref)
+    return await api.enqueue_owned_deployment_once(actor, approved, request_id)
+
+# Return Job identity and pending state; observe readiness and cleanup receipts separately.

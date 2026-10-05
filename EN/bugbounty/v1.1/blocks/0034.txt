@@ -1,0 +1,39 @@
+# Analysis of Wand IDE executable strings
+# Claude identified a suspicious pattern
+
+import pefile
+from pathlib import Path
+
+def find_hash_in_binary(exe_path: str) -> list[dict]:
+    """Searches for hash-like strings in the executable."""
+    data = Path(exe_path).read_bytes()
+    results = []
+
+    # Search for hash patterns: 64 hex characters (SHA-256)
+    i = 0
+    while i < len(data) - 64:
+        # Check if there are 64 consecutive hexadecimal characters
+        candidate = data[i:i+64]
+        try:
+            text = candidate.decode('ascii')
+            if all(c in '0123456789abcdef' for c in text):
+                # Check context: bytes before and after
+                before = data[max(0,i-20):i]
+                after = data[i+64:i+84]
+                results.append({
+                    "offset": hex(i),
+                    "hash": text,
+                    "context_before": before.hex(),
+                    "context_after": after.hex(),
+                })
+            i += 64
+        except (UnicodeDecodeError, ValueError):
+            i += 1
+            continue
+
+    return results
+
+# Result in Wand IDE:
+# Offset 0x1A3F40: "a7b3c9d1e5f2...{64 chars}"
+# Context: immediately after the string "integrity_hash"
+# This is the expected SHA-256 of app.asar

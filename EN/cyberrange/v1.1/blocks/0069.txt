@@ -1,0 +1,20 @@
+# Optional bounded proposal; catalog and schema adapters are explicit.
+import asyncio
+import json
+
+async def generate_topology(actor, description, access, catalog, provider, validator):
+    if not isinstance(description, str) or not 1 <= len(description) <= 8000:
+        raise ValueError("invalid description")
+    scope = await asyncio.wait_for(access.planning_scope(actor), 10)
+    templates = await asyncio.wait_for(catalog.approved_templates(scope, limit=100), 10)
+    payload = json.dumps({"description": description, "templates": templates}, ensure_ascii=False)
+    if len(payload.encode("utf-8")) > 65536:
+        raise ValueError("oversized context")
+    if provider is None:
+        return {"status": "manual_review_required"}
+    response = await asyncio.wait_for(provider.propose_topology(payload), 20)
+    if not isinstance(response, str) or len(response.encode("utf-8")) > 65536:
+        raise ValueError("invalid provider response")
+    proposal = validator.validate_topology(json.loads(response), scope, templates)
+    return {"status": "pending_review", "proposal": proposal}
+# Admission and deployment independently recheck ownership, capacity and leases.

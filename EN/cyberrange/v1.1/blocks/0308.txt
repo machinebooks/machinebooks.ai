@@ -1,0 +1,20 @@
+# Integration specification; fixture authorizes identity and catalogued paths
+async def verify_flag_deployment(adapter,owned_fixture):
+    for flag in await adapter.owned_flag_catalog(owned_fixture):
+        artifact=await adapter.read_owned_catalogued_artifact(owned_fixture,flag.id)
+        if artifact!=flag.expected_bytes:
+            raise AssertionError("flag artifact mismatch; value withheld")
+        proof=await adapter.solve_owned_fixture_path(owned_fixture,flag.id)
+        if proof["objective_verified"] is not True:
+            raise AssertionError("authorized objective path unconfirmed")
+        first=await adapter.submit_owned_flag(owned_fixture,flag.id)
+        duplicate=await adapter.submit_owned_flag(owned_fixture,flag.id)
+        if first["status"]!="captured" or duplicate["status"]!="already_captured":
+            raise AssertionError("capture/duplicate contract mismatch")
+        if first["capture_id"]!=duplicate["capture_id"]:
+            raise AssertionError("duplicate capture side effect")
+    return {"status":"passed"}
+
+# No administrator read is treated as objective proof, arbitrary shell path
+# interpolation or placeholder Bearer token. Adapter keeps expected secrets
+# out of failure logs. Capture/scoring semantics must match Chapter 12.

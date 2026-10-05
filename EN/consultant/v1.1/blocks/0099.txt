@@ -1,0 +1,110 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+from datetime import date, timedelta
+
+
+@dataclass
+class RemediationAction:
+    """A concrete action in the roadmap."""
+    gap: GapFinding
+    phase: str              # "quick_win", "consolidation", "maturation"
+    start_date: date
+    end_date: date
+    effort_days: float
+    dependencies: list[str] = field(default_factory=list)
+    responsible_role: str = ""
+
+
+class RoadmapGenerator:
+    """Generates remediation roadmap from gaps."""
+
+    PHASE_RULES = {
+        "quick_win": {
+            "max_effort": 5,
+            "priority": ["critical", "high"],
+            "duration_months": 3,
+        },
+        "consolidation": {
+            "max_effort": 20,
+            "priority": ["critical", "high", "medium"],
+            "duration_months": 9,
+        },
+        "maturation": {
+            "max_effort": float("inf"),
+            "priority": ["critical", "high", "medium", "low"],
+            "duration_months": 12,
+        },
+    }
+
+    def generate(
+        self,
+        gaps: list[GapFinding],
+        start: date,
+        available_capacity_days_month: float = 20,
+    ) -> list[RemediationAction]:
+        """Generates roadmap with three remediation phases."""
+        actions: list[RemediationAction] = []
+        current_date = start
+
+        for phase_name, rules in self.PHASE_RULES.items():
+            phase_gaps = [
+                g for g in gaps
+                if g.effort_days <= rules["max_effort"]
+                and g.priority in rules["priority"]
+                and g not in [a.gap for a in actions]
+            ]
+            # Sort by priority then by effort
+            phase_gaps.sort(
+                key=lambda g: (
+                    ["critical", "high", "medium", "low"]
+                    .index(g.priority),
+                    g.effort_days,
+                )
+            )
+
+            phase_end = current_date + timedelta(
+                days=rules["duration_months"] * 30
+            )
+            accumulated_days = 0
+
+            for gap in phase_gaps:
+                if accumulated_days + gap.effort_days > (
+                    available_capacity_days_month
+                    * rules["duration_months"]
+                ):
+                    break  # Exceeds phase capacity
+
+                action = RemediationAction(
+                    gap=gap,
+                    phase=phase_name,
+                    start_date=current_date + timedelta(
+                        days=int(accumulated_days * 1.5)
+                    ),
+                    end_date=current_date + timedelta(
+                        days=int(
+                            (accumulated_days + gap.effort_days)
+                            * 1.5
+                        )
+                    ),
+                    effort_days=gap.effort_days,
+                    responsible_role=self._assign_role(gap),
+                )
+                actions.append(action)
+                accumulated_days += gap.effort_days
+
+            current_date = phase_end
+
+        return actions
+
+    def _assign_role(self, gap: GapFinding) -> str:
+        """Assigns responsible role based on gap category."""
+        role_map = {
+            "Organizational": "CISO / Security Officer",
+            "People": "HR + Security",
+            "Technological": "Systems Team / DevSecOps",
+            "Physical": "Facility Management + Security",
+        }
+        return role_map.get(
+            gap.control.category,
+            "Security Team",
+        )

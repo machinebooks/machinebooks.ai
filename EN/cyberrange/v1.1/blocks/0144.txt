@@ -1,0 +1,31 @@
+# Seven-phase contract over an immutable approved artifact and scoped inventory
+import asyncio
+
+async def deploy_scenario(adapter,deployment_id,artifact_digest,deadline_seconds=600):
+    deployment=await adapter.authorized_deployment(deployment_id)
+    artifact=await adapter.load_approved_immutable_artifact(deployment,artifact_digest)
+    try:
+        async with asyncio.timeout(deadline_seconds):
+            reservation=await adapter.validate_and_reserve_complete_definition(deployment,artifact)
+            networks=await adapter.create_owned_networks(deployment,reservation)
+            await adapter.record_owned_inventory(deployment,networks)
+            guests=await adapter.clone_and_await_owned_guests(deployment,reservation,networks)
+            await adapter.record_owned_inventory(deployment,guests)
+            await adapter.configure_and_verify_owned_connectivity(deployment,guests,networks)
+            await adapter.execute_approved_playbooks(deployment,artifact,guests)
+            checks=await adapter.verify_owned_services_and_policy(deployment,guests,networks)
+            if not checks or not all(check["passed"] is True for check in checks):
+                raise RuntimeError("deployment verification failed")
+            state=await adapter.commit_verified_state(deployment,guests,networks,checks)
+            await adapter.publish_authorized_observed_topology(deployment,state)
+            return state
+    except BaseException:
+        await adapter.cancel_and_join_owned_operations(deployment)
+        await adapter.record_failure_retaining_inventory(deployment)
+        raise
+
+# No permissive vmbr0/node fallback, assumed poweredOn state or request DB
+# session in a background task. Adapter acquires its own sessions, reserves
+# identifiers, awaits Proxmox tasks and verifies isolation. Flag injection uses
+# structured copy-module arguments with catalogued paths and no_log, not shell
+# interpolation. Snapshot means measured inventory, not this design JSON.

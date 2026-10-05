@@ -1,0 +1,45 @@
+"""
+teamviewer_api_discovery.py -- Internal endpoint discovery
+Intercepts WebView2 network traffic to map the internal API.
+"""
+import websocket
+import json
+
+def discover_internal_api(ws):
+    """Intercept HTTP traffic to discover endpoints."""
+    # Enable network interception
+    ws.send(json.dumps({
+        "id": 1,
+        "method": "Network.enable"
+    }))
+    ws.recv()  # Confirmation
+
+    print("[+] Network interception active. Endpoints discovered:")
+    endpoints = set()
+
+    # Listen to network events for 30 seconds
+    import time
+    start = time.time()
+    while time.time() - start < 30:
+        try:
+            msg = json.loads(ws.recv())
+            if msg.get("method") == "Network.requestWillBeSent":
+                url = msg["params"]["request"]["url"]
+                if "teamviewer-internal" in url:
+                    path = url.split("/api/")[1] if "/api/" in url else url
+                    if path not in endpoints:
+                        endpoints.add(path)
+                        print(f"    /api/{path}")
+        except Exception:
+            break
+
+    return endpoints
+
+# Endpoints discovered (partial):
+# /api/mydevice/v1/credentials/idpassword
+# /api/account/v1/account
+# /api/account/v1/licenses
+# /api/p2auth/v2/authorize
+# /api/recentconnections/v1/recentconnections
+# /api/ui/v1/restart
+# /api/mydevice/v1/vpndriver/install

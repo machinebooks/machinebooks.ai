@@ -1,0 +1,72 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+EXTRACTION_PROMPT = """Analyze the following documents from a consulting project
+and extract candidate lessons learned.
+
+PROJECT CONTEXT:
+- Type: {project_type}
+- Client: {client_sector}
+- Current phase: {current_phase}
+- Planned duration: {planned_duration}
+- Actual duration to date: {actual_duration}
+
+CRITERIA FOR A VALID LESSON:
+1. Must be TRANSFERABLE to future projects (not specific to this client)
+2. Must have an identifiable ROOT CAUSE (not just "something went wrong")
+3. Must include a CONCRETE RECOMMENDATION (not just "improve communication")
+4. Must be VERIFIABLE (based on project facts, not opinions)
+
+NOT lessons:
+- One-off observations without pattern ("the client canceled Tuesday's meeting")
+- Personal preferences ("I prefer doing interviews in the morning")
+- Already known and documented problems in the current methodology
+
+For each lesson, return a JSON with fields:
+summary, context, what_happened, root_cause, recommendation,
+project_phase, category, impact_areas, polarity, confidence
+
+DOCUMENTS TO ANALYZE:
+{documents}"""
+
+
+def extract_lessons_from_project(
+    project_docs: list[dict],
+    project_metadata: dict
+) -> list[LessonCandidate]:
+    """Extracts candidate lessons from project documents."""
+    client = anthropic.Anthropic()
+
+    # Concatenate documents with clear separators
+    docs_text = "\n\n---DOCUMENT---\n\n".join(
+        f"[{doc['type']}] {doc['title']}\n"
+        f"Date: {doc['date']}\n\n{doc['content']}"
+        for doc in project_docs
+    )
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        messages=[{
+            "role": "user",
+            "content": EXTRACTION_PROMPT.format(
+                project_type=project_metadata["type"],
+                client_sector=project_metadata["sector"],
+                current_phase=project_metadata["phase"],
+                planned_duration=project_metadata["planned_duration"],
+                actual_duration=project_metadata["actual_duration"],
+                documents=docs_text
+            )
+        }]
+    )
+
+    # Parse JSON response and build LessonCandidate objects
+    raw_lessons = parse_json_response(message.content[0].text)
+    return [
+        LessonCandidate(
+            **lesson,
+            project_type=project_metadata["type"],
+            source_documents=[d["title"] for d in project_docs]
+        )
+        for lesson in raw_lessons
+        if lesson.get("confidence", 0) >= 0.6  # Confidence threshold
+    ]

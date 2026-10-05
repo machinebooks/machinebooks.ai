@@ -1,0 +1,14 @@
+project_input = """
+Project: Multi-framework compliance audit
+Client: Financial sector entity regulated by ECB
+Frameworks: ENS (high level), ISO 27001:2022, DORA
+Scope: 14 critical information systems
+Planned duration: 6 weeks
+Team: 2 senior consultants + 1 junior analyst
+Deliverables: Audit report per framework, cross-referenced compliance
+matrix, prioritized remediation plan, executive presentation.
+Context: The client was audited 18 months ago for ENS and ISO 27001.
+Previous reports are available. DORA is the first time.
+"""
+
+result = analyze_project(project_input)

@@ -1,0 +1,52 @@
+# YAML: docker-compose.yml; illustrative topology, local validation required
+services:
+  frontend:
+    build: ./frontend
+    expose: ["80"]
+    networks: [cyberrange_net]
+  backend:
+    build: ./backend
+    env_file: ./backend/.env
+    environment:
+      DATABASE_URL: "${DATABASE_URL:?complete escaped DSN required}"
+      REDIS_URL: "${REDIS_URL:?complete escaped DSN required}"
+    volumes: ["./uploads:/app/uploads"]
+    depends_on:
+      db: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    networks: [cyberrange_net]
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: cyberrange
+      MYSQL_USER: cyberrange
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD:?required}"
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:?required}"
+    volumes: ["cyberrange_mysql_data:/var/lib/mysql"]
+    healthcheck:
+      test: [CMD, mysqladmin, ping, -h, localhost]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    networks: [cyberrange_net]
+  redis:
+    image: redis:7-alpine
+    environment:
+      REDIS_PASSWORD: "${REDIS_PASSWORD:?required}"
+    command: [sh, -c, 'exec redis-server --requirepass "$$REDIS_PASSWORD"']
+    healthcheck:
+      test: [CMD-SHELL, 'REDISCLI_AUTH="$$REDIS_PASSWORD" redis-cli ping | grep -qx PONG']
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    volumes: ["cyberrange_redis_data:/data"]
+    networks: [cyberrange_net]
+networks:
+  cyberrange_net:
+    driver: bridge
+volumes:
+  cyberrange_mysql_data: {}
+  cyberrange_redis_data: {}
+# No application/data ports published here. Credentials are environment
+# inputs, not literals; protect runtime configuration and rotate secrets.
+# Pin reviewed image digests and enforce host/egress policy before operation.

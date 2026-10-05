@@ -1,0 +1,21 @@
+// src/server/providers/local-llm.ts (esquemático)
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  baseURL: process.env.LLM_BASE_URL ?? "http://localhost:1234/v1",
+  apiKey: "lm-studio",          // LM Studio acepta cualquier string
+});
+
+export async function chat(messages, tools) {
+  const stream = await client.chat.completions.create({
+    model: process.env.LLM_MODEL ?? "local-model",
+    messages,
+    tools,                      // function calling estándar OpenAI
+    stream: true,
+    temperature: 0.2,
+  });
+
+  for await (const chunk of stream) {
+    yield chunk;                // se reenvía a la UI por SSE
+  }
+}

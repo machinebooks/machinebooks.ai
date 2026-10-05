@@ -1,0 +1,17 @@
+# Integration specification; adapter performs bounded probes inside owned guests
+async def verify_workzone_isolation(adapter,workzone_a,workzone_b):
+    for source,target in ((workzone_a,workzone_b),(workzone_b,workzone_a)):
+        positive=await adapter.probe_owned_gateway(source,timeout_seconds=5)
+        if positive!="reachable":
+            raise AssertionError("inconclusive: guest/tool/network positive control failed")
+        for protocol in ("icmp","tcp","udp"):
+            result=await adapter.probe_owned_cross_zone(source,target,protocol,timeout_seconds=5)
+            if result!="blocked_confirmed":
+                raise AssertionError("cross-zone block unconfirmed")
+    return {"scope":"two owned workzones, three declared probe paths","status":"passed"}
+
+# The adapter distinguishes blocked traffic from command failure, timeout,
+# absent guest agent and unreachable host, retaining packet/firewall evidence.
+# Fixture teardown awaits owned task cancellation and verified removal even
+# when an assertion fails. Add management/IPv6/DNS and application paths for
+# the real policy; one failed ping does not prove all network isolation.

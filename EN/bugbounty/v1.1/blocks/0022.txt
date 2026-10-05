@@ -1,0 +1,11 @@
+# Example invocation on an explicitly authorized historical artifact.
+# This listing does not reproduce the claimed Discord measurement.
+result = full_audit(
+    r"C:\Users\researcher\AppData\Local\Discord\app-1.0.9045\Discord.exe"
+)
+
+# Historical context attributed by the narrative:
+# ASAR size: 14523648 bytes.
+# Four claimed issues require separate impact and scope verification.
+# Reader output uses configuration_signals and risk_level="NOT_SCORED".
+# Missing/error fuse data or unknown ACLs never become proof of low risk.

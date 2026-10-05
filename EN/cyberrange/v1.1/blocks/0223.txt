@@ -1,0 +1,25 @@
+# Didactic synthetic alert-rate variation; does not evade a real detector.
+import math
+import random
+
+def generate_degradation_sequence(baseline_alert_rate,target_reduction_pct,
+                                  degradation_hours,seed=1):
+    if type(baseline_alert_rate) is not int or not 0<=baseline_alert_rate<=10000:
+        raise ValueError("invalid_baseline")
+    if type(degradation_hours) is not int or not 1<=degradation_hours<=48:
+        raise ValueError("invalid_hours")
+    if type(target_reduction_pct) not in (int,float) or not math.isfinite(target_reduction_pct) or not 0<=target_reduction_pct<=1:
+        raise ValueError("reduction_fraction_required")
+    if type(seed) is not int:raise ValueError("invalid_seed")
+    rng=random.Random(seed)
+    sequence=[]
+    for hour in range(1,degradation_hours+1):
+        expected=baseline_alert_rate*(1-target_reduction_pct*hour/degradation_hours)
+        observed=max(0,round(expected*(1+rng.uniform(-.05,.05))))
+        sequence.append({"hour":hour,"synthetic_alert_count":observed,
+            "nominal_rate":expected,"atlas_reference":"AML.T0015",
+            "measured_detector_evasion":False})
+    return sequence
+
+# Scenario parameter only. An ATLAS reference records intent, not evidence of
+# an attack, training poisoning, production fidelity or detector performance.

@@ -1,0 +1,24 @@
+# Manager state; authentication grants and durable replay are injected dependencies.
+from collections import defaultdict
+
+class WebSocketManager:
+    def __init__(self, access, record):
+        self.access, self.record = access, record
+        self.active_connections = {"playbook_execution": set(), "coaching": set()}
+        self.active_sessions = {}
+        self.connection_metadata = {}
+        self.heartbeat_pending = {}
+    def disconnect(self, websocket):
+        self.connection_metadata.pop(websocket, None)
+        self.heartbeat_pending.pop(websocket, None)
+        for sockets in self.active_connections.values():
+            sockets.discard(websocket)
+    async def send_personal_message(self, websocket, message):
+        import asyncio
+        metadata = self.connection_metadata.get(websocket)
+        if metadata is None or not await self.access.still_authorized(metadata):
+            raise PermissionError("connection no longer authorized")
+        await asyncio.wait_for(websocket.send_json(message), 3)
+    async def get_session_status(self, session_id):
+        return await self.record.authorized_session_status(session_id)
+# connect/recover/send/heartbeat below share this constructor and validated metadata.

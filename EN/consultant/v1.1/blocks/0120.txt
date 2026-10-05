@@ -1,0 +1,52 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+def generate_assessment_report(
+    assessment: MaturityAssessment,
+    benchmarks: list[BenchmarkComparison],
+    roadmap: dict,
+    consultant_notes: str  # Consultant's qualitative notes
+) -> str:
+    """Generates the complete maturity assessment report."""
+
+    report_prompt = f"""Generate an executive AI maturity assessment
+report with the following structure:
+
+## 1. Executive summary (1 page)
+- Overall level and sector position
+- The 3 main conclusions
+- The most urgent recommendation
+
+## 2. Methodology
+- Dimensions evaluated and weights
+- Stakeholders interviewed ({assessment.stakeholders_interviewed})
+- Evidence sources
+
+## 3. Results by dimension (1-2 pages per dimension)
+{_format_dimension_details(assessment.dimensions, benchmarks)}
+
+## 4. Gap analysis and priorities
+- Dimensions below sector median
+- Interdependencies between dimensions
+- Risks of inaction
+
+## 5. Improvement roadmap
+{_format_roadmap_summary(roadmap)}
+
+## 6. Sector benchmarking
+- Comparative position by dimension
+- Areas of relative advantage and disadvantage
+
+## 7. Consultant observations
+{consultant_notes}
+
+Tone: professional but direct. Data before opinions.
+No empty consulting jargon. Every assertion with evidence.
+Total length: 15-25 pages."""
+
+    response = client.messages.create(
+        model="claude-opus-4-6",  # Opus for writing quality
+        max_tokens=8192,
+        messages=[{"role": "user", "content": report_prompt}]
+    )
+
+    return response.content[0].text

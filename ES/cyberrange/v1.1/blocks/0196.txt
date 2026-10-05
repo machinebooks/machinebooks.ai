@@ -1,0 +1,39 @@
+# Didactic application service; async generator and inventory adapters injected.
+import asyncio
+import hashlib
+import json
+
+class ScenarioGeneratorService:
+    def __init__(self,generate_text,validator,adapter):
+        self.generate_text=generate_text
+        self.validator=validator
+        self.adapter=adapter
+
+    async def generate_scenario(self,description,workzone_id,author_id,complexity="standard"):
+        if not isinstance(description,str) or not 20<=len(description)<=5000:
+            raise ValueError("invalid_description")
+        if complexity not in ("standard","complex"):
+            raise ValueError("invalid_complexity")
+        await self.adapter.authorize(author_id,"scenario_propose",workzone_id)
+        context=await self.adapter.minimized_authorized_context(author_id,workzone_id)
+        if context is None:
+            raise ValueError("workzone_not_found")
+        async with asyncio.timeout(120):
+            text=await self.generate_text(description,context,complexity)
+        if not isinstance(text,str) or len(text.encode("utf-8"))>131072:
+            raise ValueError("invalid_output")
+        data=json.loads(text)  # Full JSON only; no greedy brace extraction.
+        validation=await self.validator.validate(data,workzone_id,author_id)
+        if validation["valid"] is not True:
+            return {"success":False,"errors":validation["errors"],"message":"invalid_draft"}
+        canonical=json.dumps(data,sort_keys=True,separators=(",",":"),ensure_ascii=False)
+        digest=hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+        # Persist the whole specification, including flags, objectives, playbooks,
+        # evaluation criteria, MITRE release and storyline, in one private draft.
+        template_id=await self.adapter.store_private_draft(author_id,workzone_id,
+            canonical,digest,validation,approval=None)
+        return {"success":True,"template_id":template_id,"digest":digest,
+                "scenario":data,"message":"draft_requires_approval"}
+
+# The adapter supplies scoped sessions, transactional persistence and versioning.
+# A draft never schedules deployment and does not reserve current inventory.

@@ -1,0 +1,11 @@
+# ASAR header with a JSON string packed in Pickle
+header_json = json.dumps(header, separators=(",", ":")).encode("utf-8")
+json_size = len(header_json)
+padding = (-json_size) % 4
+
+# Four little-endian integers before the JSON:
+# 4 : payload size of the size Pickle
+# json_size + padding + 8 : complete header Pickle size
+# json_size + padding + 4 : header Pickle payload size
+# json_size : JSON byte length
+# JSON and padding follow; file data starts at 8 + header_size

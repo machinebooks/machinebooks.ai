@@ -1,0 +1,25 @@
+// Text terminal contract: backend provides UTF-8 PTY data, never RFB
+import { Terminal } from 'xterm';
+
+export function mountTerminal(container, grant, onDisconnect) {
+  if (grant.type !== 'terminal') throw new Error('Terminal de texto requerido');
+  const terminal = new Terminal();
+  terminal.open(container);
+  const socket = new WebSocket(grant.url);
+  socket.binaryType = 'arraybuffer';
+  socket.onmessage = event => {
+    if (typeof event.data === 'string') terminal.write(event.data);
+    else if (event.data instanceof ArrayBuffer) terminal.write(new Uint8Array(event.data));
+  };
+  const input = terminal.onData(data => {
+    if (socket.readyState === WebSocket.OPEN) socket.send(data);
+  });
+  socket.onclose = onDisconnect;
+  return () => {
+    socket.onmessage = null; socket.onclose = null;
+    input.dispose(); socket.close(); terminal.dispose();
+  };
+}
+
+// Gateway authentication uses the short-lived grant issued by the server.
+// The caller owns fit/resize, error states, accessible labels and reconnect.

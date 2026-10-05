@@ -1,0 +1,6 @@
+# Didactic award ledger; only a confirmed capture can trigger once-per-capture credit.
+async def credit_capture_skills(actor, capture_ref, access, store, rubric):
+    scope = await access.confirmed_capture(actor, capture_ref)
+    awards = rubric.skills_for_capture(scope)
+    # Unique capture/skill keys + locked totals and activity event commit together.
+    return await store.apply_skill_awards_atomic_once(scope, awards)

@@ -1,0 +1,38 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import sqlite3
+
+@tool
+def query_previous_findings(
+    client_id: str,
+    framework: str | None = None,
+    control_ref: str | None = None
+) -> list[dict]:
+    """Queries findings from previous analyses for a client.
+    Useful for identifying recurrences and evaluating evolution.
+
+    Args:
+        client_id: Client identifier
+        framework: Filter by specific framework
+        control_ref: Filter by specific control
+    """
+    conn = sqlite3.connect("findings.db")
+    query = """
+        SELECT framework_ref, status, gap, risk,
+               recommendation, analysis_date, project
+        FROM findings
+        WHERE client_id = ?
+    """
+    params = [client_id]
+
+    if framework:
+        query += " AND framework = ?"
+        params.append(framework)
+    if control_ref:
+        query += " AND framework_ref = ?"
+        params.append(control_ref)
+
+    query += " ORDER BY analysis_date DESC LIMIT 20"
+    cursor = conn.execute(query, params)
+    columns = [d[0] for d in cursor.description]
+    return [dict(zip(columns, row)) for row in cursor.fetchall()]

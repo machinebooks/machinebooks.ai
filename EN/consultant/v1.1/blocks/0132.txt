@@ -1,0 +1,66 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+# extraction/tagging_agent.py — Automatic tagging agent
+import anthropic
+import json
+
+client = anthropic.Anthropic()
+
+# Closed taxonomy for sectors and domains, open for technologies
+TAXONOMY = {
+    "sectors": [
+        "publico", "financiero", "industrial",
+        "sanitario", "tecnologico", "energia", "retail"
+    ],
+    "domains": [
+        "seguridad", "arquitectura", "datos", "operaciones",
+        "cumplimiento", "ia", "cloud", "devops"
+    ],
+    "project_types": [
+        "auditoria", "consultoria", "implantacion",
+        "formacion", "preventa", "assessment"
+    ],
+    "outcomes": ["exito", "parcial", "fallido", "desconocido"]
+}
+
+TAGGING_PROMPT = f"""Classify the following knowledge fragment
+according to this taxonomy. Assign one or more values per axis.
+
+Taxonomy:
+- sector: {TAXONOMY['sectors']}
+- dominio: {TAXONOMY['domains']}
+- tipo_proyecto: {TAXONOMY['project_types']}
+- resultado: {TAXONOMY['outcomes']}
+- tecnologias: [open list — identify technologies mentioned]
+- relevancia: 1-5 (5 = knowledge reusable in many contexts)
+
+Return strict JSON with these fields."""
+
+def tag_fragment(fragment: dict) -> dict:
+    """Tags a knowledge fragment with metadata."""
+    message = client.messages.create(
+        model="claude-haiku-4-5",  # Haiku for tagging: fast and cheap
+        max_tokens=512,
+        messages=[{
+            "role": "user",
+            "content": json.dumps(fragment, ensure_ascii=False)
+        }],
+        system=TAGGING_PROMPT,
+        temperature=0.0
+    )
+
+    tags = json.loads(message.content[0].text)
+    required = {"sector", "dominio", "tipo_proyecto", "resultado", "tecnologias", "relevancia"}
+    if not isinstance(tags, dict) or set(tags) != required:
+        raise ValueError("Invalid tagging schema")
+    for key, taxonomy in (("sector", "sectors"), ("dominio", "domains"),
+                          ("tipo_proyecto", "project_types"), ("resultado", "outcomes")):
+        values = tags[key]
+        if not isinstance(values, list) or any(v not in TAXONOMY[taxonomy] for v in values):
+            raise ValueError(f"Invalid taxonomy: {key}")
+    if not isinstance(tags["tecnologias"], list) or any(not isinstance(v, str) for v in tags["tecnologias"]):
+        raise ValueError("Invalid technologies")
+    if type(tags["relevancia"]) is not int or not 1 <= tags["relevancia"] <= 5:
+        raise ValueError("Invalid relevance")
+
+    return {**fragment, "tags": tags}

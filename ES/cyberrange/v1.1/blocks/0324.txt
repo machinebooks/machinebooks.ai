@@ -1,0 +1,6 @@
+# Server clock and immutable rubric govern capture and scoring
+async def configure_scoreboard(actor, instance_id, api):
+    rubric = {"mode": "individual", "duration_minutes": 60,
+              "freeze_public_last_minutes": 5, "hint_total_cap_pct": 60,
+              "hint_levels_pct": [5, 10, 15, 25, 40]}
+    return await api.approve_rubric_before_start(actor, instance_id, rubric)

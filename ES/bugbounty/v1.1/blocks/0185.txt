@@ -1,0 +1,5 @@
+C:\Program Files\Epic Games\
+├── Launcher\Portal\Binaries\ ← escritura sólo por el principal de instalación autorizado
+├── Launcher\Portal\Content\  ← separar datos y contenido que pueda ejecutarse o cargarse
+├── Launcher\Portal\Config\   ← permisos mínimos según el consumidor y el límite de confianza
+└── Launcher\Portal\Logs\     ← escritura de logs sin modificar código ni configuración privilegiada

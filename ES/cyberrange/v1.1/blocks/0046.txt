@@ -1,0 +1,15 @@
+# Didactic task waiter; unknown observations fail closed.
+import asyncio
+
+async def await_task_checked(api, scope, upid, timeout=60):
+    async with asyncio.timeout(timeout):
+        while True:
+            task = await api.task_status(scope, upid)
+            if task.get("status") == "stopped":
+                if task.get("exitstatus") != "OK":
+                    raise RuntimeError("task failed")
+                return task
+            if task.get("status") != "running":
+                raise RuntimeError("task state unknown")
+            await asyncio.sleep(1)
+# The caller retains task/resource inventory on timeout; an unlocked VM is insufficient.

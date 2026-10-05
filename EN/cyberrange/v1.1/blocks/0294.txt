@@ -1,0 +1,35 @@
+# Didactic contract: preserve inventory until verified teardown
+import asyncio
+from datetime import datetime, timezone
+
+async def cleanup_workzone(record, destroy_owned, verify_absent, persist_state):
+    remaining = list(record["resources"])
+    await persist_state(record["id"], "cleanup_pending", remaining)
+    for resource in list(remaining):
+        if resource.get("owner_id") != record["id"]:
+            await persist_state(record["id"], "cleanup_failed", remaining)
+            return False
+        try:
+            await destroy_owned(resource)
+            # Accepted request or powered-off status is not proof of removal.
+            if not await verify_absent(resource):
+                raise RuntimeError("removal unconfirmed")
+        except Exception:
+            await persist_state(record["id"], "cleanup_failed", remaining)
+            return False
+        remaining.remove(resource)
+        await persist_state(record["id"], "cleanup_pending", remaining)
+    # This transition permits resource release; audit/AAR records remain.
+    await persist_state(record["id"], "closed", [])
+    return True
+
+async def gc_loop(expired_records, cleanup):
+    while True:
+        now = datetime.now(timezone.utc)
+        for record in await expired_records(now):
+            expiry = record["expires_at"]
+            if expiry.tzinfo is None:
+                raise ValueError("UTC-aware expiry required")
+            if now >= expiry:
+                await cleanup(record)
+        await asyncio.sleep(900)

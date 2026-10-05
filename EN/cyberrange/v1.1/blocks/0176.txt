@@ -1,0 +1,27 @@
+# Execution and objective states are distinct; event sequence is unique per execution.
+from sqlalchemy import Column, DateTime, Integer, String, UniqueConstraint
+
+def create_execution_models(Base):
+    class AttackExecution(Base):
+        __tablename__ = "attack_execution"
+        id = Column(Integer, primary_key=True)
+        scope_ref = Column(String(128), nullable=False)
+        actor_ref = Column(String(128), nullable=False)
+        artifact_digest = Column(String(64), nullable=False)
+        state = Column(String(32), nullable=False, default="queued")
+        objective_state = Column(String(32), nullable=False, default="unverified")
+        request_ref = Column(String(128), nullable=False, unique=True)
+        started_at = Column(DateTime(timezone=True))
+        finished_at = Column(DateTime(timezone=True))
+    class AttackLog(Base):
+        __tablename__ = "attack_log"
+        __table_args__ = (UniqueConstraint("execution_id", "sequence"),)
+        id = Column(Integer, primary_key=True)
+        execution_id = Column(Integer, nullable=False)
+        event_ref = Column(String(128), nullable=False, unique=True)
+        sequence = Column(Integer, nullable=False)
+        occurred_at = Column(DateTime(timezone=True), nullable=False)
+        redacted_line = Column(String(2000), nullable=False)
+    return AttackExecution, AttackLog
+# The adapter enforces transitions, actor/target leases, UTC and redaction.
+# process_completed is not objective_verified. Retain evidence separately from resource teardown.

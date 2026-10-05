@@ -1,0 +1,40 @@
+// WorkzoneCanvas.tsx — Canvas node interface
+interface CanvasNode {
+  // UTC remote observation; unknown/partial coverage remains visible.
+  observed_at: string | null;
+  coverage: 'complete' | 'partial' | 'unknown';
+  observation_status: 'observed' | 'stale' | 'unknown';
+
+  id: string;
+  name: string;
+  type: 'vm' | 'network' | 'firewall' | 'router';
+  x: number;
+  y: number;
+  // Machine resources
+  cpu?: number;
+  memory_mb?: number;
+  template?: string;
+  // Real-time operational state
+  status?: 'connected' | 'disconnected' | 'deploying' | 'new';
+  power_state?: 'poweredOn' | 'poweredOff' | 'suspended';
+  ip_address?: string;
+  // Proxmox integration
+  vmid?: number;
+  node_id?: number;
+  cluster_id?: number;
+  tags?: string[];
+  // Available operations based on current state
+  available_operations?: {
+    power_on?: boolean;
+    power_off?: boolean;
+    restart?: boolean;
+    connect_console?: boolean;
+    get_info?: boolean;
+  };
+  // Fields for networks as visual containers
+  bridge?: string;
+  network_cidr?: string;
+  gateway?: string;
+  size?: { width: number; height: number };
+  is_container?: boolean;
+}

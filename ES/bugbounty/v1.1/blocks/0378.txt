@@ -1,0 +1,10 @@
+~/.sylvarsec/
+├── memories/
+│   ├── case-vgk-vanguard.md       ← notas de la investigación
+│   ├── case-mobaxterm.md
+│   └── general.md                 ← preferencias y estilo
+├── skills/                        ← plugins de usuario
+│   ├── extract-iocs.js
+│   └── pcap-summarizer.mjs
+└── sessions/                      ← histórico de conversaciones
+    └── 2026-04-19T03-48-12.json

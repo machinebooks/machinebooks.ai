@@ -1,0 +1,11 @@
+# .claude/rules/anonimizacion.md
+
+## Reglas de anonimización (aplicar SIEMPRE)
+
+- NUNCA incluir nombres de clientes, proyectos o personas reales
+- NUNCA incluir URLs, IPs o dominios internos
+- NUNCA incluir datos financieros exactos de contratos
+- Clientes → "la entidad", "el organismo público", "el cliente del sector financiero"
+- Proyectos → "el proyecto de auditoría", "la consultoría de arquitectura"
+- Personas → nombres ficticios si es necesario
+- Datos financieros → escalar con factor aleatorio, mantener proporciones

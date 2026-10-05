@@ -1,0 +1,69 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+# Pseudocode only; not an executable SDK example
+# Pseudocode: Agent and tool are conceptual interfaces, not SDK imports
+
+@tool
+def analyze_job_postings(
+    companies: list[str],
+    period_days: int = 30
+) -> dict:
+    """
+    Analyzes job postings published by competitor companies.
+    Extracts strategy signals: sought profiles, technologies,
+    locations, seniority level.
+    Only processes information published on public portals.
+    """
+    signals = {}
+    for company in companies:
+        postings = _search_public_postings(company, period_days)
+        signals[company] = {
+            "total_postings": len(postings),
+            "predominant_profiles": _classify_profiles(postings),
+            "mentioned_technologies": _extract_technologies(postings),
+            "expansion_areas": _infer_areas(postings),
+            "investment_level": _estimate_investment_level(postings)
+        }
+    return signals
+
+@tool
+def detect_web_changes(
+    urls: list[str],
+    last_review: str
+) -> list[dict]:
+    """
+    Detects changes on competitors' service pages.
+    Compares current content with stored version.
+    Only accesses public pages without authentication.
+    """
+    changes = []
+    for url in urls:
+        current_content = _get_public_content(url)
+        previous_content = _retrieve_cache(url, last_review)
+        if current_content != previous_content:
+            diff = _generate_semantic_diff(
+                previous_content, current_content
+            )
+            changes.append({
+                "url": url,
+                "change_type": diff["type"],  # new_service, pricing, team
+                "summary": diff["summary"],
+                "relevance": diff["relevance"]  # high, medium, low
+            })
+    return changes
+
+# Competitive signals agent configuration
+signals_agent = Agent(
+    model="claude-sonnet-4-6",
+    tools=[analyze_job_postings, detect_web_changes],
+    system="""You are a competitive intelligence analyst for a
+    technology consultancy. You analyze EXCLUSIVELY public
+    information to detect strategic competitor movements.
+
+    Unbreakable ethical rules:
+    - Only information voluntarily published by companies
+    - No inferences about individual people
+    - No access to systems requiring authentication
+    - Always indicate your inferences' confidence level
+    """
+)

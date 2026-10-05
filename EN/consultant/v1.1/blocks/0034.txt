@@ -1,0 +1,49 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+async def run_multi_framework_analysis(
+    client_id: str,
+    project_id: str,
+    frameworks: list[str]
+) -> dict:
+    """Executes compliance analysis against multiple frameworks,
+    leveraging cross-framework control mappings to avoid duplication."""
+
+    results = {}
+    consolidated_controls = set()
+
+    for framework in frameworks:
+        sections = get_all_sections(framework)
+        agent = create_compliance_agent(client_id, project_id)
+
+        framework_findings = await agent.run(
+            f"Execute complete compliance analysis against "
+            f"'{framework}'. Controls already evaluated by "
+            f"equivalence with another framework are: "
+            f"{list(consolidated_controls)}. For those controls, "
+            f"verify that the previous evaluation applies and reference "
+            f"it instead of repeating the full analysis."
+        )
+
+        # Update consolidated controls with mappings
+        findings = extract_findings(framework_findings)
+        for f in findings:
+            mappings = get_framework_mapping(
+                framework, f["framework_ref"], "all"
+            )
+            for m in mappings:
+                if m["relationship"] == "EQUIVALENT":
+                    consolidated_controls.add(
+                        f"{m['target_framework']}:{m['target_control']}"
+                    )
+
+        results[framework] = findings
+
+    return {
+        "frameworks_analyzed": frameworks,
+        "total_findings": sum(len(f) for f in results.values()),
+        "findings_by_framework": {
+            k: len(v) for k, v in results.items()
+        },
+        "controls_consolidated": len(consolidated_controls),
+        "results": results
+    }

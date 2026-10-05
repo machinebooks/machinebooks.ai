@@ -1,0 +1,35 @@
+# Pydantic 2.x teaching profile: parent and sub-technique IDs are distinguished.
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+class MitreMapping(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    tactic_id: str = Field(pattern=r"^TA[0-9]{4}$")
+    tactic_name: str
+    technique_id: str = Field(pattern=r"^T[0-9]{4}$")
+    technique_name: str
+    subtechnique_id: str | None = Field(default=None, pattern=r"^T[0-9]{4}\.[0-9]{3}$")
+    subtechnique_name: str | None = None
+    expected_indicators: list[str] = Field(default_factory=list)
+    recommended_mitigations: list[str] = Field(default_factory=list)
+    @model_validator(mode="after")
+    def check_parent(self):
+        if self.subtechnique_id and not self.subtechnique_id.startswith(self.technique_id+"."):
+            raise ValueError("sub-technique parent mismatch")
+        return self
+    @property
+    def effective_id(self):
+        return self.subtechnique_id or self.technique_id
+
+class ExerciseMitreProfile(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    exercise_id: int = Field(gt=0)
+    release: str
+    mappings: list[MitreMapping]
+    def gap_analysis(self, verified_detection_ids):
+        expected = {item.effective_id for item in self.mappings}
+        detected = expected.intersection(verified_detection_ids)
+        return {"expected": sorted(expected), "detected": sorted(detected),
+                "missed": sorted(expected-detected),
+                "coverage_percent": 100*len(detected)/len(expected) if expected else None}
+# Resolve IDs/names against the pinned catalog. Mapping describes intended scope;
+# detection coverage additionally needs independently verified, time-bounded evidence.

@@ -1,0 +1,23 @@
+def claims_allowed(claims, expected_audience, required_scope, now):
+    return (claims.get("aud") == expected_audience
+            and isinstance(claims.get("exp"), int)
+            and claims["exp"] > now
+            and required_scope in claims.get("scp", "").split())
+
+claims = {"aud": "fixture_graph", "exp": 200,
+          "scp": "Fixture.Chat.Read"}
+assert claims_allowed(claims, "fixture_graph", "Fixture.Chat.Read", 100)
+assert not claims_allowed(claims, "other", "Fixture.Chat.Read", 100)
+assert not claims_allowed(claims, "fixture_graph", "Fixture.Message.Read", 100)
+assert not claims_allowed(claims, "fixture_graph", "Fixture.Chat.Read", 200)
+message = {"id": "owned-7", "object": "fixture",
+           "method": "read", "context": "html_panel"}
+assert set(message) == {"id", "object", "method", "context"}
+contexts = {"pdf_js": {"native_reply_observed": False},
+            "html_panel": {"native_reply_observed": False}}
+assert not contexts["pdf_js"]["native_reply_observed"]
+assert not contexts["html_panel"]["native_reply_observed"]
+assert claims.get("iat") is None
+duration = None if claims.get("iat") is None else claims["exp"] - claims["iat"]
+assert duration is None
+print("audience and bridge fixture: PASS")

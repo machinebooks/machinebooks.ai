@@ -1,0 +1,7 @@
+# Authorized template inventory; no password or credential values are returned.
+async def list_templates(actor, cluster_ref, access, inventory):
+    scope = await access.authorized_catalog(actor, cluster_ref)
+    observed = await inventory.read_templates(scope, timeout=30)
+    fields = ("resource_ref", "name", "cpu", "memory_mb", "disk_gb", "digest", "version")
+    return {"templates": [{key: item.get(key) for key in fields} for item in observed.items],
+            "coverage": observed.coverage, "observed_at_utc": observed.at_utc}

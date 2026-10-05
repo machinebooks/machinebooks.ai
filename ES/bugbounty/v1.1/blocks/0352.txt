@@ -1,0 +1,20 @@
+# Vector 2: crear experimental_options.json
+# Localizar el directorio tdata (varía según tipo de instalación)
+
+# UWP (Microsoft Store):
+$tdata_uwp = "$env:LOCALAPPDATA\Packages\TelegramMessengerLLP.TelegramDesktop_t4vj0pshhgkwm\LocalCache\Roaming\Telegram Desktop\tdata"
+
+# Standalone (instalación directa):
+$tdata_standalone = "$env:APPDATA\Telegram Desktop\tdata"
+
+# Portable:
+# <directorio_del_exe>\TelegramForcePortable\tdata
+
+# Escribir el fichero de configuración (UWP)
+$jsonContent = '{"webview-debug-enabled": true}'
+Set-Content -Path "$tdata_uwp\experimental_options.json" -Value $jsonContent
+
+# Reiniciar Telegram para que lea el fichero
+Stop-Process -Name "Telegram" -Force -ErrorAction SilentlyContinue
+Start-Sleep -Seconds 3
+Start-Process "shell:AppsFolder\TelegramMessengerLLP.TelegramDesktop_t4vj0pshhgkwm!Telegram"

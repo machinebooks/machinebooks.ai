@@ -1,0 +1,8 @@
+# Current actor/resource policy; administrators have an explicit scope too.
+import asyncio
+
+async def check_workzone_access(actor, workzone_id, access):
+    if type(workzone_id) is not int or workzone_id <= 0:
+        return False
+    return await asyncio.wait_for(access.permits(actor, "workzone.read", workzone_id), 10)
+# Policy checks active session, organization, exercise and object membership.

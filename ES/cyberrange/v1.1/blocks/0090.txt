@@ -1,0 +1,13 @@
+# Didactic shared limiter contract; pseudonymous keys are produced by a trusted adapter.
+async def check_account_lockout(actor_ref, origin_ref, limiter):
+    # Atomic policy checks origin-account, account and global limits; no raw identifiers in logs.
+    result = await limiter.check_atomic(actor_ref, origin_ref)
+    if result.blocked:
+        raise PermissionError("authentication temporarily unavailable")
+
+async def record_failed_login(actor_ref, origin_ref, limiter):
+    await limiter.record_failure_atomic(actor_ref, origin_ref)
+
+async def record_successful_login(actor_ref, origin_ref, limiter):
+    await limiter.record_success_atomic(actor_ref, origin_ref)
+# UTC expiry, trusted proxy origin and unknown-account uniformity are integration requirements.

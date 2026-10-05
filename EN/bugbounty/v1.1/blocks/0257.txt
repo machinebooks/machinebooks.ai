@@ -1,0 +1,3 @@
+[Write] Steam\bin\SteamService.dll  ← USER can write
+     ↓ (copied by the service)
+[Read]  Common Files\Steam\SteamService.dll  ← only SYSTEM writes

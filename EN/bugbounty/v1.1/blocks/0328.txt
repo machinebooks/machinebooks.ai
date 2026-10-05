@@ -1,0 +1,14 @@
+// RNA bundle fragment (reconstructed by Claude from minified code)
+// Shows how the panel accesses the IMS authentication token
+this.getAccessToken = function(context) {
+    // First attempt: token already available in context
+    if (context.imsToken) {
+        return context.imsToken;
+    }
+    // Second attempt: get from the authentication service
+    var tokenInfo = this.auth.getAccessTokenInfo();
+    if (tokenInfo && tokenInfo.access_token) {
+        return tokenInfo.access_token;
+    }
+    return null;
+};

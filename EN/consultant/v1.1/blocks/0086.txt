@@ -1,0 +1,47 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+@dataclass
+class EvidenceRecord:
+    """Evidence record linked to a finding."""
+    evidence_id: str
+    source_document: str
+    page_or_section: str
+    quote: str
+    timestamp_analyzed: str
+    control_ids: list[str] = field(default_factory=list)
+
+class EvidenceCollector:
+    """Evidence collector and organizer for audits."""
+
+    def __init__(self):
+        self.records: list[EvidenceRecord] = []
+
+    def collect_from_evaluation(
+        self, control: AuditControl, doc_name: str, quotes: list[str]
+    ):
+        """Records evidence found during evaluation."""
+        from datetime import datetime
+        for i, quote in enumerate(quotes):
+            record = EvidenceRecord(
+                evidence_id=f"EV-{len(self.records)+1:04d}",
+                source_document=doc_name,
+                page_or_section=self._locate_section(quote, doc_name),
+                quote=quote[:500],  # Limit quote length
+                timestamp_analyzed=datetime.now().isoformat(),
+                control_ids=[control.control_id]
+            )
+            self.records.append(record)
+
+    def generate_evidence_matrix(self) -> dict:
+        """Generates control-evidence traceability matrix."""
+        matrix = {}
+        for record in self.records:
+            for ctrl_id in record.control_ids:
+                if ctrl_id not in matrix:
+                    matrix[ctrl_id] = []
+                matrix[ctrl_id].append({
+                    "evidence_id": record.evidence_id,
+                    "document": record.source_document,
+                    "quote_preview": record.quote[:100] + "..."
+                })
+        return matrix

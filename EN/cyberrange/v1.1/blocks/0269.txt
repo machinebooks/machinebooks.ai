@@ -1,0 +1,18 @@
+# Reuse chapter 18 validation and the scoped penalty ledger before durable fan-out
+import asyncio
+
+async def deliver_coaching_hint(actor, instance_id, request_id, coaching, adapter):
+    recorded = await asyncio.wait_for(
+        coaching.generate_reactive_hint(actor.id, instance_id, request_id), timeout=60)
+    if recorded.get("status") in {"abstained", "levels_exhausted"}:
+        return {"status": "abstained", "sent": False}
+    hint = await adapter.require_validated_recorded_hint(actor, instance_id, recorded)
+    session = await adapter.resolve_authorized_coaching_session(actor, instance_id)
+    event = await adapter.record_validated_hint_once(actor, session, request_id, hint)
+    receipt = await asyncio.wait_for(adapter.deliver_revalidating(session, event), 5)
+    return {"status": "recorded", "event_id": event["event_id"],
+            "sent": receipt.get("sent", 0) > 0,
+            "recovery_required": receipt.get("failed", 0) > 0
+                or receipt.get("sent", 0) == 0}
+
+# Adapter maps the CoachingService result contract; no raw challenge secrets enter a prompt.

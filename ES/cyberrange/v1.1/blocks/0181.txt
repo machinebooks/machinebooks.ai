@@ -1,0 +1,20 @@
+# Pure offline DNS-question builder; no socket, packet sender or real secrets.
+import base64
+import random
+import re
+
+def build_synthetic_dns_questions(count=20, seed=7):
+    if type(count) is not int or not 1 <= count <= 1000 or type(seed) is not int:
+        raise ValueError("bounded count and integer seed required")
+    rng = random.Random(seed)
+    events = []
+    for index in range(count):
+        suspicious = index % 20 == 0
+        label = base64.b32encode(f"fixture-{index}".encode()).decode().rstrip("=").lower()
+        domain = f"{label}.training.invalid" if suspicious else "portal.training.invalid"
+        assert re.fullmatch(r"[a-z0-9.]+", domain) and len(domain) < 254
+        events.append({"sequence":index+1, "qname":domain, "qtype":"A",
+                       "delay_ms":rng.randint(500,3000), "synthetic_label":suspicious})
+    return events
+# Labels are instructor ground truth for synthetic observations, not detector results.
+# Reviewed PCAP construction and contained replay need a separate catalog/lease adapter.

@@ -1,0 +1,28 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+def enrich_with_rag_context(
+    self, section_id: str, query: str, filters: dict
+) -> str:
+    """Searches for relevant context in the knowledge base."""
+    # Query Qdrant with type and sector filters
+    results = self.rag_client.search(
+        query=query,
+        filters={
+            "document_type": ["report", "lesson_learned"],
+            "sector": filters.get("sector", None),
+            "framework": filters.get("framework", None),
+        },
+        top_k=5,
+    )
+
+    if not results:
+        return ""
+
+    # Format context for injection
+    context_parts = []
+    for r in results:
+        context_parts.append(
+            f"[Source: {r.metadata['document_type']}, "
+            f"{r.metadata['year']}]\n{r.text}"
+        )
+    return "\n---\n".join(context_parts)

@@ -1,0 +1,49 @@
+# docker-compose.yml — Augmented hunter's Lab
+version: "3.9"
+
+services:
+  # Main analysis container
+  analysis:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile.analysis
+    volumes:
+      - ./samples:/opt/samples        # Binaries to analyze
+      - ./output:/opt/output           # Analysis results
+      - ./scripts:/opt/scripts         # Automation scripts
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    networks:
+      - lab-net
+    cap_add:
+      - SYS_PTRACE                     # Needed for debugging
+
+  # Fuzzing container (isolated)
+  fuzzer:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile.fuzzer
+    volumes:
+      - ./samples:/opt/samples
+      - ./crashes:/opt/crashes         # Fuzzing crashes
+    networks:
+      - lab-net
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"                  # Limit CPU for fuzzing
+          memory: 4G
+
+  # Local model for OPSEC (no telemetry)
+  lm-studio:
+    image: ghcr.io/example/lm-studio-server:latest
+    ports:
+      - "1234:1234"                    # OpenAI-compatible API
+    volumes:
+      - ./models:/opt/models           # Downloaded models
+    networks:
+      - lab-net
+
+networks:
+  lab-net:
+    driver: bridge

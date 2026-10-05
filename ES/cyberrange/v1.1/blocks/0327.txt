@@ -1,0 +1,6 @@
+# Optional feature: approved provider/adapter, budget, opt-in and hint validator required
+async def enable_coaching(actor, instance_id, api, approved_profile_ref):
+    return await api.enable_approved_coaching(actor, instance_id, approved_profile_ref,
+                                            participant_opt_in_required=True)
+
+# A hints_only prompt is not a leakage control or proof of a connected model.

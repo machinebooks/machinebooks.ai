@@ -1,0 +1,57 @@
+# Illustrative configuration; keys alone do not implement an engine or authorize actions.
+# Competitive intelligence pipeline configuration
+# config/competitive_intelligence.yaml
+
+sources:
+  awards:
+    base_url: "https://contrataciondelestado.es/sindicacion"
+    cpv_codes:
+      - "72000000"  # IT services and consulting
+      - "72200000"  # Programming and consulting
+      - "72220000"  # Systems consulting
+      - "79410000"  # Management consulting
+    cadence: "weekly"
+    history_months: 24
+
+  employment:
+    portals: ["linkedin_public", "infojobs"]
+    monitored_companies:
+      - name: "Competitor A"
+        services_web: "https://www.competitor-a.com/services"
+      - name: "Competitor B"
+        services_web: "https://www.competitor-b.com/solutions"
+    cadence: "weekly"
+
+  regulation:
+    sources:
+      - "eu_official_journal"
+      - "boe_technology"
+      - "european_ai_office"
+      - "enisa_publications"
+    domains: ["ai", "cybersecurity", "data_protection", "cloud"]
+    cadence: "daily"
+
+  technology:
+    sources:
+      - "arxiv_cs_ai"
+      - "technical_blogs"  # Anthropic, AWS, Azure, GCP blogs
+      - "upcoming_conferences"
+    cadence: "weekly"
+
+analysis:
+  model: "claude-opus-4-6"  # Powerful model for correlations
+  report_cadence: "biweekly"
+  real_time_alerts: true
+  alert_threshold: "medium"  # high, medium, low
+
+integration:
+  knowledge_rag: true
+  rfp_system: true
+  notifications: "email"
+  recipients: ["commercial_team", "partners"]
+
+ethics:
+  public_information_only: true
+  respect_robots_txt: true
+  no_individual_profiling: true
+  access_logging: true  # Traceability of what's queried

@@ -1,0 +1,43 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import anthropic
+import json
+from pathlib import Path
+
+client = anthropic.Anthropic()
+
+def analyze_service_structure(service_name: str, metadata: dict) -> dict:
+    """Analyzes a service's structure from its metadata."""
+    prompt = f"""You are a senior software architect evaluating a service
+for a modernization project.
+
+Service: {service_name}
+Language: {metadata['language']}
+Lines of code: {metadata['loc']}
+External dependencies: {json.dumps(metadata['dependencies'], indent=2)}
+Database schema (tables and relationships): {json.dumps(metadata['db_schema'], indent=2)}
+Quality metrics (SonarQube): {json.dumps(metadata['sonar'], indent=2)}
+
+Evaluate:
+1. Coupling level with other services (high/medium/low) and evidence
+2. Critical technical debt (that would block a migration)
+3. Estimated migration complexity (1-5, where 5 is maximum)
+4. Dependencies requiring replacement in a cloud-native architecture
+5. Specific risks of this service during migration
+
+Respond in structured JSON."""
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return json.loads(message.content[0].text)
+
+# Process all 12 services
+results = {}
+for service in client_services:
+    metadata = extract_metadata(service)  # Function that extracts without source code
+    results[service['name']] = analyze_service_structure(
+        service['name'], metadata
+    )

@@ -1,0 +1,28 @@
+# Draft catalog artifact; four JSON fields do not establish deployability or publication.
+from datetime import datetime, timezone
+from sqlalchemy import CheckConstraint, Column, DateTime, Integer, JSON, String
+
+def create_scenario_template_model(Base):
+    class ScenarioTemplate(Base):
+        __tablename__="scenario_template"
+        id=Column(Integer,primary_key=True)
+        scope_ref=Column(String(128),nullable=False)
+        catalog_ref=Column(String(80),nullable=False,unique=True)
+        version_ref=Column(String(80),nullable=False)
+        name=Column(String(128),nullable=False)
+        category=Column(String(64),nullable=False)
+        rubric_ref=Column(String(128),nullable=False)
+        topology_config=Column(JSON,nullable=False)
+        vm_configs=Column(JSON,nullable=False)
+        network_configs=Column(JSON,nullable=False)
+        security_configs=Column(JSON,nullable=False)
+        digest=Column(String(64))
+        approval_ref=Column(String(128))
+        state=Column(String(24),nullable=False,default="draft")
+        created_at=Column(DateTime(timezone=True),nullable=False,
+                          default=lambda:datetime.now(timezone.utc))
+        __table_args__=(CheckConstraint("state IN ('draft','review_pending','approved','retired')"),
+            CheckConstraint("state != 'approved' OR (approval_ref IS NOT NULL AND digest IS NOT NULL AND length(digest) = 64)"))
+    return ScenarioTemplate
+# Admission separately checks schema/catalog digest, authority, reservations and guest readiness.
+# Private templates/core stay private; publication of licensed educational fragments is separate.

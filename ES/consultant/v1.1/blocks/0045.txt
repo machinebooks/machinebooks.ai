@@ -1,0 +1,24 @@
+# .claude/commands/generate-proposal.md
+
+Genera borrador de propuesta técnica para: $ARGUMENTS
+
+## Fuentes de contexto
+- Consulta el RAG corporativo para propuestas similares anteriores
+- Usa la matriz de requisitos del RFP (si existe en el proyecto)
+- Aplica la estructura estándar definida en CLAUDE.md
+
+## Estructura de la propuesta
+1. Comprensión del contexto y necesidades del cliente
+2. Enfoque metodológico (adaptado al tipo de proyecto)
+3. Equipo de trabajo (perfiles, dedicación, certificaciones)
+4. Plan de trabajo (fases, hitos, entregables por fase)
+5. Estimación de esfuerzo (basada en proyectos similares)
+6. Diferencial competitivo (qué nos distingue, con datos)
+7. Gestión de riesgos (identificación y mitigación)
+8. Limitaciones y asunciones
+
+## Restricciones
+- Estilo: técnico y directo, sin lenguaje comercial vacío
+- Datos financieros: usar rangos, nunca valores absolutos exactos
+- Extensión por sección: adaptable pero proporcionada al peso del criterio
+- Si falta información para una sección, marca como [PENDIENTE: información X]

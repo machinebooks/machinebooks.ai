@@ -1,0 +1,21 @@
+# Scope and snapshot are explicit; the query adapter uses parameterized SQL
+from datetime import datetime, timedelta, timezone
+
+async def get_dashboard_stats(actor, scope, adapter, now=None):
+    snapshot = now or datetime.now(timezone.utc)
+    if snapshot.tzinfo is None or snapshot.utcoffset() is None:
+        raise ValueError("aware timestamp required")
+    snapshot = snapshot.astimezone(timezone.utc)
+    await adapter.require_audit_read(actor, scope)
+    day_start = snapshot.replace(hour=0, minute=0, second=0, microsecond=0)
+    daily = await adapter.count_categories(scope, day_start, snapshot)
+    windows = [(snapshot-timedelta(hours=24-i), snapshot-timedelta(hours=23-i))
+               for i in range(24)]
+    hourly = await adapter.count_windows(scope, windows)
+    if len(hourly) != 24 or any(type(value) is not int or value < 0 for value in hourly):
+        raise ValueError("invalid hourly counts")
+    return {"scope_ref": scope.reference, "snapshot_utc": snapshot.isoformat(),
+            "daily": daily, "hourly": [
+                {"start_utc": start.isoformat(), "end_utc": end.isoformat(), "count": count}
+                for (start, end), count in zip(windows, hourly)],
+            "coverage": await adapter.coverage(scope, windows[0][0], snapshot)}

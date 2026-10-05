@@ -1,0 +1,5 @@
+LONG WinVerifyTrust(
+    HWND   hwnd,           // Window handle (can be INVALID_HANDLE_VALUE)
+    GUID   *pgActionID,    // GUID of the verification action
+    LPVOID pWVTData        // WINTRUST_DATA structure with file path
+);

@@ -1,0 +1,44 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+    def triage_document(self, doc_name: str, doc_content: str) -> dict:
+        """Classifies a document by relevance and domain."""
+        # Use claude-haiku-4-5 for triage: fast and economical
+        response = self.client.messages.create(
+            model="claude-haiku-4-5",
+            max_tokens=512,
+            messages=[{
+                "role": "user",
+                "content": f"""Classify this document for a {self.framework} audit.
+
+Document: {doc_name}
+Content (first 2,000 words): {doc_content[:8000]}
+
+Respond ONLY in JSON:
+{{
+  "relevant": true/false,
+  "domain": "security|compliance|processes|architecture|other",
+  "controls_related": ["list of potentially related control IDs"],
+  "summary": "one-sentence summary"
+}}"""
+            }]
+        )
+        return json.loads(response.content[0].text)
+
+    def ingest_documents(self, docs_folder: str):
+        """Ingests and triages all documents."""
+        docs_path = Path(docs_folder)
+        triaged = {"relevant": 0, "discarded": 0}
+
+        for doc_file in docs_path.glob("**/*.*"):
+            if doc_file.suffix.lower() in (".pdf", ".docx", ".md", ".txt"):
+                content = self._extract_text(doc_file)
+                classification = self.triage_document(doc_file.name, content)
+
+                if classification["relevant"]:
+                    self.documents[doc_file.name] = content
+                    triaged["relevant"] += 1
+                else:
+                    triaged["discarded"] += 1
+
+        print(f"Triage: {triaged['relevant']} relevant, "
+              f"{triaged['discarded']} discarded")

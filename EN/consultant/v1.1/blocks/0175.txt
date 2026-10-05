@@ -1,0 +1,55 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+from datetime import date, timedelta
+from dataclasses import dataclass
+
+@dataclass
+class DigitalFastingPolicy:
+    """Digital fasting policy to maintain baseline skills.
+
+    Each consultant dedicates regulated time to work without AI
+    assistance to preserve autonomous analysis and writing capacity."""
+
+    # One day per month without AI tools for analytical tasks
+    monthly_fast_day: int = 15  # Day of month
+
+    # Each new proposal: first approach draft WITHOUT AI
+    proposal_first_draft_manual: bool = True
+
+    # Client diagnostic meetings: no AI preparation
+    diagnostic_meetings_manual: bool = True
+
+    # Deliverable review: at least one review without AI suggestions
+    final_review_manual: bool = True
+
+    def should_use_ai(self, task_type: str, current_date: date) -> dict:
+        """Determines whether a task should be done with or without AI."""
+        is_fast_day = current_date.day == self.monthly_fast_day
+
+        rules = {
+            "proposal_approach": {
+                "ai_allowed": not self.proposal_first_draft_manual,
+                "reason": "The first strategic draft exercises "
+                         "the consultant's independent thinking"
+            },
+            "client_diagnostic": {
+                "ai_allowed": not self.diagnostic_meetings_manual,
+                "reason": "Reading the room and active listening "
+                         "require complete human presence"
+            },
+            "deliverable_review": {
+                "ai_allowed": not self.final_review_manual,
+                "reason": "The final review must apply human judgment "
+                         "without the model's confirmation bias"
+            },
+            "routine_analysis": {
+                "ai_allowed": not is_fast_day,
+                "reason": "Digital fasting day: analytical tasks "
+                         "without AI assistance" if is_fast_day else "OK"
+            }
+        }
+
+        return rules.get(task_type, {
+            "ai_allowed": not is_fast_day,
+            "reason": "General policy"
+        })

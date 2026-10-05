@@ -1,0 +1,34 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+def _identificar_riesgos(
+    proyecto: ProyectoInput, coste_base: float
+) -> list[str]:
+    """Identifies commercial risks of the proposed pricing."""
+    riesgos = []
+
+    if proyecto.horas_estimadas_sin_ia < 100:
+        riesgos.append(
+            "Small project: management fixed costs may erode margin"
+        )
+
+    if not proyecto.es_licitacion_publica and proyecto.tipo in ("roadmap", "assessment"):
+        riesgos.append(
+            "High scope creep risk on fixed fee — define deliverables precisely"
+        )
+
+    if proyecto.valor_cliente_estimado > coste_base * 8:
+        riesgos.append(
+            "Variable component depends on client implementing recommendations"
+        )
+
+    if proyecto.sector == "publico" and not proyecto.es_licitacion_publica:
+        riesgos.append(
+            "Public sector price-sensitive — prepare value argumentation"
+        )
+
+    if proyecto.factor_reduccion_ia < 0.5:
+        riesgos.append(
+            ">50% AI reduction visible — prepare value narrative, not savings narrative"
+        )
+
+    return riesgos

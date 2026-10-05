@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+"""Review explicitly supplied window preferences; no AST/default inference."""
+def review_browser_window_preferences(windows: list[dict]) -> list[dict]:
+    findings = []
+    for window in windows:
+        preferences = window.get("webPreferences", {})
+        if not isinstance(preferences, dict):
+            raise ValueError("webPreferences must be an object")
+        values = {}
+        for name in ("nodeIntegration", "contextIsolation", "sandbox"):
+            value = preferences.get(name)
+            if value is not None and type(value) is not bool:
+                raise ValueError("Explicit preferences must be boolean or unknown")
+            values[name] = value
+        complete = all(value is not None for value in values.values())
+        options_present = complete and (
+            values["nodeIntegration"] is False
+            and values["contextIsolation"] is True
+            and values["sandbox"] is True
+        )
+        findings.append({
+            "file": window.get("file"),
+            **values,
+            "all_three_values_explicit": complete,
+            "review_status": (
+                "EXPLICIT_HARDENING_OPTIONS_PRESENT" if options_present
+                else "REVIEW_REQUIRED"
+            ),
+            "risk_level": "NOT_SCORED",
+            "scope": "Input observations only; no window execution evidence",
+        })
+    return findings
+
+# Supply preferences from verified manual/AST extraction.
+# Missing values remain unknown; this code does not replace a versioned analysis.

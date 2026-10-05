@@ -1,0 +1,54 @@
+# Historical model inventory; abbreviated teaching schemas follow
+# File: backend/models.py
+
+# ------- Catalogs -------
+# VMTemplate, ActionTemplate
+# Reusable templates that define the base for VMs and attack actions
+
+# ------- Users / Workzones -------
+# Workzone, User, Team, VCenterResource, WorkzoneInstance
+# The organizational core: who is where and what resources they have
+
+# ------- Topology Designs -------
+# TopologyDesign, TopologyNodeTemplate, TopologyNetTemplate, TopologyEdgeTemplate
+# Representation of the network canvas that the user designs visually
+
+# ------- Scenarios -------
+# Scenario, ScenarioTemplate, ScenarioDeployment, ScenarioInstance
+# From template to actual deployment on infrastructure
+
+# ------- Attacks -------
+# AttackExecution, ScheduledAttackExecution, AttackLog
+# Execution of immediate, scheduled, and recurring attacks
+
+# ------- Auditing & Gamification -------
+# AuditSession, AuditEvent, ScoreLog
+# User sessions, granular events, scores
+
+# ------- CTF & Challenges -------
+# Challenge, ChallengeInstance, CtfFlag, CtfCapture, CtfHint, CtfHintUse
+# Illustrative CTF relationships; policy, scoring and ledger need separate adapters
+
+# ------- MITRE ATT&CK -------
+# MitreTactic, MitreTechnique, MitreSubtechnique,
+# MitreTacticTechnique, ChallengeMitreTechnique
+# Catalog relationships; validate the selected release and coverage separately
+
+# ------- Profiles and Skills -------
+# Skill, SkillLevelConfig, Badge, BadgeChallenge, ChallengeSkill,
+# FlagSkill, UserSkill, UserBadge, UserActivityLog
+# Progression system with skills, badges, and activity log
+
+# ------- Proxmox Management -------
+# ProxmoxCluster, ProxmoxNode, ProxmoxVM, ProxmoxTemplate,
+# ProxmoxSnapshot, ProxmoxPool, ProxmoxTask, ProxmoxSyncLog
+# Abbreviated infrastructure inventory; reconciliation and coverage are separate
+
+# ------- Database Management -------
+# DatabaseConnection, DatabaseQueryHistory, DatabasePerformanceMetric,
+# DatabaseBackup, DatabaseAlert
+# Self-monitoring and management of the database itself
+
+# ------- Instrumented Auditing -------
+# AuditLog, AuditLogArchive, SecurityAlert
+# Audit system with archiving and security alerts

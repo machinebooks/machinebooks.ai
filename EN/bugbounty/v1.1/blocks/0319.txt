@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+"""
+CDP target enumerator for WebView2.
+Queries the debug endpoint and lists available contexts.
+FOR EXCLUSIVE USE IN AN AUTHORIZED LAB ENVIRONMENT.
+"""
+
+import json
+import urllib.request
+import sys
+
+CDP_HOST = "127.0.0.1"
+CDP_PORT = 9222
+
+def enumerate_targets(host: str = CDP_HOST, port: int = CDP_PORT) -> list:
+    """Query the /json endpoint and return the list of targets."""
+    url = f"http://{host}:{port}/json"
+    try:
+        with urllib.request.urlopen(url, timeout=5) as resp:
+            data = json.loads(resp.read().decode())
+            return data
+    except ConnectionRefusedError:
+        print(f"[!] No CDP server at {host}:{port}")
+        return []
+    except Exception as e:
+        print(f"[!] Connection error: {e}")
+        return []
+
+def classify_target(target: dict) -> str:
+    """Classify a target by its URL to identify the application."""
+    url = target.get("url", "")
+    if "teams.microsoft.com" in url or "teams.live.com" in url:
+        return "Microsoft Teams"
+    elif "outlook.live.com" in url or "outlook.office" in url:
+        return "Microsoft Outlook"
+    elif "acrobat.adobe.com" in url or "documentcloud" in url:
+        return "Adobe Acrobat"
+    elif "web.telegram.org" in url or "tg-webview" in url:
+        return "Telegram"
+    elif "teamviewer" in url.lower():
+        return "TeamViewer"
+    else:
+        return f"Unknown ({url[:60]})"
+
+if __name__ == "__main__":
+    targets = enumerate_targets()
+    if not targets:
+        sys.exit(1)
+    
+    print(f"[+] {len(targets)} CDP targets found:\n")
+    for i, t in enumerate(targets):
+        app = classify_target(t)
+        print(f"  [{i}] {app}")
+        print(f"      Title: {t.get('title', 'N/A')}")
+        print(f"      URL:   {t.get('url', 'N/A')[:80]}")
+        print(f"      Type:  {t.get('type', 'N/A')}")
+        print(f"      WS:    {t.get('webSocketDebuggerUrl', 'N/A')[:80]}")
+        print()

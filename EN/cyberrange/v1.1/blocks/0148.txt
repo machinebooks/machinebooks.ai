@@ -1,0 +1,16 @@
+# Transactional outbox; workers receive IDs and acquire their own sessions
+from datetime import datetime, timezone
+
+def queue_scenario_deployment(db,actor,template_id,workzone_id,version_digest,scope):
+    scope.authorize(actor.id,"scenario_deploy",workzone_id)
+    with db.transaction():
+        template=db.lock_authorized_template(actor.id,template_id)
+        if template is None or template.approved_digest!=version_digest:
+            raise ValueError("current approved immutable artifact required")
+        reservation=db.reserve_owned_workzone(actor.id,workzone_id,template_id)
+        deployment=db.insert_unique_deployment(reservation,version_digest,datetime.now(timezone.utc))
+        db.enqueue_unique_deployment_event(deployment.id,version_digest)
+        return {"deployment_id":deployment.id,"status":"queued"}
+
+# Scope, reservation, schema constraints and durable outbox dispatch are
+# adapter contracts. No request-scoped ORM object/session crosses task lifetime.

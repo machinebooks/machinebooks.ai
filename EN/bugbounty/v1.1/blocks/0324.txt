@@ -1,0 +1,5 @@
+// Fragment identified by Claude in the minified bundle
+// (formatted for readability)
+window.nativepostmessage = function(msg) {
+    chrome.webview.postMessage(msg);
+};

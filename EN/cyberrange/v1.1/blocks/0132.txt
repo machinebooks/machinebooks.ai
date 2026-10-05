@@ -1,0 +1,47 @@
+# Structural validation is followed by authorized subnet and VLAN lease admission.
+from ipaddress import IPv4Address, IPv4Network
+from typing import Literal
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+class AvailableNetworkCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    name: str = Field(min_length=1, max_length=80)
+    network: str
+    vlan_id: int = Field(ge=1, le=4094)
+    gateway: str
+    dns_servers: list[str] = Field(default_factory=list, max_length=4)
+    mac_address: str | None = Field(default=None, pattern=r"^(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$")
+    dhcp_enabled: bool = False
+    dhcp_range_start: str | None = None
+    dhcp_range_end: str | None = None
+    environment: Literal["exercise"] = "exercise"
+
+    @model_validator(mode="after")
+    def validate_addresses(self):
+        subnet = IPv4Network(self.network, strict=True)
+        if not subnet.is_private or subnet.prefixlen < 24 or subnet.prefixlen > 29:
+            raise ValueError("bounded private exercise subnet required")
+        gateway = IPv4Address(self.gateway)
+        if gateway not in subnet or gateway in (subnet.network_address, subnet.broadcast_address):
+            raise ValueError("usable gateway required")
+        for address in self.dns_servers:
+            IPv4Address(address)
+        if self.dhcp_enabled:
+            start, end = IPv4Address(self.dhcp_range_start), IPv4Address(self.dhcp_range_end)
+            if start not in subnet or end not in subnet or int(start) > int(end):
+                raise ValueError("ordered in-subnet DHCP range required")
+            if any(int(start) <= int(address) <= int(end) for address in
+                   (subnet.network_address, subnet.broadcast_address, gateway)):
+                raise ValueError("DHCP range contains reserved address")
+        elif self.dhcp_range_start is not None or self.dhcp_range_end is not None:
+            raise ValueError("disabled DHCP must not carry a range")
+        return self
+
+class PlaybookCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    catalog_ref: str = Field(pattern=r"^[a-z][a-z0-9_-]{0,63}$")
+    digest: str = Field(pattern=r"^[0-9a-f]{64}$")
+    category: Literal["deployment", "configuration", "security", "maintenance"]
+    parameter_set_ref: str = Field(pattern=r"^[a-z][a-z0-9_-]{0,63}$")
+# No caller-supplied executable text, inventory, secret or arbitrary extra variables.
+# An adapter checks approved digest/schema, owned targets, lease and permissions.

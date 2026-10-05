@@ -1,0 +1,23 @@
+# Async private deployment boundary; generated proposals contain placeholders only.
+import copy
+from backend.services.dynamic_flag_service import DynamicFlagService
+
+async def inject_instance_flags(adapter, actor_ref, workzone_id, scenario_data):
+    await adapter.authorize(actor_ref, "deploy_instance_flags", workzone_id)
+    data = copy.deepcopy(scenario_data)
+    nodes = {item["node_id"]: item for item in data["vm_configs"]}
+    if len(nodes) != len(data["vm_configs"]):
+        raise ValueError("duplicate nodes")
+    ids = [item["id"] for item in data["flags"]]
+    if len(ids) != len(set(ids)):
+        raise ValueError("duplicate flags")
+    for definition in data["flags"]:
+        node_id = definition["location"]
+        if node_id not in nodes:
+            raise ValueError("unknown flag location")
+        instance = await adapter.require_authorized_open_instance(
+            actor_ref, workzone_id, definition["id"], node_id)
+        value = await DynamicFlagService.generate_flag_for_instance(adapter, actor_ref, instance.id)
+        await adapter.inject_owned_flag_and_verify(instance, node_id, value)
+    return {"status": "seeded_and_verified", "instance_refs": await adapter.seed_receipts(workzone_id)}
+# Do not return final tokens to a model, browser catalog or log. Failures retain inventory and intents.

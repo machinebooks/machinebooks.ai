@@ -1,0 +1,23 @@
+┌─────────────────────────────────────────────────────────────┐
+│  1. ADOBE-2026-001: Env var injection (CVSS 8.1)            │
+│     reg add HKCU\Environment ... --remote-debugging-port    │
+│                          │                                  │
+│                          ▼                                  │
+│  2. CDP active on localhost:9222                             │
+│     5 RNA targets accessible                                │
+│                          │                                  │
+│              ┌───────────┼───────────┐                      │
+│              ▼           ▼           ▼                      │
+│  3. ADOBE-2026-002  4. ADOBE-2026-003  5. ADOBE-2026-004   │
+│     Cookie theft       AcroJS bridge     IMS token theft    │
+│     (CVSS 8.0)        (CVSS 9.0)        (CVSS 7.5)        │
+│              │           │           │                      │
+│              └───────────┼───────────┘                      │
+│                          ▼                                  │
+│  6. ADOBE-2026-005: Known API endpoints (CVSS 5.3)          │
+│     The attacker knows exactly where to aim                 │
+│                          │                                  │
+│                          ▼                                  │
+│  7. ADOBE-2026-006: jQuery 1.11.1 (CVSS 6.1)               │
+│     Additional XSS → AcroJS escalation vector              │
+└─────────────────────────────────────────────────────────────┘

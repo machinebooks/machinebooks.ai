@@ -1,0 +1,127 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import json
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta
+from typing import Optional
+
+@dataclass
+class JuniorProgress:
+    """Tracking a junior's progress in the program."""
+    junior_id: str
+    name: str
+    start_date: str
+    assigned_project_type: str           # "audit_security", "architecture", "ai_adoption"
+    current_phase: str = "immersion"     # "immersion", "simulation", "assisted_production"
+    current_week: int = 1
+
+    # Immersion metrics (phase 1)
+    docs_read: list[str] = field(default_factory=list)
+    mentor_queries: int = 0
+    mentor_gaps_triggered: int = 0       # Questions with no answer in RAG
+    quiz_scores: list[float] = field(default_factory=list)
+
+    # Simulation metrics (phase 2)
+    scenarios_completed: list[dict] = field(default_factory=list)
+    avg_scenario_score: float = 0.0
+    common_weaknesses: list[str] = field(default_factory=list)
+
+    # Production metrics (phase 3)
+    deliverables_produced: int = 0
+    deliverables_approved: int = 0
+    revision_rounds_avg: float = 0.0     # Average revision rounds per deliverable
+    first_billable_date: Optional[str] = None
+
+    @property
+    def latest_quiz_score(self):
+        if not isinstance(self.quiz_scores, list) or not self.quiz_scores:
+            return None
+        score = self.quiz_scores[-1]
+        return score if type(score) in (int, float) and 0 <= score <= 1 else None
+
+    def validated_scenarios(self):
+        accepted = []
+        seen = set()
+        if not isinstance(self.scenarios_completed, list):
+            return accepted
+        for scenario in self.scenarios_completed:
+            if not isinstance(scenario, dict) or not isinstance(scenario.get("evaluation"), dict):
+                continue
+            scenario_id = scenario.get("scenario_id")
+            if type(scenario_id) is not str or not scenario_id or scenario_id != scenario_id.strip() or scenario_id in seen:
+                continue
+            if type(self.junior_id) is not str or not self.junior_id or type(scenario.get("junior_id")) is not str or scenario.get("junior_id") != self.junior_id:
+                continue
+            timestamp = scenario.get("timestamp")
+            if type(timestamp) is not str:
+                continue
+            try:
+                occurred_at = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+                evaluation = validate_evaluation(json.dumps(scenario["evaluation"]))
+            except (ValueError, TypeError, KeyError):
+                continue
+            if occurred_at.tzinfo is None:
+                continue
+            if scenario.get("rating") == evaluation["rating"] and evaluation["rating"] in ("excellent", "acceptable"):
+                seen.add(scenario_id)
+                accepted.append({**scenario, "evaluation": evaluation})
+        return accepted
+
+    def days_to_first_billable(self) -> Optional[int]:
+        """Calculates days from start to first billable delivery."""
+        if not self.first_billable_date:
+            return None
+        start = datetime.fromisoformat(self.start_date)
+        billable = datetime.fromisoformat(self.first_billable_date)
+        return (billable - start).days
+
+    def ready_for_next_phase(self) -> bool:
+        """Evaluates whether the junior can advance to the next phase."""
+        if self.current_phase == "immersion":
+            score = self.latest_quiz_score
+            return score is not None and score >= 0.8
+        elif self.current_phase == "simulation":
+            return len(self.validated_scenarios()) >= 3
+        return False
+
+def generate_weekly_report(progress: JuniorProgress) -> dict:
+    """Generates weekly progress report for the human mentor."""
+    validated = progress.validated_scenarios()
+    observed_average = (sum(s["evaluation"]["score"] for s in validated) / len(validated)) if validated else None
+    report_prompt = f"""Generate a weekly progress report for the mentor
+of a junior consultant in an onboarding program.
+
+Junior data:
+- Week: {progress.current_week}
+- Phase: {progress.current_phase}
+- Assigned project: {progress.assigned_project_type}
+- Documents read: {len(progress.docs_read)}
+- AI mentor queries: {progress.mentor_queries}
+- Gaps detected: {progress.mentor_gaps_triggered}
+- Latest quiz score: {progress.latest_quiz_score if progress.latest_quiz_score is not None else 'N/A'}
+- Scenarios completed: {len(validated)}
+- Average scenario score: {format(observed_average, '.1f') if observed_average is not None else 'N/A'}
+- Recurring weaknesses: {', '.join(progress.common_weaknesses) or 'None detected'}
+
+Generate:
+1. Progress summary in 3-4 lines
+2. Areas where the junior is progressing well (maximum 3)
+3. Areas requiring human mentor attention (maximum 3)
+4. Recommendation: ready to advance phase? Yes/No with justification
+5. Suggested activities for the next week
+"""
+
+    response = client.messages.create(
+        model="claude-haiku-4-5",  # Haiku for routine reports, lower cost
+        max_tokens=1024,
+        system="You are a training program coordinator. "
+               "Your reports are concise, factual, and action-oriented.",
+        messages=[{"role": "user", "content": report_prompt}]
+    )
+
+    return {
+        "junior_id": progress.junior_id,
+        "week": progress.current_week,
+        "report": response.content[0].text,
+        "phase_transition_recommended": progress.ready_for_next_phase()
+    }

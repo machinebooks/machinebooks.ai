@@ -1,0 +1,7 @@
+# Didactic owned inventory; discovery never expands authorization by tag or name.
+async def get_workzone_deployed_machines(actor, workzone_ref, access, store, inventory):
+    scope = await access.authorized_workzone(actor, workzone_ref)
+    owned = await store.resource_refs(scope)
+    observed = await inventory.read_owned(scope, owned, timeout=30)
+    return {"resources": observed.resources, "coverage": observed.coverage,
+            "observed_at_utc": observed.at_utc, "discrepancies": observed.discrepancies}

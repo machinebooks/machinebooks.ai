@@ -1,0 +1,114 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+SYSTEM_PROMPTS = {
+    SeccionTipo.COMPRENSION_NECESIDAD: """You are a senior consultant writing
+the understanding-of-the-need section for a technical proposal.
+
+RULES:
+- Demonstrate that you understand the client's SPECIFIC problem, not the generic one.
+- Reference concrete data from the tender: deadlines, volumes, constraints.
+- Identify risks the client hasn't explicitly mentioned.
+- Use direct, technical language. No empty adjectives.
+- Length: 800-1,200 words.
+- Structure: context → problem → implications → our reading.
+- DO NOT use generic phrases like "we understand your need" or "we are aware of the importance."
+- EVERY paragraph must contain at least one specific data point from the tender or client.""",
+
+    SeccionTipo.ENFOQUE_TECNICO: """You are an AI Architect writing
+the technical approach section for a consulting proposal.
+
+RULES:
+- Describe the approach with technical precision: tools, methodologies, standards.
+- Connect each technical decision to a benefit for the client.
+- Include alternatives considered and reason for rejection (demonstrates judgment).
+- Detail specific deliverables per phase, not generic ones.
+- Length: 1,500-2,500 words.
+- Structure: overall approach → phases with activities → deliverables → tools.
+- DO NOT use marketing language. The evaluator is technical.""",
+
+    SeccionTipo.RESUMEN_EJECUTIVO: """You are a consulting director writing
+the executive summary of a technical proposal.
+
+RULES:
+- Maximum 2 pages (600-800 words).
+- First sentence: why the client should choose us (concrete data point or differentiator).
+- Condense: understanding, approach, team, differentiator, commitment.
+- Tone: confidence based on data, not adjectives.
+- This summary is written AFTER all other sections.
+- NEVER start with "We are pleased to present" or variants."""
+}
+
+def generar_seccion(
+    tipo: SeccionTipo,
+    contexto: ContextoPropuesta,
+    secciones_referencia: list[dict],
+    secciones_previas: dict[SeccionTipo, str] | None = None
+) -> SeccionGenerada:
+    """Generates a proposal section with RAG context."""
+
+    # Build context for the prompt
+    refs_texto = "\n\n---\n\n".join([
+        f"[Reference {i+1} — {ref['sector']}, {ref['tipo_servicio']}, "
+        f"score: {ref['puntuacion']}]\n{ref['contenido']}"
+        for i, ref in enumerate(secciones_referencia[:3])
+    ])
+
+    requisitos_texto = "\n".join([
+        f"- {r['descripcion']} (mandatory: {r.get('obligatorio', True)})"
+        for r in contexto.requisitos_pliego[:20]
+    ])
+
+    criterios_texto = "\n".join([
+        f"- {c['nombre']}: {c['puntuacion_maxima']} points — {c.get('descripcion', '')}"
+        for c in contexto.criterios_valoracion
+    ])
+
+    # Context of previously generated sections (narrative coherence)
+    previas_texto = ""
+    if secciones_previas:
+        previas_texto = "\n\nSECTIONS ALREADY WRITTEN (maintain coherence):\n"
+        for tipo_prev, contenido_prev in secciones_previas.items():
+            # Only first 500 chars as summary
+            previas_texto += f"\n[{tipo_prev.value}]: {contenido_prev[:500]}...\n"
+
+    user_prompt = f"""Generate the {tipo.value} section for this proposal.
+
+CLIENT: {contexto.cliente} — Sector: {contexto.sector}
+SERVICE TYPE: {contexto.tipo_servicio}
+DEADLINE: {contexto.fecha_entrega.strftime('%d/%m/%Y')}
+
+TENDER REQUIREMENTS:
+{requisitos_texto}
+
+EVALUATION CRITERIA:
+{criterios_texto}
+
+CONSTRAINTS:
+{chr(10).join(f'- {r}' for r in contexto.restricciones)}
+
+REFERENCE SECTIONS (previous winning proposals):
+{refs_texto}
+{previas_texto}
+
+Generate the section following the system prompt rules.
+Prioritize specificity over generality."""
+
+    response = client_anthropic.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        system=SYSTEM_PROMPTS[tipo],
+        messages=[{"role": "user", "content": user_prompt}]
+    )
+
+    contenido = response.content[0].text
+    tokens_total = response.usage.input_tokens + response.usage.output_tokens
+    # Approximate cost of claude-sonnet-4-6
+    coste = (response.usage.input_tokens * 3.0 +
+             response.usage.output_tokens * 15.0) / 1_000_000
+
+    return SeccionGenerada(
+        tipo=tipo,
+        contenido=contenido,
+        tokens_consumidos=tokens_total,
+        coste_generacion=coste
+    )

@@ -1,0 +1,273 @@
+# JSON: illustrative six-node draft; catalog IDs require validation.
+{
+  "name": "AD Lateral Movement Lab — Kerberos Edition",
+  "description": "An authorized lateral movement exercise in an isolated Active Directory lab with three progressive objectives. Review Kerberos and domain-service configuration against the approved instructor rubric.",
+  "category": "red-team",
+  "difficulty": "intermediate",
+  "topology_config": {
+    "nodes": [
+      {
+        "id": "dc01",
+        "template_id": 12,
+        "role": "Domain Controller",
+        "network": "corp-net",
+        "ip": "10.10.1.10"
+      },
+      {
+        "id": "srv01",
+        "template_id": 14,
+        "role": "SQL Server",
+        "network": "corp-net",
+        "ip": "10.10.1.20"
+      },
+      {
+        "id": "ws01",
+        "template_id": 15,
+        "role": "Workstation",
+        "network": "corp-net",
+        "ip": "10.10.1.100"
+      },
+      {
+        "id": "ws02",
+        "template_id": 15,
+        "role": "Workstation",
+        "network": "corp-net",
+        "ip": "10.10.1.101"
+      },
+      {
+        "id": "kali01",
+        "template_id": 8,
+        "role": "Attacker",
+        "network": "attack-net",
+        "ip": "10.10.2.50"
+      },
+      {
+        "id": "wazuh01",
+        "template_id": 22,
+        "role": "SIEM",
+        "network": "mgmt-net",
+        "ip": "10.10.3.10"
+      }
+    ],
+    "networks": [
+      {
+        "id": "corp-net",
+        "cidr": "10.10.1.0/24",
+        "vlan": 110,
+        "description": "Corporate network with a DC and workstations"
+      },
+      {
+        "id": "attack-net",
+        "cidr": "10.10.2.0/24",
+        "vlan": 111,
+        "description": "Attacker network with limited access to corp-net"
+      },
+      {
+        "id": "mgmt-net",
+        "cidr": "10.10.3.0/24",
+        "vlan": 112,
+        "description": "SIEM management network"
+      }
+    ],
+    "routing": [
+      {
+        "from": "attack-net",
+        "to": "corp-net",
+        "ports": [
+          445,
+          135,
+          139,
+          389,
+          88
+        ]
+      },
+      {
+        "from": "corp-net",
+        "to": "mgmt-net",
+        "ports": [
+          1514,
+          1515,
+          55000
+        ]
+      }
+    ]
+  },
+  "vm_configs": [
+    {
+      "node_id": "dc01",
+      "template_id": 12,
+      "cpu": 4,
+      "ram_mb": 8192,
+      "disk_gb": 60,
+      "playbooks": [
+        "windows_playbooks/disable_smb_signing.yml",
+        "windows_playbooks/weak_password_policy.yml"
+      ],
+      "custom_config": {
+        "domain_name": "cyberlab.local",
+        "service_accounts": [
+          {
+            "name": "svc_sql",
+            "spn": "MSSQLSvc/srv01.cyberlab.local:1433",
+            "kerberoastable": true,
+            "secret_ref": "isolated_catalog_secret_reference"
+          },
+          {
+            "name": "svc_backup",
+            "asreproastable": true,
+            "secret_ref": "isolated_catalog_secret_reference"
+          }
+        ],
+        "domain_admin_secret_ref": "deployment_secret_reference"
+      }
+    },
+    {
+      "node_id": "srv01",
+      "template_id": 14,
+      "cpu": 2,
+      "ram_mb": 4096,
+      "disk_gb": 40,
+      "playbooks": [
+        "windows_playbooks/weak_service_permissions.yml"
+      ]
+    },
+    {
+      "node_id": "kali01",
+      "template_id": 8,
+      "cpu": 2,
+      "ram_mb": 4096,
+      "disk_gb": 30,
+      "playbooks": [],
+      "custom_config": {
+        "tools_preinstalled": [
+          "impacket",
+          "bloodhound",
+          "crackmapexec",
+          "rubeus"
+        ]
+      }
+    },
+    {
+      "node_id": "ws01",
+      "template_id": 15,
+      "cpu": 2,
+      "ram_mb": 4096,
+      "disk_gb": 40,
+      "playbooks": [],
+      "custom_config": {}
+    },
+    {
+      "node_id": "ws02",
+      "template_id": 15,
+      "cpu": 2,
+      "ram_mb": 4096,
+      "disk_gb": 40,
+      "playbooks": [],
+      "custom_config": {}
+    },
+    {
+      "node_id": "wazuh01",
+      "template_id": 22,
+      "cpu": 2,
+      "ram_mb": 4096,
+      "disk_gb": 40,
+      "playbooks": [],
+      "custom_config": {}
+    }
+  ],
+  "flags": [
+    {
+      "id": "flag-1",
+      "description": "Observe the authorized SQL-service Kerberoasting objective",
+      "location": "dc01",
+      "technique": "Kerberoasting (T1558.003)",
+      "points": 200,
+      "hint_1": "Which service accounts have a configured SPN?",
+      "hint_2": "Review the approved SPN inventory and instructor evidence",
+      "flag_type": "dynamic"
+    },
+    {
+      "id": "flag-2",
+      "description": "Validate the approved SQL-service access objective",
+      "location": "srv01",
+      "technique": "Valid Accounts (T1078)",
+      "points": 300,
+      "hint_1": "Review the authorized credential assessment evidence",
+      "hint_2": "Consult the approved lab catalog and instructor rubric",
+      "flag_type": "dynamic"
+    },
+    {
+      "id": "flag-3",
+      "description": "Verify authorized replication-data access in the lab",
+      "location": "dc01",
+      "technique": "DCSync (T1003.006)",
+      "points": 500,
+      "hint_1": "Review the explicitly approved svc_sql lab permissions",
+      "hint_2": "Review permission evidence and the instructor rubric",
+      "flag_type": "dynamic"
+    }
+  ],
+  "mitre_mapping": [
+    {
+      "technique_id": "T1558.003",
+      "tactic": "Credential Access",
+      "name": "Kerberoasting",
+      "phase": "flag-1"
+    },
+    {
+      "technique_id": "T1078",
+      "tactic": "Persistence",
+      "name": "Valid Accounts",
+      "phase": "flag-2"
+    },
+    {
+      "technique_id": "T1003.006",
+      "tactic": "Credential Access",
+      "name": "OS Credential Dumping: DCSync",
+      "phase": "flag-3"
+    }
+  ],
+  "storyline": "Authorized evaluation of an isolated AD template; review objectives and evidence with the instructor.",
+  "estimated_deploy_time": 12,
+  "tags": [
+    "active-directory",
+    "kerberos",
+    "lateral-movement",
+    "red-team"
+  ],
+  "network_configs": [
+    {
+      "id": "corp-net",
+      "cidr": "10.10.1.0/24",
+      "vlan": 110,
+      "description": "Corporate network with a DC and workstations"
+    },
+    {
+      "id": "attack-net",
+      "cidr": "10.10.2.0/24",
+      "vlan": 111,
+      "description": "Attacker network with limited access to corp-net"
+    },
+    {
+      "id": "mgmt-net",
+      "cidr": "10.10.3.0/24",
+      "vlan": 112,
+      "description": "SIEM management network"
+    }
+  ],
+  "security_configs": {
+    "policy_ref": "approved_isolation_policy"
+  },
+  "playbooks": [
+    "windows_playbooks/disable_smb_signing.yml",
+    "windows_playbooks/weak_password_policy.yml",
+    "windows_playbooks/weak_service_permissions.yml"
+  ],
+  "objectives": [
+    "Validate progression using authorized evidence"
+  ],
+  "evaluation_criteria": [
+    "Versioned instructor rubric"
+  ],
+  "mitre_release": "catalog_release_required"
+}

@@ -1,0 +1,76 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+ESTIMATION_SYSTEM_PROMPT = """You are a technology consulting project estimator
+with access to historical data from completed projects.
+
+Your job: given a new project, search for the most similar projects
+in the historical database, analyze their actual metrics (effort, duration,
+team, deviation), and generate a calibrated estimate.
+
+Estimation rules:
+- Never give a single number. Give a range with three scenarios:
+  optimistic (P25), probable (P50), pessimistic (P75).
+- Include the regulatory complexity factor (1.0 to 2.5).
+- Include the client maturity factor (1.0 to 1.8):
+  client with good documentation = 1.0, client without processes = 1.8.
+- List the assumptions conditioning the estimate.
+- List the risks that could push the estimate to the pessimistic scenario.
+- Show the historical projects used as reference.
+
+IMPORTANT: if there are fewer than 3 comparable projects in the database,
+warn about it explicitly. An estimate without a historical base
+is an opinion, not an estimate."""
+
+def estimate_project(
+    description: str,
+    historical_projects: list[dict]
+) -> dict:
+    """Generates a calibrated estimate based on historical data."""
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        system=ESTIMATION_SYSTEM_PROMPT,
+        messages=[{
+            "role": "user",
+            "content": f"""Estimate this project:
+
+{description}
+
+Comparable historical projects:
+{json.dumps(historical_projects, indent=2, ensure_ascii=False)}
+
+Respond in JSON:
+{{
+  "estimation": {{
+    "optimistic_hours": N,
+    "probable_hours": N,
+    "pessimistic_hours": N,
+    "team_size_recommended": N,
+    "duration_weeks": {{
+      "optimistic": N,
+      "probable": N,
+      "pessimistic": N
+    }}
+  }},
+  "complexity_factors": {{
+    "regulatory": N,
+    "client_maturity": N,
+    "technical": N
+  }},
+  "comparable_projects": [
+    {{
+      "name": "anonymized reference",
+      "similarity_score": 0.0-1.0,
+      "actual_hours": N,
+      "deviation_from_estimate": "N%"
+    }}
+  ],
+  "assumptions": ["..."],
+  "risks": ["..."],
+  "confidence": "high|medium|low",
+  "confidence_justification": "..."
+}}"""
+        }]
+    )
+    return json.loads(message.content[0].text)

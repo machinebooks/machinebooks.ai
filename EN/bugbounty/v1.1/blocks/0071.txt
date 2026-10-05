@@ -1,0 +1,9 @@
+1. Copy .sys to /lab/drivers/ in Docker
+2. python 01_pe_analysis.py
+   → imports, sections, security features, strings, risk score
+3. python 04_ioctl_mapper.py
+   → dispatch table, handlers, IOCTLs, dangerous calls
+4. Send JSON results to Claude/LM Studio
+   → interpretation, vulnerability hypotheses, fuzzing plan
+5. python 12_device_dacl_probe.py (on Windows)
+   → device accessibility, attack vectors

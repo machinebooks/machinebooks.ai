@@ -1,0 +1,36 @@
+# Offline structural gate over reviewed JSON fixtures (JSON is a YAML subset)
+import json
+import pytest
+
+def validate_generated_playbook(text,allowed_hosts,approved_modules):
+    if not isinstance(text,str) or len(text.encode("utf-8"))>65536:
+        raise ValueError("bounded fixture required")
+    plays=json.loads(text)
+    if not isinstance(plays,list) or not 1<=len(plays)<=20:
+        raise ValueError("bounded play list required")
+    for play in plays:
+        if not isinstance(play,dict) or play.get("hosts") not in allowed_hosts:
+            raise ValueError("approved host required")
+        tasks=play.get("tasks")
+        if not isinstance(tasks,list) or not 1<=len(tasks)<=100:
+            raise ValueError("bounded tasks required")
+        for task in tasks:
+            if not isinstance(task,dict) or len(task)!=1 or next(iter(task)) not in approved_modules:
+                raise ValueError("unapproved task/module")
+    return plays
+
+@pytest.mark.unit
+def test_offline_generator_contract():
+    good='[{"hosts":"fixture","tasks":[{"ansible.builtin.debug":{"msg":"fixture"}}]}]'
+    assert validate_generated_playbook(good,{"fixture"},{"ansible.builtin.debug"})
+    bad='[{"hosts":"all","tasks":[{"ansible.builtin.shell":"unreviewed"}]}]'
+    try:
+        validate_generated_playbook(bad,{"fixture"},{"ansible.builtin.debug"})
+    except ValueError:
+        return
+    raise AssertionError("unapproved fixture accepted")
+
+# Run deterministic tests with injected provider output. Full YAML, module
+# argument semantics, imports/plugins and authorization need independent gates.
+# Provider quality/coaching nondisclosure require a dated integration/evaluation
+# corpus and adversarial review; one live model response is not a unit test.

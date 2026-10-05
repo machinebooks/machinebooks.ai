@@ -1,0 +1,14 @@
+# Explicit SecretStr boundary; never log or echo the database URL.
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+def create_database(settings):
+    engine = create_engine(settings.database_url.get_secret_value(), echo=False,
+                           pool_pre_ping=True)
+    session_factory = sessionmaker(bind=engine, autoflush=False)
+    def get_db():
+        with session_factory() as session:
+            yield session
+    return engine, session_factory, get_db
+# Synchronous sessions are used by sync handlers or bounded worker adapters,
+# never directly inside an async wait/loop. Migration and disposal belong to host lifecycle.

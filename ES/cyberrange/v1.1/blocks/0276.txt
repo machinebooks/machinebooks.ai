@@ -1,0 +1,36 @@
+# Didactic contract: browser WebSocket authorization
+# ticket_service must atomically consume a short-lived, single-use ticket
+# bound to user, session and resource. It never accepts a client user_id.
+import asyncio
+import hmac
+from datetime import datetime, timezone
+from backend.models import User
+
+async def authenticated_socket(websocket, db, resource_id, ticket_service, allowed_origins):
+    if websocket.headers.get("origin") not in allowed_origins:
+        await websocket.close(code=1008)
+        return None
+    ticket = websocket.query_params.get("ticket")
+    if not isinstance(ticket, str) or not ticket:
+        await websocket.close(code=1008)
+        return None
+    grant = await asyncio.wait_for(ticket_service.consume(ticket, resource_id), 5)
+    if grant is None:
+        await websocket.close(code=1008)
+        return None
+    expiry = grant.expires_at
+    if expiry.tzinfo is None or datetime.now(timezone.utc) >= expiry:
+        await websocket.close(code=1008)
+        return None
+    user = await asyncio.wait_for(db.get_current_account(grant.user_id), 5)
+    if (user is None or not user.is_active or not user.session_token
+            or not isinstance(grant.session_token, str)
+            or not hmac.compare_digest(grant.session_token.encode("utf-8"), user.session_token.encode("utf-8"))):
+        await websocket.close(code=1008)
+        return None
+    if not await asyncio.wait_for(ticket_service.authorize(user, resource_id), 5):
+        await websocket.close(code=1008)
+        return None
+    await websocket.accept()
+    # The connection owner must also enforce expiry/revocation and limits.
+    return user

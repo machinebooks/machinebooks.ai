@@ -1,0 +1,37 @@
+# Application heartbeat with send/reply deadlines and fresh grant checks.
+import asyncio
+import secrets
+import time
+
+async def ping_connections(self):
+    failed = []
+    for websocket, metadata in list(self.connection_metadata.items()):
+        try:
+            if not await asyncio.wait_for(self.access.still_authorized(metadata), 3):
+                raise PermissionError("expired grant")
+            pending = self.heartbeat_pending.get(websocket)
+            if pending and time.monotonic() >= pending[1]:
+                raise TimeoutError("heartbeat reply overdue")
+            if pending:
+                continue
+            nonce = secrets.token_hex(16)
+            await asyncio.wait_for(websocket.send_json({"type": "heartbeat", "nonce": nonce}), 3)
+            self.heartbeat_pending[websocket] = (nonce, time.monotonic()+10)
+        except Exception:
+            failed.append(websocket)
+    for websocket in failed:
+        self.disconnect(websocket)
+        try:
+            await asyncio.wait_for(websocket.close(code=1008), 3)
+        except Exception:
+            pass
+    return len(failed)
+
+def accept_heartbeat_reply(self, websocket, value):
+    pending = self.heartbeat_pending.get(websocket)
+    if not pending or time.monotonic() >= pending[1] or value != pending[0]:
+        return False
+    self.heartbeat_pending.pop(websocket)
+    return True
+# The sole receive owner routes bounded heartbeat_reply frames to this function;
+# it must keep its own receive deadline and authorization checks. Protocol pings are separate.

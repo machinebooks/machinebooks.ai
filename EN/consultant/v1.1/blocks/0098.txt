@@ -1,0 +1,94 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+class MultiFrameworkAnalyzer:
+    """Analyzes gaps crossing multiple frameworks."""
+
+    def __init__(self, agent: GapAnalysisAgent):
+        self.agent = agent
+        self.unified_gaps: list[GapFinding] = []
+
+    def run_unified_analysis(
+        self, evidence_processor: EvidenceProcessor
+    ) -> list[GapFinding]:
+        """Executes deduplicated multi-framework gap analysis."""
+        raw_findings: list[GapFinding] = []
+
+        # Phase 1: evaluate each control from each framework
+        for fw_name, controls in self.agent.frameworks.items():
+            for control in controls:
+                evidence = evidence_processor \
+                    .get_evidence_for_control(control.control_id)
+                finding = self.agent.evaluate_control(
+                    control, evidence
+                )
+                if finding is not None:
+                    raw_findings.append(finding)
+
+        # Phase 2: group by cross-reference equivalence
+        groups = self._group_by_cross_reference(raw_findings)
+
+        # Phase 3: unify each group into a single gap
+        for group in groups:
+            unified = self._unify_group(group)
+            self.unified_gaps.append(unified)
+
+        return self.unified_gaps
+
+    def _group_by_cross_reference(
+        self, findings: list[GapFinding]
+    ) -> list[list[GapFinding]]:
+        """Groups findings that refer to the same real gap."""
+        # Union-Find to group equivalent controls
+        parent: dict[str, str] = {}
+
+        def find(x: str) -> str:
+            while parent.get(x, x) != x:
+                x = parent[x]
+            return x
+
+        def union(a: str, b: str) -> None:
+            parent[find(a)] = find(b)
+
+        # Build groups based on cross_references
+        for finding in findings:
+            ctrl = finding.control
+            key = f"{ctrl.framework}:{ctrl.control_id}"
+            for ref in ctrl.cross_references:
+                union(key, ref)
+
+        # Group findings by root
+        groups_map: dict[str, list[GapFinding]] = {}
+        for finding in findings:
+            ctrl = finding.control
+            key = f"{ctrl.framework}:{ctrl.control_id}"
+            root = find(key)
+            groups_map.setdefault(root, []).append(finding)
+
+        return list(groups_map.values())
+
+    def _unify_group(
+        self, group: list[GapFinding]
+    ) -> GapFinding:
+        """Unifies a group of equivalent findings."""
+        # Take the lowest level as conservative
+        worst_level = min(f.current_level for f in group)
+        # Take the maximum effort (don't sum)
+        max_effort = max(f.effort_days for f in group)
+        # Collect all affected frameworks
+        all_frameworks = list({
+            f.control.framework for f in group
+        })
+
+        primary = group[0]  # The first as base
+        return GapFinding(
+            control=primary.control,
+            current_level=MaturityLevel(worst_level),
+            target_level=self.agent.target_level,
+            evidence_summary=primary.evidence_summary,
+            gap_description=primary.gap_description,
+            remediation=primary.remediation,
+            effort_days=max_effort,
+            priority=primary.priority,
+            confidence=min(f.confidence for f in group),
+            affected_frameworks=all_frameworks,
+        )

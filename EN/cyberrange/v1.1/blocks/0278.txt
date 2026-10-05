@@ -1,0 +1,17 @@
+# Minimized event references; no usernames, IPs, user agents or raw errors in logs
+from datetime import datetime, timezone
+
+async def log_login_attempt(adapter, actor_ref, request_ref, success, reason_code=None):
+    if type(success) is not bool:
+        raise ValueError("invalid outcome")
+    allowed = {None, "invalid_credentials", "account_locked", "mfa_required", "unavailable"}
+    if reason_code not in allowed:
+        raise ValueError("invalid reason")
+    event = {"event_type": "login_attempt", "actor_ref": actor_ref,
+             "request_ref": request_ref, "status": "success" if success else "failure", "category": "authentication",
+             "reason_code": reason_code, "severity": "info" if success else "warning",
+             "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")}
+    await adapter.validate_minimized_references(event)
+    return await adapter.persist_with_integrity(event)
+
+# The adapter enforces lawful scope, bounded references, integrity and failure handling.

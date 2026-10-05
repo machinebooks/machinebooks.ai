@@ -21,7 +21,7 @@ Each book examines how a professional profile applies AI capabilities, tool cont
 | 7 | *The FinOps Engineer and the Machine* | *El FinOps Engineer y la Máquina* | [`EN/finops/`](EN/finops/) | [`ES/finops/`](ES/finops/) |
 | 8 | *The Consultant and the Machine* | *El Consultor y la Máquina* | [`EN/consultant/`](EN/consultant/) | [`ES/consultant/`](ES/consultant/) |
 | 9 | *The DevSecOps and the Machine* | *El DevSecOps y la Máquina* | [`EN/devsecops/`](EN/devsecops/) | [`ES/devsecops/`](ES/devsecops/) |
-| 10 | *The Bug Bounty Hunter and the Machine* (in editing) | *El Bug Bounty Hunter y la Máquina* (en edición) | [`EN/bugbounty/`](EN/bugbounty/) | [`ES/bugbounty/`](ES/bugbounty/) |
+| 10 | *The Bug Bounty Hunter and the Machine* | *El Bug Bounty Hunter y la Máquina* | [`EN/bugbounty/`](EN/bugbounty/) | [`ES/bugbounty/`](ES/bugbounty/) |
 | 11 | *AI Safety Engineer and the Machine* | *AI Safety Engineer y la Máquina* | [`EN/aisafety/`](EN/aisafety/) | [`ES/aisafety/`](ES/aisafety/) |
 | 12 | *Anatomy of an Agent* | *Anatomía de un Agente de IA* | [`EN/agents/`](EN/agents/) | [`ES/agents/`](ES/agents/) |
 | 13 | *Anatomy of a Corporate AI Platform* | *Anatomía de una Plataforma IA Corporativa* | [`EN/aigateway/`](EN/aigateway/) | [`ES/aigateway/`](ES/aigateway/) |
@@ -32,21 +32,13 @@ El estado de publicación varía por título e idioma. Las entradas en edición 
 
 ## Review status — 5 October 2026
 
-Educational blocks from the v1.1 revisions of User, FinOps, AI Safety, PQC, CISO, Pentester, DevSecOps, Architect, Agent Anatomy, and Corporate AI Platform Anatomy are separated into `ES/<book>/v1.1/` and `EN/<book>/v1.1/`, with source manifests and SHA-256 hashes. Earlier material is preserved. The other titles remain under review; this code synchronization does not itself announce eBook publication or establish execution of every snippet.
+All thirteen v1.1 manuscript pairs are closed locally. Educational blocks from their final Spanish and English Word manuscripts are organized in ES/<book>/v1.1/ and EN/<book>/v1.1/. Every language has a literal source manifest identifying the current Word and EPUB files and SHA-256 hashes. Earlier material outside those revision folders is preserved; earlier v1.1 snapshots remain available in Git history.
 
-Los bloques didácticos de la revisión v1.1 de Usuario, FinOps, AI Safety, PQC, CISO, Pentester, DevSecOps, Arquitecto, Anatomía de un Agente y Anatomía de una Plataforma IA Corporativa están separados en `ES/<libro>/v1.1/` y `EN/<libro>/v1.1/`, con manifiestos de origen y SHA-256. El material anterior se conserva. Los demás títulos siguen en revisión; esta sincronización del código no anuncia por sí misma la publicación de los eBooks ni acredita ejecución de cada fragmento.
+Los trece pares de manuscritos v1.1 están cerrados localmente. Los bloques didácticos de los Word finales en español e inglés están organizados en ES/<libro>/v1.1/ y EN/<libro>/v1.1/. Cada idioma dispone de un manifiesto literal que identifica los Word y EPUB actuales y sus hashes SHA-256. El material anterior situado fuera de las carpetas de revisión se conserva; los snapshots v1.1 anteriores siguen disponibles en el historial Git.
 
-FinOps and PQC v1.1 manifests identify the current Word and EPUB sources checked on 5 October 2026. FinOps v1.1 updates in Spanish and English have been submitted to KDP and await Amazon review. PQC, CISO and Pentester v1.1 updates in both languages are prepared in KDP and await final submission confirmation.
+FinOps v1.1 updates in Spanish and English have been submitted to KDP and await Amazon review. The other twenty-four Kindle updates are prepared or being prepared for final submission. This repository does not announce those updates as live on Amazon. Source extraction establishes provenance of the fragments, not execution of every example or parity from file counts.
 
-Los manifiestos v1.1 de FinOps y PQC identifican los Word y EPUB actuales comprobados el 5 de octubre de 2026. Las actualizaciones v1.1 de FinOps en español e inglés se han enviado a KDP y esperan la revisión de Amazon. Las actualizaciones v1.1 de PQC, CISO y Pentester en ambos idiomas están preparadas en KDP y pendientes de la confirmación del envío final.
-
-Pentester v1.1 educational fragments are now synchronized from both final manuscripts (307 blocks per language). The manuscripts are closed locally and their Kindle updates are being prepared in KDP; this does not announce publication.
-
-Los fragmentos didácticos de Pentester v1.1 ya están sincronizados desde ambos manuscritos finales (307 bloques por idioma). Los manuscritos están cerrados localmente y sus actualizaciones Kindle se están preparando en KDP; esto no anuncia su publicación.
-
-DevSecOps, Architect, Agent Anatomy and Corporate AI Platform Anatomy v1.1 educational fragments are synchronized from their closed local ES/EN manuscripts, with literal source manifests. Their Kindle updates are being prepared; publication has not been announced. Agent Anatomy now has companion material in both languages.
-
-Los fragmentos didácticos v1.1 de DevSecOps, Arquitecto, Anatomía de un Agente y Anatomía de una Plataforma IA Corporativa están sincronizados desde sus manuscritos ES/EN cerrados localmente, con manifiestos literales. Sus actualizaciones Kindle se están preparando; no se anuncia publicación. Anatomía de un Agente ya dispone de ejemplos en ambos idiomas.
+Las actualizaciones v1.1 de FinOps en español e inglés se han enviado a KDP y esperan la revisión de Amazon. Las otras veinticuatro actualizaciones Kindle están preparadas o en preparación para el envío final. Este repositorio no anuncia esas actualizaciones como disponibles en Amazon. La extracción acredita la procedencia de los fragmentos, no la ejecución de todos los ejemplos ni la paridad a partir del número de ficheros.
 
 ## How to use
 

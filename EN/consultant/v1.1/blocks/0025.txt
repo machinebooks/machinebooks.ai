@@ -1,0 +1,11 @@
+LESSON_SCHEMA = {
+    "project_type": str,       # audit, consulting, assessment
+    "sector": str,             # public, financial, industrial
+    "phase": str,              # scoping, execution, delivery, closure
+    "problem": str,            # what went wrong or what was learned
+    "root_cause": str,         # why it happened
+    "corrective_action": str,  # what was done
+    "recommendation": str,     # what to do in the future
+    "impact": str,             # high, medium, low
+    "date": str                # YYYY-MM
+}

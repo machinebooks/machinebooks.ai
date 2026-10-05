@@ -1,0 +1,12 @@
+Paso 1: Candidato de DLL sideloading
+  → Verificar permisos, resolución y carga en la versión del caso.
+Paso 2: Candidato de alteración ASAR
+  → Verificar ruta, referencia de integridad y ejecución autorizada.
+Paso 3: Actualización Squirrel
+  → Verificar el ejecutable nuevo y si conserva el contenido alterado.
+Paso 4: Confianza e integridad
+  → Evaluar firma, recursos, política y señales de seguridad.
+
+La cadena conjunta no está demostrada por estos bloques.
+Persistencia y ausencia de alertas no se dan por supuestas.
+CVSS requiere versión, vector y precondiciones explícitas.

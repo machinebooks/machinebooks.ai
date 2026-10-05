@@ -1,0 +1,19 @@
+# Configurar la variable de entorno para habilitar CDP en WebView2
+# NO requiere privilegios de administrador
+# Persiste entre reinicios del sistema
+[Environment]::SetEnvironmentVariable(
+    'WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS',
+    '--remote-debugging-port=9222 --remote-allow-origins=*',
+    'User'
+)
+
+# Verificar que la variable se ha establecido correctamente
+$val = [Environment]::GetEnvironmentVariable(
+    'WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS', 'User'
+)
+Write-Host "Variable configurada: $val"
+
+# Para restaurar el estado original tras la investigación:
+# [Environment]::SetEnvironmentVariable(
+#     'WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS', $null, 'User'
+# )

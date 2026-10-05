@@ -1,0 +1,15 @@
+# Integration specification; fixture is deployed normally, then clock/expiry set
+async def verify_expired_cleanup(adapter,owned_fixture):
+    inventory=await adapter.inventory_owned_resources(owned_fixture)
+    await adapter.set_fixture_expired(owned_fixture)
+    receipt=await adapter.cleanup_owned_expired(owned_fixture)
+    if receipt["state"]!="closed" or receipt["remaining_resources"]:
+        raise AssertionError("cleanup incomplete")
+    for resource in inventory:
+        if not await adapter.confirm_resource_absent(resource):
+            raise AssertionError("inventory absence unconfirmed")
+    return {"status":"passed","resources_checked":len(inventory)}
+
+# The test fixture reserves its VLAN/IP/VM identifiers, awaits provisioning
+# tasks and retains failure evidence. It cleans only its owned resources in
+# teardown. No negative TTL accepted by the production creation API is assumed.

@@ -1,0 +1,45 @@
+# YAML: read-only preflight on an authorized, already prepared AD lab template.
+---
+- name: Check authorized lab template
+  hosts: dc01
+  gather_facts: false
+  tasks:
+    - name: Check scope and template identifier
+      ansible.builtin.assert:
+        that:
+          - authorized_lab | default(false) | bool
+          - approved_template_digest is defined
+          - service_account is match('^[A-Za-z0-9_]{1,40}$')
+          - expected_spn is defined
+          - expected_replication_guids | length == 2
+      no_log: true
+    - name: Query SPN and explicit template rights
+      ansible.windows.win_powershell:
+        parameters:
+          Account: "{{ service_account }}"
+          ExpectedSpn: "{{ expected_spn }}"
+          DomainDn: "{{ lab_domain_dn }}"
+          ExpectedGuids: "{{ expected_replication_guids }}"
+        script: |
+          param([string]$Account,[string]$ExpectedSpn,[string]$DomainDn,
+                [string[]]$ExpectedGuids)
+          Import-Module ActiveDirectory
+          $user = Get-ADUser -Identity $Account -Properties servicePrincipalName
+          if ($user.servicePrincipalName -notcontains $ExpectedSpn) {
+            throw "Expected SPN missing"
+          }
+          $acl = Get-Acl -LiteralPath ("AD:" + $DomainDn)
+          foreach ($guid in $ExpectedGuids) {
+            $match = @($acl.Access | Where-Object {
+              $_.IdentityReference.Translate([System.Security.Principal.SecurityIdentifier]) -eq $user.SID -and
+              $_.AccessControlType -eq 'Allow' -and
+              ($_.ActiveDirectoryRights -band [System.DirectoryServices.ActiveDirectoryRights]::ExtendedRight) -and
+              $_.ObjectType -eq [guid]$guid
+            })
+            if ($match.Count -eq 0) { throw "Expected explicit ACE missing" }
+          }
+          $Ansible.Changed = $false
+      no_log: true
+
+# This checks explicit catalog conditions, not effective rights, exploitability
+# or Domain Admin membership. Secrets/ACL changes belong to approved preparation.

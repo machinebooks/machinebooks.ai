@@ -1,0 +1,8 @@
+// src/server/slash-commands.ts (esquemático)
+export const commands = {
+  "/plan":   { description: "Pide al modelo un plan antes de actuar",      handler: planHandler },
+  "/commit": { description: "Genera mensaje de commit a partir del diff",  handler: commitHandler },
+  "/review": { description: "Revisa los últimos cambios del workspace",    handler: reviewHandler },
+  "/note":   { description: "Añade una nota a la memoria del caso actual", handler: noteHandler },
+  "/skills": { description: "Lista skills disponibles y recarga el dir",   handler: skillsHandler },
+};

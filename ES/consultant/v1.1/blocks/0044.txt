@@ -1,0 +1,26 @@
+# .claude/commands/analyze-rfp.md
+
+Analiza el documento RFP proporcionado como argumento: $ARGUMENTS
+
+## Proceso
+1. Extrae requisitos obligatorios (MUST) y valorables (SHOULD)
+2. Identifica criterios de valoración con sus pesos
+3. Detecta penalizaciones y cláusulas de riesgo
+4. Lista perfiles profesionales exigidos con certificaciones
+5. Identifica plazos (entrega de oferta, inicio, duración, hitos)
+6. Genera matriz de cumplimiento preliminar
+
+## Formato de salida
+Produce un informe Markdown con estas secciones:
+- Resumen ejecutivo (10 líneas máximo)
+- Requisitos obligatorios (tabla: ID | Requisito | Cumplimos | Evidencia)
+- Criterios de valoración (tabla: Criterio | Peso | Nuestra posición)
+- Riesgos contractuales (lista priorizada)
+- Perfiles requeridos (tabla: Perfil | Certificaciones | Disponibilidad)
+- Plazos críticos (timeline)
+- Recomendación go/no-go con justificación
+
+## Restricciones
+- Si no puedes acceder al documento, solicita que se copie el contenido
+- Marca con ⚠️ cualquier requisito ambiguo que necesite clarificación
+- No asumas cumplimiento sin evidencia — marca como "A VERIFICAR"

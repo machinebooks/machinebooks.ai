@@ -1,0 +1,14 @@
+# Finite discrepancy specification; unknown is not authorization to delete
+def verify_sync_classification(classifier):
+    platform=[{"cluster":"fixture","resource_id":7,"status":"stopped"},
+              {"cluster":"fixture","resource_id":8,"status":"running"}]
+    observed=[{"cluster":"fixture","resource_id":7,"status":"stopped"},
+              {"cluster":"fixture","resource_id":9,"status":"stopped"}]
+    report=classifier(platform,observed)
+    assert report["missing"]==[{"cluster":"fixture","resource_id":8}]
+    assert report["unknown"]==[{"cluster":"fixture","resource_id":9,"ownership":"unverified"}]
+    assert report["delete_authorized"]==[]
+
+# This is an injectable local specification. A live integration test separately
+# verifies all-state inventory, cluster identity and cleanup using reserved IDs;
+# it never creates a fixed VM ID in a shared cluster or auto-deletes unknowns.

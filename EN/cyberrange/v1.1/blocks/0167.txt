@@ -1,0 +1,9 @@
+# Authorized async catalog search; result cap and release are server controlled.
+async def search_mitre(actor, query, kind, release, adapter):
+    if not isinstance(query, str) or not 1 <= len(query) <= 128:
+        raise ValueError("invalid query")
+    if kind not in {None, "tactic", "technique", "subtechnique"}:
+        raise ValueError("invalid kind")
+    scope = await adapter.authorized_catalog_read(actor, release)
+    return await adapter.parameterized_catalog_search(scope, query, kind, limit=30, timeout=5)
+# The adapter uses async I/O or a supervised worker, validates output and never reflects raw SQL.

@@ -1,0 +1,31 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters enforce current authenticated scope, atomic version replacement and complete pagination.
+from hashlib import sha256
+from uuid import NAMESPACE_URL, uuid5
+from math import isfinite
+import json
+
+def ingest_chunks(chunks, identity, corpus_adapter, embedding_adapter):
+    corpus_adapter.require_write_authorization(identity, chunks)
+    validated = corpus_adapter.validate_ingestion(identity, chunks)
+    if not isinstance(validated, list) or len(validated) != len(chunks):
+        raise ValueError("Invalid authorized ingestion batch")
+    records = {}
+    for chunk in validated:
+        required = ("tenant_id", "doc_id", "version", "doc_hash", "source_uri", "text", "section")
+        if not isinstance(chunk, dict) or any(type(chunk.get(k)) is not str or not chunk[k] for k in required):
+            raise ValueError("Missing source, version or content identity")
+        if chunk["tenant_id"] != identity.tenant_id or not isinstance(chunk.get("metadata"), dict):
+            raise ValueError("Ingestion scope or metadata mismatch")
+        content_hash = sha256(chunk["text"].encode("utf8")).hexdigest()
+        point_id = str(uuid5(NAMESPACE_URL, json.dumps([chunk[k] for k in ("tenant_id", "doc_id", "version", "section")] + [content_hash], ensure_ascii=False)))
+        records[point_id] = chunk
+    if not records:
+        return 0
+    vectors = embedding_adapter.embed([c["text"] for c in records.values()], model=EMBEDDING_MODEL)
+    if len(vectors) != len(records) or any(len(v) != 1024 or any(type(x) not in (int, float) or not isfinite(x) for x in v) for v in vectors):
+        raise ValueError("Invalid embedding dimension, cardinality or finiteness")
+    points = [{"id": key, "vector": vector, "payload": chunk} for (key, chunk), vector in zip(records.items(), vectors)]
+    # Adapter must recheck authorization and atomically replace superseded versions.
+    corpus_adapter.commit_authorized_versions(identity, points)
+    return len(points)

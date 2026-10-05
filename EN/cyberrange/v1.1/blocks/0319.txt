@@ -1,0 +1,10 @@
+# Contract for a configured API adapter; no unverified endpoint or exposed token
+async def create_first_workzone(actor, api, request_id):
+    request = {"name": "EXERCISE-FIRST", "candidate_vlan": 100,
+               "max_vms": 4, "max_ram_mb": 12288, "max_vcpus": 6,
+               "max_disk_gb": 100, "ttl_hours": 4,
+               "firewall_template_ref": "approved-firewall-template"}
+    await api.validate_available_resources_and_nonoverlapping_routes(actor, request)
+    return await api.create_workzone_once(actor, request_id, request)
+
+# API maps to the deployed version's actual schema and authenticated session.

@@ -1,0 +1,23 @@
+// src/server/tools.ts (extracto)
+export const fsReadTool = {
+  schema: {
+    type: "function",
+    function: {
+      name: "fs_read",
+      description: "Lee un fichero del workspace activo",
+      parameters: {
+        type: "object",
+        properties: {
+          path: { type: "string", description: "Ruta relativa al workspace" },
+        },
+        required: ["path"],
+      },
+    },
+  },
+  handler: async ({ path }, ctx) => {
+    if (!ctx.permissions.canRead(path)) {
+      throw new Error(`Lectura denegada: ${path}`);
+    }
+    return await fs.readFile(resolveInWorkspace(path), "utf8");
+  },
+};

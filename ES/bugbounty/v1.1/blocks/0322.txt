@@ -1,0 +1,39 @@
+// Verificación de seguridad antes de crear el entorno WebView2 (C#)
+// Insertar en el método de inicialización de la aplicación
+string envArgs = Environment.GetEnvironmentVariable(
+    "WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS",
+    EnvironmentVariableTarget.User
+);
+
+if (!string.IsNullOrEmpty(envArgs))
+{
+    string[] dangerousArgs = {
+        "--remote-debugging-port",
+        "--remote-debugging-pipe",
+        "--remote-allow-origins",
+        "--disable-web-security",
+        "--disable-site-isolation"
+    };
+    
+    foreach (string arg in dangerousArgs)
+    {
+        if (envArgs.Contains(arg, StringComparison.OrdinalIgnoreCase))
+        {
+            // Registrar el evento de seguridad
+            Logger.Warn($"Variable de entorno WebView2 sospechosa: {arg}");
+            
+            // Opción A: limpiar la variable y continuar
+            // Environment.SetEnvironmentVariable(
+            //     "WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS",
+            //     null, EnvironmentVariableTarget.User);
+            
+            // Opción B: mostrar advertencia al usuario
+            MessageBox.Show(
+                "Se ha detectado una configuración de depuración " +
+                "en WebView2 que podría comprometer la seguridad.",
+                "Advertencia de seguridad",
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            break;
+        }
+    }
+}

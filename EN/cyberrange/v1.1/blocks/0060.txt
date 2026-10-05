@@ -1,0 +1,14 @@
+# Didactic mapping; the lease adapter enforces unique scope/VLAN and overlap checks.
+import ipaddress
+
+def calculate_network(vlan_id):
+    if type(vlan_id) is not int or not 1 <= vlan_id <= 4094:
+        raise ValueError("invalid VLAN")
+    net = ipaddress.ip_network(f"10.{vlan_id//256}.{vlan_id%256}.0/24")
+    return {"network_cidr": str(net), "gateway_ip": str(net.network_address + 1),
+            "dhcp_start": str(net.network_address + 100),
+            "dhcp_end": str(net.network_address + 200)}
+
+async def allocate_vlan(actor, scope, leases):
+    # Atomic reservation includes external networks, pending leases and ownership.
+    return await leases.reserve_reviewed_network(actor, scope, calculate_network)

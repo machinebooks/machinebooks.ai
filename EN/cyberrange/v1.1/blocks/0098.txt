@@ -1,0 +1,17 @@
+# Didactic login contract; adapters enforce shared limits and non-reusable MFA.
+import secrets
+
+async def login(credentials, origin_ref, limiter, identities, sessions, tokens):
+    subject_ref = identities.pseudonymous_subject(credentials)
+    await check_account_lockout(subject_ref, origin_ref, limiter)
+    identity = await identities.verify_uniform(credentials)
+    if identity is None or not identity.active:
+        await record_failed_login(subject_ref, origin_ref, limiter)
+        raise PermissionError("invalid credentials")
+    if identity.mfa_required and not await identities.consume_mfa_once(identity, credentials):
+        await record_failed_login(subject_ref, origin_ref, limiter)
+        raise PermissionError("invalid credentials")
+    # Persist session and commit before token issuance; do not return a token after failed commit.
+    session = await sessions.create_atomic(identity, secrets.token_hex(32))
+    await record_successful_login(subject_ref, origin_ref, limiter)
+    return await tokens.issue_for_persisted_session(identity, session)

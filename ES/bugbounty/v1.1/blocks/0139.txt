@@ -1,0 +1,6 @@
+bundle/
+├── vmlinux           # Kernel Linux (comprimido)
+├── initrd            # Initramfs con sistema base
+├── rootfs.ext4       # Filesystem root de la VM
+├── config.json       # Configuración HCS (CPU, memoria, red)
+└── sdk-daemon        # Binary que conecta VM con host

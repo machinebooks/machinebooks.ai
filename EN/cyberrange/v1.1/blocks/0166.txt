@@ -1,0 +1,13 @@
+# Mutation contract against a pinned ATT&CK catalog, not arbitrary T-prefixed IDs
+def map_challenge_technique(adapter,actor,challenge_id,technique_id,release):
+    adapter.authorize(actor.id,"challenge_mapping_update",challenge_id)
+    catalog=adapter.approved_mitre_catalog(release)
+    technique=catalog.get(technique_id)
+    if technique is None or technique.revoked or technique.deprecated:
+        raise ValueError("current approved catalog technique required")
+    if technique.parent_id is not None and technique.parent_id not in catalog:
+        raise ValueError("missing catalog parent")
+    return adapter.record_versioned_mapping(challenge_id,technique_id,release,actor.id)
+
+# Mapping records intended exercise coverage, not observed technique success.
+# Read/search endpoints require corresponding tenant/resource permission too.

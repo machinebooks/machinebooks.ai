@@ -1,0 +1,4 @@
+Generate a proxy DLL in C for VERSION.dll that:
+1. Forwards the 17 exports to the real DLL in System32
+2. Executes CreateFile + WriteFile as payload
+3. Compiles with MinGW: x86_64-w64-mingw32-gcc -shared

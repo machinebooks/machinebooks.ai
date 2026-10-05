@@ -1,0 +1,12 @@
+# Didactic composition; adapters have explicit cluster, identity and scope contracts.
+class ProxmoxSDKManager:
+    def __init__(self, access, store, operations, consoles):
+        self.access, self.store = access, store
+        self.operations, self.consoles = operations, consoles
+    async def observed_inventory(self, actor, workzone_ref):
+        scope = await self.access.authorized_workzone(actor, workzone_ref)
+        return await self.store.minimized_inventory(scope)
+    async def console_grant(self, actor, resource_ref):
+        scope = await self.access.authorized_console(actor, resource_ref)
+        return await self.consoles.short_resource_bound_grant(scope)
+# Independent token ACLs and console proxy integration must be tested on the pinned version.

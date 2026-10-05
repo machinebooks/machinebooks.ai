@@ -1,0 +1,105 @@
+"""
+bounty_roi_calculator.py -- Bug bounty hunter ROI calculator
+Computes profitability metrics considering severity, duplicates,
+rejections, taxes and tool cost.
+"""
+from dataclasses import dataclass, field
+from typing import Optional
+import json
+
+# Median payouts by severity (HackerOne, 2024)
+MEDIAN_PAYOUTS = {
+    "critical": 3000,
+    "high": 1000,
+    "medium": 500,
+    "low": 150,
+}
+
+# Tax rates by jurisdiction (simplified)
+TAX_RATES = {
+    "spain_autonomo": 0.30,  # IRPF estimate + net VAT
+    "spain_empresa": 0.25,   # Corporate tax
+    "us_selfemployed": 0.35, # Federal + self-employment
+    "eu_average": 0.28,      # EU average for self-employed
+}
+
+@dataclass
+class BountyReport:
+    """A report submitted to a platform."""
+    vuln_id: str
+    severity: str           # critical, high, medium, low
+    platform: str           # hackerone, bugcrowd, direct
+    hours_spent: float      # research hours
+    status: str = "pending" # pending, accepted, duplicate, rejected
+    payout: Optional[float] = None  # actual payment (if known)
+    
+    @property
+    def estimated_payout(self) -> float:
+        """Estimated payout if the real one is not known."""
+        if self.payout is not None:
+            return self.payout
+        if self.status in ("duplicate", "rejected"):
+            return 0.0
+        return MEDIAN_PAYOUTS.get(self.severity, 0)
+
+@dataclass
+class MonthlyROI:
+    """Monthly ROI computation."""
+    reports: list[BountyReport] = field(default_factory=list)
+    tool_cost_monthly: float = 74.0  # our real cost
+    hours_total: float = 0.0
+    tax_jurisdiction: str = "spain_autonomo"
+    
+    def add_report(self, report: BountyReport):
+        self.reports.append(report)
+        self.hours_total += report.hours_spent
+    
+    @property
+    def gross_income(self) -> float:
+        """Estimated gross income."""
+        return sum(r.estimated_payout for r in self.reports)
+    
+    @property
+    def accepted_count(self) -> int:
+        return sum(1 for r in self.reports 
+                   if r.status not in ("duplicate", "rejected"))
+    
+    @property
+    def duplicate_rate(self) -> float:
+        """Duplicate rate."""
+        dupes = sum(1 for r in self.reports if r.status == "duplicate")
+        return dupes / len(self.reports) if self.reports else 0
+    
+    @property
+    def net_income(self) -> float:
+        """Net income after taxes and tools."""
+        tax_rate = TAX_RATES.get(self.tax_jurisdiction, 0.30)
+        after_tax = self.gross_income * (1 - tax_rate)
+        return after_tax - self.tool_cost_monthly
+    
+    @property
+    def hourly_rate_gross(self) -> float:
+        """Gross hourly rate."""
+        return self.gross_income / self.hours_total if self.hours_total else 0
+    
+    @property
+    def hourly_rate_net(self) -> float:
+        """Net hourly rate."""
+        return self.net_income / self.hours_total if self.hours_total else 0
+    
+    def summary(self) -> dict:
+        """Full month summary."""
+        return {
+            "reports_total": len(self.reports),
+            "accepted": self.accepted_count,
+            "duplicate_rate": f"{self.duplicate_rate:.1%}",
+            "hours_total": self.hours_total,
+            "gross_income": f"${self.gross_income:,.0f}",
+            "tool_cost": f"${self.tool_cost_monthly:.0f}",
+            "tax_rate": f"{TAX_RATES.get(self.tax_jurisdiction, 0.30):.0%}",
+            "net_income": f"${self.net_income:,.0f}",
+            "hourly_gross": f"${self.hourly_rate_gross:,.0f}/h",
+            "hourly_net": f"${self.hourly_rate_net:,.0f}/h",
+            "roi_on_tools": f"{self.gross_income / self.tool_cost_monthly:.0f}:1"
+                if self.tool_cost_monthly > 0 else "N/A",
+        }

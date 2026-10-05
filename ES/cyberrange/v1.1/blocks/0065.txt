@@ -1,0 +1,8 @@
+# Didactic reviewed traffic catalog; no caller path, shell or arbitrary script.
+async def schedule_profile(actor, profile_ref, workzone_ref, access, catalog, executor):
+    scope = await access.authorized_traffic(actor, workzone_ref)
+    artifact = await catalog.reviewed_profile(scope, profile_ref)
+    if artifact.kind not in {"pcap", "synthetic_dns"}:
+        raise ValueError("unsupported profile")
+    # Executor verifies digest, interface, rate, byte/packet/time quotas and ownership.
+    return await executor.run_owned_profile(scope, artifact, deadline=300)

@@ -1,0 +1,44 @@
+# Didactic structured rubric proposal; instructor makes the final assessment.
+import asyncio
+import json
+import math
+
+SOC_001_RUBRIC={"version":"1.1","criteria":[
+    {"id":"detect_error","weight":.30},
+    {"id":"incident_response","weight":.25},
+    {"id":"improvement_proposal","weight":.25},
+    {"id":"critical_review","weight":.20}]}
+
+async def evaluate_with_rubric(adapter,generate_text,actor_id,exercise_id,rubric):
+    await adapter.authorize_assessment(actor_id,exercise_id)
+    criteria=rubric["criteria"]
+    ids=[c["id"] for c in criteria]
+    if not ids or len(ids)!=len(set(ids)) or len(ids)>30:
+        raise ValueError("invalid_criteria")
+    weights=[c["weight"] for c in criteria]
+    if not all(type(w) in (int,float) and math.isfinite(w) and 0<w<=1 for w in weights) or not math.isclose(sum(weights),1,abs_tol=1e-9):
+        raise ValueError("invalid_weights")
+    evidence=await adapter.minimized_assessment_evidence(exercise_id)
+    request=json.dumps({"rubric":rubric,"evidence":evidence},allow_nan=False)
+    if len(request.encode("utf-8"))>64000:raise ValueError("oversized_evidence")
+    async with asyncio.timeout(90):text=await generate_text(request)
+    if not isinstance(text,str) or len(text.encode("utf-8"))>65536:
+        raise ValueError("invalid_output")
+    result=json.loads(text)
+    if not isinstance(result,dict) or set(result)!={"criteria"} or not isinstance(result["criteria"],list):
+        raise ValueError("invalid_schema")
+    scores=result["criteria"]
+    if len(scores)!=len(ids) or {c.get("id") for c in scores}!=set(ids):
+        raise ValueError("missing_or_duplicate_criteria")
+    for criterion in scores:
+        if set(criterion)!={"id","score","explanation","evidence_ids"} or type(criterion["score"]) is not int or not 1<=criterion["score"]<=4:
+            raise ValueError("invalid_score")
+        if not isinstance(criterion["explanation"],str) or not 1<=len(criterion["explanation"])<=4000:
+            raise ValueError("invalid_explanation")
+        await adapter.verify_assessment_evidence(criterion["evidence_ids"],evidence)
+    total=sum(next(c["score"] for c in scores if c["id"]==item["id"])*item["weight"] for item in criteria)
+    return await adapter.store_assessment_proposal(exercise_id,rubric["version"],
+        result,total,human_review="pending")
+
+# rubric version also binds criterion descriptions/indicators held in the
+# approved catalog. A 1–4 model score is a proposal, not professional certification.

@@ -1,0 +1,108 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+client = anthropic.Anthropic()
+
+# Extraction categories with specialized prompts
+CATEGORIAS_EXTRACCION = {
+    "requisitos_obligatorios": {
+        "descripcion": "Solvency, experience, and capacity requirements "
+                       "that are admission conditions (not scoring)",
+        "prompt": """Analyze the following RFP text and extract
+ALL mandatory requirements for bid admission.
+
+Include:
+- Technical and economic solvency requirements
+- Mandatory certifications (ISO, ENS, etc.)
+- Minimum required experience (years, projects, amounts)
+- Mandatory professional profiles with qualifications or certifications
+- Required business classification
+- Joint venture or subcontracting requirements
+
+For each requirement indicate:
+- Exact description (verbatim quote when possible)
+- Page where it appears
+- Whether it's eliminatory or admits correction
+- Confidence level (high/medium/low) on whether it's mandatory
+
+IMPORTANT: If a requirement appears as "will be valued" it is NOT
+mandatory. If it appears as "must demonstrate" or "is an essential
+requirement," it IS. When in doubt, classify it as
+mandatory with medium confidence."""
+    },
+    "criterios_valoracion": {
+        "descripcion": "Technical and economic scoring criteria "
+                       "with weights and subcriteria",
+        "prompt": """Extract the bid evaluation criteria with:
+- Criterion name
+- Weight (points or percentage of total)
+- Subcriteria if any, with their individual weight
+- Whether it's automatic evaluation (formula) or judgment-based
+- Page where it appears
+- What exactly is required to obtain maximum score"""
+    },
+    "riesgos_penalizaciones": {
+        "descripcion": "Penalties, SLAs, guarantees, and contract "
+                       "termination clauses",
+        "prompt": """Extract all contractual risk clauses:
+- Penalties for non-compliance (amounts or percentages)
+- SLAs with thresholds and consequences
+- Required guarantees (definitive, supplementary)
+- Causes for contract termination
+- Liability for damages
+- Intellectual property clauses
+- Transition obligations at contract end
+- Page where each clause appears"""
+    },
+    "plazos_calendario": {
+        "descripcion": "Dates, execution deadlines, milestones, and "
+                       "time constraints",
+        "prompt": """Extract all temporal information from the RFP:
+- Bid submission deadline
+- Contract execution period
+- Intermediate milestones with dates or relative deadlines
+- Possible extensions and conditions
+- Post-delivery warranty periods
+- Calendar restrictions (maintenance windows,
+  unavailability periods)
+- Page where each temporal data point appears"""
+    },
+    "cumplimiento_normativo": {
+        "descripcion": "Regulatory, compliance, and legal "
+                       "requirements",
+        "prompt": """Extract the regulatory compliance requirements:
+- Applicable regulations cited (ENS, GDPR, NIS2, DORA, etc.)
+- Required compliance level (ENS category, GDPR level)
+- Required vs valued regulatory certifications
+- Compliance audits during execution
+- Data protection requirements (DPO, DPIA, etc.)
+- Digital sovereignty or data residency requirements
+- Page where each regulatory requirement appears"""
+    }
+}
+
+def extraer_categoria(
+    texto_rfp: str,
+    categoria: str,
+    config: dict
+) -> dict:
+    """Extracts one category of information from the RFP."""
+    mensaje = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        system="""You are an expert analyst in tenders and RFPs.
+You extract information precisely, citing pages.
+If you don't find information for a category, state it
+explicitly — never invent data.""",
+        messages=[{
+            "role": "user",
+            "content": f"{config['prompt']}\n\n"
+                       f"RFP TEXT:\n{texto_rfp}"
+        }]
+    )
+    return {
+        "categoria": categoria,
+        "descripcion": config["descripcion"],
+        "resultado": mensaje.content[0].text,
+        "tokens_entrada": mensaje.usage.input_tokens,
+        "tokens_salida": mensaje.usage.output_tokens
+    }

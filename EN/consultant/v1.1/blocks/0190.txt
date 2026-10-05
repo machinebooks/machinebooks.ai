@@ -1,0 +1,34 @@
+# Illustrative configuration; keys alone do not implement an engine or authorize actions.
+# Report generation pipeline configuration
+report_pipeline:
+  model: "claude-sonnet-4-6"
+  sections:
+    - id: "executive_summary"
+      generation: "manual"  # The consultant writes this
+      reason: "Requires political judgment and strategic prioritization"
+    - id: "current_state"
+      generation: "agent"
+      source: "code_analysis_results"
+      template: "templates/current_state.md"
+      review: "mandatory"
+    - id: "alternatives_evaluation"
+      generation: "agent"
+      source: "technology_evaluation_results"
+      template: "templates/alternatives_evaluation.md"
+      review: "mandatory"
+    - id: "migration_roadmap"
+      generation: "hybrid"  # Agent generates base, consultant adjusts
+      source: "estimates + stakeholder_context"
+      review: "mandatory"
+    - id: "cost_estimation"
+      generation: "agent"
+      source: "estimation_results"
+      template: "templates/cost_estimation.md"
+      review: "mandatory"
+    - id: "recommendations"
+      generation: "manual"  # Human judgment
+      reason: "Requires weighing non-technical factors"
+    - id: "technical_annexes"
+      generation: "agent"
+      source: "metadata + detailed_analysis"
+      review: "technical_validation"

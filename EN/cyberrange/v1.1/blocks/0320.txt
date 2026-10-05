@@ -1,0 +1,19 @@
+# YAML: teaching proposal; reviewed private adapter resolves leases, templates and secret refs
+scenario:
+  status: proposal
+  name: EXERCISE-FIRST
+  workzone_ref: newly-created-owned-workzone
+  approval_ref: null
+  duration_minutes: 60
+  network: {lease_ref: null, candidate_subnet: 10.100.0.0/24, routes_to_management: []}
+  firewall: {template_ref: approved-firewall-template, vcpus: 1, ram_mb: 2048, disk_gb: 10}
+  machines:
+    - {id: kali, template_ref: approved-kali-template, vcpus: 2, ram_mb: 4096, disk_gb: 30}
+    - {id: linux, template_ref: approved-linux-objective-template, vcpus: 1, ram_mb: 2048, disk_gb: 20}
+    - {id: windows, template_ref: approved-windows-objective-template, vcpus: 2, ram_mb: 4096, disk_gb: 40}
+  objectives:
+    - {id: obj-1, objective_ref: approved-linux-access-objective, target: linux}
+    - {id: obj-2, objective_ref: approved-share-discovery-objective, target: windows}
+  secrets: {source: configured-secret-store, expose_to_model: false}
+  required_receipts: [lease, template_digest, readiness, isolation, flag_seed, cleanup]
+# Totals include the firewall: 4 VMs, 6 vCPUs, 12288 MiB, 100 GiB, plus host overhead.

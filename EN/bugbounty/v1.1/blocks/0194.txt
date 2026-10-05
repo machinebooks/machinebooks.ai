@@ -1,0 +1,9 @@
+LPE HYPOTHESIS — requires installation-specific validation:
+1. Determine effective token writing to the relevant code path.
+2. Identify the service account and the path it actually consumes.
+3. Verify effective startup, stop or configuration rights.
+4. Check integrity, signatures, repair and other loading restrictions.
+5. In an authorized fixture, observe a benign marker and the context producing it.
+6. Record controls and conditions breaking the chain.
+Do not replace binaries or restart real services as part of this example.
+Severity and the CVSS vector depend on demonstrated impact.

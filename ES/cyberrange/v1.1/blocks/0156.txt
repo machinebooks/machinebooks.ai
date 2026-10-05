@@ -1,0 +1,16 @@
+# Authorized snapshot aggregation with an explicit common cutoff/ledger
+def build_team_response(snapshot):
+    members=snapshot["authorized_members"]
+    ledger=snapshot["score_events"]
+    identifiers={member["id"] for member in members}
+    if len(identifiers)!=len(members):
+        raise ValueError("duplicate member")
+    if any(event["user_id"] not in identifiers for event in ledger):
+        raise ValueError("score event outside authorized team")
+    return {"team_id":snapshot["team_id"],"cutoff_utc":snapshot["cutoff_utc"],
+            "members":len(members),"total_score":sum(event["points"] for event in ledger),
+            "flags_captured":len(set(snapshot["capture_ids"])),
+            "completed_challenges":len(set(snapshot["completed_instance_ids"]))}
+
+# Adapter queries one consistent snapshot with scoped permissions and immutable
+# rubric/compensation events. UI permission hints do not authorize mutations.

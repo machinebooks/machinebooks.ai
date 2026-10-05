@@ -1,0 +1,11 @@
+# Explicit cluster and actor; no inferred separation or all-cluster default.
+import asyncio
+
+async def get_all_resources_separated(actor, cluster_id, access, inventory):
+    scope = await asyncio.wait_for(access.cluster_scope(actor, cluster_id, "inventory.read"), 10)
+    raw = await asyncio.wait_for(inventory.vms_and_templates(scope, limit=100), 20)
+    value = inventory.validate_resource_inventory(raw, scope, limit=100)
+    return {"virtual_machines": {"data": value["vms"]},
+        "templates": {"data": value["templates"]},
+        "observed_at": value["observed_at"], "coverage": value["coverage"]}
+# Per-resource available_operations is a presentation hint, never an authorization grant.

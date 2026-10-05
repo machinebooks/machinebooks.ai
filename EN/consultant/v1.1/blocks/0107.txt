@@ -1,0 +1,49 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+def prioritize_recommendations(
+    findings: list[Finding],
+    client_budget: str,
+    constraints: str,
+    voice_prompt: str
+) -> str:
+    """Generates the prioritized recommendations section."""
+
+    findings_text = "\n\n".join(
+        f"ID: {f.id}\n"
+        f"Recommendation: {f.recommendation}\n"
+        f"Severity: {f.severity.value}\n"
+        f"Suggested priority: {f.priority.value}\n"
+        f"Effort: {f.estimated_effort}\n"
+        f"Estimated cost: {f.estimated_cost or 'Not estimated'}\n"
+        f"Impact: {f.business_impact}"
+        for f in findings
+    )
+
+    prompt = f"""Generate the prioritized recommendations section
+for a consulting report.
+
+INDIVIDUAL RECOMMENDATIONS:
+{findings_text}
+
+AVAILABLE CLIENT BUDGET: {client_budget}
+CONSTRAINTS: {constraints}
+
+INSTRUCTIONS:
+1. Group into three blocks: Immediate (0-30 days),
+   Short term (1-3 months), Medium term (3-12 months).
+2. Within each block, order by impact/effort ratio.
+3. For each recommendation: action + timeline + suggested
+   owner + estimated cost + expected impact.
+4. Mark dependencies between recommendations.
+5. Identify "quick wins": high impact, low effort.
+6. If budget doesn't cover everything, indicate what to
+   drop and why.
+7. Format: Markdown table for the summary, prose for narrative."""
+
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        system=voice_prompt,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return response.content[0].text

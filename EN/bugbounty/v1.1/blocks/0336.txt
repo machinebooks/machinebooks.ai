@@ -1,0 +1,29 @@
+"""
+teams_screenshot.py -- Screenshot via CDP
+Generates a PNG capture of Teams visible content.
+"""
+import websocket
+import json
+import base64
+
+def capture_screenshot(ws_url, output_path="teams_evidence.png"):
+    """Capture the Teams target screen via CDP."""
+    ws = websocket.create_connection(ws_url)
+
+    cmd = json.dumps({
+        "id": 3,
+        "method": "Page.captureScreenshot",
+        "params": {"format": "png", "quality": 90}
+    })
+    ws.send(cmd)
+    result = json.loads(ws.recv())
+
+    img_data = result["result"]["data"]
+    with open(output_path, "wb") as f:
+        f.write(base64.b64decode(img_data))
+
+    print(f"[+] Screenshot saved: {output_path}")
+    ws.close()
+
+# Output: teams_evidence.png (304 KB)
+# Visible content: Teams interface with active chats

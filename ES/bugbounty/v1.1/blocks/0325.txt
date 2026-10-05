@@ -1,0 +1,28 @@
+"""
+adobe_cdp_enum.py — Enumeración de targets CDP en Adobe Acrobat DC
+Descubre los paneles RNA expuestos por WebView2 con CDP activo.
+"""
+import requests
+import json
+
+CDP_HOST = "http://localhost:9222"
+
+def enumerate_targets():
+    """Lista todos los targets CDP disponibles."""
+    resp = requests.get(f"{CDP_HOST}/json")
+    targets = resp.json()
+    
+    print(f"[*] Targets CDP encontrados: {len(targets)}\n")
+    
+    for i, target in enumerate(targets):
+        print(f"--- Target {i+1} ---")
+        print(f"  Title:       {target.get('title', 'N/A')}")
+        print(f"  URL:         {target.get('url', 'N/A')}")
+        print(f"  Type:        {target.get('type', 'N/A')}")
+        print(f"  WebSocket:   {target.get('webSocketDebuggerUrl', 'N/A')}")
+        print()
+    
+    return targets
+
+if __name__ == "__main__":
+    targets = enumerate_targets()

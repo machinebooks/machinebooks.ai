@@ -1,0 +1,42 @@
+# Structural ZIP validation without extracting to the filesystem
+import io
+import re
+import stat
+import zipfile
+from pathlib import PurePosixPath
+
+def validate_zip(data, max_bytes=50*1024*1024, max_expanded=200*1024*1024,
+                 max_entries=2000, max_ratio=100):
+    if len(data) > max_bytes:
+        raise ValueError("compressed size limit")
+    total, names = 0, set()
+    with zipfile.ZipFile(io.BytesIO(data)) as archive:
+        entries = archive.infolist()
+        if len(entries) > max_entries:
+            raise ValueError("entry limit")
+        for entry in entries:
+            name = entry.orig_filename
+            path = PurePosixPath(name)
+            if (not name or "\\" in name or "\x00" in name or path.is_absolute()
+                    or re.match(r"^[A-Za-z]:", name)
+                    or any(part in ("", ".", "..") for part in name.split("/") if part or not entry.is_dir())):
+                raise ValueError("invalid member path")
+            key = name.rstrip("/").casefold()
+            if key in names:
+                raise ValueError("duplicate member")
+            names.add(key)
+            mode = entry.external_attr >> 16
+            if stat.S_ISLNK(mode) or entry.flag_bits & 1:
+                raise ValueError("symlink or encrypted member")
+            if entry.file_size > max_expanded or entry.file_size > max_ratio * max(entry.compress_size, 1):
+                raise ValueError("expansion limit")
+            with archive.open(entry) as stream:
+                while chunk := stream.read(65536):
+                    total += len(chunk)
+                    if total > max_expanded:
+                        raise ValueError("expanded size limit")
+    return {"entries": len(entries), "expanded_bytes": total}
+
+# Bound request bytes before calling. This does not parse YAML/JSON,
+# authorize uploads or safely extract files. Extraction needs a dedicated,
+# owned directory and component containment with link/race protections.

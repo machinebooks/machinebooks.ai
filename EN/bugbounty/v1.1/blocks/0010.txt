@@ -1,0 +1,10 @@
+> I need to fuzz the IOCTLs of the AsIO3.sys driver I already identified.
+> Launch the ioctl-fuzzer sub-agent with those codes.
+
+[main agent invokes sub-agent]
+
+> /agent ioctl-fuzzer
+>   target: ./binaries/AsIO3.sys
+>   ioctl_codes: [0x22E044, 0x22E048, 0x22E050, 0x22E054]
+>   max_iterations: 10000
+>   output: ./analysis/ioctl-fuzz/

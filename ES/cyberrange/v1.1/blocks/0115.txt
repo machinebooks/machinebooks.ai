@@ -1,0 +1,10 @@
+# Didactic scoped live read; the adapter bounds blocking calls and validates metrics.
+from datetime import datetime, timezone
+
+async def get_vm_status(actor, resource_ref, access, api):
+    scope = await access.owned_vm_read(actor, resource_ref)
+    observation = await api.read_current_state(scope, timeout=20)
+    return {"resource_ref": resource_ref, "status": observation.get("status", "unknown"),
+            "cpu": observation.get("cpu"), "memory_bytes": observation.get("mem"),
+            "at_utc": datetime.now(timezone.utc).isoformat(),
+            "coverage": "observed_fields_only"}

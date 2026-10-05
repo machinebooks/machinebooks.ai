@@ -1,0 +1,17 @@
+# Caso: Discord Desktop Q2 2026
+
+## Target
+- Discord Desktop 0.0.395 (Electron 28.x)
+- Plataforma: Windows x64
+- Programa: HackerOne (privado)
+
+## Estado actual
+- ASAR extraído y verificado
+- Preferencias de BrowserWindow examinadas: nodeIntegration deshabilitado, contextIsolation activo
+- IPC interno mapeado parcialmente: 14 handlers documentados, ~30 pendientes
+- Hipótesis activa: bypass de contextIsolation vía preload race condition
+
+## Reglas operativas
+- Workspace etiquetado pre-disclosure, NO usar LLM cloud
+- Toda evidencia debe sellarse con timestamp ISO-8601 UTC
+- Nombres de usuarios reales en dumps deben anonimizarse antes de cualquier output

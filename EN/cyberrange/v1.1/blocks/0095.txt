@@ -1,0 +1,15 @@
+# Three WebSocket channels in main.py
+@app.websocket("/ws/playbook/{session_id}")
+async def websocket_playbook_execution(websocket: WebSocket, session_id: str):
+    """Streaming of Ansible playbook execution."""
+    ...
+
+@app.websocket("/ws/powershell/{session_id}")
+async def websocket_powershell_execution(websocket: WebSocket, session_id: str):
+    """Streaming of PowerShell script execution."""
+    ...
+
+@app.websocket("/ws/logs")
+async def websocket_system_logs(websocket: WebSocket):
+    """Real-time system logs."""
+    ...

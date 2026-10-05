@@ -1,0 +1,27 @@
+// VS Code security model (simplified)
+// Each point corresponds to a bypass vector
+
+// 1. Against ASAR tampering: fuses enabled
+// OnlyLoadAppFromAsar: true
+// EnableEmbeddedAsarIntegrityValidation: true
+
+// 2. Against DLL sideloading: protected directory
+// Installation in C:\Program Files\Microsoft VS Code
+// Requires admin to modify
+
+// 3. Against NODE_OPTIONS injection: fuse disabled
+// EnableNodeOptionsEnvironmentVariable: false
+// The process completely ignores NODE_OPTIONS
+
+// 4. Against Squirrel abuse: secure update mechanism
+// VS Code uses its own update mechanism
+// with signature verification of the downloaded package
+
+// 5. Against WINTRUST bypass: not applicable
+// VS Code doesn't run services as SYSTEM
+// that need to verify third-party signatures
+
+// 6. Runtime integrity verification
+// VS Code has an integrity verification mechanism
+// that detects modifications to app files
+// Shows a warning "Your Code installation appears to be corrupt"

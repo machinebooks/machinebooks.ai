@@ -1,0 +1,17 @@
+# Didactic optional sizing proposal; no clipping or automatic deployment.
+import asyncio
+import json
+
+async def suggest_workzone_sizing(description, provider, validator, approved_profiles):
+    if not isinstance(description, str) or not 1 <= len(description) <= 8000:
+        raise ValueError("invalid description")
+    if provider is None:
+        return {"status": "manual_review_required"}
+    response = await asyncio.wait_for(provider.propose_sizing(description, approved_profiles), 20)
+    if not isinstance(response, str) or len(response.encode("utf-8")) > 65536:
+        raise ValueError("invalid provider response")
+    raw = json.loads(response)
+    # External validator checks strict types, per-node profiles, sums, overhead and scope.
+    verified = validator.validate_proposal(raw, approved_profiles)
+    return {"status": "pending_review", "proposal": verified}
+# Current capacity is rechecked under atomic leases after human approval.

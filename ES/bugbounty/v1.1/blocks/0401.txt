@@ -1,0 +1,3 @@
+const fixture = { chrome: { webview: { hostObjects: { sample: {} } } } };
+console.log(Object.keys(fixture));
+console.log(Object.keys(fixture.chrome.webview.hostObjects));

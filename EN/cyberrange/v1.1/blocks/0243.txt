@@ -1,0 +1,12 @@
+// Using the translation system in components
+const GamingZone: React.FC = () => {
+  const { t } = useTranslation();
+
+  return (
+    <div>
+      <h1>{t('gamingZone.title')}</h1>
+      <p>{t('gamingZone.errorLoading')}</p>
+      <span>{t('gamingZone.difficulty.hard')}</span>
+    </div>
+  );
+};

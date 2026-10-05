@@ -1,0 +1,6 @@
+/opt/traffic-profiles/
+├── corporate-workday.pcap      # 8h of HTTP/HTTPS/DNS traffic
+├── voip-calls.pcap             # SIP/RTP traffic simulating calls
+├── lateral-movement-slow.py    # Scapy: slow scan simulating APT
+├── dns-exfiltration.py         # Scapy: DNS tunnel with encoded data
+└── normal-browsing.pcap        # Legitimate web browsing

@@ -1,0 +1,31 @@
+def decode_ioctl(value):
+    value &= 0xffffffff
+    access = (value >> 14) & 3
+    method = value & 3
+    return {
+        "value": value,
+        "device_type": value >> 16,
+        "function": (value >> 2) & 0xfff,
+        "access": ["any", "read", "write", "read_and_write"][access],
+        "method": ["buffered", "in_direct", "out_direct", "neither"][method],
+        "candidate_only": True,
+    }
+
+def inspect_fixture(constants):
+    return {"candidates": [decode_ioctl(v) for v in constants],
+            "dispatch_observed": False, "risk": "unassessed"}
+
+value = (0x8000 << 16) | (3 << 14) | (0x801 << 2) | 1
+decoded = decode_ioctl(value)
+assert decoded["access"] == "read_and_write"
+assert decoded["method"] == "in_direct"
+assert decoded["function"] == 0x801
+assert decode_ioctl(value - 2**32) == decoded
+report = inspect_fixture([value])
+assert isinstance(report, dict)
+assert report["risk"] == "unassessed"
+assert not report["dispatch_observed"]
+buffers = {"in_direct": {"first": "SystemBuffer", "second": "MDL_read"},
+           "out_direct": {"first": "SystemBuffer", "second": "MDL_write"}}
+assert buffers["in_direct"]["first"] == buffers["out_direct"]["first"]
+print("IOCTL data fixture: PASS")

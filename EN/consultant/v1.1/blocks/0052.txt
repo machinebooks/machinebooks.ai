@@ -1,0 +1,59 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import os
+import anthropic
+from pathlib import Path
+from dataclasses import dataclass, field
+from PyPDF2 import PdfReader
+
+# Base directory for RFP documents
+RFP_BASE_DIR = Path(os.environ.get("RFP_BASE_DIR", "rfps")).resolve()
+
+@dataclass
+class RFPDocument:
+    """Represents a preprocessed RFP ready for analysis."""
+    titulo: str
+    fuente: str
+    secciones: list[dict] = field(default_factory=list)
+    num_paginas: int = 0
+    texto_completo: str = ""
+
+def preprocesar_rfp(ruta_pdf: str) -> RFPDocument:
+    """Extracts text from the PDF and segments by detected sections.
+
+    The file path is validated against RFP_BASE_DIR to prevent
+    path traversal attacks.
+    """
+    resolved = Path(ruta_pdf).resolve()
+    if not resolved.is_relative_to(RFP_BASE_DIR):
+        raise ValueError(
+            f"Access denied: '{ruta_pdf}' is outside the allowed directory."
+        )
+    if resolved.suffix.lower() != ".pdf":
+        raise ValueError(f"Only PDF files are allowed, got: {resolved.suffix}")
+
+    reader = PdfReader(str(resolved))
+    texto_paginas = []
+
+    for i, pagina in enumerate(reader.pages):
+        texto = pagina.extract_text() or ""
+        texto_paginas.append({
+            "pagina": i + 1,
+            "texto": texto.strip()
+        })
+
+    texto_completo = "\n\n".join(
+        f"[Page {p['pagina']}]\n{p['texto']}"
+        for p in texto_paginas
+    )
+
+    # Heuristic detection of main sections
+    secciones = detectar_secciones(texto_paginas)
+
+    return RFPDocument(
+        titulo=Path(ruta_pdf).stem,
+        fuente=ruta_pdf,
+        secciones=secciones,
+        num_paginas=len(reader.pages),
+        texto_completo=texto_completo
+    )

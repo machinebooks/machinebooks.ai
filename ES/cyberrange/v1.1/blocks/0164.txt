@@ -1,0 +1,14 @@
+# Didactic finite predicate; persist awards through a unique user/badge/version ledger.
+def badge_progress(rule, completed_ids):
+    required, electives = set(rule["required_ids"]), set(rule["elective_ids"])
+    minimum = rule["elective_min"]
+    if required & electives or type(minimum) is not int or not 0 <= minimum <= len(electives):
+        raise ValueError("invalid badge rule")
+    if not required and minimum == 0:
+        raise ValueError("empty badge rule")
+    done = set(completed_ids)
+    count = len(done & required) + min(len(done & electives), minimum)
+    total = len(required) + minimum
+    return {"completed": required <= done and len(done & electives) >= minimum,
+            "progress_percentage": int(count/total*100)}
+# Completion records are scoped to the same exercise/rubric; transaction prevents duplicate credit.

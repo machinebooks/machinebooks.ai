@@ -1,0 +1,8 @@
+┌──────────────────────────────────────────────────────────┐
+│ Instructor → catalog, authorization and scheduling       │
+│ ↓ Leased worker → owned guest executor                   │
+│ ↓ Bounded output → authorized WebSocket                  │
+│ ↓ AttackLog → observed evidence and coverage             │
+│ ↓ Audit + Score → by verified objective                  │
+│ Blue team: authorized signals for detection and response │
+└──────────────────────────────────────────────────────────┘

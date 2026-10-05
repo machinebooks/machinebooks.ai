@@ -1,0 +1,31 @@
+# Authorized remote-executor contract; never run a template on the API host
+from datetime import datetime, timezone
+import asyncio
+
+async def run_attack(attack, scope, executor, persist):
+    if not scope.authorizes(attack.user_id, attack.template_id,
+                            attack.attacker_host_id, attack.target_host_id):
+        raise PermissionError("execution outside exercise scope")
+    await persist(attack.id, "running", datetime.now(timezone.utc))
+    handle = None
+    try:
+        handle = await executor.start_owned(attack, scope)
+        result = await executor.wait_bounded(handle)
+        # Exit code is process outcome, not proof of the learning objective.
+        state = "process_completed" if result.returncode == 0 else "failed"
+        await persist(attack.id, state, datetime.now(timezone.utc), result)
+        return result
+    except asyncio.CancelledError:
+        if handle is not None:
+            await executor.cancel_and_wait_owned(handle)
+        await persist(attack.id, "cancelled", datetime.now(timezone.utc))
+        raise
+    except Exception:
+        if handle is not None:
+            await executor.cancel_and_wait_owned(handle)
+        await persist(attack.id, "failed", datetime.now(timezone.utc))
+        raise
+
+# Adapters validate catalog/arguments/inventory, bound logs and runtime,
+# isolate the runner and confirm cleanup. Scoring uses the actual user and
+# independently verified objectives; no points are assigned by exit code.

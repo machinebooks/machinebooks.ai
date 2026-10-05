@@ -1,0 +1,21 @@
+// Didactic unknown/zero distinction; formatters are independently testable.
+import React from 'react';
+export function percent(value:unknown):string {
+  return typeof value==='number'&&Number.isFinite(value)&&value>=0&&value<=100
+    ?`${value.toFixed(1)}%`:'—';
+}
+export function gibibytes(value:unknown):string {
+  return typeof value==='number'&&Number.isFinite(value)&&value>=0
+    ?`${(value/(1024**3)).toFixed(1)} GiB`:'—';
+}
+type Stats={cpu_usage:number|null;memory_used:number|null;storage_used:number|null};
+export const ClusterDashboard=({stats,loading,onRefresh}:
+ {stats:Stats|null;loading:boolean;onRefresh:()=>void})=>(
+  <section aria-label="Cluster status" aria-busy={loading}>
+    <p>CPU: {percent(stats?.cpu_usage)}</p>
+    <p>Memory: {gibibytes(stats?.memory_used)}</p>
+    <p>Storage: {gibibytes(stats?.storage_used)}</p>
+    {!stats&&<p role="status">Data unavailable</p>}
+    <button type="button" disabled={loading} onClick={onRefresh}>Refresh</button>
+  </section>
+);

@@ -1,0 +1,39 @@
+from pathlib import Path
+
+SENTINEL = b"dL7pKGdnNz796PbbjQWNKmHXBZaB9tsX"
+
+def read_fuses(data):
+    offset = data.find(SENTINEL)
+    if offset < 0:
+        return {"status": "missing", "states": []}
+    start = offset + len(SENTINEL)
+    if start + 2 > len(data):
+        return {"status": "truncated", "states": []}
+    version, length = data[start:start + 2]
+    if version != 1 or start + 2 + length > len(data):
+        return {"status": "unknown", "states": []}
+    states = {48: "disabled", 49: "enabled", 114: "removed"}
+    return {
+        "status": "parsed",
+        "version": version,
+        "states": [states.get(value, "unknown")
+                   for value in data[start + 2:start + 2 + length]],
+    }
+
+FUSE_NAMES = [
+    "RunAsNode", "EnableCookieEncryption",
+    "EnableNodeOptionsEnvironmentVariable", "EnableNodeCliInspectArguments",
+    "EnableEmbeddedAsarIntegrityValidation", "OnlyLoadAppFromAsar",
+    "LoadBrowserProcessSpecificV8Snapshot", "GrantFileProtocolExtraPrivileges",
+]
+
+def analyze_fuses(exe_path):
+    # Read only an owned or explicitly authorized file.
+    result = read_fuses(Path(exe_path).read_bytes())
+    result["fuses"] = {
+        FUSE_NAMES[index] if index < len(FUSE_NAMES) else f"UnknownFuse{index}":
+        {"state": state}
+        for index, state in enumerate(result["states"])
+    }
+    result["risk"] = "not_assessed"
+    return result

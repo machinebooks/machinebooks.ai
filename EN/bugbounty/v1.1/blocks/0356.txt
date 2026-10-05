@@ -1,0 +1,7 @@
+// webview_windows_edge_chromium.cpp (simplified fragment)
+// The 'debug' variable comes from the webview-debug-enabled toggle
+const auto debug = OptionWebviewDebugEnabled.value();
+
+// This call enables DevTools on the WebView2
+// In production, it should ALWAYS be false
+settings->put_AreDevToolsEnabled(debug);

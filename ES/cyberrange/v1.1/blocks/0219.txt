@@ -1,0 +1,52 @@
+# Didactic async episode contract; no PPO implementation or transfer claim.
+import asyncio
+import math
+
+class CyberDefenseEnvironment:
+    def __init__(self,adapter,red_agent,max_steps=100):
+        if type(max_steps) is not int or not 1<=max_steps<=1000:
+            raise ValueError("invalid_step_limit")
+        self.adapter=adapter;self.red_agent=red_agent;self.max_steps=max_steps
+        self.steps=0;self.done=True
+
+    async def reset(self,seed):
+        if type(seed) is not int or not 0<=seed<2**32:
+            raise ValueError("invalid_seed")
+        self.done=True
+        observation=await self.adapter.reset_owned_isolated_episode(seed)
+        self.steps=0;self.done=False
+        return observation,{"seed":seed,"reward_policy":"illustrative-v1"}
+
+    async def step(self,action):
+        if self.done:raise ValueError("reset_required")
+        async with asyncio.timeout(60):
+            request=await self.adapter.next_approved_red_request()
+            if not isinstance(request,str) or not 1<=len(request)<=4000:
+                raise ValueError("approved_red_request_required")
+            defense=await self.adapter.apply_approved_defense(action)
+            red=await self.red_agent.execute_step(request)
+            truth=await self.adapter.independent_episode_evidence(defense,red)
+            if type(truth.get("objectives_finished")) is not bool or not isinstance(truth.get("id"),str) or not 1<=len(truth["id"])<=128:
+                raise ValueError("invalid_episode_evidence")
+            reward=self.calculate_reward(truth)
+            observation=await self.adapter.observation_without_ground_truth()
+        self.steps+=1
+        terminated=truth["objectives_finished"] is True
+        truncated=self.steps>=self.max_steps
+        self.done=terminated or truncated
+        return observation,reward,terminated,truncated,{"evidence_id":truth["id"]}
+
+    @staticmethod
+    def calculate_reward(truth):
+        fields=("blocked_real_attack","false_positive","undetected_verified_attack",
+                "late_response","correct_detection","correct_escalation")
+        if not all(type(truth.get(key)) is bool for key in fields):
+            raise ValueError("independent_boolean_truth_required")
+        reward=(10*truth["blocked_real_attack"]-8*truth["false_positive"]
+            -15*truth["undetected_verified_attack"]-3*truth["late_response"]
+            +5*truth["correct_detection"]+8*truth["correct_escalation"])
+        if not math.isfinite(reward):raise ValueError("invalid_reward")
+        return float(reward)
+
+# Adapter controls reset/cleanup, seeds, action spaces and lawful telemetry.
+# Weights are an author rubric, not an empirically optimal defense policy.

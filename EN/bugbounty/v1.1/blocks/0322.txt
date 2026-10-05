@@ -1,0 +1,39 @@
+// Security check before creating the WebView2 environment (C#)
+// Insert into the application's initialization method
+string envArgs = Environment.GetEnvironmentVariable(
+    "WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS",
+    EnvironmentVariableTarget.User
+);
+
+if (!string.IsNullOrEmpty(envArgs))
+{
+    string[] dangerousArgs = {
+        "--remote-debugging-port",
+        "--remote-debugging-pipe",
+        "--remote-allow-origins",
+        "--disable-web-security",
+        "--disable-site-isolation"
+    };
+    
+    foreach (string arg in dangerousArgs)
+    {
+        if (envArgs.Contains(arg, StringComparison.OrdinalIgnoreCase))
+        {
+            // Log the security event
+            Logger.Warn($"Suspicious WebView2 environment variable: {arg}");
+            
+            // Option A: clear the variable and continue
+            // Environment.SetEnvironmentVariable(
+            //     "WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS",
+            //     null, EnvironmentVariableTarget.User);
+            
+            // Option B: show a warning to the user
+            MessageBox.Show(
+                "A WebView2 debug configuration has been detected " +
+                "that could compromise security.",
+                "Security warning",
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            break;
+        }
+    }
+}

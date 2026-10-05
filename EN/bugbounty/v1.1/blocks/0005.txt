@@ -1,0 +1,21 @@
+# IOCTL analysis with radare2 via r2pipe
+# Executed inside the Docker container
+import r2pipe
+
+r2 = r2pipe.open("/lab/drivers/AsIO3.sys", flags=["-2"])
+r2.cmd("aaa")  # Full analysis
+
+# Look for IRP_MJ_DEVICE_CONTROL dispatch handler
+functions = r2.cmdj("aflj") or []
+for f in functions:
+    disasm = r2.cmd(f"pdf @ {f['offset']}")
+    # Look for comparisons with IOCTL codes
+    if "cmp" in disasm and "0x22" in disasm:
+        for line in disasm.split('\n'):
+            if 'cmp' in line and '0x22' in line:
+                print(f"IOCTL candidate: {line.strip()}")
+
+# Result: 16 IOCTLs identified
+# 4 with METHOD_NEITHER (0x3) — UNVALIDATED POINTERS
+# The most dangerous: code that calls MmMapIoSpace
+# with physical address controlled by the user

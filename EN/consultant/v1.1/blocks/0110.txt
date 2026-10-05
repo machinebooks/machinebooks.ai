@@ -1,0 +1,59 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+from docx import Document
+from docx.shared import Pt, Inches, Cm
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+
+def generate_one_pager(
+    project: ReportingProject,
+    executive_summary: str,
+    top_findings: list[Finding],
+    output_path: str,
+    template_docx: str
+) -> str:
+    """Generates one-page executive summary."""
+
+    doc = Document(template_docx)
+
+    # Title
+    title = doc.add_heading(project.project_name, level=1)
+    title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    # Metadata
+    meta = doc.add_paragraph()
+    meta.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    meta.add_run(
+        f"{project.client} | {project.type.upper()} | "
+        f"{project.end_date}"
+    ).font.size = Pt(10)
+
+    # Summary in 3 sentences
+    doc.add_heading("Summary", level=2)
+    # Use only the first paragraph of the executive summary
+    first_paragraph = executive_summary.split("\n\n")[0]
+    doc.add_paragraph(first_paragraph)
+
+    # Critical findings in compact table
+    doc.add_heading("Key findings", level=2)
+    table = doc.add_table(rows=1, cols=3)
+    table.style = "Light Grid Accent 1"
+    hdr = table.rows[0].cells
+    hdr[0].text = "Finding"
+    hdr[1].text = "Severity"
+    hdr[2].text = "Required action"
+
+    for f in top_findings[:5]:
+        row = table.add_row().cells
+        row[0].text = f.title
+        row[1].text = f.severity.value.upper()
+        row[2].text = f.recommendation[:80]  # Truncate
+
+    # Next steps
+    doc.add_heading("Next steps", level=2)
+    doc.add_paragraph(
+        "Findings validation session with technical teams "
+        "within the next 5 business days."
+    )
+
+    doc.save(output_path)
+    return output_path

@@ -1,0 +1,52 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+from datetime import datetime
+from dataclasses import dataclass, field
+
+@dataclass
+class AIIncident:
+    """Incident record for inappropriate AI use.
+
+    Anonymous and learning-oriented, not blame-oriented.
+    Reviewed monthly in the practice improvement meeting."""
+
+    timestamp: datetime = field(default_factory=datetime.now)
+
+    category: str = ""  # "hallucination", "overreliance", "wrong_zone",
+                        # "client_trust", "quality_degradation"
+
+    project_phase: str = ""  # "presale", "delivery", "review", "communication"
+
+    impact: str = ""  # "none_detected", "rework_required",
+                      # "client_dissatisfaction", "contract_loss"
+
+    description: str = ""
+
+    prevention: str = ""
+
+    correct_zone: str = ""  # "green", "yellow", "orange", "red"
+    actual_zone_used: str = ""
+
+def analyze_incidents(incidents: list[AIIncident]) -> dict:
+    """Generates quarterly incident report for practice improvement."""
+    total = len(incidents)
+    if total == 0:
+        return {"message": "No incidents recorded"}
+
+    by_category = {}
+    by_impact = {}
+    zone_mismatches = 0
+
+    for inc in incidents:
+        by_category[inc.category] = by_category.get(inc.category, 0) + 1
+        by_impact[inc.impact] = by_impact.get(inc.impact, 0) + 1
+        if inc.correct_zone != inc.actual_zone_used:
+            zone_mismatches += 1
+
+    return {
+        "total_incidents": total,
+        "by_category": by_category,
+        "by_impact": by_impact,
+        "zone_mismatch_rate": zone_mismatches / total,
+        "preventable_rate": zone_mismatches / total
+    }

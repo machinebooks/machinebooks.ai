@@ -1,0 +1,20 @@
+# Didactic adapter contract: record partial ownership before each effect.
+async def create_reviewed_clone(actor, proposal_ref, access, leases, api, store):
+    scope = await access.reviewed_deployment(actor, proposal_ref)
+    reservation = await leases.reserve_atomic(scope)
+    intent = await store.record_reserved_intent(scope, reservation)
+    try:
+        upid = await api.request_clone(scope, reservation)
+        await store.record_task(intent, upid, "cloning")
+        result = await api.wait_task(scope, upid, timeout=120)
+        if result.get("exitstatus") != "OK":
+            raise RuntimeError("clone not confirmed")
+        await store.record_owned_resource(intent, reservation.vmid)
+        await api.configure_checked_network(scope, reservation)
+        await api.start_and_check_guest(scope, reservation, timeout=120)
+        await store.record_state(intent, "ready")
+        return {"status": "ready", "resource_ref": intent.id}
+    except BaseException:
+        await store.retain_for_reconciliation(intent, "deployment_incomplete")
+        raise
+# A request timeout retains the VMID reservation; absence is confirmed before release.

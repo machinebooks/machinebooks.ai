@@ -1,0 +1,10 @@
+Direct HCS API (mismo usuario, sin Hyper-V Admin):
+  HcsCreateComputeSystem -> HRESULT=-2147024809 (E_INVALIDARG, 0x80070057)
+
+Via pipe SYSTEM (mismo usuario, DLL inyectada):
+  [configure]       {"success":true}
+  [createDiskImage] {"success":true}
+  [createVM]        {"success":true}
+  [isRunning]       {"success":true,"result":{"running":true}}
+  [spawn]           {"success":true}
+  [mountPath]       {"success":true}

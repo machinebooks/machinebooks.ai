@@ -1,0 +1,30 @@
+# Nonblocking async reconciliation; adapters own sessions and the fenced scheduler lease.
+import asyncio
+from datetime import datetime, timezone
+
+class AutoSyncService:
+    def __init__(self, inventory, store, owner):
+        self.inventory, self.store, self.owner = inventory, store, owner
+    async def sync_cluster(self, cluster_ref):
+        async with asyncio.timeout(45):
+            async with self.owner.fenced_job("sync:"+str(cluster_ref)):
+                scope = await self.inventory.authorized_cluster(cluster_ref)
+                observation = await asyncio.wait_for(self.inventory.read_cluster(scope, timeout=20), 20)
+                return await self.store.reconcile_observed(scope, observation, datetime.now(timezone.utc))
+    async def sync_all_clusters(self):
+        async with asyncio.timeout(45):
+            refs = await asyncio.wait_for(self.inventory.authorized_cluster_refs(), 10)
+            if len(refs)>100:
+                raise ValueError("cluster count exceeds cycle contract")
+            for ref in refs:
+                try:
+                    await self.sync_cluster(ref)
+                except Exception:
+                    await asyncio.wait_for(self.store.record_sync_failure(ref, "read_or_store_failed"),3)
+# Async adapters use native async I/O or a separately supervised bounded worker.
+# A caller timeout cannot prove a blocking worker or remote task stopped.
+
+    async def run(self):
+        while True:
+            await self.sync_all_clusters()
+            await asyncio.sleep(120)

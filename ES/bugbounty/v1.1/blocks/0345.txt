@@ -1,0 +1,4 @@
+base::options::toggle OptionWebviewDebugEnabled({
+    .id = kOptionWebviewDebugEnabled,  // "webview-debug-enabled"
+    .name = "Enable webview inspecting",
+});

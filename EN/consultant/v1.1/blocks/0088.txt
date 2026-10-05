@@ -1,0 +1,53 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+def run_full_audit(
+    framework_key: str,
+    docs_folder: str,
+    config_path: str = "audit_config.yaml"
+):
+    """Complete agent-assisted audit flow."""
+    import yaml
+    from datetime import datetime
+
+    # 1. Load configuration
+    with open(config_path) as f:
+        config = yaml.safe_load(f)
+    fw_config = config["frameworks"][framework_key]
+    settings = config["audit_settings"]
+
+    # 2. Initialize agent and collector
+    agent = AuditAgent(
+        framework=fw_config["name"],
+        model=settings["evaluation_model"]
+    )
+    agent.load_framework(fw_config["controls_file"])
+    collector = EvidenceCollector()
+
+    # 3. Ingestion and triage
+    print(f"Starting {fw_config['name']} audit")
+    print(f"Documents in: {docs_folder}")
+    agent.ingest_documents(docs_folder)
+
+    # 4. Control evaluation
+    print(f"\nEvaluating {len(agent.controls)} controls...")
+    findings = agent.run_audit()
+
+    # 5. Generate deliverables
+    report = {
+        "audit_framework": fw_config["name"],
+        "date": datetime.now().isoformat(),
+        "status": "DRAFT — PENDING HUMAN REVIEW",
+        "statistics": agent._calculate_stats(),
+        "findings": [vars(f) for f in findings],
+        "evidence_matrix": collector.generate_evidence_matrix(),
+    }
+
+    # 6. Save draft
+    output_path = f"audit_{framework_key}_{datetime.now():%Y%m%d}.json"
+    with open(output_path, "w") as f:
+        json.dump(report, f, indent=2, ensure_ascii=False)
+
+    print(f"\nDraft generated: {output_path}")
+    print("REQUIRES HUMAN REVIEW before delivery to client")
+
+    return report

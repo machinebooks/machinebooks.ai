@@ -1,0 +1,14 @@
+## Historical Electron comparison attributed to March 2026
+
+| Feature | Discord | Wand | VS Code | Signal | Slack |
+|---------|---------|------|---------|--------|-------|
+| RunAsNode | FAIL | FAIL | PASS | PASS | FAIL |
+| CookieEncrypt | FAIL | FAIL | PASS | PASS | PASS |
+| NodeOptions | FAIL | FAIL | PASS | PASS | FAIL |
+| OnlyFromAsar | FAIL | FAIL | PASS | PASS | FAIL |
+| AsarIntegrity | FAIL | FAIL | PASS | PASS | FAIL |
+| Install in PF | FAIL | FAIL | PASS | PASS | FAIL |
+| contextIsolation | PASS | FAIL | PASS | PASS | PASS |
+| nodeIntegration off | PASS | FAIL | PASS | PASS | PASS |
+
+Attributed score: Discord 2/8, Wand 0/8, VS Code 8/8, Signal 8/8, Slack 4/8. These historical values require identified artifacts, platforms, versions and a valid fuse reader. PASS/FAIL reflects the internal comparison, not CVSS or demonstrated exploitability. SylvarSecDesktop and its core remain private; this educational table is not a Community distribution.

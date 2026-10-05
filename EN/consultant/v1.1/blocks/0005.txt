@@ -1,0 +1,69 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import anthropic
+import json
+
+client = anthropic.Anthropic()
+
+SYSTEM_PROMPT = """You are a technology consulting operations analyst.
+Your job: given a consulting project, decompose its activities
+by phase (pre-sales, delivery, knowledge capture) and evaluate
+the AI automation potential of each activity.
+
+Evaluation criteria:
+- HIGH: repetitive, structured task with low variability between projects.
+  Examples: regulation search, matrix generation, draft writing.
+- MEDIUM: task with both a structured component and a judgment component.
+  Examples: gap analysis (mechanical evaluation is automatable,
+  prioritization requires client context).
+- LOW: task where value is in human interaction or expert judgment.
+  Examples: stakeholder meetings, scope negotiation, strategic recommendations.
+- NONE: inherently human task.
+  Examples: building trust, reading client political dynamics.
+
+For each activity, estimate manual hours and AI-assisted hours.
+Be realistic: AI does not eliminate tasks, it accelerates them.
+The consultant always reviews.
+
+Return valid JSON with the activity structure by phase."""
+
+def analyze_project(project_description: str) -> dict:
+    """Analyzes a project and generates the automation map."""
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        system=SYSTEM_PROMPT,
+        messages=[{
+            "role": "user",
+            "content": f"""Analyze this consulting project and generate
+the activity breakdown with automation potential:
+
+{project_description}
+
+Respond ONLY with valid JSON. Expected structure:
+{{
+  "project_summary": "...",
+  "phases": {{
+    "presales": [
+      {{
+        "activity": "name",
+        "hours_manual": N,
+        "hours_assisted": N,
+        "automation_potential": "high|medium|low|none",
+        "requires_client_interaction": true|false,
+        "requires_expert_judgment": true|false,
+        "justification": "why this evaluation"
+      }}
+    ],
+    "delivery": [...],
+    "knowledge_capture": [...]
+  }},
+  "total_hours_manual": N,
+  "total_hours_assisted": N,
+  "reduction_percentage": N,
+  "recommendations": ["...", "..."],
+  "warnings": ["activities that should NOT be automated and why"]
+}}"""
+        }]
+    )
+    return json.loads(message.content[0].text)

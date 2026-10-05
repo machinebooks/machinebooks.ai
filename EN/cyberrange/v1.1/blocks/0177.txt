@@ -1,0 +1,34 @@
+# Local bounded fan-out; authorized callers own topics and generator closure
+import asyncio
+import copy
+from collections import defaultdict
+
+class EventBus:
+    def __init__(self, capacity=128):
+        if type(capacity) is not int or not 1 <= capacity <= 4096:
+            raise ValueError("invalid capacity")
+        self.capacity = capacity
+        self.subscribers = defaultdict(list)
+        self.dropped = 0
+
+    async def publish(self, topic, payload):
+        if not isinstance(topic, str) or not topic or len(topic) > 200:
+            raise ValueError("invalid topic")
+        for queue in tuple(self.subscribers.get(topic, ())):
+            if queue.full():
+                queue.get_nowait()
+                self.dropped += 1
+            queue.put_nowait(copy.deepcopy(payload))
+
+    async def subscribe(self, topic):
+        queue = asyncio.Queue(maxsize=self.capacity)
+        self.subscribers[topic].append(queue)
+        try:
+            while True:
+                yield await queue.get()
+        finally:
+            self.subscribers[topic].remove(queue)
+            if not self.subscribers[topic]:
+                del self.subscribers[topic]
+
+# Dropped events require replay from the durable, scoped record.

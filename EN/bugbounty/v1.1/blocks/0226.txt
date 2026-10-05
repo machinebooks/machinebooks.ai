@@ -1,0 +1,25 @@
+def find_epic_install():
+    """Auto-detects the Epic Games installation path."""
+    import winreg
+    reg_paths = [
+        (winreg.HKEY_LOCAL_MACHINE,
+         r"SOFTWARE\WOW6432Node\Epic Games\EpicGamesLauncher"),
+        (winreg.HKEY_LOCAL_MACHINE,
+         r"SOFTWARE\Epic Games\EpicGamesLauncher"),
+        (winreg.HKEY_CURRENT_USER,
+         r"SOFTWARE\Epic Games\EpicGamesLauncher"),
+    ]
+    for hive, key_path in reg_paths:
+        try:
+            key = winreg.OpenKey(hive, key_path)
+            val, _ = winreg.QueryValueEx(key, "AppDataPath")
+            winreg.CloseKey(key)
+            # Navigate from AppDataPath to the directory
+            # containing EpicGamesUpdater.exe
+            target = locate_updater_from_base(val)
+            if target:
+                return target
+        except (OSError, FileNotFoundError):
+            pass
+    # Fallback: common paths in Program Files
+    return scan_common_paths()

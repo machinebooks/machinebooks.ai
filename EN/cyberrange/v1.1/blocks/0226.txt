@@ -1,0 +1,33 @@
+# Didactic role separation uses distinct authenticated adapters and agents.
+import asyncio
+import json
+
+async def run_exercise_tick(adapter,roles,exercise_id,analyst_action=None):
+    if set(roles)!={"tier0","adversary","coach"}:
+        raise ValueError("invalid_roles")
+    await adapter.verify_distinct_role_scopes(roles,exercise_id)
+    results={}
+    async with asyncio.timeout(180):
+        request=await adapter.approved_adversary_request(exercise_id)
+        if request is not None:
+            result=await roles["adversary"].execute_step(request)
+            await adapter.apply_verified_result_to_owned_state(exercise_id,result)
+            results["adversary_status"]=await adapter.minimized_execution_status(result)
+        alert_ids=await adapter.claim_pending_alert_ids(exercise_id,limit=20)
+        for alert_id in alert_ids:
+            request=await adapter.minimized_tier0_request(exercise_id,alert_id)
+            result=await roles["tier0"].execute_step(request)
+            await adapter.commit_triage_proposal(exercise_id,alert_id,result)
+            results["triage_"+str(alert_id)]=result
+        if analyst_action is not None:
+            await adapter.verify_owned_analyst_action(exercise_id,analyst_action)
+            context=await adapter.minimized_coach_context(exercise_id,analyst_action)
+            if any(key in context for key in ("ground_truth","flags","credentials")):
+                raise ValueError("forbidden_coach_context")
+            request=json.dumps(context,allow_nan=False)
+            results["coach"]=await roles["coach"].execute_step(request)
+    return await adapter.validate_role_specific_delivery(exercise_id,results)
+
+# Lifecycle creates one independent bounded agent per role with private message
+# history, tool allowlist, scope, deadline and budget. Names/prompts alone do not
+# separate access. Leased alert IDs prevent duplicate processing across ticks.

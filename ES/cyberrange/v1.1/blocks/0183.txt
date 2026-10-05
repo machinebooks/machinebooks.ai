@@ -1,0 +1,23 @@
+# Admission creates a durable intent; the leased worker executes the approved script.
+from fastapi import APIRouter, Depends
+from pydantic import BaseModel, ConfigDict, Field
+
+class GuestExecutionRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    script_id: str = Field(pattern=r"^[a-z][a-z0-9_-]{0,63}$")
+    digest: str = Field(pattern=r"^[0-9a-f]{64}$")
+    parameter_set_ref: str = Field(pattern=r"^[a-z][a-z0-9_-]{0,63}$")
+    request_id: str = Field(pattern=r"^[A-Za-z0-9_-]{8,80}$")
+
+def build_guest_router(admission, current_actor):
+    router = APIRouter()
+    @router.post("/guests/{guest_id}/script-executions", status_code=202)
+    async def execute_guest_script(guest_id:int, body:GuestExecutionRequest,
+                                   actor=Depends(current_actor)):
+        intent = await admission.authorize_and_enqueue(actor,guest_id,
+            body.script_id,body.digest,body.parameter_set_ref,body.request_id)
+        return {"execution_ref":intent.execution_ref, "status":"pending",
+                "stream_grant_endpoint":intent.authorized_stream_grant_endpoint}
+    return router
+# Admission validates owned guest, catalog digest/parameters and unique request ID
+# in a durable transaction; acceptance does not report execution or objective success.

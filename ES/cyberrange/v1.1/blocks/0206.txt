@@ -1,0 +1,79 @@
+# Didactic coaching contracts; no flag/solution values sent to the model.
+import asyncio
+import json
+from enum import Enum
+
+class CoachingMode(str,Enum):
+    REACTIVE="reactive"
+    PROACTIVE="proactive"
+    EVALUATIVE="evaluative"
+
+HINT_PENALTY_MAP={1:5,2:10,3:15,4:25,5:40}
+
+class CoachingService:
+    def __init__(self,adapter,generate_hint,validator,generate_report):
+        self.adapter=adapter
+        self.generate_hint=generate_hint
+        self.validator=validator
+        self.generate_report=generate_report
+
+    async def generate_reactive_hint(self,actor_id,instance_id,request_id,message=None):
+        context=await self.adapter.require_open_instance_context(actor_id,instance_id)
+        if message is not None and (not isinstance(message,str) or len(message)>2000):
+            raise ValueError("invalid_message")
+        current=context.current_hint_level
+        if type(current) is not int or not 0<=current<=5:
+            raise ValueError("invalid_level")
+        if current==5:
+            return {"status":"levels_exhausted"}
+        level=current+1
+        minimized=await self.adapter.minimize_context(context,message,level)
+        text=await self._validated_hint(context,minimized,level)
+        if text is None:
+            return {"status":"abstained"}
+        # Recheck permission/expiry and compare current level inside one locked
+        # transaction. Unique request_id prevents repeated charges after retry.
+        return await self.adapter.record_and_deliver_hint(actor_id,instance_id,
+            request_id,expected_level=current,new_level=level,text=text,
+            penalty_pct=HINT_PENALTY_MAP[level],total_cap_pct=60)
+
+    async def _validated_hint(self,context,minimized,level):
+        async with asyncio.timeout(60):
+            for attempt in range(3):
+                text=await self.generate_hint(minimized,level,attempt)
+                result=self.validator.validate(text,context,level)
+                if result.is_safe:
+                    return text
+            fallback=await self.adapter.approved_fallback(context.instance_id,level)
+            if fallback is not None and self.validator.validate(fallback,context,level).is_safe:
+                return fallback
+        return None
+
+    async def generate_proactive_hint(self,actor_id,instance_id):
+        context=await self.adapter.require_open_instance_context(actor_id,instance_id)
+        if context.proactive_opt_in is not True or context.current_hint_level>=2:
+            return None
+        if not await self.adapter.reserve_cooldown_if_stalled(context,seconds=600):
+            return None
+        level=context.current_hint_level+1
+        minimized=await self.adapter.minimize_context(context,None,level)
+        text=await self._validated_hint(context,minimized,level)
+        if text is None:
+            return None
+        # A free suggestion does not lower the paid level or charge a penalty.
+        return await self.adapter.deliver_free_suggestion(actor_id,instance_id,text,level)
+
+    async def generate_evaluation_report(self,actor_id,instance_id):
+        context=await self.adapter.require_finished_instance_context(actor_id,instance_id)
+        evidence=await self.adapter.minimized_evidence_with_coverage(context,limit=500)
+        async with asyncio.timeout(90):
+            text=await self.generate_report(evidence)
+        if not isinstance(text,str) or len(text.encode("utf-8"))>65536:
+            raise ValueError("invalid_report")
+        proposal=json.loads(text)
+        await self.adapter.validate_report_schema_and_evidence(proposal,evidence)
+        return await self.adapter.store_report_proposal(actor_id,instance_id,proposal,
+            coverage=evidence["coverage"],human_review="pending")
+
+# Adapters enforce authenticated actor/instance/objective, redaction and async
+# persistence. Reports have observed coverage, not an invented complete history.

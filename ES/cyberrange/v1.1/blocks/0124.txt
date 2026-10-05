@@ -1,0 +1,39 @@
+# SQLAlchemy 2.x didactic fragment; all timestamps are normalized UTC by the adapter.
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, UniqueConstraint
+
+def ctf_models(Base):
+    class Challenge(Base):
+        __tablename__ = "challenge"
+        id = Column(Integer, primary_key=True)
+        title = Column(String(128), nullable=False)
+        approved_catalog_ref = Column(String(128), nullable=False)
+        rubric_version = Column(String(64), nullable=False)
+        status = Column(String(32), default="draft", nullable=False)
+    class ChallengeInstance(Base):
+        __tablename__ = "challenge_instance"
+        id = Column(Integer, primary_key=True)
+        challenge_id = Column(Integer, ForeignKey("challenge.id"), nullable=False)
+        user_ref = Column(String(128), nullable=False)
+        owned_resource_ref = Column(String(128))
+        flag_secret_ref = Column(String(128))
+        flag_verifier = Column(String(64))
+        flag_key_ref = Column(String(128))
+        expires_at = Column(DateTime(timezone=True), nullable=False)
+        state = Column(String(32), default="pending", nullable=False)
+    class CtfCapture(Base):
+        __tablename__ = "ctf_capture"
+        __table_args__ = (UniqueConstraint("instance_id", "flag_ref"),)
+        id = Column(Integer, primary_key=True)
+        instance_id = Column(Integer, ForeignKey("challenge_instance.id"), nullable=False)
+        flag_ref = Column(String(128), nullable=False)
+        captured_at = Column(DateTime(timezone=True), nullable=False)
+    class CtfHintUse(Base):
+        __tablename__ = "ctf_hint_use"
+        __table_args__ = (UniqueConstraint("instance_id", "hint_ref", "user_ref"),)
+        id = Column(Integer, primary_key=True)
+        instance_id = Column(Integer, ForeignKey("challenge_instance.id"), nullable=False)
+        user_ref = Column(String(128), nullable=False)
+        hint_ref = Column(String(128), nullable=False)
+        used_at = Column(DateTime(timezone=True), nullable=False)
+    return Challenge, ChallengeInstance, CtfCapture, CtfHintUse
+# Flag, hint, MITRE and scoring catalog schemas plus concurrent first-blood rules are separate contracts.

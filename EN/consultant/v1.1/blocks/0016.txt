@@ -1,0 +1,18 @@
+# Illustrative configuration; keys alone do not implement an engine or authorize actions.
+# docker-compose.yml -- RAG for consulting
+version: "3.8"
+services:
+  qdrant:
+    image: qdrant/qdrant:v1.12.1
+    ports:
+      - "127.0.0.1:6333:6333"    # REST API
+      - "127.0.0.1:6334:6334"    # gRPC
+    volumes:
+      - qdrant_data:/qdrant/storage
+    environment:
+      QDRANT__SERVICE__GRPC_PORT: 6334
+    restart: unless-stopped
+
+volumes:
+  qdrant_data:
+    driver: local

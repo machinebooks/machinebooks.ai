@@ -1,0 +1,57 @@
+// Injected API exchanges authenticated access for a short-lived scoped WebSocket grant
+import React, {useEffect, useRef, useState} from 'react';
+
+export function RealTimeExecutionViewer({executionId, api}) {
+  const [events, setEvents] = useState([]);
+  const [paused, setPaused] = useState(false);
+  const [status, setStatus] = useState('Connecting');
+  const latest = useRef([]);
+  useEffect(() => {
+    let stopped = false, socket;
+    const controller = new AbortController();
+    latest.current = [];
+    setEvents([]);
+    setStatus('Connecting');
+    async function connect() {
+      try {
+        const grant = await api.issueStreamGrant(executionId, controller.signal);
+        const url = new URL(grant.url, window.location.href);
+        if (url.protocol !== 'wss:' || url.host !== window.location.host)
+          throw new Error('Channel not allowed');
+        if (stopped) return;
+        socket = new WebSocket(url.href);
+        socket.onopen = () => !stopped && setStatus('Connected');
+        socket.onmessage = event => {
+          if (stopped) return;
+          try {
+            if (typeof event.data !== 'string' || event.data.length > 16384)
+              throw new Error('Invalid event');
+            const value = JSON.parse(event.data);
+            if (typeof value.event_id !== 'string' || !Number.isSafeInteger(value.sequence)
+                || value.sequence < 1 || typeof value.line !== 'string')
+              throw new Error('Invalid event');
+            const prior = latest.current;
+            if (prior.some(item => item.event_id === value.event_id)) return;
+            if (prior.length && value.sequence !== prior.at(-1).sequence + 1)
+              setStatus('Gap detected: recover from the server');
+            latest.current = [...prior, value].slice(-500);
+            setEvents(latest.current);
+          } catch { setStatus('Event rejected; recover from the server'); }
+        };
+        socket.onerror = () => !stopped && setStatus('Connection error');
+        socket.onclose = () => !stopped && setStatus('Disconnected; recovery pending');
+      } catch { if (!stopped) setStatus('Could not open the channel'); }
+    }
+    connect();
+    return () => { stopped = true; controller.abort(); socket?.close(); };
+  }, [executionId, api]);
+  return <section aria-label="Execution output">
+    <p role="status">{status}</p>
+    <button onClick={() => setPaused(value => !value)}>
+      {paused ? 'Show output' : 'Pause presentation'}</button>
+    {!paused && <ol>{events.map(item => <li key={item.event_id}>{item.line}</li>)}</ol>}
+    <p>Local window: {events.length} events. History and recovery are requested from the server.</p>
+  </section>;
+}
+
+// Pausing hides presentation only. Automatic replay/reconnection needs the API adapter.

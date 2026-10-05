@@ -1,0 +1,39 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+def generate_chart_specification(
+    data: dict,
+    chart_type: str,
+    context: str,
+    voice_prompt: str
+) -> dict:
+    """Generates chart specification + descriptive text."""
+
+    prompt = f"""Generate the specification for a consulting
+report chart.
+
+DATA:
+{data}
+
+SUGGESTED CHART TYPE: {chart_type}
+CONTEXT: {context}
+
+Generate a JSON with:
+1. "type": optimal chart type for this data.
+2. "title": chart title (max 10 words).
+3. "axes": description of X and Y axes.
+4. "colors": suggested palette (max 5 hex colors).
+5. "alt_text": prose description of the chart
+   (for accessibility and for the Word report).
+6. "key_insight": the conclusion the reader should
+   draw from the chart (1 sentence).
+7. "chart_data": data formatted for Matplotlib/Recharts."""
+
+    response = client.messages.create(
+        model="claude-haiku-4-5",  # Haiku for simple structure
+        max_tokens=2048,
+        system=voice_prompt,
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    import json
+    return json.loads(response.content[0].text)

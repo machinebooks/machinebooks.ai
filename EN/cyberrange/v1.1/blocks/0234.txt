@@ -1,0 +1,22 @@
+// Didactic React Flow node; keyboard selection complements drag interaction.
+import React from 'react';
+import { Handle, Position } from 'reactflow';
+type AssetNodeData = {
+  label: string; type: string; os?: string; cpu?: number; ram?: number;
+  ip?: string; onSelect: () => void;
+};
+export const AssetNode = ({data,selected}: {data:AssetNodeData;selected:boolean}) => (
+  <div className={selected ? 'asset-node selected' : 'asset-node'}>
+    <Handle type="target" position={Position.Left} />
+    <button type="button" onClick={data.onSelect}
+      aria-label={`${data.type}: ${data.label}`} aria-pressed={selected}>
+      <strong>{data.label}</strong><span>{data.type}</span>
+    </button>
+    {data.os && <p>{data.os}</p>}
+    <p>{data.cpu ?? '—'} vCPU · {data.ram ?? '—'} MB</p>
+    {data.ip && <p>{data.ip}</p>}
+    <Handle type="source" position={Position.Right} />
+  </div>
+);
+// Host supplies validated role-visible data, contrast/focus styles and a
+// keyboard/form alternative for moving, connecting and resizing nodes.

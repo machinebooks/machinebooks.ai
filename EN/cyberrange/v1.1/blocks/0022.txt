@@ -1,0 +1,19 @@
+# Optional reactive hint contract; solutions and flag values never enter model context.
+import asyncio
+import time
+
+async def get_coaching_hint(actor, instance_id, text, service, access, ledger, validator):
+    if not isinstance(text, str) or not 1 <= len(text) <= 4000:
+        raise ValueError("invalid message")
+    scope = await access.authorized_opted_in_coaching(actor, instance_id)
+    context = await access.minimized_coaching_context(scope)
+    started = time.monotonic()
+    async with asyncio.timeout(20):
+        proposal = await service.propose_hint(context, text)
+        approved = await validator.review_hint(scope, proposal)
+    if approved is None:
+        return {"status": "abstained", "latency_ms": (time.monotonic()-started)*1000}
+    receipt = await ledger.record_hint_once(scope, approved)
+    return {"status": "approved", "hint": approved.text, "receipt_ref": receipt.id,
+            "latency_ms": (time.monotonic()-started)*1000}
+# The validator is a required integration, not a prompt guarantee. Usage and latency are distinct.

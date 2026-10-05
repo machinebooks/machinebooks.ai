@@ -1,0 +1,47 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+# Pseudocode only; not an executable SDK example
+import json
+from pathlib import Path
+# Pseudocode: Agent and tool are conceptual interfaces, not SDK imports
+from dataclasses import dataclass, asdict
+
+@dataclass
+class Finding:
+    """Structured analysis finding."""
+    framework_ref: str      # E.g.: "ISO 27001 A.8.2"
+    status: str             # compliant | partial | non_compliant | not_applicable
+    evidence: str           # Summary of analyzed evidence
+    gap: str                # Detected discrepancy
+    risk: str               # critical | high | medium | low
+    recommendation: str     # Action to close the gap
+    confidence: float       # 0.0 to 1.0
+
+@tool
+def query_framework(
+    framework: str,
+    section: str
+) -> dict:
+    """Queries a reference framework and returns the requirements
+    of a specific section or control.
+
+    Args:
+        framework: Framework name (iso27001, ens, dora)
+        section: Section or control to query (e.g.: 'A.8.2', '8.1')
+    """
+    # Loads framework from structured JSON files
+    framework_path = Path(f"frameworks/{framework}/{section}.json")
+    if not framework_path.exists():
+        return {"error": f"Section {section} not found in {framework}"}
+
+    with open(framework_path) as f:
+        control = json.load(f)
+
+    return {
+        "framework": framework,
+        "section": section,
+        "title": control["title"],
+        "requirements": control["requirements"],
+        "guidance": control.get("guidance", ""),
+        "related_controls": control.get("related", [])
+    }

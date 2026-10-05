@@ -1,0 +1,21 @@
+# Optional narrative proposal from an authorized minimized snapshot.
+import asyncio
+import json
+
+async def generate_competency_report(snapshot, client, model, authorize_transfer):
+    authorize_transfer(snapshot)
+    payload = json.dumps(snapshot, ensure_ascii=False)
+    if len(payload.encode("utf-8")) > 65536 or not model:
+        raise ValueError("bounded authorized snapshot/model required")
+    message = await asyncio.wait_for(client.messages.create(model=model, max_tokens=2000,
+        system="Summarize observed evidence and gaps; do not infer certification from points.",
+        messages=[{"role": "user", "content": payload}]), 20)
+    if message.stop_reason != "end_turn":
+        raise ValueError("incomplete summary")
+    blocks = [block.text for block in message.content if getattr(block, "type", None) == "text"]
+    if not blocks or any(not isinstance(text, str) for text in blocks):
+        raise ValueError("invalid summary blocks")
+    if sum(len(text.encode("utf-8")) for text in blocks) + len(blocks) - 1 > 16384:
+        raise ValueError("oversized summary")
+    return {"status": "pending_human_review", "proposed_summary": "\n".join(blocks)}
+# Transfer authorization and minimization are separate from narrative generation.

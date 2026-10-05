@@ -1,0 +1,30 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+# Pseudocode only; not an executable SDK example
+# Pseudocode: Agent and tool are conceptual interfaces, not SDK imports
+
+@tool
+def evaluar_alternativa_tecnologica(
+    alternativa: str,
+    criterios: list[dict],
+    contexto_cliente: dict
+) -> dict:
+    """Evalúa una alternativa tecnológica contra criterios ponderados del cliente.
+
+    Args:
+        alternativa: Nombre de la alternativa (ej: "microservicios con Spring Boot")
+        criterios: Lista de criterios con nombre, peso y descripción
+        contexto_cliente: Restricciones del cliente (cloud, equipo, regulación)
+    """
+    # El agente consulta su knowledge base de proyectos similares
+    # y evalúa cada criterio con puntuación 1-5 y justificación
+    raise NotImplementedError("Required adapter is not implemented; no completed result")
+
+agent = Agent(
+    model="claude-sonnet-4-6",
+    tools=[evaluar_alternativa_tecnologica],
+    system="""Eres un arquitecto de soluciones con experiencia en
+modernización de sistemas legacy en el sector financiero/asegurador.
+Evalúas alternativas tecnológicas con datos concretos, no opiniones.
+Cuando no tengas datos suficientes, indica el nivel de incertidumbre."""
+)

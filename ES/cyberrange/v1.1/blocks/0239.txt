@@ -1,0 +1,16 @@
+// Graphical RFB console; no custom browser WebSocket headers
+import RFB from '@novnc/novnc/core/rfb';
+
+export function mountVnc(container, grant, onDisconnect) {
+  if (grant.type !== 'novnc') throw new Error('Consola gráfica requerida');
+  const client = new RFB(container, grant.url);
+  client.addEventListener('disconnect', onDisconnect);
+  return () => {
+    client.removeEventListener('disconnect', onDisconnect);
+    client.disconnect();
+  };
+}
+
+// The same-origin gateway bridges the authorized RFB capability, enforces
+// session expiry/revocation and limits. This module does not implement it.
+// Request a fresh ticket after failure; never reuse management credentials.

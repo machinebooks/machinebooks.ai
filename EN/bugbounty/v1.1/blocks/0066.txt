@@ -1,0 +1,6 @@
+\Device\Asusgio3          ← device name
+\DosDevices\Asusgio3      ← symbolic link (user-mode accessible)
+\Device\PhysicalMemory    ← physical memory reference (!)
+D:\Jenkins\...\AsIO3_64.sys.pdb  ← PDB path (reveals build environment)
+C:\Program Files (x86)\ASUS\AsusCertService  ← certificate service
+\BaseNamedObjects\WaitForIoAccess            ← synchronization named event

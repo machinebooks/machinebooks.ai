@@ -1,0 +1,29 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import subprocess
+import os
+
+def export_word(
+    markdown_path: str,
+    output_path: str,
+    reference_docx: str
+) -> str:
+    """Converts Markdown to Word using corporate styles."""
+
+    cmd = [
+        "pandoc",
+        markdown_path,
+        "-o", output_path,
+        f"--reference-doc={reference_docx}",
+        "--toc",                    # Table of contents
+        "--toc-depth=3",
+        "--number-sections",
+        "--metadata", "lang=en-US",
+        "--filter", "pandoc-crossref",  # Cross-references
+    ]
+
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        raise RuntimeError(f"Pandoc failed: {result.stderr}")
+
+    return output_path

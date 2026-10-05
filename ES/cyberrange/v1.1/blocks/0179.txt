@@ -1,0 +1,21 @@
+# Bounded authorized replay contract; no arbitrary API-host network injection
+from pathlib import Path
+
+async def replay_pcap(adapter,actor,profile_id,guest_id,interface,deadline_seconds=60):
+    adapter.authorize(actor.id,"traffic_replay",guest_id)
+    profile=adapter.approved_traffic_profile(profile_id)
+    path=Path(profile.path).resolve()
+    root=Path(profile.catalog_root).resolve()
+    if not path.is_relative_to(root) or not path.is_file():
+        raise ValueError("catalogued contained PCAP required")
+    if interface not in adapter.authorized_guest_interfaces(guest_id):
+        raise ValueError("authorized guest interface required")
+    task=await adapter.start_owned_bounded_replay(guest_id,path,interface,
+        max_packets=20000,max_packets_per_second=1000,deadline_seconds=deadline_seconds)
+    try:
+        return await adapter.wait_owned_replay(task,deadline_seconds)
+    finally:
+        await adapter.stop_and_join_owned_replay(task)
+
+# The adapter executes in the scoped guest, checks approved file digest and
+# actual packet/rate/deadline limits, and retains loss/teardown evidence.

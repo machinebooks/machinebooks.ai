@@ -1,0 +1,69 @@
+"""
+trend_analyzer.py -- Security trend analysis with Claude
+Analyzes recent CVEs and public reports to identify
+emerging categories of vulnerabilities.
+"""
+import anthropic
+from datetime import datetime
+
+client = anthropic.Anthropic(api_key="<YOUR_API_KEY>")
+
+def analyze_security_trends(
+    recent_cves: list[dict],
+    timeframe_days: int = 90
+) -> dict:
+    """
+    Analyze trends in recent CVEs to identify
+    emerging categories of vulnerabilities.
+    """
+    cve_summary = "\n".join([
+        f"- {cve['id']}: {cve['description']} "
+        f"(CVSS: {cve['cvss']}, product: {cve['product']})"
+        for cve in recent_cves[:50]  # Limit context
+    ])
+    
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=2048,
+        messages=[{
+            "role": "user",
+            "content": f"""Analyze these CVEs from the last {timeframe_days} days 
+and identify emerging trends for bug bounty hunters:
+
+{cve_summary}
+
+Reply in JSON with:
+1. "emerging_categories": new vulnerability categories
+2. "declining_categories": categories vendors already cover well
+3. "high_value_targets": products with the highest bug density
+4. "recommended_focus": where a hunter should invest time
+5. "ai_specific_trends": AI-security-specific trends
+
+Base recommendations on data, not speculation."""
+        }]
+    )
+    
+    return {
+        "analysis_date": datetime.now().isoformat(),
+        "cves_analyzed": len(recent_cves),
+        "timeframe_days": timeframe_days,
+        "insights": message.content[0].text,
+    }
+
+# Example with synthetic data; SAMPLE identifiers are not registered CVEs
+sample_cves = [
+    {"id": "SAMPLE-1234", "description": "Prompt injection in AI coding assistant",
+     "cvss": 9.8, "product": "AI IDE"},
+    {"id": "SAMPLE-1235", "description": "ASAR tampering in Electron app",
+     "cvss": 8.4, "product": "Desktop communication"},
+    {"id": "SAMPLE-1236", "description": "Kernel driver IOCTL validation bypass",
+     "cvss": 8.8, "product": "Hardware utility"},
+    {"id": "SAMPLE-1237", "description": "Tool use abuse in AI agent framework",
+     "cvss": 9.1, "product": "AI agent platform"},
+    {"id": "SAMPLE-1238", "description": "VM escape via RPC in AI desktop app",
+     "cvss": 8.6, "product": "AI assistant"},
+]
+
+result = analyze_security_trends(sample_cves)
+print(f"Analysis complete: {result['cves_analyzed']} CVEs in "
+      f"{result['timeframe_days']} days")

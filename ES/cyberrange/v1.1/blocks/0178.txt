@@ -1,0 +1,25 @@
+# Already authorized opaque-ticket WebSocket contract with bounded replay
+import asyncio
+
+async def stream_attack(socket,actor,execution_id,adapter,after_sequence=0):
+    adapter.authorize(actor.id,"attack_stream",execution_id)
+    if type(after_sequence) is not int or after_sequence<0:
+        raise ValueError("valid resume cursor required")
+    try:
+        async with asyncio.timeout(300):
+            while True:
+                adapter.revalidate_session_and_execution(actor,execution_id)
+                events=await adapter.next_owned_events(execution_id,after_sequence,limit=100,wait_seconds=10)
+                for event in events:
+                    if event["sequence"]<=after_sequence:
+                        raise ValueError("nonmonotonic event sequence")
+                    await adapter.send_bounded_authorized_event(socket,event,max_bytes=8192)
+                    after_sequence=event["sequence"]
+                if await adapter.execution_stream_complete(execution_id,after_sequence):
+                    return
+    finally:
+        await adapter.remove_owned_subscription(socket,execution_id)
+
+# Connection entry validates Origin/ticket/resource before accept, as in
+# Chapter 24. Delivery acknowledgement/cursor persistence belong to the
+# adapter; sending alone is not durable delivery. No unauthenticated broadcast.

@@ -1,0 +1,33 @@
+"""
+teams_chat_access.py -- Chat access via REST API
+Chat-list example; a token requires the Graph audience and suitable permissions.
+NOTE: PoC only in controlled environment.
+"""
+import requests
+
+def read_chats(auth_token):
+    """List chats using an authorized Graph token."""
+    headers = {
+        "Authorization": f"Bearer {auth_token}",
+        "Content-Type": "application/json"
+    }
+
+    # Microsoft Graph API -- user chats
+    url = "https://graph.microsoft.com/v1.0/me/chats"
+    response = requests.get(url, headers=headers, timeout=10)
+
+    if response.status_code == 200:
+        chats = response.json().get("value", [])
+        print(f"[+] {len(chats)} chats accessible\n")
+        for chat in chats[:5]:
+            topic = chat.get("topic", "Untitled chat")
+            chat_type = chat.get("chatType", "unknown")
+            print(f"  [{chat_type}] {topic}")
+    else:
+        print(f"[-] Error {response.status_code}: {response.text[:200]}")
+
+    return response
+
+# /me/chats lists chat resources, not message history.
+# This fragment does not demonstrate token audience or permissions.
+# It does not exchange tokens.

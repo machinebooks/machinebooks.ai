@@ -1,0 +1,16 @@
+# Remote guest execution contract over a reviewed script catalog
+async def run_remote_script(adapter,actor,guest_id,script_id,parameters,deadline_seconds=120):
+    adapter.authorize(actor.id,"guest_script",guest_id)
+    script=adapter.approved_script(script_id)
+    arguments=script.validate_structured_parameters(parameters)
+    task=await adapter.start_owned_guest_script(guest_id,script.digest,arguments)
+    try:
+        result=await adapter.wait_owned_guest_script(task,deadline_seconds)
+        return {"process_exit_code":result.exit_code,"objective_verified":False,
+                "receipt_id":result.receipt_id}
+    finally:
+        await adapter.stop_and_join_owned_guest_script(task)
+
+# Configure WinRM/SSH/guest executor with verified TLS/host identity and least
+# privilege. A local PowerShell subprocess is not remote execution. Script
+# approval/ownership and bounded output are enforced by the selected adapter.

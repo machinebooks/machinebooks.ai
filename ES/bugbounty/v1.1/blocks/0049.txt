@@ -1,0 +1,22 @@
+# Script de PowerShell para filtrar logs de Process Monitor
+# Generado por Claude Code para confirmar phantom DLLs
+# Requiere ProcMon CSV export previo
+
+$procmon_csv = "C:\temp\procmon_steam.csv"
+$results = Import-Csv $procmon_csv |
+    Where-Object {
+        $_.Operation -eq "CreateFile" -and
+        $_.Result -eq "NAME NOT FOUND" -and
+        $_.Path -like "*.dll"
+    } |
+    Select-Object Process, Path, Result |
+    Sort-Object Path -Unique
+
+$results | Format-Table -AutoSize
+
+# Resultado típico para Steam:
+# Process    Path                                       Result
+# -------    ----                                       ------
+# Steam.exe  C:\Program Files (x86)\Steam\VERSION.dll   NAME NOT FOUND
+# Steam.exe  C:\Program Files (x86)\Steam\TextShaping.. NAME NOT FOUND
+# Steam.exe  C:\Program Files (x86)\Steam\USERENV.dll   NAME NOT FOUND

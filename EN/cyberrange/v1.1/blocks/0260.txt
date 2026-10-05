@@ -1,0 +1,23 @@
+# Called after durable recording; injected access revalidates every destination
+import asyncio
+
+async def send_to_session(self, session_id, message):
+    if session_id not in self.active_sessions:
+        raise ValueError("unknown session")
+    sent = 0
+    failed = 0
+    for websocket, metadata in list(self.connection_metadata.items()):
+        if metadata["session_id"] != session_id:
+            continue
+        try:
+            if not await self.access.still_authorized(metadata):
+                self.disconnect(websocket)
+                failed += 1
+                continue
+            await asyncio.wait_for(websocket.send_json(dict(message)), timeout=5)
+            sent += 1
+        except Exception:
+            self.disconnect(websocket)
+            failed += 1
+    return {"sent": sent, "failed": failed,
+            "recovery_required": sent == 0 or failed > 0}

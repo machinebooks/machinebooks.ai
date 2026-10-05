@@ -1,0 +1,14 @@
+# Didactic confirmed teardown; keep fields, inventory and lease on any failure.
+async def cleanup_workzone_network(actor, network_ref, access, firewall, store, leases):
+    scope = await access.owned_network_teardown(actor, network_ref)
+    await store.mark_network_cleanup_pending(scope)
+    try:
+        await firewall.remove_owned_resources(scope, timeout=30)
+        complete = await firewall.confirm_owned_absence(scope, timeout=30)
+    except Exception:
+        complete = False
+    if not complete:
+        return {"status": "cleanup_pending"}
+    await store.record_network_absence(scope)
+    await leases.release_confirmed(scope)
+    return {"status": "deleted"}

@@ -1,0 +1,17 @@
+# Authorized durable queue contract; role alone does not authorize resources
+from datetime import datetime, timezone
+
+def queue_attack(adapter,actor,template_id,attacker_host_id,target_host_ids,artifact_digest):
+    if not isinstance(target_host_ids,list) or not 1<=len(target_host_ids)<=20 or len(set(target_host_ids))!=len(target_host_ids):
+        raise ValueError("bounded unique targets required")
+    adapter.authorize_attack_scope(actor.id,template_id,attacker_host_id,target_host_ids)
+    with adapter.attack_transaction() as transaction:
+        template=transaction.lock_approved_template(template_id,artifact_digest)
+        if template is None:
+            raise ValueError("approved immutable catalog action required")
+        execution=transaction.insert_owned_execution(actor.id,attacker_host_id,target_host_ids,template_id,datetime.now(timezone.utc))
+        transaction.enqueue_unique_execution(execution.id,artifact_digest)
+        return {"execution_id":execution.id,"status":"queued"}
+
+# Adapter reserves resources, serializes/idempotently dispatches work, and
+# passes IDs rather than a request-scoped session. Worker checks scope again.

@@ -1,0 +1,65 @@
+# Didactic Socket.IO factory; opaque ticket is bound to Origin/actor/instance.
+import asyncio
+import socketio
+
+def create_coaching_socket(adapter,tracker,service,allowed_origins):
+    if not allowed_origins or "*" in allowed_origins:
+        raise ValueError("explicit_origins_required")
+    sio=socketio.AsyncServer(async_mode="asgi",cors_allowed_origins=allowed_origins)
+
+    @sio.event
+    async def connect(sid,environ,auth):
+        if not isinstance(auth,dict) or set(auth)!={"ticket"}:
+            return False
+        if not isinstance(auth["ticket"],str) or not 1<=len(auth["ticket"])<=512:
+            return False
+        identity=await asyncio.wait_for(adapter.consume_ticket(auth["ticket"],environ.get("HTTP_ORIGIN")),3)
+        if identity is None:
+            return False
+        await sio.save_session(sid,identity)
+        await sio.enter_room(sid,identity.authorized_room)
+
+    @sio.on("terminal_command")
+    async def terminal_command(sid,data):
+        identity=await sio.get_session(sid)
+        await adapter.revalidate(identity)
+        if not isinstance(data,dict) or set(data)!={"instrumentation_event_id"}:
+            raise ValueError("invalid_event")
+        # Client text is not execution proof; resolve a signed/server-owned event.
+        event=await adapter.require_owned_command_event(identity,data["instrumentation_event_id"])
+        tracker.track(identity.actor_id,identity.instance_id,event.command,
+            adapter.authorize_command_telemetry,adapter.redact_command)
+
+    @sio.on("toggle_proactive_coaching")
+    async def toggle_proactive(sid,data):
+        identity=await sio.get_session(sid)
+        await adapter.revalidate(identity)
+        if not isinstance(data,dict) or set(data)!={"enabled"} or type(data["enabled"]) is not bool:
+            raise ValueError("invalid_opt_in")
+        await adapter.set_proactive(identity,data["enabled"])
+        await sio.emit("coaching_status",{"proactive_enabled":data["enabled"]},to=sid)
+
+    return sio
+
+async def proactive_coaching_loop(adapter,service,sio,stop):
+    while not stop.is_set():
+        sessions=await adapter.authorized_opted_in_sessions(limit=100)
+        for identity in sessions:
+            if stop.is_set():
+                return
+            try:
+                async with asyncio.timeout(65):
+                    await adapter.revalidate(identity)
+                    hint=await service.generate_proactive_hint(identity.actor_id,identity.instance_id)
+                    if hint is not None:
+                        await adapter.revalidate(identity)
+                        await asyncio.wait_for(sio.emit("coaching_hint",hint,to=identity.authorized_room),3)
+            except (ValueError,PermissionError,TimeoutError):
+                await adapter.record_operational_failure(identity.instance_id)
+        try:
+            await asyncio.wait_for(stop.wait(),timeout=60)
+        except TimeoutError:
+            pass
+
+# Lifecycle owns this task and cancels/joins it on shutdown. Adapter periodically
+# revokes expired sessions/rooms; command capture is instrumentation, not RFB.

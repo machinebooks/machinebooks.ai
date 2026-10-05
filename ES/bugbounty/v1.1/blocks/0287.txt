@@ -1,0 +1,10 @@
+GET  /api/config     -- Leer configuracion completa
+POST /api/config     -- Modificar configuracion
+GET  /api/apps       -- Listar aplicaciones
+POST /api/apps       -- Anadir aplicacion
+PUT  /api/apps/{id}  -- Modificar aplicacion
+DEL  /api/apps/{id}  -- Eliminar aplicacion
+POST /api/pin        -- Emparejar cliente Moonlight
+GET  /api/currentClient -- Info del cliente actual
+POST /api/restart    -- Reiniciar el servicio
+POST /api/password   -- Cambiar password

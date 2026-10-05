@@ -1,0 +1,23 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+def chunk_audit_report(text: str) -> list[dict]:
+    """Specialized chunking for audit reports."""
+    findings = extract_findings(text)  # detects finding patterns
+    chunks = []
+
+    for finding in findings:
+        # Each finding includes control, evidence, and recommendation
+        chunk_text = (
+            f"Control: {finding['control']}\n"
+            f"Status: {finding['status']}\n"
+            f"Evidence: {finding['evidence']}\n"
+            f"Finding: {finding['finding']}\n"
+            f"Recommendation: {finding['recommendation']}"
+        )
+        chunks.append({
+            "text": chunk_text,
+            "section": f"Finding — {finding['control']}",
+            "chunk_type": "audit_finding"
+        })
+
+    return chunks

@@ -1,0 +1,56 @@
+# Didactic dataset export: independent reviewed labels, not model ground truth.
+import hashlib
+import json
+from datetime import datetime,timezone
+
+def export_exercise_dataset(adapter,actor_id,exercise_id,events,reviewed_labels,
+                            schema_version="synthetic-soc-v1"):
+    adapter.authorize_dataset_export(actor_id,exercise_id)
+    if not isinstance(events,list) or len(events)>10000:
+        raise ValueError("invalid_event_count")
+    seen=set();records=[]
+    for event in events:
+        event_id=event["event_id"]
+        if not isinstance(event_id,str) or not event_id or event_id in seen:
+            raise ValueError("invalid_or_duplicate_event_id")
+        seen.add(event_id)
+        timestamp=event["timestamp"]
+        if not isinstance(timestamp,datetime) or timestamp.tzinfo is None or timestamp.utcoffset() is None:
+            raise ValueError("aware_event_timestamp_required")
+        truth=reviewed_labels.get(event_id)
+        label="unknown" if truth is None else truth["label"]
+        if label not in ("benign","malicious","unknown"):
+            raise ValueError("invalid_label")
+        if label!="unknown" and not truth.get("review_id"):
+            raise ValueError("label_provenance_required")
+        features=adapter.extract_allowed_minimized_features(event)
+        record={"event_id":event_id,"timestamp":timestamp.astimezone(timezone.utc).isoformat().replace("+00:00","Z"),
+            "features":features,"label":label,
+            "label_review_id":truth.get("review_id") if truth else None,
+            "exercise_id":exercise_id,"split_group":exercise_id,
+            "mitre_release":event.get("mitre_release"),
+            "technique_observed":event.get("technique_observed"),
+            "ai_classification":event.get("ai_classification"),
+            "human_classification":event.get("human_classification")}
+        adapter.validate_record_schema_and_provenance(record,event,truth)
+        records.append(record)
+    def metric(actor):
+        eligible=[r for r in records if r["label"]!="unknown" and
+                  r.get(actor+"_classification") in ("benign","malicious")]
+        count=len(eligible)
+        return {"accuracy":sum(r[actor+"_classification"]==r["label"] for r in eligible)/count if count else None,
+                "evaluated":count,"total":len(records)}
+    both=[r for r in records if r["ai_classification"] in ("benign","malicious") and
+          r["human_classification"] in ("benign","malicious")]
+    agreement=sum(r["ai_classification"]==r["human_classification"] for r in both)/len(both) if both else None
+    serialized=json.dumps(records,sort_keys=True,allow_nan=False).encode("utf-8")
+    if len(serialized)>20_000_000:
+        raise ValueError("dataset_byte_limit")
+    return {"metadata":{"exercise_id":exercise_id,"schema_version":schema_version,
+        "exported_at":datetime.now(timezone.utc).isoformat().replace("+00:00","Z"),
+        "records_sha256":hashlib.sha256(serialized).hexdigest(),"total_events":len(records),
+        "ai":metric("ai"),"human":metric("human"),"agreement":agreement},"events":records}
+
+# Accuracy differs from precision; actor agreement does not establish truth.
+# Export gate checks lawful purpose/retention and approved release. Split by
+# exercise (and lineage), never random rows from the same campaign across sets.

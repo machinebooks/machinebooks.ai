@@ -1,0 +1,11 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+# Pseudocode: Messages API output is never an embedding vector.
+def recuperar_secciones_similares(tipo_seccion, sector, tipo_servicio,
+                                 descripcion_necesidad, identity, embedding_adapter, repository, top_k=5):
+    vector = embedding_adapter.encode(descripcion_necesidad)
+    require_finite_vector(vector, embedding_adapter.dimension)
+    filters = AND(tenant_and_acl_filter(identity),
+                  section_filter(tipo_seccion, sector, tipo_servicio, winner=True))
+    return repository.authorized_sections(vector, filters, bounded_limit(top_k),
+                                          schema="content/score/source_uri/version/doc_hash/acl")

@@ -1,0 +1,34 @@
+from datetime import datetime, timezone
+from decimal import Decimal
+import json
+
+record = {
+    "target": "owned_fixture",
+    "written_scope": ["read synthetic configuration"],
+    "activity": "read synthetic configuration",
+    "observed_at_utc": datetime(2026, 10, 4, tzinfo=timezone.utc).isoformat(),
+    "evidence": ["fixture configuration flag"],
+    "acceptance": "pending",
+    "cve": None,
+    "reward_estimate": "100.00",
+    "paid": "0.00",
+}
+assert record["activity"] in record["written_scope"]
+assert record["observed_at_utc"].endswith("+00:00")
+assert Decimal(record["paid"]) == 0
+assert record["acceptance"] != "paid"
+assert record["cve"] is None
+sections = ["summary", "scope", "requirements", "steps",
+            "observed", "expected", "limitations"]
+report = {key: "" for key in sections}
+report.update(summary="Synthetic configuration fixture",
+              scope="Owned invented application",
+              requirements="Python standard library",
+              steps="Compare the synthetic configuration flag",
+              observed="Flag is enabled",
+              expected="Flag matches the documented contract",
+              limitations="No vendor system or real impact tested")
+assert all(report[key] for key in sections)
+encoded = json.dumps(report, ensure_ascii=False)
+assert json.loads(encoded) == report
+print("report and state fixture: PASS")

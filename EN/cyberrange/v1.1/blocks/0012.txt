@@ -1,0 +1,9 @@
+# Historical authentication-policy values; deployment validates its own policy.
+from datetime import timedelta
+JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=4)
+JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=7)
+MAX_FAILED_ATTEMPTS = 5
+LOCKOUT_DURATION = timedelta(minutes=30)
+# Expiry does not replace revocation or current resource authorization.
+# IP and user-agent are context signals, not proof of identity.
+# The verifier and refresh endpoint must enforce the actual session contract.

@@ -1,0 +1,59 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+# Pseudocode only; not an executable SDK example
+# Example MCP tools for auditing
+# Pseudocode: Agent and tool are conceptual interfaces, not SDK imports
+
+@tool
+def read_policy_document(document_id: str) -> str:
+    """Reads a policy or procedure from the client's repository.
+
+    Args:
+        document_id: Document identifier in the repository
+    Returns:
+        Textual content of the document
+    """
+    # Connection to the client's document repository
+    # (SharePoint, Confluence, Git repository)
+    content = document_repository.get_document(document_id)
+    # Sanitize before processing
+    guard = ConfidentialityGuard(PUBLIC_SECTOR_CONFIG)
+    return guard.sanitize_before_api(content)
+
+@tool
+def get_access_control_records(system_id: str, period: str) -> dict:
+    """Gets access control records from a system.
+
+    Args:
+        system_id: System identifier
+        period: Query period (e.g., "2026-Q1")
+    Returns:
+        Access statistics: active users, reviews, anomalies
+    """
+    records = access_management.get_records(system_id, period)
+    return {
+        "active_users": len(records["users"]),
+        "reviews_completed": records["quarterly_reviews"],
+        "anomalies_detected": records["anomalies"],
+        "last_review_date": records["last_review"]
+    }
+
+@tool
+def check_security_configuration(asset_type: str, asset_id: str) -> dict:
+    """Verifies the security configuration of an asset.
+
+    Args:
+        asset_type: Asset type (firewall, server, database, cloud_service)
+        asset_id: Asset identifier
+    Returns:
+        Configuration status against security baseline
+    """
+    config = asset_inventory.get_config(asset_type, asset_id)
+    baseline = security_baselines.get(asset_type)
+    deviations = compare_config_to_baseline(config, baseline)
+    return {
+        "asset": asset_id,
+        "baseline_compliance": len(deviations) == 0,
+        "deviations": deviations[:10],  # Limit for context
+        "total_deviations": len(deviations)
+    }

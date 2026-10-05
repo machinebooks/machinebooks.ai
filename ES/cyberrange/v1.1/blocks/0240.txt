@@ -1,0 +1,35 @@
+// Didactic frontend state; management configuration remains server-side.
+interface MachineState {
+  clusters: ProxmoxCluster[];
+  vms: ProxmoxVM[];
+  workzoneVMs: ProxmoxVM[];
+  templates: ProxmoxTemplate[];
+  stats: DashboardStats | null;
+  loading: boolean;
+  error: string | null;
+  lastUpdate: number;
+  observationStatus: 'observed' | 'unknown';
+  consoleGrant: {gateway_ref: string; resource_ref: string; expires_at: string} | null;
+}
+type MachineAction =
+  | {type: 'SET_VMS' | 'SET_WORKZONE_VMS'; vms: ProxmoxVM[]}
+  | {type: 'UPDATE_VM'; vm: ProxmoxVM};
+
+function machineReducer(state: MachineState, action: MachineAction): MachineState {
+  if (action.type === 'SET_VMS' || action.type === 'SET_WORKZONE_VMS') {
+    if (!Array.isArray(action.vms) || !action.vms.every(vm =>
+      vm !== null && typeof vm === 'object' && Number.isInteger(vm.id) && vm.id > 0)) {
+      return {...state, error: 'Respuesta de inventario inválida', observationStatus: 'unknown'};
+    }
+    const key = action.type === 'SET_VMS' ? 'vms' : 'workzoneVMs';
+    return {...state, [key]: action.vms, error: null, lastUpdate: Date.now(), observationStatus: 'observed'};
+  }
+  if (action.type === 'UPDATE_VM') {
+    if (!action.vm || !Number.isInteger(action.vm.id) || !state.vms.some(vm => vm.id === action.vm.id)) {
+      return {...state, error: 'Respuesta de inventario inválida', observationStatus: 'unknown'};
+    }
+    return {...state, vms: state.vms.map(vm => vm.id === action.vm.id ? action.vm : vm), lastUpdate: Date.now()};
+  }
+  return state;
+}
+// Validate full scoped DTOs before dispatch. lastUpdate is receipt time, not remote observation time.

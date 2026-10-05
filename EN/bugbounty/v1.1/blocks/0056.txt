@@ -1,0 +1,10 @@
+Historical results per file: Discord.exe, Claude.exe and Wand.exe.
+  Signature, publisher, timestamp and policy require the binary and record.
+  They do not imply universal EDR trust.
+
+External resources:
+  Executable coverage does not automatically authenticate each resource.
+  Load policy and the integrity reference must be verified.
+  A readable hash is not a credential; replacing it may invalidate signing.
+
+The comparison preserves case hypotheses without confirming every build.

@@ -1,0 +1,26 @@
+# Didactic collaborative request using the bounded Messages agent from Chapter 19.
+import asyncio
+import json
+from datetime import datetime,timezone
+
+async def run_collaborative_investigation(agent,adapter,actor_id,workzone_id,
+                                         alert_id,analyst_context):
+    await adapter.authorize(actor_id,"investigate",workzone_id,alert_id)
+    if not isinstance(analyst_context,dict):
+        raise ValueError("invalid_context")
+    # Adapter admits only relevant fields and redacts identities/secrets.
+    context=await adapter.minimize_analyst_context(actor_id,workzone_id,analyst_context)
+    alert=await adapter.minimized_owned_alert(actor_id,workzone_id,alert_id)
+    request=json.dumps({"alert":alert,"analyst_context":context},allow_nan=False)
+    if len(request.encode("utf-8"))>16000:
+        raise ValueError("oversized_request")
+    async with asyncio.timeout(180):
+        proposal=await agent.execute_step(request)
+    return await adapter.store_investigation_proposal(actor_id,workzone_id,alert_id,
+        proposal,created_at=datetime.now(timezone.utc),human_review="pending")
+
+# Tools query scoped read-only catalogs, ask the authenticated analyst with a
+# deadline and share validated findings. No arbitrary index/SPL/KQL passthrough;
+# adapters translate structured filters into their actual API languages.
+# Every prior assistant turn gets one grouped user tool_result message. Replies
+# include evidence IDs, not hidden campaign truth or a NIS2 data classification.

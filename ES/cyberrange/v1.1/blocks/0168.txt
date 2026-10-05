@@ -1,0 +1,8 @@
+# Authorized bounded MITRE linkage; release is selected by the server catalog.
+import asyncio
+
+async def challenge_mitre_detail(actor, challenge_ref, access, catalog):
+    scope = await asyncio.wait_for(access.challenge_detail_scope(actor, challenge_ref), 10)
+    values = await asyncio.wait_for(catalog.linked_techniques(scope, limit=100), 20)
+    return catalog.validate_technique_dtos(values, scope, limit=100)
+# The adapter validates release, identifiers and URLs and exposes only scoped approved data.

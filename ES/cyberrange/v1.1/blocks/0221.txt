@@ -1,0 +1,40 @@
+# Didactic triage proposal; the injected agent uses Chapter 19's bounded loop.
+import math
+from datetime import datetime,timezone
+
+def validate_classification(proposal):
+    required={"classification","confidence","reasoning","recommended_action","evidence_ids"}
+    if not isinstance(proposal,dict) or set(proposal)!=required:
+        raise ValueError("invalid_classification_schema")
+    if proposal["classification"] not in {"true_positive","false_positive","suspicious","escalate_to_human"}:
+        raise ValueError("invalid_classification")
+    confidence=proposal["confidence"]
+    if type(confidence) not in (int,float) or not math.isfinite(confidence) or not 0<=confidence<=1:
+        raise ValueError("invalid_confidence")
+    if proposal["recommended_action"] not in {"close","contain","investigate","escalate"}:
+        raise ValueError("invalid_action")
+    if not isinstance(proposal["reasoning"],str) or not 1<=len(proposal["reasoning"])<=4000:
+        raise ValueError("invalid_explanation")
+    ids=proposal["evidence_ids"]
+    if not isinstance(ids,list) or len(ids)>50 or not all(isinstance(i,str) and 1<=len(i)<=100 for i in ids) or len(ids)!=len(set(ids)):
+        raise ValueError("invalid_evidence_references")
+    return dict(proposal)
+
+async def investigate_alert(agent,adapter,actor_id,workzone_id,alert_id):
+    await adapter.authorize(actor_id,"triage",workzone_id,alert_id)
+    request=await adapter.minimized_owned_alert_request(actor_id,workzone_id,alert_id)
+    proposal=validate_classification(await agent.execute_step(request))
+    await adapter.verify_evidence_membership(proposal["evidence_ids"],actor_id,workzone_id,alert_id)
+    risk=await adapter.independent_risk(alert_id)
+    if proposal["confidence"]<0.75 or risk=="high":
+        proposal["classification"]="escalate_to_human"
+        proposal["recommended_action"]="escalate"
+    if proposal["classification"]=="false_positive" and not await adapter.has_positive_legitimacy_evidence(proposal):
+        proposal["classification"]="suspicious"
+        proposal["recommended_action"]="investigate"
+    return await adapter.store_triage_proposal(alert_id,proposal,human_review="pending",
+        created_at=datetime.now(timezone.utc))
+
+# Confidence is a model score, not a calibrated probability. No close/contain
+# side effects occur here. Adapter implements scoped, read-only catalog tools,
+# provenance, deadlines and usage reservations; no pass/None executor is used.

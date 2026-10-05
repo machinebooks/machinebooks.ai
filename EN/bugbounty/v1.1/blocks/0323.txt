@@ -1,0 +1,35 @@
+# Detection script: check whether there is an active CDP server
+# Run periodically or as a monitoring service
+$ports = @(9222, 9229, 9230, 9231)  # Common debug ports
+
+foreach ($port in $ports) {
+    try {
+        $tcp = New-Object System.Net.Sockets.TcpClient
+        $tcp.Connect("127.0.0.1", $port)
+        if ($tcp.Connected) {
+            Write-Warning "ALERT: CDP port $port active on localhost"
+            
+            # Query the endpoint to identify the application
+            $response = Invoke-RestMethod `
+                -Uri "http://127.0.0.1:$port/json/version" `
+                -TimeoutSec 3 -ErrorAction SilentlyContinue
+            
+            if ($response) {
+                Write-Warning "  Browser: $($response.Browser)"
+                Write-Warning "  User-Agent: $($response.'User-Agent')"
+            }
+            $tcp.Close()
+        }
+    }
+    catch {
+        # Port not active — normal situation
+    }
+}
+
+# Check the environment variable
+$envVar = [Environment]::GetEnvironmentVariable(
+    'WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS', 'User')
+
+if ($envVar) {
+    Write-Warning "ALERT: WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS = $envVar"
+}

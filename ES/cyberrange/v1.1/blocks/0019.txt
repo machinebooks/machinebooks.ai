@@ -1,0 +1,8 @@
+# JSON: measurement template; unknown is null, not a fabricated current result
+{
+  "coverage": {"target": null, "observed": null, "recipe_ref": null},
+  "security_findings": {"sample": null, "severity_policy": null, "observed": null},
+  "ai_error_rate": {"model_version": null, "review_criterion": null, "observed": null},
+  "deployment_success": {"workload": null, "verified_receipts": null, "observed": null},
+  "generation_time": {"scope": null, "review_included": true, "observed": null}
+}

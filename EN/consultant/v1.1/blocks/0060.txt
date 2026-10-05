@@ -1,0 +1,38 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+from dataclasses import dataclass, field
+from enum import Enum
+from datetime import datetime
+
+class SeccionTipo(Enum):
+    RESUMEN_EJECUTIVO = "resumen_ejecutivo"
+    COMPRENSION_NECESIDAD = "comprension_necesidad"
+    ENFOQUE_TECNICO = "enfoque_tecnico"
+    METODOLOGIA = "metodologia"
+    EQUIPO = "equipo"
+    PLAN_TRABAJO = "plan_trabajo"
+    # Pricing is excluded: it's a human decision
+
+@dataclass
+class ContextoPropuesta:
+    """Complete context for generating a proposal."""
+    cliente: str                    # Anonymized client descriptor
+    sector: str                     # Sector: public, financial, industry...
+    tipo_servicio: str              # audit, consulting, implementation...
+    requisitos_pliego: list[dict]   # Requirements extracted from RFP analysis
+    criterios_valoracion: list[dict] # Criteria with weighting
+    restricciones: list[str]        # Deadlines, certifications, location...
+    equipo_propuesto: list[dict]    # Prior human decision
+    precio_objetivo: float          # Prior human decision
+    fecha_entrega: datetime
+
+@dataclass
+class SeccionGenerada:
+    tipo: SeccionTipo
+    contenido: str
+    version: int = 1
+    score_quality: float = 0.0     # 0-100, quality gate estimate
+    revisado_por: str | None = None
+    notas_revision: list[str] = field(default_factory=list)
+    tokens_consumidos: int = 0
+    coste_generacion: float = 0.0  # USD

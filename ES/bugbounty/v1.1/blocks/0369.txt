@@ -1,0 +1,5 @@
+$ dumpbin /headers vgk.sys | findstr "Guard"
+    (sin resultados)
+
+$ r2 -q -c 'iH~Guard' vgk.sys
+    Guard: 0x00000000

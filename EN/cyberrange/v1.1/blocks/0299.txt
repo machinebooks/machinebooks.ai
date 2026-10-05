@@ -1,0 +1,24 @@
+# YAML: docker-compose.ot.yml; optional isolated teaching networks
+services:
+  modbus-simulator:
+    build: ./ot-simulators/modbus
+    networks: {ot_net: {ipv4_address: 10.0.3.10}}
+  opcua-simulator:
+    build: ./ot-simulators/opcua
+    networks: {ot_net: {ipv4_address: 10.0.2.10}}
+  mqtt-broker:
+    image: eclipse-mosquitto:2
+    volumes: ["./ot-simulators/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro"]
+    networks: {iot_net: {ipv4_address: 192.168.50.10}}
+networks:
+  ot_net:
+    driver: bridge
+    internal: true
+    ipam: {config: [{subnet: 10.0.0.0/16}]}
+  iot_net:
+    driver: bridge
+    internal: true
+    ipam: {config: [{subnet: 192.168.50.0/24}]}
+# No simulator ports published on the host. Validate address conflicts,
+# MQTT configuration and host reachability. Internal bridge configuration
+# does not itself prove isolation from the Docker host or privileged peers.

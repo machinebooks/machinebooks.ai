@@ -1,0 +1,18 @@
+# Didactic cleanup contract; no deletion by name, tag or guessed VMID.
+async def remove_owned_vm(actor, resource_ref, access, api, store):
+    scope = await access.owned_teardown(actor, resource_ref)
+    await store.check_retention_and_mark_pending(scope)
+    if not await api.confirm_stopped(scope, timeout=30):
+        await store.record_cleanup(scope, "cleanup_pending")
+        return {"status": "cleanup_pending"}
+    try:
+        upid = await api.request_reviewed_delete(scope)
+        result = await api.wait_task(scope, upid, timeout=60)
+        complete = result.get("exitstatus") == "OK" and await api.confirm_owned_absence(scope)
+    except Exception:
+        complete = False
+    status = "deleted" if complete else "cleanup_pending"
+    await store.record_cleanup(scope, status)
+    if complete:
+        await store.release_confirmed_reservation(scope)
+    return {"status": status}

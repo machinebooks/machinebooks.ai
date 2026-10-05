@@ -1,0 +1,23 @@
+def update_fixture(state, authenticated, changes):
+    if not authenticated:
+        return 401, dict(state)
+    if set(changes) - {"fixture_flag"}:
+        return 400, dict(state)
+    updated = dict(state)
+    updated.update(changes)
+    return 200, updated
+
+initial = {"fixture_flag": False}
+status, state = update_fixture(initial, False, {"fixture_flag": True})
+assert status == 401 and state == initial
+status, state = update_fixture(initial, True, {"fixture_flag": True})
+assert status == 200 and state["fixture_flag"]
+assert not initial["fixture_flag"]
+runtime = {"packaged": True, "fuse_enabled": True,
+           "flag_supported": False, "version_verified": False}
+require_available = (runtime["fuse_enabled"] and runtime["flag_supported"]
+                     and runtime["version_verified"])
+assert not require_available
+update = {"recipient": "new_executable", "old_handler_observed": False}
+assert not update["old_handler_observed"]
+print("configuration fixture: PASS")

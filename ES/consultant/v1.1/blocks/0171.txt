@@ -1,0 +1,20 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+# Pseudocode contract; no remote classifier runs before an authorized route exists.
+def route_request(text, task, project_config, identity):
+    policy = validate_project_policy(project_config, identity)
+    require_permission(identity, policy.project_id, "process")
+    # UNKNOWN defaults to local review, never PUBLIC.
+    level = max_sensitivity(policy.default_level,
+                            classify_full_text_locally(text, policy.restricted_terms))
+    route = policy.routes[level]
+    if route == "local_only" or level == "unknown":
+        result = process_authorized_local(text, task, policy)
+    else:
+        require_external_destination_approval(identity, policy, route)
+        clean_text = minimize_and_pseudonymize(text, policy.project_entities)
+        require_local_residual_risk_review(clean_text, policy)
+        # A reversible map stays local; this does not establish anonymization.
+        result = process_approved_destination(clean_text, task, policy)
+    write_minimal_audit(identity, policy, level, route, retention=policy.retention_days)
+    return result

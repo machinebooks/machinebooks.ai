@@ -1,0 +1,44 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import anthropic
+import numpy as np
+from dataclasses import dataclass
+
+@dataclass
+class SimilitudProyecto:
+    proyecto: ProyectoHistorico
+    score_semantico: float  # 0-1, embedding similarity
+    score_estructural: float  # 0-1, attribute match
+    score_combinado: float  # weighted combination of both
+
+def calcular_similitud_estructural(
+    nuevo: dict, historico: ProyectoHistorico
+) -> float:
+    """Compares discrete attributes between new and historical project."""
+    score = 0.0
+    pesos = {
+        "tipo_servicio": 0.30,
+        "sector": 0.25,
+        "complejidad_regulatoria": 0.20,
+        "tecnologias": 0.25,
+    }
+    # Service type: exact match
+    if nuevo["tipo_servicio"] == historico.tipo_servicio.value:
+        score += pesos["tipo_servicio"]
+    # Sector: exact match
+    if nuevo["sector"] == historico.sector:
+        score += pesos["sector"]
+    # Regulatory complexity: penalize difference
+    niveles = {"baja": 1, "media": 2, "alta": 3}
+    diff = abs(
+        niveles[nuevo["complejidad_regulatoria"]]
+        - niveles[historico.complejidad_regulatoria.value]
+    )
+    score += pesos["complejidad_regulatoria"] * max(0, 1 - diff * 0.5)
+    # Technologies: Jaccard similarity
+    set_nuevo = set(nuevo.get("tecnologias", []))
+    set_hist = set(historico.tecnologias)
+    if set_nuevo | set_hist:
+        jaccard = len(set_nuevo & set_hist) / len(set_nuevo | set_hist)
+        score += pesos["tecnologias"] * jaccard
+    return score

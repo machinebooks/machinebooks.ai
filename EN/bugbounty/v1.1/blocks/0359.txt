@@ -1,0 +1,54 @@
+import ctypes
+from ctypes import wintypes
+import struct
+
+# Windows API constants
+CRYPTPROTECT_UI_FORBIDDEN = 0x01
+
+class DATA_BLOB(ctypes.Structure):
+    _fields_ = [
+        ("cbData", wintypes.DWORD),
+        ("pbData", ctypes.POINTER(ctypes.c_byte))
+    ]
+
+def decrypt_dpapi_blob(encrypted_blob: bytes, entropy: bytes) -> bytes:
+    """Decrypt a DPAPI blob using the SessionP entropy."""
+    # Standard DPAPI header: 20 bytes
+    # MobaXterm stores the blob without header; it must be prepended
+    DPAPI_HEADER = bytes.fromhex(
+        "01000000D08C9DDF0115D1118C7A00C04FC297EB"
+    )
+    full_blob = DPAPI_HEADER + encrypted_blob
+
+    blob_in = DATA_BLOB()
+    blob_in.cbData = len(full_blob)
+    blob_in.pbData = (ctypes.c_byte * len(full_blob))(*full_blob)
+
+    entropy_blob = DATA_BLOB()
+    entropy_blob.cbData = len(entropy)
+    entropy_blob.pbData = (ctypes.c_byte * len(entropy))(*entropy)
+
+    blob_out = DATA_BLOB()
+
+    result = ctypes.windll.crypt32.CryptUnprotectData(
+        ctypes.byref(blob_in),
+        None,                          # description (not needed)
+        ctypes.byref(entropy_blob),    # SessionP entropy
+        None,                          # reserved
+        None,                          # prompt (no UI)
+        CRYPTPROTECT_UI_FORBIDDEN,
+        ctypes.byref(blob_out)
+    )
+
+    if result:
+        size = blob_out.cbData
+        data = bytes((ctypes.c_byte * size).from_address(
+            ctypes.addressof(blob_out.pbData.contents)
+        ))
+        # Free memory allocated by CryptUnprotectData
+        ctypes.windll.kernel32.LocalFree(blob_out.pbData)
+        return data  # SHA-512 of the master password (64 bytes)
+    else:
+        error = ctypes.GetLastError()
+        print(f"[-] CryptUnprotectData failed: error {error}")
+        return None

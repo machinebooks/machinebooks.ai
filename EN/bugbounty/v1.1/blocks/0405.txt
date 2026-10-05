@@ -1,0 +1,31 @@
+class OwnedFixture:
+    def __init__(self):
+        self.references = 1
+
+    def retain(self):
+        if self.references == 0:
+            raise ValueError("released")
+        self.references += 1
+
+    def release(self):
+        if self.references == 0:
+            raise ValueError("already released")
+        self.references -= 1
+
+fixture = OwnedFixture()
+fixture.retain()
+fixture.release()
+assert fixture.references == 1
+fixture.release()
+assert fixture.references == 0
+try:
+    fixture.retain()
+except ValueError:
+    pass
+else:
+    raise AssertionError("released fixture retained")
+observation = {"exception": "NullReferenceException",
+               "exit_code": 139, "memory_trace": None}
+assert observation["memory_trace"] is None
+assert observation["exception"] != "confirmed UAF"
+print("reference model fixture: PASS")

@@ -1,0 +1,22 @@
+# Owned async lifecycle contract; every adapter must be cancellation-safe
+import asyncio
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app):
+    tasks = []
+    try:
+        tasks = [asyncio.create_task(service.run())
+                 for service in app.state.background_services]
+        for task in tasks:
+            task.add_done_callback(app.state.supervise_background_result)
+        yield
+    finally:
+        for task in tasks:
+            task.cancel()
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        await app.state.verify_background_shutdown(results)
+
+# Sync threads require adapters that stop and join their owner thread;
+# cancelling an asyncio wrapper alone does not terminate a blocking thread.
+# Instantiate FastAPI(lifespan=lifespan) and configure supervised adapters.

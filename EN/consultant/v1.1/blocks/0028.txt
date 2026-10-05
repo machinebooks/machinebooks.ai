@@ -1,0 +1,54 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+from qdrant_client import QdrantClient
+import voyageai
+
+qdrant = QdrantClient(host="localhost", port=6333)
+voyage = voyageai.Client()
+
+@tool
+def search_evidence(
+    query: str,
+    doc_types: list[str] | None = None,
+    max_results: int = 5
+) -> list[dict]:
+    """Searches the client documentation for evidence relevant
+    to a specific control or requirement.
+
+    Args:
+        query: Description of the control or requirement to evaluate
+        doc_types: Document types to search (policy, procedure,
+                   record, report). None searches all.
+        max_results: Maximum number of results
+    """
+    # Generate query embedding
+    embedding = voyage.embed(
+        texts=[query],
+        model="voyage-3"
+    ).embeddings[0]
+
+    # Build document type filters
+    search_filter = None
+    if doc_types:
+        search_filter = {
+            "must": [{"key": "doc_type", "match": {"any": doc_types}}]
+        }
+
+    # Search in the active client's collection
+    results = qdrant.search(
+        collection_name="client_evidence",
+        query_vector=embedding,
+        query_filter=search_filter,
+        limit=max_results
+    )
+
+    return [
+        {
+            "content": hit.payload["content"],
+            "source": hit.payload["source_doc"],
+            "doc_type": hit.payload["doc_type"],
+            "page": hit.payload.get("page", "N/A"),
+            "relevance_score": round(hit.score, 3)
+        }
+        for hit in results
+    ]

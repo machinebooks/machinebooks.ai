@@ -1,0 +1,18 @@
+services:
+  security-lab:
+    build: .
+    container_name: aegis-security-lab
+    hostname: seclab
+    stdin_open: true
+    tty: true
+    volumes:
+      - ${WORKSPACE}/analysis:/lab/results
+      - ${WORKSPACE}/scripts:/lab/scripts
+      - ${WORKSPACE}/binaries:/lab/drivers:ro
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    networks: [labnet]
+
+networks:
+  labnet: {driver: bridge}

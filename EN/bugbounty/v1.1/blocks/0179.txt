@@ -1,0 +1,10 @@
+%LOCALAPPDATA%\Discord\
+├── Update.exe                    ← Squirrel updater (writable)
+├── app-1.0.9230\                 ← Current version
+│   ├── Discord.exe               ← Main binary (writable)
+│   ├── resources\
+│   │   └── app.asar              ← Application code (writable)
+│   └── *.dll                     ← 7 sideloadable DLLs (writable)
+├── app-1.0.9229\                 ← Previous version (may exist)
+├── packages\                     ← Downloaded NuGet packages
+└── SquirrelSetup.log             ← Installation log

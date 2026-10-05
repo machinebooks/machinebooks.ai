@@ -1,0 +1,16 @@
+# Explicit async manager boundary; live resource observations are not ownership authority.
+class ProxmoxSDKManager:
+    def __init__(self, access, inventory, operations, store):
+        self.access, self.inventory, self.operations, self.store = access, inventory, operations, store
+    async def observed_vm(self, actor, cluster_id, resource_ref):
+        scope = await self.access.authorized_owned_resource(actor, cluster_id, resource_ref)
+        observed = await self.inventory.read_resource(scope, timeout=30)
+        await self.store.record_observation(scope, observed)
+        return observed
+    async def start_vm(self, actor, cluster_id, vmid):
+        scope = await self.access.owned_vm(actor, cluster_id, vmid, "start")
+        task = await self.operations.request_start(scope)
+        await self.store.record_task(scope, task, status="starting")
+        return {"status": "starting", "task_ref": task.reference}
+# Reconciliation preserves absent/unknown distinctions and pending inventory.
+# Management clients, secret resolution and console gateways are separately configured adapters.

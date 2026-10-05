@@ -1,0 +1,14 @@
+# EDR evasion impact: scenario documented in the report
+#
+# Without signature bypass (detectable):
+# malware.exe → opens C2 connection → EDR ALERTS
+#
+# With bypass via ASAR tampering (undetectable):
+# Discord.exe (signed) → payload in main.js → opens connection
+# → EDR: "Discord connecting to internet, normal behavior"
+#
+# With bypass via DLL sideloading (hard to detect):
+# Steam.exe (signed) → VERSION.dll (proxy) → payload in DllMain
+# → EDR: "Steam loading system DLL, normal behavior"
+#
+# The same payload, but the trust wrapper changes everything.

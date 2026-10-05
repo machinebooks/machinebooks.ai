@@ -1,0 +1,39 @@
+def correlate(messages, request_id):
+    events = []
+    response = None
+    for message in messages:
+        if not isinstance(message, dict):
+            raise ValueError("invalid message")
+        if "id" not in message:
+            events.append(message)
+        elif message["id"] == request_id:
+            if response is not None:
+                raise ValueError("duplicate response")
+            response = message
+    if response is None:
+        raise TimeoutError("response missing")
+    if "error" in response:
+        return {"status": "error", "error": response["error"], "events": events}
+    if "result" not in response:
+        raise ValueError("result missing")
+    return {"status": "ok", "result": response["result"], "events": events}
+
+messages = [{"method": "fixture.changed", "params": {}},
+            {"id": 8, "result": {"ignored": True}},
+            {"id": 7, "result": {"items": ["owned fixture"]}}]
+result = correlate(messages, 7)
+assert result["result"]["items"] == ["owned fixture"]
+assert len(result["events"]) == 1
+assert correlate([{"id": 7, "error": {"code": -1}}], 7)["status"] == "error"
+try:
+    correlate(messages, 9)
+except TimeoutError:
+    pass
+else:
+    raise AssertionError("missing response accepted")
+endpoint = {"requested_port": 0, "assigned_port": 49152,
+            "profile": "owned_fixture", "authenticated": True}
+assert endpoint["assigned_port"] != endpoint["requested_port"]
+permissions = {"listed_methods": ["fixture.read"], "authorized": []}
+assert "fixture.read" not in permissions["authorized"]
+print("RPC correlation fixture: PASS")

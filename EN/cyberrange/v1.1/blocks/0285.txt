@@ -1,0 +1,21 @@
+# Append review history atomically; never overwrite the original event
+from datetime import datetime, timezone
+
+def review_audit_event(db,actor,log_id,expected_version,status,note,scope):
+    if status not in {"pending","reviewed","dismissed"}:
+        raise ValueError("invalid review status")
+    if not isinstance(note,str) or len(note)>2000:
+        raise ValueError("bounded review note required")
+    scope.authorize(actor.id,"audit_review",log_id)
+    with db.transaction():
+        original=db.lock_authorized_event(actor.id,log_id)
+        if original is None:
+            raise ValueError("event unavailable")
+        if original.review_version!=expected_version:
+            raise ValueError("review conflict")
+        result=db.append_review(log_id,actor.id,status,note,datetime.now(timezone.utc))
+        db.increment_review_version(log_id,expected_version)
+        return result
+
+# Database constraints/locking, allowed reviewer roles, retention and
+# tamper-evidence are adapter contracts, not supplied by this function alone.

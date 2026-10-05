@@ -1,0 +1,110 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+from dataclasses import dataclass
+
+@dataclass
+class DimensionScore:
+    dimension: Dimension
+    level: float          # 1.0 - 5.0, with decimals
+    confidence: float     # 0.0 - 1.0
+    evidence_ratio: float # Proportion of responses with evidence
+    key_findings: list[str]
+    gaps: list[str]
+    strengths: list[str]
+
+    def __post_init__(self):
+        from math import isfinite
+        if not isinstance(self.dimension, Dimension):
+            raise ValueError("Unknown dimension")
+        if any(type(v) not in (int, float) or not isfinite(v) for v in (self.level, self.confidence, self.evidence_ratio)):
+            raise ValueError("Dimension values must be finite numbers")
+        if not 1 <= self.level <= 5 or not 0 <= self.confidence <= 1 or not 0 < self.evidence_ratio <= 1:
+            raise ValueError("Invalid level or evidence; absent evidence is not level 1")
+
+
+@dataclass
+class MaturityAssessment:
+    organization: str
+    sector: str
+    size_band: str          # "200-500", "500-2000", "2000+"
+    assessment_date: str
+    dimensions: list[DimensionScore]
+    overall_level: float
+    stakeholders_interviewed: int
+
+    @property
+    def overall_level_weighted(self) -> float:
+        """Weighted overall level — data and people weigh more."""
+        if not isinstance(self.dimensions, list) or len(self.dimensions) != len(Dimension) or {d.dimension for d in self.dimensions} != set(Dimension):
+            raise ValueError("Weighted maturity requires exactly one evidenced record for each dimension")
+        for dimension in self.dimensions:
+            dimension.__post_init__()
+
+        weights = {
+            Dimension.STRATEGY: 0.15,
+            Dimension.DATA: 0.25,      # Higher weight: no data, no AI
+            Dimension.TECHNOLOGY: 0.20,
+            Dimension.PEOPLE: 0.25,    # Higher weight: no people, no change
+            Dimension.GOVERNANCE: 0.15,
+        }
+        total = sum(
+            d.level * weights[d.dimension] for d in self.dimensions
+        )
+        return round(total, 1)
+
+
+def score_dimension(
+    dimension: Dimension,
+    interview_responses: list[dict],
+    evidence_docs: list[str],
+    objective_indicators: dict
+) -> DimensionScore:
+    """Scores a dimension combining interviews, evidence, and indicators."""
+    if not isinstance(dimension, Dimension) or not isinstance(evidence_docs, list) or not evidence_docs or any(type(d) is not str or not d.strip() for d in evidence_docs):
+        raise ValueError("No evidenced score: preserve unassessed outside the scored schema")
+    if not isinstance(interview_responses, list) or not isinstance(objective_indicators, dict):
+        raise ValueError("Invalid scoring sources")
+    for record in interview_responses:
+        validate_interview_response(record)
+        if record["dimension"] != dimension.value:
+            raise ValueError("Interview dimension does not match scoring dimension")
+
+
+    scoring_prompt = f"""Evaluate maturity in the '{dimension.value}' dimension
+based on the following sources:
+
+## Interview responses
+{_format_responses(interview_responses)}
+
+## Collected documentary evidence
+{chr(10).join(f"- {doc}" for doc in evidence_docs) or "None"}
+
+## Objective indicators
+{_format_indicators(objective_indicators)}
+
+## Evaluation scale (dimension: {dimension.value})
+- Level 1 (Ad-hoc): {LEVEL_DESCRIPTORS[dimension][1]}
+- Level 2 (Experimental): {LEVEL_DESCRIPTORS[dimension][2]}
+- Level 3 (Operational): {LEVEL_DESCRIPTORS[dimension][3]}
+- Level 4 (Optimized): {LEVEL_DESCRIPTORS[dimension][4]}
+- Level 5 (Transformative): {LEVEL_DESCRIPTORS[dimension][5]}
+
+Instructions:
+- Assign a level with one decimal (e.g., 2.3)
+- Indicate your confidence (0.0-1.0) based on evidence quality
+- Without sufficient evidence, retain no_evaluado: do not invent level 1 or aggregate the dimension
+- List key findings, gaps, and strengths
+- Be conservative: when in doubt, score lower
+
+Respond in JSON with: level, confidence, evidence_ratio,
+key_findings, gaps, strengths"""
+
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=2048,
+        messages=[{"role": "user", "content": scoring_prompt}]
+    )
+
+    # Parse JSON response and build DimensionScore
+    result = _parse_scoring_response(response.content[0].text)
+    return DimensionScore(dimension=dimension, **result)

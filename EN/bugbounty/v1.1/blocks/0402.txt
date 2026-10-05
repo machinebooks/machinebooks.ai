@@ -1,0 +1,86 @@
+import hashlib
+import json
+import struct
+
+SENTINEL = b"dL7pKGdnNz796PbbjQWNKmHXBZaB9tsX"
+
+def read_fuses(data):
+    offset = data.find(SENTINEL)
+    if offset < 0:
+        return {"status": "missing", "states": []}
+    start = offset + len(SENTINEL)
+    if start + 2 > len(data):
+        return {"status": "truncated", "states": []}
+    version, length = data[start:start + 2]
+    if version != 1 or start + 2 + length > len(data):
+        return {"status": "unknown", "states": []}
+    states = {48: "disabled", 49: "enabled", 114: "removed"}
+    return {
+        "status": "parsed",
+        "version": version,
+        "states": [states.get(value, "unknown")
+                   for value in data[start + 2:start + 2 + length]],
+    }
+
+def read_asar(data):
+    if len(data) < 16:
+        raise ValueError("short header")
+    size_payload, header_size, json_payload, text_size = (
+        struct.unpack_from("<4I", data)
+    )
+    if size_payload != 4 or header_size < 8:
+        raise ValueError("invalid size pickle")
+    if json_payload + 4 != header_size:
+        raise ValueError("inconsistent header pickle")
+    if text_size > json_payload - 4 or 8 + header_size > len(data):
+        raise ValueError("out of bounds")
+    text = data[16:16 + text_size]
+    header = json.loads(text.decode("utf-8"))
+    if not isinstance(header, dict) or not isinstance(header.get("files"), dict):
+        raise ValueError("invalid file tree")
+    data_offset = 8 + header_size
+    def validate_tree(files):
+        for name, entry in files.items():
+            if not isinstance(name, str) or not isinstance(entry, dict):
+                raise ValueError("invalid entry")
+            if "files" in entry:
+                if not isinstance(entry["files"], dict):
+                    raise ValueError("invalid directory")
+                validate_tree(entry["files"])
+            elif "link" in entry or entry.get("unpacked") is True:
+                continue
+            else:
+                size, offset = entry.get("size"), entry.get("offset")
+                if isinstance(size, bool) or not isinstance(size, int) or size < 0:
+                    raise ValueError("invalid size")
+                if not isinstance(offset, str) or not offset.isascii() or not offset.isdecimal():
+                    raise ValueError("invalid offset")
+                if int(offset) + size > len(data) - data_offset:
+                    raise ValueError("entry out of bounds")
+    validate_tree(header["files"])
+    return header, data_offset, hashlib.sha256(text).hexdigest()
+
+assert read_fuses(b"plain")["status"] == "missing"
+fixture = SENTINEL + bytes([1, 4]) + b"01r?"
+assert read_fuses(fixture)["states"] == [
+    "disabled", "enabled", "removed", "unknown"]
+assert read_fuses(SENTINEL + bytes([2, 1]) + b"1")["status"] == "unknown"
+text = json.dumps({"files": {"empty": {"size": 0, "offset": "0"}}},
+                  separators=(",", ":")).encode("utf-8")
+padding = (-len(text)) % 4
+header_size = 8 + len(text) + padding
+archive = struct.pack("<4I", 4, header_size,
+                      header_size - 4, len(text)) + text + b"\0" * padding
+header, data_offset, header_hash = read_asar(archive)
+assert data_offset == len(archive)
+assert header["files"]["empty"]["size"] == 0
+assert header_hash != hashlib.sha256(archive).hexdigest()
+try:
+    read_asar(archive[:-1])
+except ValueError:
+    pass
+else:
+    raise AssertionError("truncation accepted")
+signature = {"status": "NotSigned", "error": None}
+assert signature["status"] != "Valid"
+print("binary fixture: PASS")

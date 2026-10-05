@@ -1,0 +1,34 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+def estimate_migration_effort(
+    service: dict,
+    complexity: int,
+    historical_projects: list[dict]
+) -> dict:
+    """Estimates migration effort by analogy with historical projects."""
+
+    prompt = f"""Based on this historical data from similar migrations:
+
+{json.dumps(historical_projects, indent=2)}
+
+Estimate the effort for migrating the following service:
+- Name: {service['name']}
+- LOC: {service['loc']}
+- Complexity (1-5): {complexity}
+- Critical dependencies: {service['critical_dependencies']}
+- Current test coverage: {service['test_coverage']}%
+
+Provide:
+1. Optimistic, probable, and pessimistic estimate (in person-days)
+2. Risk factors that could increase effort
+3. Most analogous historical projects and why
+4. Estimation confidence level (high/medium/low)
+
+Use concrete data, not generalities."""
+
+    message = client.messages.create(
+        model="claude-opus-4-6",  # Opus for estimation — requires deep reasoning
+        max_tokens=4096,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return json.loads(message.content[0].text)

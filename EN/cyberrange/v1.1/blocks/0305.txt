@@ -1,0 +1,7 @@
+┌──────────────────────────────────────────────────┐
+│ Evidence layers                                  │
+│ Path: UI → API → Job → resource                  │
+│ Integration: version, network and persistence    │
+│ Rules: permissions, scoring and dates            │
+│ Each layer declares scope, failures and coverage │
+└──────────────────────────────────────────────────┘

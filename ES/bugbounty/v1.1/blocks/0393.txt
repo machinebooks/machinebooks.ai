@@ -1,0 +1,38 @@
+## Título
+
+DLL Sideloading en [NombreApp] permite ejecución de código arbitrario
+en contexto del usuario
+
+## Weakness
+
+CWE-426: Untrusted Search Path
+
+## Severity
+
+High (CVSS:3.1/AV:L/AC:L/PR:L/UI:R/S:U/C:H/I:H/A:H — 7.3)
+
+## Description
+
+La aplicación [NombreApp] versión [X.Y.Z] carga la biblioteca
+VERSION.dll desde su directorio de instalación sin verificar la
+integridad ni la firma digital del fichero. El directorio de
+instalación por defecto (`C:\Users\<usuario>\AppData\Local\[NombreApp]`)
+tiene permisos de escritura para el usuario estándar.
+
+Un atacante con acceso al sistema de ficheros local (o mediante otro
+vector como phishing con fichero adjunto) puede colocar una DLL
+maliciosa con el nombre VERSION.dll en el directorio de instalación.
+La próxima vez que el usuario ejecute [NombreApp], la DLL maliciosa
+se carga en el contexto del proceso, permitiendo ejecución de código
+arbitrario con los privilegios del usuario.
+
+### Root cause
+
+[NombreApp] utiliza la función LoadLibrary de la API de Windows sin
+especificar una ruta absoluta para VERSION.dll. El orden de búsqueda
+de DLLs de Windows prioriza el directorio de la aplicación, que en
+este caso es writable por el usuario.
+
+## Steps to Reproduce
+
+1. Identificar la DLL vulnerable:

@@ -1,0 +1,37 @@
+# Didactic API factory; adapter supplies transactions, identity and outbox.
+from fastapi import APIRouter,Depends,HTTPException
+from pydantic import BaseModel,ConfigDict,Field
+from typing import Literal
+
+class GenerateScenarioRequest(BaseModel):
+    model_config=ConfigDict(extra="forbid")
+    description:str=Field(min_length=20,max_length=5000)
+    workzone_id:int=Field(gt=0,strict=True)
+    complexity:Literal["standard","complex"]="standard"
+
+def create_scenario_router(adapter,generator,require_organizer):
+    router=APIRouter(prefix="/ai/scenarios",tags=["AI Scenarios"])
+
+    @router.post("/generate")
+    async def generate_scenario(request:GenerateScenarioRequest,
+                                actor=Depends(require_organizer)):
+        await adapter.authorize(actor.id,"scenario_propose",request.workzone_id)
+        return await generator.generate_scenario(request.description,
+            request.workzone_id,actor.id,request.complexity)
+
+    @router.post("/generate/{template_id}/deploy")
+    async def deploy_generated_scenario(template_id:int,actor=Depends(require_organizer)):
+        if template_id<=0:
+            raise HTTPException(400,"invalid_template")
+        # Transaction locks version, checks workzone/object permissions, current
+        # digest-bound approval/artifacts and capacity, and appends unique outbox.
+        deployment=await adapter.reserve_approved_deployment(actor.id,template_id)
+        if deployment is None:
+            raise HTTPException(409,"approval_or_reservation_required")
+        return {"status":"queued","deployment_id":deployment.id,
+                "template_id":template_id,"approved_digest":deployment.digest}
+
+    return router
+
+# Consumer receives immutable IDs/digest, not a request DB session or raw secrets.
+# queued means accepted for processing; verified completion comes from the runner.

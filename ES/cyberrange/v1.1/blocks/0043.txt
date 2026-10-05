@@ -1,0 +1,10 @@
+# Didactic adapter interface; explicit cluster and authorization are mandatory.
+async def proxmox_operation(actor, cluster_id, action, params, access, adapter):
+    if action not in {"list", "status", "start"}:
+        raise ValueError("unsupported operation")
+    scope = await access.authorize(actor, cluster_id, action, params)
+    if action == "start":
+        upid = await adapter.request_start(scope)
+        return {"status": "starting", "upid_ref": await adapter.retain_task(scope, upid)}
+    return await adapter.read_minimized(scope, action)
+# Cloning, deletion and console tickets use separate reviewed lifecycle services.

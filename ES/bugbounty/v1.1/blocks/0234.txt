@@ -1,0 +1,11 @@
+=== PROOF OF SYSTEM EXECUTION ===
+
+Timestamp:     2026-03-31T13:47:55Z
+Username:      SYSTEM
+PID:           43236
+Process:       C:\Program Files\Epic Games\...\EpicGamesUpdater.exe
+
+Attack:        Service EXE replacement (CWE-427, CWE-732)
+Service:       EpicGamesUpdater (NT AUTHORITY\SYSTEM)
+Admin Needed:  No
+CVSS 3.1:     7.8

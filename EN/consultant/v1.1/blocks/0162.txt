@@ -1,0 +1,92 @@
+@dataclass
+class AugmentedEconomics:
+    """Unit economics calculation engine for the augmented consultant."""
+    baseline: ConsultantProfile
+    ai_cost: AIStackCost
+    compression_factor: float = 0.52    # ECF: 52% effort reduction
+    price_retention: float = 0.80       # PAF: retains 80% of price
+    capacity_conversion: float = 0.60   # IC: 60% of freed time becomes billable
+    year: int = 1
+
+    def __post_init__(self):
+        from math import isfinite
+        values = (self.compression_factor, self.price_retention, self.capacity_conversion)
+        if any(isinstance(v, bool) or not isfinite(v) for v in values):
+            raise ValueError("Factors must be finite")
+        if not 0 <= self.compression_factor < 1 or not 0 <= self.capacity_conversion <= 1 or self.price_retention < 0:
+            raise ValueError("Invalid economic factors")
+        if self.baseline.billable_hours <= 0:
+            raise ValueError("Billable hours must be positive")
+        if self.ai_cost.total_year(self.year) <= 0:
+            raise ValueError("AI investment must be positive")
+
+    @property
+    def hours_saved_per_project(self) -> float:
+        """Hours saved per average project."""
+        avg_project_hours = self.baseline.billable_hours / self._baseline_projects
+        return avg_project_hours * self.compression_factor
+
+    @property
+    def _baseline_projects(self) -> float:
+        """Estimated number of annual projects in traditional model."""
+        avg_project_hours = 120  # Average hours per project
+        return self.baseline.billable_hours / avg_project_hours
+
+    @property
+    def augmented_hours_per_project(self) -> float:
+        """Hours required per project with AI."""
+        return 120 * (1 - self.compression_factor)
+
+    @property
+    def augmented_projects(self) -> float:
+        """Projects completed with augmented model."""
+        freed_hours = self.baseline.billable_hours * self.compression_factor
+        additional_billable = freed_hours * self.capacity_conversion
+        if not 0 <= self.compression_factor < 1 or not 0 <= self.capacity_conversion <= 1:
+            raise ValueError("Invalid compression or capacity conversion")
+        if self.baseline.billable_hours <= 0 or self.price_retention < 0:
+            raise ValueError("Invalid billable hours or price retention")
+        return self._baseline_projects + additional_billable / self.augmented_hours_per_project
+
+    @property
+    def augmented_revenue_per_project(self) -> float:
+        """Revenue per project with augmented model."""
+        baseline_revenue_per_project = 120 * self.baseline.avg_bill_rate
+        return baseline_revenue_per_project * self.price_retention
+
+    @property
+    def augmented_annual_revenue(self) -> float:
+        """Annual billing of the augmented consultant."""
+        return self.augmented_projects * self.augmented_revenue_per_project
+
+    @property
+    def augmented_total_cost(self) -> float:
+        """Total cost including AI."""
+        return self.baseline.loaded_cost + self.ai_cost.total_year(self.year)
+
+    @property
+    def augmented_gross_margin(self) -> float:
+        return self.augmented_annual_revenue - self.augmented_total_cost
+
+    @property
+    def augmented_margin_pct(self) -> float:
+        if self.augmented_annual_revenue == 0:
+            return 0
+        return self.augmented_gross_margin / self.augmented_annual_revenue
+
+    @property
+    def roi_on_ai_investment(self) -> float:
+        """ROI on the AI investment."""
+        incremental_margin = self.augmented_gross_margin - self.baseline.gross_margin
+        ai_investment = self.ai_cost.total_year(self.year)
+        return incremental_margin / ai_investment if ai_investment > 0 else 0
+
+    @property
+    def breakeven_days(self) -> float:
+        """Days to reach AI investment break-even."""
+        daily_incremental = (
+            (self.augmented_gross_margin - self.baseline.gross_margin) / 365
+        )
+        if daily_incremental <= 0:
+            return float('inf')
+        return self.ai_cost.total_year(self.year) / daily_incremental

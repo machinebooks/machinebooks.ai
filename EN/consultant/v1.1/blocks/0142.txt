@@ -1,0 +1,35 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import anthropic
+from dataclasses import dataclass, field
+from enum import Enum
+from datetime import date
+
+class LessonPolarity(Enum):
+    POSITIVE = "positive"    # What worked well
+    NEGATIVE = "negative"    # What failed or could improve
+    NEUTRAL = "neutral"      # Context change without valuation
+
+class ImpactArea(Enum):
+    COST = "cost"
+    SCHEDULE = "schedule"
+    QUALITY = "quality"
+    CLIENT_SATISFACTION = "client_satisfaction"
+    TEAM = "team"
+
+@dataclass
+class LessonCandidate:
+    """Candidate lesson extracted from project documents."""
+    summary: str                    # 1-2 sentence summary
+    context: str                    # Full situation that originated the lesson
+    what_happened: str              # What exactly occurred
+    root_cause: str                 # Identified root cause (or hypothesis)
+    recommendation: str             # What to do differently in the future
+    project_type: str               # Project type (audit, migration...)
+    project_phase: str              # Phase where it occurred
+    category: str                   # Lesson category
+    impact_areas: list[ImpactArea]  # Impact areas
+    polarity: LessonPolarity        # Positive, negative, or neutral
+    confidence: float               # Agent confidence (0.0-1.0)
+    source_documents: list[str]     # Source documents
+    extraction_date: date = field(default_factory=date.today)

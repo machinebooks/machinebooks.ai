@@ -1,0 +1,22 @@
+from collections import defaultdict
+from decimal import Decimal
+
+rows = [
+    {"currency": "USD", "state": "paid", "amount": "100.10"},
+    {"currency": "USD", "state": "pending", "amount": "200.20"},
+    {"currency": "EUR", "state": "paid", "amount": "50.30"},
+]
+totals = defaultdict(lambda: Decimal("0"))
+for row in rows:
+    if row["state"] not in {"paid", "pending", "accepted"}:
+        raise ValueError("invalid state")
+    totals[(row["currency"], row["state"])] += Decimal(row["amount"])
+assert totals[("USD", "paid")] == Decimal("100.10")
+assert totals[("USD", "pending")] == Decimal("200.20")
+assert totals[("EUR", "paid")] == Decimal("50.30")
+scenario = {"hours": Decimal("55"), "gross": Decimal("32600"),
+            "expenses": Decimal("9854"), "verified_receipts": False}
+assert scenario["gross"] - scenario["expenses"] == Decimal("22746")
+assert not scenario["verified_receipts"]
+assert sum(row["state"] == "paid" for row in rows) == 2
+print("monetary state fixture: PASS")

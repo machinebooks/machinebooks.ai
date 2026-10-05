@@ -1,0 +1,39 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+client = anthropic.Anthropic()
+
+def detect_inconsistencies(
+    dimension: str,
+    responses: list[dict]
+) -> list[str]:
+    """Detects contradictions in responses within a dimension."""
+    responses_text = "\n".join(
+        f"- Question: {r['question']}\n  Answer: {r['answer']}"
+        for r in responses
+    )
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=1024,
+        system=(
+            "You are an expert auditor of AI maturity. "
+            "Analyze a client's responses and detect "
+            "internal inconsistencies. An inconsistency is when "
+            "two answers contradict or are incompatible. "
+            "Return ONLY the inconsistencies found, "
+            "one per line. If there are no inconsistencies, respond NONE."
+        ),
+        messages=[{
+            "role": "user",
+            "content": (
+                f"Dimension: {dimension}\n\n"
+                f"Client responses:\n{responses_text}\n\n"
+                "List of detected inconsistencies:"
+            )
+        }]
+    )
+
+    result = message.content[0].text.strip()
+    if result == "NONE":
+        return []
+    return [line.strip("- ") for line in result.split("\n") if line.strip()]

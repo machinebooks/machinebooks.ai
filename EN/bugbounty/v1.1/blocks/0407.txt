@@ -1,0 +1,30 @@
+import json
+import sqlite3
+
+connection = sqlite3.connect(":memory:")
+try:
+    connection.execute("create table observations (origin text, flag integer)")
+    connection.execute("insert into observations values (?, ?)",
+                       ("https://fixture.invalid", 1))
+    rows = connection.execute("select origin, flag from observations").fetchall()
+    assert rows == [("https://fixture.invalid", 1)]
+finally:
+    connection.close()
+
+record = {"origin": "https://fixture.invalid",
+          "candidate_found": True, "session_validated": False}
+assert not record["session_validated"]
+protection = {"public_entropy": True, "user_key_available": False,
+              "machine_key_available": False}
+assert not protection["user_key_available"]
+key_handle = object()
+try:
+    json.dumps({"key": key_handle})
+except TypeError:
+    pass
+else:
+    raise AssertionError("opaque key exported")
+minimized = {"origin": record["origin"],
+             "candidate_found": record["candidate_found"]}
+assert set(minimized) == {"origin", "candidate_found"}
+print("data context fixture: PASS")

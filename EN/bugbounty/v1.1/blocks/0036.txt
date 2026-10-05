@@ -1,0 +1,49 @@
+// Effective defenses against ASAR tampering
+
+// 1. Enable integrity fuses (in Electron build)
+// In forge.config.js or electron-builder config:
+const fuseConfig = {
+    // Disable RunAsNode
+    [FuseV1Options.RunAsNode]: false,
+    // Only load from ASAR (not app/ directory)
+    [FuseV1Options.OnlyLoadAppFromAsar]: true,
+    // Verify ASAR integrity on load
+    [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
+    // Encrypt cookies
+    [FuseV1Options.EnableCookieEncryption]: true,
+    // Disable NODE_OPTIONS
+    [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false,
+};
+
+// 2. Digital signature verification on startup
+// In main.js (first line):
+const { app } = require('electron');
+const crypto = require('crypto');
+const path = require('path');
+
+function verifyCodeSignature() {
+    // Windows: verify Authenticode
+    if (process.platform === 'win32') {
+        const { execSync } = require('child_process');
+        try {
+            const result = execSync(
+                `powershell -Command "` +
+                `(Get-AuthenticodeSignature '${process.execPath}').Status"`,
+                { encoding: 'utf-8' }
+            );
+            if (!result.trim().includes('Valid')) {
+                app.quit();
+                return false;
+            }
+        } catch (e) {
+            app.quit();
+            return false;
+        }
+    }
+    return true;
+}
+
+// 3. Install in Program Files (requires admin)
+// In the installer (NSIS, WiX, etc.):
+// InstallDir: $PROGRAMFILES64\MyApp
+// NOT: $LOCALAPPDATA\MyApp

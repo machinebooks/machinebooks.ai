@@ -1,0 +1,49 @@
+# Vulnerability Report: [VENDOR]-[YEAR]-[NNN]
+
+## Executive Summary
+Descripción en una frase del hallazgo y su impacto máximo.
+
+## Severity Assessment
+- **CVSS v3.1 Score:** X.X (Critical/High/Medium/Low)
+- **CVSS Vector:** AV:L/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H
+- **CWE:** CWE-XXX — Nombre del weakness
+
+## Affected Component
+- Product: [nombre y versión exacta]
+- Component: [fichero, DLL, driver, etc.]
+- Platform: [Windows 10/11, versiones]
+
+## Technical Description
+Descripción técnica detallada del hallazgo.
+Incluir el contexto necesario para que un ingeniero del vendor
+entienda la raíz del problema sin ambigÃ¼edad.
+
+## Steps to Reproduce
+1. Instalar [aplicación] versión [X.Y.Z]
+2. Verificar que [condición previa]
+3. Ejecutar [acción específica]
+4. Observar [resultado vulnerable]
+
+## Proof of Concept
+Código del PoC con instrucciones de compilación y ejecución.
+Screenshot o log que demuestre la ejecución exitosa.
+
+## Impact Assessment
+Qué puede hacer un atacante con esta vulnerabilidad:
+- Escalada de privilegios / RCE / robo de datos / persistencia
+- Escenario concreto de ataque (no teórico)
+
+## Remediation Recommendations
+Sugerencias específicas de corrección:
+- Código o configuración que resuelve el problema
+- Alternativas si la corrección principal no es viable
+
+## Timeline
+- [Fecha]: Descubrimiento
+- [Fecha]: Report enviado al vendor
+- [Fecha]: Confirmación de recepción
+- [Fecha]: Corrección publicada (pendiente)
+
+## Researcher
+[Nombre o handle del investigador]
+[Email de contacto para comunicación segura]

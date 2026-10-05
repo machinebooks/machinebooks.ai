@@ -1,0 +1,5 @@
+configure, createVM, startVM, stopVM, isRunning,
+isGuestConnected, spawn, kill, writeStdin,
+isProcessRunning, setDebugLogging, mountPath,
+readFile, getSessionsDiskInfo, deleteSessionDirs,
+installSdk, createDiskImage, addApprovedOauthToken

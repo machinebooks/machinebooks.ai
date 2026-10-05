@@ -1,0 +1,27 @@
+import asyncio
+from pathlib import PurePosixPath
+
+async def fixture_pages():
+    yield {"items": ["owned-a"], "next_cursor": "second"}
+    yield {"items": ["owned-b"], "next_cursor": None}
+
+async def collect_fixture():
+    items = []
+    async for page in fixture_pages():
+        if not isinstance(page.get("items"), list):
+            raise ValueError("invalid items")
+        items.extend(page["items"])
+    return items
+
+assert asyncio.run(collect_fixture()) == ["owned-a", "owned-b"]
+root = PurePosixPath("/owned/fixture")
+candidate = PurePosixPath("/owned/fixture/input.json")
+outside = PurePosixPath("/owned/fixtures/input.json")
+assert candidate.is_relative_to(root)
+assert not outside.is_relative_to(root)
+assert ".." not in candidate.parts
+capabilities = {"read_fixture": True, "launch_process": False,
+                "publish_private_core": False}
+assert not capabilities["launch_process"]
+assert not capabilities["publish_private_core"]
+print("private contract fixture: PASS")

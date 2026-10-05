@@ -1,0 +1,7 @@
+[Fuentes]           [Pipeline]         [Almacén]         [Consulta]
+ Propuestas ──┐
+ Informes ────┤     Ingesta ──→ Extracción ──→ Etiquetado ──→ Qdrant
+ Notas ───────┤         │                                       │
+ Correos ─────┘    (Celery/Redis)                          API búsqueda
+                                                                │
+                                                     Interfaz lenguaje natural

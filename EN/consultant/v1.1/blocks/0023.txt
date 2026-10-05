@@ -1,0 +1,25 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+# The consultant asks before preparing a proposal
+result = answer_query(
+    "What approach did we use in ENS audits for healthcare "
+    "sector agencies? What problems did we encounter?",
+    identity, corpus_adapter, embedding_adapter, filter_adapter, model_adapter
+)
+
+print(result["answer"])
+# Declared historical response; not generated or independently validated by these fixtures:
+# "In healthcare sector ENS audits we identified three recurring
+#  patterns [Source 1]: the classification of clinical information
+#  systems requires specific analysis due to the nature of health
+#  data (high category in confidentiality dimension). The main
+#  documented problem [Source 3] was the difficulty of obtaining
+#  evidence from electronic health record systems, whose administrators
+#  prioritized availability over auditing. In the lesson learned from
+#  the 2024 project [Source 4], it is recommended to negotiate access
+#  to audit logs during the scoping phase, not during execution."
+
+print(f"\nSources consulted: {len(result['sources'])}")
+for s in result["sources"]:
+    print(f"  - {s['doc_type']} ({s['sector']}, {s['year']}) "
+          f"— score: {s['score']}")

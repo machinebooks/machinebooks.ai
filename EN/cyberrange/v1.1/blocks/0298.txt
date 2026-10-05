@@ -1,0 +1,39 @@
+# YAML: docker-compose.prod.yml; merge with the base file
+services:
+  backend:
+    volumes: ["./uploads:/app/uploads", "./backend/playbooks:/app/playbooks:ro"]
+  celery-worker:
+    build: ./backend
+    command: [celery, -A, backend.tasks, worker, --loglevel=info]
+    env_file: ./backend/.env
+    environment:
+      DATABASE_URL: "${DATABASE_URL:?complete escaped DSN required}"
+      REDIS_URL: "${REDIS_URL:?complete escaped DSN required}"
+    volumes: ["./uploads:/app/uploads", "./backend/playbooks:/app/playbooks:ro"]
+    depends_on:
+      db: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    networks: [cyberrange_net]
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: /api
+  nginx:
+    image: nginx:1.28-alpine
+    ports: ["${LISTEN_ADDRESS:-127.0.0.1}:${HTTPS_PORT:-10443}:443"]
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    depends_on: [backend, frontend]
+    networks: [cyberrange_net]
+  ollama:
+    image: "${OLLAMA_IMAGE:?set reviewed version or digest}"
+    profiles: [local-ai]
+    volumes: ["cyberrange_ollama_data:/root/.ollama"]
+    networks: [cyberrange_net]
+volumes:
+  cyberrange_ollama_data: {}
+# Only nginx publishes a loopback HTTPS port by default. Worker/data/model
+# services share the declared network. Cert/key, application readiness,
+# resource limits, backups and gateway adapters remain deployment inputs.

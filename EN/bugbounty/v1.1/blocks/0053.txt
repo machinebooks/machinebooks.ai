@@ -1,0 +1,5 @@
+1. The case proposes a prior resource alteration.
+2. Squirrel downloads and installs a new version.
+3. ASAR replacement may remove the old alteration.
+4. Events are sent to the executable of the corresponding version.
+5. A handler in the previous ASAR does not prove persistence in the new version.

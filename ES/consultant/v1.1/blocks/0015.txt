@@ -1,0 +1,10 @@
+Documentos  ──►  Ingestión  ──►  Qdrant (vectores + metadatos)
+    │                                      │
+    │                                      ▼
+    │                           Búsqueda semántica + filtros
+    │                                      │
+    │                                      ▼
+    └──────────────────────►  Claude API (síntesis con contexto)
+                                           │
+                                           ▼
+                                    Respuesta + fuentes

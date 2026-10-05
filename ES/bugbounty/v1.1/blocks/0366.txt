@@ -1,0 +1,16 @@
+// Capacidades demostradas desde dentro del proceso Riot
+// (solo verificacion de acceso, no explotacion real)
+
+HANDLE hGame = OpenProcess(PROCESS_ALL_ACCESS, FALSE, game_pid);
+// Resultado: handle valido (acceso completo al proceso del juego)
+
+BYTE buffer[256];
+ReadProcessMemory(hGame, game_base_addr, buffer, sizeof(buffer), NULL);
+// Resultado: lectura exitosa de memoria del juego
+
+LPVOID remote = VirtualAllocEx(hGame, NULL, 0x1000,
+                               MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+// Resultado: asignacion exitosa en espacio del juego
+
+// WriteProcessMemory y CreateRemoteThread tambien funcionan
+// No ejecutamos payloads reales en el proceso del juego

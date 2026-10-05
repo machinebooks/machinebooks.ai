@@ -1,0 +1,54 @@
+# Illustrative configuration; keys alone do not implement an engine or authorize actions.
+# audit_config.yaml — Multi-framework audit configuration
+frameworks:
+  iso27001:
+    name: "ISO/IEC 27001:2022"
+    controls_file: "frameworks/iso27001_annexA.json"
+    system_context: >
+      Certified ISO 27001 Lead Auditor. Evaluates Annex A controls
+      per the 2022 version of the standard. Considers the 93 controls
+      organized in 4 categories: organizational, people, physical,
+      and technological.
+    severity_mapping:
+      mandatory_control_missing: "high"
+      partial_implementation: "medium"
+      documentation_gap: "low"
+
+  ens:
+    name: "Esquema Nacional de Seguridad (ENS)"
+    controls_file: "frameworks/ens_controls.json"
+    system_context: >
+      ENS auditor with knowledge of RD 311/2022 security measures.
+      Evaluates according to system category (BASIC, MEDIUM, HIGH)
+      and differentiates organizational, operational, and
+      protection measures.
+    severity_mapping:
+      mandatory_control_missing: "high"
+      partial_implementation: "medium"
+      documentation_gap: "low"
+
+  dora:
+    name: "Digital Operational Resilience Act (DORA)"
+    controls_file: "frameworks/dora_requirements.json"
+    system_context: >
+      DORA specialist auditor. Evaluates five pillars: ICT risk
+      management, incident reporting, resilience testing, ICT
+      third-party management, and information sharing.
+      Context: EU financial entities.
+
+  ai_act:
+    name: "EU AI Regulation (AI Act)"
+    controls_file: "frameworks/ai_act_requirements.json"
+    system_context: >
+      AI Act compliance auditor. Evaluates AI system risk
+      classification, transparency requirements, training data
+      management, human oversight, and technical documentation.
+      Applies according to risk level.
+
+audit_settings:
+  triage_model: "claude-haiku-4-5"
+  evaluation_model: "claude-sonnet-4-6"
+  finding_model: "claude-sonnet-4-6"
+  max_documents_per_control: 5
+  max_tokens_per_evaluation: 2048
+  human_review_required: true  # NEVER disable

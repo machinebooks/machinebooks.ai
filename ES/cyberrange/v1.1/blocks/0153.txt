@@ -1,0 +1,6 @@
+# Didactic transactional contract; constraints handle concurrent membership/name conflicts.
+async def create_team(actor, raw, validator, access, store):
+    proposal = validator.team_create(raw)
+    scope = await access.authorized_team_creation(actor, proposal)
+    # Adapter locks membership, enforces scoped unique name/captain and rolls back on failure.
+    return await store.create_team_and_captain_atomic(scope, proposal)

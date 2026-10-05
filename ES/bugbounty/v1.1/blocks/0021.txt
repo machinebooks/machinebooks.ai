@@ -1,0 +1,112 @@
+#!/usr/bin/env python3
+"""Read Electron fuse wire V1 and collect bounded review observations."""
+import subprocess
+from pathlib import Path
+from dataclasses import dataclass, asdict
+
+SENTINEL = b"dL7pKGdnNz796PbbjQWNKmHXBZaB9tsX"
+FUSE_MAP = {
+    0: "RunAsNode",
+    1: "EnableCookieEncryption",
+    2: "EnableNodeOptionsEnvironmentVariable",
+    3: "EnableNodeCliInspectArguments",
+    4: "EnableEmbeddedAsarIntegrityValidation",
+    5: "OnlyLoadAppFromAsar",
+    6: "LoadBrowserProcessSpecificV8Snapshot",
+    7: "GrantFileProtocolExtraPrivileges",
+}
+
+@dataclass
+class FuseResult:
+    index: int
+    name: str
+    enabled: bool | None
+    state: str
+
+def extract_fuses(exe_path: Path) -> list[FuseResult]:
+    data = exe_path.read_bytes()
+    offset = data.find(SENTINEL)
+    if offset < 0:
+        return []
+    if data.find(SENTINEL, offset + len(SENTINEL)) >= 0:
+        raise ValueError("Multiple fuse wires require separate build analysis")
+    header = offset + len(SENTINEL)
+    if header + 2 > len(data):
+        raise ValueError("Truncated fuse header")
+    version, length = data[header:header + 2]
+    if version != 1 or length == 0:
+        raise ValueError("Unsupported or empty fuse wire")
+    start = header + 2
+    if start + length > len(data):
+        raise ValueError("Truncated fuse states")
+    states = {0x30: "disabled", 0x31: "enabled",
+              0x72: "removed", 0x90: "inherit"}
+    results = []
+    for index, value in enumerate(data[start:start + length]):
+        if value not in states:
+            raise ValueError("Unknown fuse state")
+        enabled = True if value == 0x31 else False if value == 0x30 else None
+        results.append(FuseResult(
+            index, FUSE_MAP.get(index, f"UnmappedFuse{index}"),
+            enabled, states[value],
+        ))
+    return results
+
+def check_directory_permissions(app_dir: Path) -> dict:
+    try:
+        result = subprocess.run(
+            ["icacls", str(app_dir)], capture_output=True,
+            text=True, timeout=10,
+        )
+        if result.returncode != 0:
+            return {"error": "ACL query failed",
+                    "returncode": result.returncode,
+                    "writable_by_user": None}
+        return {"install_location": str(app_dir),
+                "acl_output": result.stdout,
+                "writable_by_user": None,
+                "assessment": "Effective write permission not derived"}
+    except (OSError, subprocess.TimeoutExpired) as error:
+        return {"error": str(error), "writable_by_user": None}
+
+def check_asar(app_dir: Path) -> dict:
+    archive = app_dir / "resources" / "app.asar"
+    unpacked = app_dir / "resources" / "app"
+    return {
+        "asar_exists": archive.is_file(),
+        "asar_size": archive.stat().st_size if archive.is_file() else 0,
+        "app_dir_exists": unpacked.is_dir(),
+        "app_dir_coexists": archive.is_file() and unpacked.is_dir(),
+        "integrity_enforcement": "Not tested",
+    }
+
+def full_audit(exe_path: str) -> dict:
+    exe = Path(exe_path)
+    try:
+        fuses = extract_fuses(exe)
+        fuse_status = "observed" if fuses else "not_found"
+        fuse_error = None
+    except (OSError, ValueError) as error:
+        fuses, fuse_status, fuse_error = [], "error", str(error)
+    observations = {f.name: f.enabled for f in fuses}
+    signals = []
+    for name, review_value in [
+        ("RunAsNode", True),
+        ("EnableCookieEncryption", False),
+        ("EnableNodeOptionsEnvironmentVariable", True),
+        ("OnlyLoadAppFromAsar", False),
+        ("EnableEmbeddedAsarIntegrityValidation", False),
+    ]:
+        if name in observations and observations[name] is review_value:
+            signals.append(name)
+    return {
+        "application": exe.name,
+        "fuses": [asdict(f) for f in fuses],
+        "fuse_read_status": fuse_status,
+        "fuse_error": fuse_error,
+        "permissions": check_directory_permissions(exe.parent),
+        "asar": check_asar(exe.parent),
+        "configuration_signals": signals,
+        "risk_level": "NOT_SCORED",
+        "scope": "Static observations; no exploit or effective ACL proof",
+    }

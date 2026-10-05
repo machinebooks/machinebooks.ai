@@ -1,0 +1,4 @@
+# Idempotent start fixes the backend UTC window and checks readiness/approval
+async def start_exercise(actor, instance_id, api, request_id):
+    await api.require_ready_isolated_seeded_instance(actor, instance_id)
+    return await api.start_once(actor, instance_id, request_id)

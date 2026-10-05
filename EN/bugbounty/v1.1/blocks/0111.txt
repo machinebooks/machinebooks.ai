@@ -1,0 +1,18 @@
+def find_our_eprocess(phys_memory, system_eprocess_phys, our_pid):
+    """Traverses ActiveProcessLinks until our process is found."""
+    current_virt = phys_memory.read_qword(
+        system_eprocess_phys + OFFSET_ACTIVE_LINKS
+    )
+    visited = set()
+    while current_virt not in visited:
+        visited.add(current_virt)
+        # Convert virtual address to physical
+        # (requires resolving page tables or using another primitive)
+        eprocess_phys = virt_to_phys(current_virt - OFFSET_ACTIVE_LINKS)
+        pid = phys_memory.read_qword(eprocess_phys + OFFSET_PID)
+        if pid == our_pid:
+            return eprocess_phys
+        current_virt = phys_memory.read_qword(
+            eprocess_phys + OFFSET_ACTIVE_LINKS
+        )
+    return None

@@ -1,0 +1,60 @@
+#!/usr/bin/env python3
+"""Read bounded ASAR Pickle headers and list archive entries."""
+import json
+import struct
+from pathlib import Path
+
+def parse_asar_header(asar_path: str) -> dict:
+    path = Path(asar_path)
+    archive_size = path.stat().st_size
+    with path.open("rb") as stream:
+        prefix = stream.read(16)
+        if len(prefix) != 16:
+            raise ValueError("Truncated ASAR Pickle headers")
+        size_payload, header_size, header_payload, json_size = struct.unpack(
+            "<IIII", prefix
+        )
+        if size_payload != 4 or header_size < 8:
+            raise ValueError("Invalid ASAR size Pickle")
+        if header_payload != header_size - 4:
+            raise ValueError("Invalid ASAR header Pickle")
+        if header_size != 8 + ((json_size + 3) // 4) * 4:
+            raise ValueError("Invalid JSON length or Pickle alignment")
+        data_offset = 8 + header_size
+        if data_offset > archive_size:
+            raise ValueError("Header exceeds archive bounds")
+        raw = stream.read(json_size)
+        if len(raw) != json_size:
+            raise ValueError("Truncated header JSON")
+        header = json.loads(raw.decode("utf-8"))
+    if not isinstance(header, dict) or not isinstance(header.get("files"), dict):
+        raise ValueError("ASAR root must contain a files object")
+    return {"header_size": header_size, "json_size": json_size,
+            "data_offset": data_offset, "structure": header}
+
+def list_asar_files(asar_path: str) -> list[dict]:
+    header = parse_asar_header(asar_path)
+    files = []
+    def walk(node, path=""):
+        if not isinstance(node, dict):
+            raise ValueError("Invalid ASAR entry")
+        if "files" in node:
+            if not isinstance(node["files"], dict):
+                raise ValueError("Invalid ASAR directory")
+            for name, child in node["files"].items():
+                if name in ("", ".", "..") or "/" in name or "\\" in name:
+                    raise ValueError("Invalid ASAR entry name")
+                walk(child, f"{path}/{name}" if path else name)
+        else:
+            files.append({
+                "path": path, "offset": node.get("offset"),
+                "size": node.get("size"), "unpacked": node.get("unpacked", False),
+                "link": node.get("link"),
+                "executable": node.get("executable", False),
+                "has_integrity_metadata": "integrity" in node,
+            })
+    walk(header["structure"])
+    return files
+
+# These readers inspect structure; they do not verify runtime integrity.
+# Historical context: 847 entries and roughly 14 MB were attributed to Discord.

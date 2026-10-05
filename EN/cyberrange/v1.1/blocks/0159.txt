@@ -1,0 +1,6 @@
+class ScoreboardStats(BaseModel):
+    total_players: int     # Users who have participated
+    total_teams: int       # Teams with at least one member
+    max_score: int         # Maximum score (individual or team)
+    total_challenges: int  # Available challenges
+    total_flags_captured: int  # Total registered captures

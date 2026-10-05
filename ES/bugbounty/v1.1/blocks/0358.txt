@@ -1,0 +1,23 @@
+import winreg
+
+def read_session_p():
+    """Lee la entropy DPAPI de MobaXterm desde el registro."""
+    key_path = r"Software\Mobatek\MobaXterm"
+    try:
+        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path)
+        value, reg_type = winreg.QueryValueEx(key, "SessionP")
+        winreg.CloseKey(key)
+        # SessionP contiene entre 20 y 64 bytes de entropy
+        if isinstance(value, str):
+            entropy = value.encode("utf-8")
+        else:
+            entropy = value
+        print(f"[+] SessionP leido: {len(entropy)} bytes")
+        print(f"[+] Hex: {entropy.hex()}")
+        return entropy
+    except FileNotFoundError:
+        print("[-] Clave SessionP no encontrada")
+        return None
+    except PermissionError:
+        print("[-] Acceso denegado (esto no deberia ocurrir)")
+        return None

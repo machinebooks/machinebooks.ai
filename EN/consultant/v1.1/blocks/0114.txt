@@ -1,0 +1,58 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+from datetime import datetime
+
+def generate_progress_report(
+    project: ReportingProject,
+    updated_findings: list[dict],
+    period: str,
+    voice_prompt: str
+) -> str:
+    """Generates weekly/monthly progress report."""
+
+    # Classify findings by current status
+    resolved = [f for f in updated_findings
+                if f["status"] == "resolved"]
+    in_progress = [f for f in updated_findings
+                   if f["status"] == "in_progress"]
+    pending = [f for f in updated_findings
+               if f["status"] == "pending"]
+    blocked = [f for f in updated_findings
+               if f["status"] == "blocked"]
+
+    prompt = f"""Generate a progress report for the period
+{period}.
+
+PROJECT: {project.project_name}
+DATE: {datetime.now().strftime('%Y-%m-%d')}
+
+CURRENT STATUS:
+- Resolved: {len(resolved)} of {len(updated_findings)}
+- In progress: {len(in_progress)}
+- Pending: {len(pending)}
+- Blocked: {len(blocked)}
+
+BLOCKED FINDINGS:
+{chr(10).join(f"- {f['title']}: {f['block_reason']}"
+              for f in blocked)}
+
+FINDINGS RESOLVED IN THIS PERIOD:
+{chr(10).join(f"- {f['title']}" for f in resolved
+              if f.get('resolution_date', '').startswith(period[:7]))}
+
+INSTRUCTIONS:
+1. Length: 300-500 words.
+2. Open with overall progress percentage.
+3. Highlight period achievements.
+4. Alert on blockages with unblocking proposals.
+5. Indicate deviation risks vs. original roadmap.
+6. Close with actions required from the client (if any).
+7. Tone: informative and direct, without alarmism."""
+
+    response = client.messages.create(
+        model="claude-haiku-4-5",  # Haiku for brief reports
+        max_tokens=1024,
+        system=voice_prompt,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return response.content[0].text

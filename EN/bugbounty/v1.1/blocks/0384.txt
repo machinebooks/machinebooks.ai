@@ -1,0 +1,47 @@
+"""
+hunter_service_pricing.py -- Pricing model for
+AI-assisted security research services.
+Calculates competitive rates based on AI productivity.
+"""
+@dataclass
+class HunterServiceTier:
+    """Security research service tier."""
+    name: str
+    hours_per_month: int
+    targets_included: int
+    report_format: str          # basic, detailed, executive
+    ai_assisted: bool = True
+    
+    @property
+    def base_rate_hourly(self) -> float:
+        """Base hourly rate by tier."""
+        rates = {
+            "starter": 75,    # basic reports, web apps
+            "professional": 150,  # detailed reports, desktop + web
+            "enterprise": 250,    # executive reports, kernel + AI + desktop
+        }
+        return rates.get(self.name, 100)
+    
+    @property
+    def monthly_price(self) -> float:
+        """Monthly service price."""
+        return self.base_rate_hourly * self.hours_per_month
+    
+    @property
+    def effective_hourly_with_ai(self) -> float:
+        """Effective rate considering AI multiplier (4-5x)."""
+        if self.ai_assisted:
+            return self.base_rate_hourly * 4.5  # value delivered/hour
+        return self.base_rate_hourly
+
+# Service tiers
+tiers = [
+    HunterServiceTier("starter", 20, 3, "basic"),
+    HunterServiceTier("professional", 40, 8, "detailed"),
+    HunterServiceTier("enterprise", 60, 15, "executive"),
+]
+
+for tier in tiers:
+    print(f"{tier.name}: ${tier.monthly_price:,.0f}/month "
+          f"({tier.hours_per_month}h, {tier.targets_included} targets)")
+    print(f"  Effective AI value: ${tier.effective_hourly_with_ai:.0f}/h")

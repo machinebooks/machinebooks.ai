@@ -1,0 +1,34 @@
+# Finite outbox contract; no request-scoped DB session in background tasks
+from datetime import datetime, timedelta, timezone
+
+REQUIRED_EVENT_FIELDS = {"event_type", "actor_ref", "request_ref", "status", "category", "severity", "reason_code", "timestamp"}
+
+def record_audit(db,event):
+    if set(event) != REQUIRED_EVENT_FIELDS or event["status"] not in {"success", "failure", "pending"}:
+        raise ValueError("invalid minimized audit event")
+    occurred = datetime.fromisoformat(event["timestamp"].replace("Z", "+00:00"))
+    if occurred.tzinfo is None or occurred.utcoffset() is None:
+        raise ValueError("aware audit time required")
+    with db.transaction():
+        persisted=db.append_minimized_event(event,datetime.now(timezone.utc))
+        if (event["severity"] in {"security","critical"}
+            or event["event_type"]=="login_attempt" and event["status"]=="failure"
+            or event["category"]=="authorization" and event["status"]=="failure"):
+            db.enqueue_unique_security_review(persisted.id)
+        persisted_id = persisted.id
+    return persisted_id
+
+def review_security_event(db_factory,event_id):
+    with db_factory() as db:
+        event=db.get_event(event_id)
+        if event is None:
+            return {"status":"absent"}
+        cutoff=datetime.now(timezone.utc)-timedelta(minutes=15)
+        failures=db.count_authorized_login_failures(event,cutoff)
+        if failures>=10:
+            db.append_unique_review_signal(event_id,"repeated_login_failure",failures)
+        return {"status":"reviewed","possible_pattern":failures>=10}
+
+# Adapters enforce tenant scope, retention, uniqueness and durable dispatch.
+# A count is a possible pattern, not proof of an attack. This abbreviated
+# example does not implement all patterns, recursive logging or automatic bans.

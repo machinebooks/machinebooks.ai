@@ -1,0 +1,38 @@
+"""
+teams_jwt_decode.py -- Decodificacion del JWT skypetoken
+Extrae las claims del token sin verificar firma
+(la verificacion la hace el servidor de Microsoft).
+"""
+import base64
+import json
+
+def decode_jwt_payload(token):
+    """Decodificar payload de un JWT sin verificar firma."""
+    parts = token.split(".")
+    if len(parts) != 3:
+        print("[-] Token no es un JWT valido")
+        return None
+
+    # Decodificar payload (parte 2, index 1)
+    payload_b64 = parts[1]
+    # Anadir padding si es necesario
+    padding = 4 - len(payload_b64) % 4
+    if padding != 4:
+        payload_b64 += "=" * padding
+
+    payload_bytes = base64.urlsafe_b64decode(payload_b64)
+    claims = json.loads(payload_bytes)
+
+    print("[+] Claims del skypetoken:")
+    print(f"    skypeid: {claims.get('skypeid', 'N/A')}")
+    print(f"    exp:     {claims.get('exp', 'N/A')}")
+    print(f"    scope:   {claims.get('scope', 'N/A')}")
+    print(f"    iss:     {claims.get('iss', 'N/A')}")
+
+    return claims
+
+# Output:
+# skypeid: live:<REDACTED>
+# exp: <timestamp 22+ horas en el futuro>
+# scope: 956 (acceso completo)
+# iss: https://api.aps.skype.com/v1/

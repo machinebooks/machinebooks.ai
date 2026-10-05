@@ -1,0 +1,86 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+class ComplianceMatrixGenerator:
+    """Generates compliance matrices control by control."""
+
+    def __init__(self):
+        self.client = anthropic.Anthropic()
+        self.model = "claude-sonnet-4-6"
+
+    def generate_control_assessment(
+        self, control: dict, evidence: dict, context: str
+    ) -> dict:
+        """Evaluates an individual control against the evidence."""
+        description = evidence.get("description")
+        if not isinstance(description, str) or not description.strip():
+            return {
+                "control_id": control["id"], "status": "not_evaluated",
+                "evidence_summary": "", "gap_description": None,
+                "risk_level": None, "remediation": "Collect evidence for review",
+                "effort_hours": None, "priority": None,
+            }
+        response = self.client.messages.create(
+            model=self.model,
+            max_tokens=1024,
+            system="""You are an auditor evaluating a security
+control. Respond ONLY in JSON with this structure:
+{
+  "control_id": "...",
+  "status": "compliant|partially_compliant|non_compliant|not_evaluated",
+  "evidence_summary": "...",
+  "evidence_quotes": ["exact quotes"],
+  "gap_description": "..." or null,
+  "risk_level": "high|medium|low",
+  "remediation": "...",
+  "effort_hours": N,
+  "priority": "quick_win|medium_term|long_term"
+}
+If evidence is insufficient, use not_evaluated and leave risk,
+priority and effort null. Non-compliance requires sufficient evidence.""",
+            messages=[{
+                "role": "user",
+                "content": f"""CONTROL:
+ID: {control['id']}
+Title: {control['title']}
+Description: {control['description']}
+Compliance criteria: {control['criteria']}
+
+CLIENT EVIDENCE:
+{evidence.get('description', 'No evidence provided')}
+
+ASSESSMENT CONTEXT:
+{context}
+
+Evaluate this control."""
+            }]
+        )
+        # Parse JSON response
+        import json
+        result = json.loads(response.content[0].text)
+        if not isinstance(result, dict) or result.get("status") not in ['compliant', 'partially_compliant', 'non_compliant', 'not_evaluated']:
+            raise ValueError("Invalid assessment status; human review required")
+        if result["status"] == "not_evaluated":
+            for key in ("gap_description", "risk_level", "effort_hours", "priority"):
+                result[key] = None
+        else:
+            quotes = result.get("evidence_quotes")
+            if not isinstance(quotes, list) or not quotes or any(
+                not isinstance(q, str) or not q.strip() or q not in description
+                for q in quotes
+            ):
+                raise ValueError("Assessment requires verifiable evidence quotes")
+        result["control_id"] = control["id"]
+        return result
+
+    def generate_matrix(
+        self, controls: list[dict], evidences: dict, context: str
+    ) -> list[dict]:
+        """Generates the complete matrix, control by control."""
+        results = []
+        for control in controls:
+            evidence = evidences.get(control["id"], {})
+            assessment = self.generate_control_assessment(
+                control, evidence, context
+            )
+            results.append(assessment)
+        return results

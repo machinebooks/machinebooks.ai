@@ -1,0 +1,30 @@
+# Authentication adapter checks Origin, resource and single-use ticket before accept
+import asyncio
+from contextlib import aclosing
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+
+def deployment_router(bus, access):
+    router = APIRouter()
+    @router.websocket("/ws/deploy/{deployment_id}")
+    async def stream(websocket: WebSocket, deployment_id: int):
+        grant = await access.authenticate_and_accept_once(websocket, deployment_id)
+        if grant is None:
+            return
+        try:
+            async with aclosing(bus.subscribe(grant.authorized_topic)) as events:
+                while True:
+                    if not await access.still_authorized(grant):
+                        await websocket.close(code=1008)
+                        return
+                    event = await asyncio.wait_for(anext(events), timeout=20)
+                    if not await access.still_authorized(grant):
+                        await websocket.close(code=1008)
+                        return
+                    await asyncio.wait_for(websocket.send_json(event), timeout=5)
+        except asyncio.TimeoutError:
+            await websocket.close(code=1001)
+        except WebSocketDisconnect:
+            pass
+    return router
+
+# Idle timeout closes this abbreviated stream; clients recover from the record.

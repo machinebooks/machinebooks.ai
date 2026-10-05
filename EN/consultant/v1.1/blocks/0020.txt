@@ -1,0 +1,21 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# The model adapter is omitted; malformed filters never broaden a query.
+import json
+
+def extract_search_filters(query, model_adapter):
+    response = model_adapter.extract_filters(query)
+    if response.get("stop_reason") != "end_turn":
+        raise ValueError("Incomplete filter extraction")
+    filters = json.loads(response["text"])
+    allowed = {"tipo": {"propuesta", "informe", "metodologia", "leccion"}, "sector": {"publico", "financiero", "industrial", "tecnologico"}, "framework": {"ISO_27001", "ENS", "DORA", "NIS2", "AI_Act"}, "resultado": {"ganada", "perdida", "cancelada"}}
+    if not isinstance(filters, dict) or set(filters) - set(allowed) - {"year_min", "year_max"}:
+        raise ValueError("Unknown filter fields")
+    for key, value in filters.items():
+        if key in ("year_min", "year_max"):
+            if type(value) is not int or not 1900 <= value <= 9999:
+                raise ValueError("Invalid year filter")
+        elif type(value) is not str or value not in allowed[key]:
+            raise ValueError("Invalid canonical filter enum")
+    if filters.get("year_min", 1900) > filters.get("year_max", 9999):
+        raise ValueError("Reversed year filter")
+    return filters

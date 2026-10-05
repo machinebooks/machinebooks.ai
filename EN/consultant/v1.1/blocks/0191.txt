@@ -1,0 +1,38 @@
+# Illustrative configuration; keys alone do not implement an engine or authorize actions.
+# Augmented architecture consulting stack
+analysis_tools:
+  code_analysis:
+    agent: "claude-sonnet-4-6"
+    input: "repository metadata (structure, dependencies, metrics)"
+    output: "dependency map, technical debt, migration complexity"
+    typical_cost: "$8-15 per project"
+
+  technology_evaluation:
+    agent: "claude-sonnet-4-6"
+    input: "alternatives + weighted criteria + client context"
+    output: "evaluation matrix with justifications"
+    typical_cost: "$5-10 per evaluation"
+
+  effort_estimation:
+    agent: "claude-opus-4-6"
+    input: "service + complexity + project history"
+    output: "three-point estimate with risk factors"
+    typical_cost: "$15-25 per project"
+
+  report_generation:
+    agent: "claude-sonnet-4-6"
+    input: "findings + template + context"
+    output: "report draft by sections"
+    typical_cost: "$30-50 per report"
+
+human_validation:
+  - "Lead architect validates each output before including in deliverable"
+  - "Double-check with static analysis tools (SonarQube, dependency-check)"
+  - "Stakeholder interviews for non-technical factors"
+  - "Cost data review against client's actual contracts"
+
+confidentiality:
+  - "Metadata without personal data to API"
+  - "Anonymized snippets for pattern analysis"
+  - "Data residency in European region"
+  - "No complete source code leaves the local environment"

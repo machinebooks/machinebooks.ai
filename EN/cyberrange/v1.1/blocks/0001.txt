@@ -1,0 +1,9 @@
+┌───────────────────────────────────────────────────────┐
+│ Interface: topology, noVNC/RFB, Xterm/PTY and metrics │
+│ ↓ API: identity, resource permission and Jobs         │
+│ ↓ Runner: approved catalog, limits and receipts       │
+│ Store: intent, ownership and evidence                 │
+│ Proxmox: tasks and resource observations              │
+│ Broker/cache: transport and declared validity         │
+│ Optional AI: proposal and independent validation      │
+└───────────────────────────────────────────────────────┘

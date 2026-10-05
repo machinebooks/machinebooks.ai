@@ -1,0 +1,17 @@
+# Optional text generation: proposal only, configured API and schema adapters
+import asyncio
+import json
+
+async def generate_exercise_scenario(actor, description, profile, text_service, adapter):
+    if not isinstance(description,str) or not 1<=len(description)<=4000:
+        raise ValueError("invalid description")
+    context=await adapter.authorized_minimized_profile(actor,profile)
+    prompt=json.dumps({"description":description,"profile":context},allow_nan=False)
+    raw=await asyncio.wait_for(text_service.generate(prompt),timeout=60)
+    if not isinstance(raw,str) or len(raw.encode("utf-8"))>65536:
+        raise ValueError("invalid proposal size")
+    proposal=json.loads(raw)
+    await adapter.validate_complete_schema_catalog_objectives(proposal)
+    return await adapter.store_proposal(actor,proposal,approval_ref=None)
+
+# No resources are created. Approval, owned deployment and receipts are separate.

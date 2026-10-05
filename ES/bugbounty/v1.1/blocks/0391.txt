@@ -1,0 +1,17 @@
+# Configurar la API key de Anthropic (para Claude)
+export ANTHROPIC_API_KEY="<TU_API_KEY>"
+
+# Levantar todos los servicios
+docker-compose up -d
+
+# Verificar que los contenedores están corriendo
+docker-compose ps
+
+# Acceder al contenedor de análisis
+docker exec -it hunter-lab-analysis-1 bash
+
+# Verificar las herramientas instaladas
+r2 -v                    # radare2
+python3 -c "import pefile; print('pefile OK')"
+python3 -c "import capstone; print('capstone OK')"
+python3 -c "import anthropic; print('anthropic OK')"

@@ -1,0 +1,16 @@
+# Didactic contract: reconcile candidates before any deletion
+async def orphan_candidates(inventory, live_resources):
+    # Include stopped, failed and cleanup-pending rows, not only running ones.
+    known = {(r["cluster_id"], r["resource_id"]): r for r in inventory}
+    candidates = []
+    for resource in live_resources:
+        key = (resource["cluster_id"], resource["resource_id"])
+        if key in known or resource.get("template"):
+            continue
+        # A name prefix is only a search hint, never proof of ownership.
+        if resource.get("name", "").startswith("cr-"):
+            candidates.append({"resource": resource, "status": "ownership_unverified"})
+    return candidates
+
+# An operator or verified ownership registry must authorize teardown.
+# Use cleanup_workzone's confirmed-removal contract; retain unresolved rows.

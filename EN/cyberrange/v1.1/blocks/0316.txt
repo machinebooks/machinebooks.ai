@@ -1,0 +1,26 @@
+# YAML: proposed private catalog contract; creates no resources by itself
+digital_twin:
+  status: proposal
+  source_model_ref: approved-redacted-infrastructure-model
+  approval_ref: null
+  labels: {ground_truth: independently_reviewed, coverage: pending}
+  networks:
+    corporate: {lease_ref: null, candidate_subnet: 10.10.10.0/24, routes: []}
+    dmz: {lease_ref: null, candidate_subnet: 10.10.20.0/24, routes: []}
+    ot: {lease_ref: null, candidate_subnet: 10.10.30.0/24, routes: []}
+  hosts:
+    - {id: dc, template_ref: approved-ad-template, network: corporate, ip: 10.10.10.10}
+    - {id: web, template_ref: approved-web-template, network: dmz, ip: 10.10.20.10}
+    - {id: workstation, template_ref: approved-workstation-template, network: corporate, ip: 10.10.10.50}
+  objectives:
+    - {id: obj-1, objective_ref: approved-detection-objective, evidence_required: true}
+  resource_limits: {max_hosts: 3, timeout_seconds: 7200}
+  required_checks:
+    - actor_instance_authorization
+    - template_digest_and_supported_version
+    - resource_and_network_leases
+    - no_production_credentials_or_data
+    - explicit_lab_routes_and_deny_management_egress
+    - objective_solvability_and_independent_labels
+    - confirmed_cleanup_receipt
+# CWE and ATT&CK references classify a verified objective; they do not prove equivalence.

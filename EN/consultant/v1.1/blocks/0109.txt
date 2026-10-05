@@ -1,0 +1,75 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+from pptx import Presentation
+from pptx.util import Inches, Pt
+from pptx.enum.text import PP_ALIGN
+
+def generate_executive_presentation(
+    project: ReportingProject,
+    executive_summary: str,
+    top_findings: list[Finding],
+    prioritized_recommendations: str,
+    template_pptx: str,
+    output_path: str
+) -> str:
+    """Generates 12-15 slide executive presentation."""
+
+    prs = Presentation(template_pptx)
+
+    # Slide 1: Title
+    slide = prs.slides.add_slide(prs.slide_layouts[0])
+    slide.shapes.title.text = project.project_name
+    slide.placeholders[1].text = (
+        f"{project.client} | {project.end_date}"
+    )
+
+    # Slide 2: Executive summary
+    slide = prs.slides.add_slide(prs.slide_layouts[1])
+    slide.shapes.title.text = "Executive summary"
+    # Truncate to first 3 paragraphs for the slide
+    paragraphs = executive_summary.split("\n\n")[:3]
+    body = slide.placeholders[1]
+    body.text = "\n\n".join(paragraphs)
+
+    # Slide 3: Findings distribution
+    slide = prs.slides.add_slide(prs.slide_layouts[1])
+    slide.shapes.title.text = "Findings by severity"
+    count = {}
+    for f in project.findings:
+        count[f.severity.value] = count.get(f.severity.value, 0) + 1
+    body = slide.placeholders[1]
+    body.text = "\n".join(
+        f"{sev.upper()}: {n} findings" for sev, n in count.items()
+    )
+
+    # Slides 4-8: Top findings (one per slide)
+    for f in top_findings[:5]:
+        slide = prs.slides.add_slide(prs.slide_layouts[1])
+        slide.shapes.title.text = f.title
+        body = slide.placeholders[1]
+        body.text = (
+            f"Severity: {f.severity.value.upper()}\n\n"
+            f"{f.description}\n\n"
+            f"Impact: {f.business_impact}\n\n"
+            f"Recommendation: {f.recommendation}"
+        )
+
+    # Slide 9: Summarized roadmap
+    slide = prs.slides.add_slide(prs.slide_layouts[1])
+    slide.shapes.title.text = "Implementation roadmap"
+    body = slide.placeholders[1]
+    body.text = prioritized_recommendations[:1500]  # Summary
+
+    # Final slide: Next steps
+    slide = prs.slides.add_slide(prs.slide_layouts[1])
+    slide.shapes.title.text = "Next steps"
+    body = slide.placeholders[1]
+    body.text = (
+        "1. Validate findings with technical teams (week 1)\n"
+        "2. Prioritize recommendations with budget (week 2)\n"
+        "3. Assign owners and timelines (week 3)\n"
+        "4. Action plan kickoff session (week 4)"
+    )
+
+    prs.save(output_path)
+    return output_path

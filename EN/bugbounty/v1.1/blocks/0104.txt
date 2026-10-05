@@ -1,0 +1,28 @@
+import win32com.client
+import threading
+
+anim = win32com.client.Dispatch(
+    "{756E6C18-79CC-3842-9E47-7C80011D303A}"
+)
+anim.init(10, 10)
+
+def add_remove_loop():
+    """Adds and removes layers in a fast loop."""
+    for _ in range(1000):
+        try:
+            layer = anim.CreateLayer()
+            anim.AddLayer(layer)
+            anim.RemoveLayer(layer)
+        except Exception:
+            pass  # Ignore individual errors
+
+# Launch 4 concurrent threads
+threads = []
+for _ in range(4):
+    t = threading.Thread(target=add_remove_loop)
+    threads.append(t)
+    t.start()
+
+for t in threads:
+    t.join()
+# Result: crash due to internal list corruption

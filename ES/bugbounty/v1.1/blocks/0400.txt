@@ -1,0 +1,7 @@
+code = 0x22E003
+device_type = (code >> 16) & 0xFFFF
+access = (code >> 14) & 0x3
+function = (code >> 2) & 0xFFF
+method = code & 0x3
+assert (device_type, access, function, method) == (0x22, 3, 0x800, 3)
+print(device_type, access, function, method)

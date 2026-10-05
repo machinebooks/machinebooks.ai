@@ -1,0 +1,6 @@
+# Compile the proxy DLL in the container
+docker exec aegis-security-lab \
+    x86_64-w64-mingw32-gcc -shared \
+    -o /lab/results/VERSION.dll \
+    /lab/scripts/proxy_version.c \
+    -Wl,--enable-stdcall-fixup

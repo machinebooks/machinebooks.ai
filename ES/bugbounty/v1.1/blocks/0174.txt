@@ -1,0 +1,23 @@
+"UserLocalConfigStore"
+{
+    "Software"
+    {
+        "Valve"
+        {
+            "Steam"
+            {
+                "ConnectCache"
+                {
+                    "<steam_id>"    "<session_token_hex>"
+                }
+                "Accounts"
+                {
+                    "<username>"
+                    {
+                        "SteamID"   "<steam_id_64>"
+                    }
+                }
+            }
+        }
+    }
+}

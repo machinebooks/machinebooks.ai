@@ -1,0 +1,9 @@
+candidate_ioctls = {
+    0x222400, 0x222404, 0x222408,
+    0x22240C, 0x222410, 0x222414,
+}
+matched_candidates = candidate_ioctls & set(found)
+if matched_candidates:
+    print("Candidate values present:",
+          [hex(value) for value in sorted(matched_candidates)])
+# Values are not attributed to a CVE or confirmed as reachable handlers.

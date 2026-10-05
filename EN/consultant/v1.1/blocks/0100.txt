@@ -1,0 +1,40 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+def generate_executive_summary(
+    gaps: list[GapFinding],
+    roadmap: list[RemediationAction],
+    org_profile: str,
+) -> str:
+    """Generates executive summary with Claude Opus."""
+    client = anthropic.Anthropic()
+
+    # Prepare data for synthesis
+    gap_summary = _format_gap_summary(gaps)
+    roadmap_summary = _format_roadmap_summary(roadmap)
+
+    response = client.messages.create(
+        model="claude-opus-4-6",
+        max_tokens=4096,
+        system="""You are a senior security and compliance consultant
+with 20 years of experience. Draft an executive summary for
+the organization's management. Tone: direct, without alarmism
+but without minimizing. Include: current position, main risks,
+estimated investment, timeline, and expected benefit.
+Maximum 2 pages.""",
+        messages=[{"role": "user", "content": f"""
+Organization profile: {org_profile}
+
+GAP SUMMARY:
+{gap_summary}
+
+PROPOSED REMEDIATION ROADMAP:
+{roadmap_summary}
+
+Generate an executive summary that includes:
+1. Overall compliance position (% per framework)
+2. The 5 most relevant risks and their potential impact
+3. Total estimated investment (person-days and timeline)
+4. Strategic recommendation: where to start and why
+5. What happens if no action is taken (cost of inaction)"""}],
+    )
+    return response.content[0].text

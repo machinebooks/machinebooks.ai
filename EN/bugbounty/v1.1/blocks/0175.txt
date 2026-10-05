@@ -1,0 +1,21 @@
+C:\Program Files (x86)\Steam\
+├── BUILTIN\Users: (F) FullControl             ← ALL WRITABLE
+├── BUILTIN\Users: (OI)(CI)(IO)(F) Inheritance ← Children inherit FullControl
+│
+├── bin\                                        ← WRITABLE (inherited)
+│   ├── SteamService.dll                        ← WRITABLE
+│   ├── SteamService.exe                        ← WRITABLE
+│   ├── secure_desktop_capture.exe              ← WRITABLE
+│   ├── drivers.exe                             ← WRITABLE
+│   └── service_current_versions.vdf            ← WRITABLE
+│
+├── config\                                     ← WRITABLE (inherited)
+│   ├── config.vdf                              ← Session tokens
+│   └── loginusers.vdf                          ← Registered users
+│
+└── ssfn*                                       ← 2FA tokens (WRITABLE)
+
+C:\Program Files (x86)\Common Files\Steam\
+├── BUILTIN\Users: (RX) Read/Execute only       ← PROTECTED
+├── steamservice.exe                            ← Read-only
+└── SteamService.dll                            ← Read-only

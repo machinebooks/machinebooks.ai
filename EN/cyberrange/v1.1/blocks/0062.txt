@@ -1,0 +1,32 @@
+# Ordered interface-rule contract: first matching rule applies
+# This builds a plan. The adapter must reserve ownership, atomically
+# install exactly this order, apply it, read it back and test traffic.
+def workzone_rules(network_cidr, internet_enabled=False, management_cidrs=()):
+    import ipaddress
+    network = ipaddress.ip_network(network_cidr, strict=True)
+    rules = []
+    for cidr in management_cidrs:
+        target = ipaddress.ip_network(cidr, strict=True)
+        if target.version != network.version or target.overlaps(network):
+            raise ValueError("invalid management boundary")
+        rules.append({"action": "block", "source": str(network),
+                      "destination": str(target), "purpose": "management_boundary"})
+    rules.append({"action": "pass", "source": str(network),
+                  "destination": str(network), "purpose": "intra_workzone"})
+    if internet_enabled:
+        if not management_cidrs:
+            raise ValueError("explicit management boundaries required")
+        # An adapter must also exclude other workzones and unauthorized routes.
+        rules.append({"action": "pass", "source": str(network),
+                      "destination": "authorized_egress", "purpose": "egress"})
+    rules.append({"action": "block", "source": "any",
+                  "destination": "any", "purpose": "default_deny"})
+    return rules
+
+def configure_workzone(adapter, workzone):
+    rules = workzone_rules(workzone.network_cidr, workzone.internet_enabled,
+                           workzone.management_cidrs)
+    receipt = adapter.replace_owned_interface_rules(workzone.id, rules)
+    if receipt.get("applied") is not True or receipt.get("ordered_rules") != rules:
+        raise RuntimeError("firewall configuration unconfirmed")
+    return receipt

@@ -1,0 +1,21 @@
+// Didactic partial loading with explicit section errors and final cleanup.
+export async function loadDashboardData(api,view) {
+  view.setLoading(true);
+  view.setErrors({});
+  try {
+    const results=await Promise.allSettled([
+      api.getDashboardStats(),api.getRecentActivity(),api.getSystemHealth()
+    ]);
+    const errors={};
+    for(const [index,name] of ['stats','activity','health'].entries()) {
+      const result=results[index];
+      if(result.status==='fulfilled') {
+        try {view.setSection(name,view.validateSection(name,result.value));}
+        catch {view.setSection(name,null);errors[name]='Respuesta inválida';}
+      } else {view.setSection(name,null);errors[name]='No disponible';}
+    }
+    view.setErrors(errors);
+  } finally {view.setLoading(false);}
+}
+// API wrapper provides deadlines/cancellation; view guards stale request IDs.
+// Missing health/activity stays unknown instead of a fictional healthy/empty state.

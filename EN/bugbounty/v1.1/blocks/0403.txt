@@ -1,0 +1,33 @@
+from datetime import datetime, timezone
+import hashlib
+from pathlib import PureWindowsPath
+
+def is_below(path, root):
+    path_parts = PureWindowsPath(path).parts
+    root_parts = PureWindowsPath(root).parts
+    return tuple(p.casefold() for p in path_parts[:len(root_parts)]) == (
+        tuple(p.casefold() for p in root_parts)
+    ) and len(path_parts) > len(root_parts)
+
+exports = [
+    {"ordinal": 7, "name": None, "forwarder": None},
+    {"ordinal": 8, "name": "Fixture", "forwarder": "fixture_base.Fixture"},
+]
+assert exports[0]["name"] is None
+assert exports[1]["forwarder"] == "fixture_base.Fixture"
+assert is_below(r"C:\Lab\module.dll", r"C:\Lab")
+assert not is_below(r"C:\Laboratory\module.dll", r"C:\Lab")
+imports = ["fixture_base.dll", "api-ms-win-core-file-l1-1-0.dll"]
+candidates = [{"name": name, "observed_load": False} for name in imports]
+assert all(not row["observed_load"] for row in candidates)
+sample = b"owned synthetic fixture"
+snapshot = {
+    "observed_at_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+    "sha256": hashlib.sha256(sample).hexdigest(),
+    "kind": "snapshot",
+    "effective_acl_verified": False,
+    "compromise_verdict": None,
+}
+assert snapshot["observed_at_utc"].endswith("Z")
+assert snapshot["compromise_verdict"] is None
+print("load observation fixture: PASS")

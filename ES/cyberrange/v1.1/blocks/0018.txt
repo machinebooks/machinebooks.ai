@@ -1,0 +1,6 @@
+# YAML: proposed workflow, not historical proof of implemented tests
+planning: [approved_objectives, acceptance_criteria, declared_scope]
+development: [implementation, independent_review, material_local_tests]
+integration: [authorized_resources, end_to_end_receipts, confirmed_cleanup]
+closure: [evidence_coverage, pending_findings, human_acceptance]
+# Use project instructions compatible with the chosen assistant. No remote CI implied.

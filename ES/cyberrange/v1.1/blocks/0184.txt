@@ -1,0 +1,8 @@
+┌────────────────────────────────────────────────────────────┐
+│ Instructor → catálogo, autorización y programación         │
+│ ↓ Worker con lease → ejecutor del guest propio             │
+│ ↓ Salida acotada → WebSocket autorizado                    │
+│ ↓ AttackLog → evidencia observada y cobertura              │
+│ ↓ Audit + Score → según objetivo verificado                │
+│ Equipo azul: señales autorizadas para detectar y responder │
+└────────────────────────────────────────────────────────────┘

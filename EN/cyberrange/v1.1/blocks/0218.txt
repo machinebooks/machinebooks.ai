@@ -1,0 +1,93 @@
+# Didactic task ownership and reviewed-label contracts.
+import asyncio
+import time
+
+class PurpleTeamOrchestrator:
+    def __init__(self,adapter,red_agent,blue_assistant,ttl_seconds=3600):
+        if type(ttl_seconds) is not int or not 1<=ttl_seconds<=28800:
+            raise ValueError("invalid_ttl")
+        self.adapter=adapter;self.red_agent=red_agent;self.blue=blue_assistant
+        self.deadline=time.monotonic()+ttl_seconds
+        self.stop=asyncio.Event();self.tasks=[];self.monitor_task=None
+
+    async def start_exercise(self):
+        if self.tasks or self.stop.is_set():
+            raise ValueError("lifecycle_already_started")
+        await self.adapter.require_approved_exercise()
+        self.tasks=[asyncio.create_task(self._red_loop()),asyncio.create_task(self._blue_loop())]
+        self.monitor_task=asyncio.create_task(self._supervise())
+        return {"status":"running","task_count":len(self.tasks)}
+
+    async def _supervise(self):
+        reason="completed"
+        try:
+            async with asyncio.timeout(max(0,self.deadline-time.monotonic())):
+                await asyncio.gather(*self.tasks)
+        except TimeoutError:
+            reason="deadline"
+        except asyncio.CancelledError:
+            reason="cancelled"
+        except Exception:
+            reason="task_failed"
+        finally:
+            self.stop.set()
+            for task in self.tasks:task.cancel()
+            try:
+                async with asyncio.timeout(60):
+                    await asyncio.gather(*self.tasks,return_exceptions=True)
+                    receipt=await self.adapter.cancel_and_join_owned_remote_tasks()
+            except TimeoutError:
+                receipt={"all_confirmed":False,"reason":"stop_timeout"}
+            if receipt.get("all_confirmed") is not True:
+                await self.adapter.retain_pending_inventory(receipt)
+                return {"status":"stop_pending","reason":reason,"receipt":receipt}
+            return {"status":"stopped","reason":reason,"receipt":receipt}
+
+    async def _red_loop(self):
+        while not self.stop.is_set() and time.monotonic()<self.deadline:
+            request=await self.adapter.next_approved_request()
+            if request is None:
+                return
+            result=await self.red_agent.execute_step(request)
+            await self.adapter.record_process_and_objective_separately(result)
+            try:await asyncio.wait_for(self.stop.wait(),timeout=30)
+            except TimeoutError:pass
+
+    async def _blue_loop(self):
+        while not self.stop.is_set() and time.monotonic()<self.deadline:
+            alert_ids=await self.adapter.next_authorized_alert_ids(limit=20)
+            for alert_id in alert_ids:
+                if self.stop.is_set():return
+                proposal=await self.blue.analyze_alert(alert_id)
+                await self.adapter.deliver_reviewed_blue_proposal(proposal)
+            try:await asyncio.wait_for(self.stop.wait(),timeout=5)
+            except TimeoutError:pass
+
+    async def stop_exercise(self):
+        self.stop.set()
+        for task in self.tasks:task.cancel()
+        if self.monitor_task is None:
+            return {"status":"not_started"}
+        try:
+            return await asyncio.wait_for(asyncio.shield(self.monitor_task),65)
+        except TimeoutError:
+            return {"status":"stop_pending","reason":"supervisor_timeout"}
+
+    def generate_labeled_dataset(self,observations,reviewed_labels):
+        records=[]
+        for observation in observations:
+            truth=reviewed_labels.get(observation["id"])
+            if truth is None:
+                label="unknown";provenance=None
+            else:
+                label=truth["label"];provenance=truth["review_id"]
+                if label not in ("benign","malicious") or not provenance:
+                    raise ValueError("invalid_reviewed_label")
+            records.append({"event_id":observation["id"],
+                "timestamp":observation["timestamp"],"minimized_data":observation["data"],
+                "label":label,"label_provenance":provenance})
+        return records
+
+# Observation IDs, UTC timestamps and redaction come from authenticated adapters.
+# Keep ground truth separate from agent inputs; source != red is not benign.
+# Dataset release additionally checks lawful purpose, retention and group splits.

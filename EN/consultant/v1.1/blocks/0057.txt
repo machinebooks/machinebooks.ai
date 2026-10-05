@@ -1,0 +1,42 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+PROMPT_CONTRADICCIONES = """Analyze the following RFP looking for
+internal contradictions between sections.
+
+Types of contradictions to look for:
+1. Inconsistent deadlines or dates between sections
+2. Amounts or penalties that differ
+3. Experience or profile requirements with different values
+4. Evaluation criteria that sum to more or less than 100
+5. Contradictory obligations (e.g., "maximum 3 profiles" vs
+   "the minimum team will include 5 people")
+
+For each contradiction found, indicate:
+- Contradictory element
+- Version A: text and page
+- Version B: text and page
+- Severity: high (may cause exclusion), medium (may cause
+  a claim), low (minor ambiguity)
+- Recommendation: whether to request formal clarification or
+  interpret conservatively
+
+If you don't find contradictions, state it explicitly."""
+
+def detectar_contradicciones(texto_rfp: str) -> dict:
+    """Searches for internal contradictions in the RFP."""
+    mensaje = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=3000,
+        system="You are a legal analyst specializing in tender "
+               "documents. Your role is to detect internal inconsistencies "
+               "that could generate contractual risk.",
+        messages=[{
+            "role": "user",
+            "content": f"{PROMPT_CONTRADICCIONES}\n\n"
+                       f"TEXT:\n{texto_rfp}"
+        }]
+    )
+    return {
+        "contradicciones": mensaje.content[0].text,
+        "tokens": mensaje.usage.input_tokens + mensaje.usage.output_tokens
+    }

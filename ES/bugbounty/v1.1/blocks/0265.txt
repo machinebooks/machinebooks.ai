@@ -1,0 +1,14 @@
+Funciones de acceso a memoria fisica:
+  ASIO_MapMem, ASIO_UnmapMem, MapPhysToLin
+  AllocatePhysMemory, FreePhysMemory, Dump_PhysMem
+  Read_Mem_Byte, Write_Mem_Byte
+
+Funciones de acceso a MSR:
+  ASIO_ReadMSR, ASIO_WriteMSR, Read_MSR, Write_MSR
+
+Funciones de acceso a I/O:
+  ASIO_InPortB, ASIO_OutPortB
+  Read_Io_Byte, Write_Io_Byte
+
+Funciones de PCI:
+  Read_PCI_Byte, Write_PCI_Byte

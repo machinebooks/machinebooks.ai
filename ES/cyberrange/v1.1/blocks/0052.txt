@@ -1,0 +1,19 @@
+# Per-process monotonic cooldown example; a shared fenced owner remains necessary.
+import asyncio
+import time
+
+class SyncCooldown:
+    def __init__(self):
+        self.last_completed = {}
+        self.lock = asyncio.Lock()
+    async def run(self, key, interval_seconds, operation):
+        if not 0 < interval_seconds <= 3600:
+            raise ValueError("invalid interval")
+        async with self.lock:
+            previous = self.last_completed.get(key)
+            if previous is not None and time.monotonic()-previous < interval_seconds:
+                return {"status": "cooldown"}
+            result = await operation()
+            self.last_completed[key] = time.monotonic()
+            return {"status": "completed", "result": result}
+# Failures do not advance last_completed. This lock coordinates only one process.

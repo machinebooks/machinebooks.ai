@@ -1,0 +1,44 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+from anthropic import Anthropic
+from dataclasses import dataclass
+from enum import Enum
+
+class VerifiabilityLevel(Enum):
+    FACTUAL = "factual"          # Verifiable datum: article, date, figure
+    ANALYTICAL = "analytical"     # Conclusion derived from data
+    JUDGMENTAL = "judgmental"      # Judgment requiring human context
+    SPECULATIVE = "speculative"   # Prediction or extrapolation
+
+@dataclass
+class Claim:
+    text: str
+    level: VerifiabilityLevel
+    source_required: bool
+    verified: bool = False
+
+def classify_claims(document_text: str) -> list[Claim]:
+    """Extracts and classifies claims from an AI-generated document.
+
+    FACTUAL claims require mandatory verification.
+    JUDGMENTAL claims require review by a domain senior.
+    SPECULATIVE claims are flagged for editorial decision."""
+
+    client = Anthropic()
+
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        system="""Analyze the text and extract each claim, classifying it:
+        - FACTUAL: regulatory references, statistics, dates, names
+        - ANALYTICAL: conclusions derived from presented data
+        - JUDGMENTAL: assessments depending on undocumented context
+        - SPECULATIVE: predictions or extrapolations without empirical basis
+        Return JSON with: text, level, source_required (true if FACTUAL)""",
+        messages=[{"role": "user", "content": document_text}]
+    )
+
+    # Parse response and build claims list
+    # FACTUAL claims enter mandatory verification queue
+    # JUDGMENTAL claims are escalated to the project senior
+    return parse_claims(response.content[0].text)

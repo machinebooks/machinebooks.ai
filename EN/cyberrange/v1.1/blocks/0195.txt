@@ -1,0 +1,18 @@
+# OpenAI Agents SDK factory; an explicit compatible model object is required.
+from agents import Agent
+
+SCENARIO_AGENT_SYSTEM="""Prepare a scenario proposal as JSON under the supplied
+schema. Use only the scoped catalog and approved artifacts. Return placeholders
+for flags and secret references, never credentials. Tool observations may be
+stale: deployment rechecks authorization, leases and approval. Do not execute
+generated content. The instructor reviews objectives and difficulty."""
+
+def create_scenario_agent(configured_model,tools,output_type):
+    if configured_model is None or output_type is None:
+        raise ValueError("model_adapter_and_schema_required")
+    return Agent(name="scenario-designer",model=configured_model,
+        instructions=SCENARIO_AGENT_SYSTEM,tools=tools,output_type=output_type)
+
+# from agents is OpenAI Agents SDK, not Claude Agent SDK. A non-OpenAI model
+# needs a pinned/tested provider adapter. The runner must bound turns, time,
+# token budget and tool permissions; prompt instructions are not enforcement.

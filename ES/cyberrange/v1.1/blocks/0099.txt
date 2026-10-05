@@ -1,0 +1,22 @@
+# Didactic lifecycle factory; one fenced owner supervises background work.
+import asyncio
+from contextlib import asynccontextmanager
+
+def build_lifespan(owner, maintenance):
+    @asynccontextmanager
+    async def lifespan(app):
+        async with owner.fenced_job("range_maintenance"):
+            stop = asyncio.Event()
+            task = asyncio.create_task(maintenance.run(stop))
+            app.state.maintenance_task = task
+            try:
+                yield
+                if task.done():
+                    task.result()
+            finally:
+                stop.set()
+                task.cancel()
+                await asyncio.gather(task, return_exceptions=True)
+                await maintenance.reconcile_owned(timeout=30)
+    return lifespan
+# SIGKILL recovery and remote completion require durable leases and receipts.

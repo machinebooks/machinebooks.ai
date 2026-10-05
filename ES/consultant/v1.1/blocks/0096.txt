@@ -1,0 +1,108 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import anthropic
+import json
+import yaml
+from pathlib import Path
+
+
+class GapAnalysisAgent:
+    """Agente de gap analysis multi-framework."""
+
+    def __init__(self, org_profile: str, target_level: MaturityLevel):
+        self.client = anthropic.Anthropic()
+        self.org_profile = org_profile
+        self.target_level = target_level
+        self.frameworks: dict[str, list[Control]] = {}
+        self.criteria: dict[str, EvaluationCriteria] = {}
+        self.findings: list[GapFinding] = []
+        self.pending_controls: list[dict] = []
+
+    def load_framework(self, yaml_path: str) -> None:
+        """Carga un framework normativo desde YAML."""
+        data = yaml.safe_load(Path(yaml_path).read_text())
+        controls = []
+        for c in data["controls"]:
+            control = Control(
+                framework=data["framework"],
+                control_id=c["id"],
+                title=c["title"],
+                description=c["description"],
+                category=c.get("category", "General"),
+                cross_references=c.get("cross_references", []),
+            )
+            controls.append(control)
+        self.frameworks[data["framework"]] = controls
+
+    def evaluate_control(
+        self, control: Control, evidence_text: str
+    ) -> GapFinding | None:
+        """Evalúa un control contra las evidencias del cliente."""
+        if not isinstance(evidence_text, str) or not evidence_text.strip():
+            self.pending_controls.append({
+                "control_id": control.control_id, "status": "not_evaluated",
+                "reason": "Insufficient evidence; human review required",
+            })
+            return None
+        criteria = self.criteria.get(
+            f"{control.control_id}:{self.org_profile}"
+        )
+        criteria_text = self._format_criteria(criteria)
+
+        prompt = f"""Evalúa el siguiente control normativo contra
+las evidencias del cliente.
+
+CONTROL: {control.framework} {control.control_id}
+— {control.title}
+Descripción: {control.description}
+
+PERFIL DE ORGANIZACIÓN: {self.org_profile}
+
+CRITERIOS DE EVALUACIÓN POR NIVEL:
+{criteria_text}
+
+EVIDENCIAS DEL CLIENTE:
+{evidence_text}
+
+Responde en JSON con estos campos:
+- evidence_quotes: exact source quotes
+- evaluation_status: evaluated o not_evaluated
+- current_level: nivel actual (0-4), o null si no_evaluado
+- gap_description: qué falta para alcanzar nivel {self.target_level.value}
+- remediation: acciones concretas recomendadas
+- effort_days: estimación de esfuerzo en días-persona
+- priority: "critica", "alta", "media" o "baja"
+- confidence: confianza en la evaluación (0.0-1.0)
+- reasoning: razonamiento paso a paso de la evaluación"""
+
+        response = self.client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=2048,
+            system="""Eres un auditor experto en normativa de
+seguridad y compliance. Evalúas controles de forma rigurosa
+pero justa. Si la evidencia es insuficiente para evaluar,
+usa evaluation_status not_evaluated y current_level null.
+Nunca conviertas ausencia de evidencia en nivel cero o incumplimiento. Nunca exageres gaps sin justificación.""",
+            messages=[{"role": "user", "content": prompt}],
+        )
+        result = json.loads(response.content[0].text)
+        if not isinstance(result, dict):
+            raise ValueError("Invalid maturity assessment")
+        if result.get("evaluation_status") == "not_evaluated":
+            if result.get("current_level") is not None:
+                raise ValueError("Unevaluated maturity cannot have a numeric level")
+            self.pending_controls.append({
+                "control_id": control.control_id, "status": "not_evaluated",
+                "reason": "Insufficient evidence; human review required",
+            })
+            return None
+        level = result.get("current_level")
+        if result.get("evaluation_status") != "evaluated" or type(level) is not int or not 0 <= level <= 4:
+            raise ValueError("Invalid evaluated maturity level")
+        quotes = result.get("evidence_quotes")
+        if not isinstance(quotes, list) or not quotes or any(
+            not isinstance(q, str) or not q.strip() or q not in evidence_text
+            for q in quotes
+        ):
+            raise ValueError("Maturity judgment requires verifiable evidence quotes")
+        return self._parse_finding(control, response)

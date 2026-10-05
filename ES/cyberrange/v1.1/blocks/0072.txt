@@ -1,0 +1,17 @@
+# Didactic Pydantic 2 schema; creation adapter commits ownership and leases atomically.
+from pydantic import BaseModel, ConfigDict, Field
+
+class WorkzoneCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    name: str = Field(min_length=1, max_length=128)
+    app_id: int | None = Field(default=None, ge=1, le=15)
+    cpu_limit: int = Field(default=8, ge=1, le=32)
+    memory_limit: int = Field(default=16384, ge=1024, le=65536)
+    storage_limit: int = Field(default=100, ge=10, le=1000)
+    zone_ttl_hours: int = Field(default=4, ge=1, le=24)
+
+async def create_workzone(actor, raw, access, store):
+    data = WorkzoneCreate.model_validate(raw)
+    scope = await access.authorize_creation(actor, data)
+    # Uniqueness races are handled by constraints + rollback, not check-then-insert.
+    return await store.create_reserved_workzone(scope, data)

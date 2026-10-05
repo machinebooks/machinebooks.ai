@@ -1,0 +1,18 @@
+# Didactic fenced GC; expiry requests cleanup, never deletes inventory prematurely.
+import asyncio
+from datetime import datetime, timezone
+
+async def gc_loop(stop, owner, store, cleanup):
+    while not stop.is_set():
+        async with owner.fenced_job("workzone_gc"):
+            now = datetime.now(timezone.utc)
+            for resource in await store.claim_expired(now):
+                try:
+                    receipt = await cleanup.reconcile_owned(resource, timeout=60)
+                    await store.record_cleanup_receipt(resource, receipt)
+                except Exception:
+                    await store.retain_cleanup_pending(resource)
+        try:
+            await asyncio.wait_for(stop.wait(), 900)
+        except TimeoutError:
+            pass

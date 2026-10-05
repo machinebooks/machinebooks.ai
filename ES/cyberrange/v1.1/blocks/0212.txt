@@ -1,0 +1,21 @@
+# REST factories call the same actor/instance/request contracts as CoachingService.
+from fastapi import APIRouter, Depends
+from pydantic import BaseModel, ConfigDict, Field
+
+class HintRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    request_id: str = Field(pattern=r"^[A-Za-z0-9_-]{8,80}$")
+    message: str | None = Field(default=None, max_length=2000)
+
+def build_coaching_router(service,current_actor):
+    router=APIRouter()
+    @router.post("/instances/{instance_id}/hints")
+    async def request_hint(instance_id:int,body:HintRequest,actor=Depends(current_actor)):
+        return await service.generate_reactive_hint(actor.id,instance_id,
+                                                   body.request_id,body.message)
+    @router.post("/instances/{instance_id}/evaluation-proposals")
+    async def request_evaluation(instance_id:int,actor=Depends(current_actor)):
+        return await service.generate_evaluation_report(actor.id,instance_id)
+    return router
+# Service adapters authorize open/finished ownership again at each transactional effect.
+# Feedback has its own bounded unique actor/hint transaction, omitted from this factory.

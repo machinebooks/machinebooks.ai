@@ -1,0 +1,21 @@
+// Didactic state separation; VM state belongs to the authorized context.
+import React, {useState} from 'react';
+type Position = {id:string;x:number;y:number};
+type VMView = {id:string;name:string;power_state:string};
+type CanvasProps = {
+  roleVisibleVMs:VMView[]; renderCanvas:(positions:Position[])=>React.ReactNode;
+  onSelect:(id:string)=>void;
+};
+export const WorkzoneCanvas = ({roleVisibleVMs,renderCanvas,onSelect}:CanvasProps) => {
+  const [positions] = useState<Position[]>([]);
+  return <section aria-label="Workzone topology">
+    {renderCanvas(positions)}
+    <ul>{roleVisibleVMs.map(vm=><li key={vm.id}>
+      <button type="button" onClick={()=>onSelect(vm.id)}>
+        {vm.name}: {vm.power_state}
+      </button>
+    </li>)}</ul>
+  </section>;
+};
+// Rendering/position update implementation is injected; this snippet supplies
+// an accessible selection list and does not claim complete drag/resize behavior.

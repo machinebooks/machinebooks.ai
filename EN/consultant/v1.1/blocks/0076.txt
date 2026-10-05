@@ -1,0 +1,47 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import anthropic
+import httpx
+from dataclasses import dataclass
+from datetime import datetime
+
+@dataclass
+class Award:
+    """Structure of a collected public procurement award."""
+    title: str
+    contracting_body: str
+    awardee: str
+    amount: float
+    date: datetime
+    cpv: str           # Contract classification code
+    criteria: str      # Published award criteria
+    source_url: str
+
+async def collect_awards(
+    cpv_codes: list[str],
+    date_from: str,
+    date_to: str
+) -> list[Award]:
+    """
+    Queries the public procurement portal and extracts
+    relevant awards for the indicated CPV codes.
+    CPV 72000000 = IT services and consulting.
+    """
+    awards = []
+    async with httpx.AsyncClient() as client:
+        for cpv in cpv_codes:
+            # Query the public procurement API
+            response = await client.get(
+                "https://contrataciondelestado.es/sindicacion/sindicacion_643/licitacionesPerfilContratante.atom",
+                params={
+                    "cpv": cpv,
+                    "fechaDesde": date_from,
+                    "fechaHasta": date_to,
+                    "estado": "ADJ"  # Awards only
+                }
+            )
+            # Parse Atom feed and structured extraction
+            awards.extend(
+                _parse_awards_feed(response.text)
+            )
+    return awards

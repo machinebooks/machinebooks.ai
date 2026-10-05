@@ -1,0 +1,102 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+# Pseudocode only; not an executable SDK example
+# Pseudocode: Agent and tool are conceptual interfaces, not SDK imports
+import json
+
+@tool
+def calcular_precio_proyecto(
+    tipo: str,
+    sector: str,
+    alcance: str,
+    frameworks: str,
+    horas_estimadas: int,
+    valor_cliente: float,
+    es_licitacion: bool = False,
+    cliente_recurrente: bool = False
+) -> str:
+    """Calculates recommended pricing for a consulting project.
+
+    Args:
+        tipo: Project type (auditoria, gap_analysis, roadmap, assessment)
+        sector: Client sector (financiero, publico, energia, salud)
+        alcance: Scope description
+        frameworks: Comma-separated frameworks (ISO27001,ENS,NIS2)
+        horas_estimadas: Estimated hours without AI
+        valor_cliente: Estimated result value for the client
+        es_licitacion: Whether it's a public tender
+        cliente_recurrente: Whether it's an existing client
+    """
+    factores = {
+        "auditoria": 0.40, "gap_analysis": 0.45,
+        "roadmap": 0.75, "assessment": 0.55
+    }
+
+    proyecto = ProyectoInput(
+        tipo=tipo, sector=sector, alcance=alcance,
+        frameworks=frameworks.split(","),
+        horas_estimadas_sin_ia=horas_estimadas,
+        factor_reduccion_ia=factores.get(tipo, 0.50),
+        valor_cliente_estimado=valor_cliente,
+        es_licitacion_publica=es_licitacion,
+        cliente_recurrente=cliente_recurrente
+    )
+    resultado = calcular_pricing(proyecto)
+    return json.dumps({
+        "recomendacion": resultado.modelo_recomendado,
+        "precios": {
+            "cost_plus": f"€{resultado.precio_cost_plus:,.0f}",
+            "value_based": f"€{resultado.precio_value_based:,.0f}",
+            "hybrid": f"€{resultado.precio_hybrid:,.0f}",
+            "retainer_mensual": f"€{resultado.precio_retainer_mensual:,.0f}",
+        },
+        "margenes": {
+            "cost_plus": f"{resultado.margen_cost_plus:.1%}",
+            "value_based": f"{resultado.margen_value_based:.1%}",
+            "hybrid": f"{resultado.margen_hybrid:.1%}",
+        },
+        "justificacion": resultado.justificacion,
+        "riesgos": resultado.riesgos,
+    }, indent=2, ensure_ascii=False)
+
+@tool
+def comparar_con_historico(tipo: str, sector: str, precio_propuesto: float) -> str:
+    """Compares a proposed price against the historical record of similar projects.
+
+    Searches projects of the same type and sector to calibrate whether
+    the price is in range, below market, or above.
+    """
+    historico = {
+        ("auditoria", "publico"): {"media": 52000, "min": 35000, "max": 78000, "n": 14},
+        ("auditoria", "financiero"): {"media": 68000, "min": 45000, "max": 95000, "n": 8},
+        ("gap_analysis", "publico"): {"media": 38000, "min": 22000, "max": 58000, "n": 11},
+        ("gap_analysis", "energia"): {"media": 45000, "min": 30000, "max": 72000, "n": 6},
+        ("assessment", "publico"): {"media": 28000, "min": 18000, "max": 42000, "n": 9},
+        ("roadmap", "financiero"): {"media": 55000, "min": 35000, "max": 85000, "n": 5},
+    }
+
+    datos = historico.get((tipo, sector))
+    if not datos:
+        return json.dumps({"error": "No historical data for this combination"})
+
+    percentil = (precio_propuesto - datos["min"]) / (datos["max"] - datos["min"])
+    posicion = "low" if percentil < 0.3 else "mid" if percentil < 0.7 else "high"
+
+    return json.dumps({
+        "precio_propuesto": f"€{precio_propuesto:,.0f}",
+        "media_historica": f"€{datos['media']:,.0f}",
+        "rango": f"€{datos['min']:,.0f} - €{datos['max']:,.0f}",
+        "posicion": posicion,
+        "percentil": f"{percentil:.0%}",
+        "proyectos_comparados": datos["n"],
+    }, indent=2, ensure_ascii=False)
+
+# Agent configuration
+pricing_agent = Agent(
+    model="claude-sonnet-4-6",
+    tools=[calcular_precio_proyecto, comparar_con_historico],
+    system="""You are the pricing agent of a technology consulting practice.
+Your role: help the commercial team set prices that maximize margin
+without losing competitiveness. Always explain the reasoning behind
+your recommendation and alert about commercial risks."""
+)

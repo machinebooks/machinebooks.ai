@@ -1,0 +1,10 @@
+VENDOR: Can you confirm this works on version 2.5.1?
+        We patched a similar issue in 2.5.0.
+
+RESEARCHER: Tested on version 2.5.1 (installed today from your
+website). The vulnerability is still present. Evidence attached:
+- Screenshot of version dialog showing 2.5.1
+- Output of PoC on 2.5.1 (epic_lpe_proof_2.5.1.txt)
+- The root cause (CWE-732) is in the installer, not in the
+  service binary. The patch in 2.5.0 fixed a different issue
+  (IOCTL validation). The file permissions remain unchanged.

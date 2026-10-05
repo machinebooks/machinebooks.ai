@@ -1,0 +1,14 @@
+# Proposed server-side gateway contract; Proxmox credentials stay here
+async def console_ticket(user, vm_id, inventory, authorize, pve_adapter, gateway):
+    resource = await inventory.resolve_owned_vm(vm_id)
+    if not await authorize(user, resource, "console"):
+        raise PermissionError("console access denied")
+    upstream = await pve_adapter.console_capability(resource)
+    # Gateway keeps the upstream capability; browser receives an opaque,
+    # resource/session-bound, short-lived ticket, consumed once at handshake.
+    grant = await gateway.issue(user, resource, upstream)
+    return {"console_type":"novnc", "gateway_url":grant.url,
+            "expires_at":grant.expires_at.isoformat()}
+
+# Adapters must validate edition/version API, TLS, upstream expiry and scope.
+# No management API token, PVEAuthCookie, password or CSRF secret is returned.

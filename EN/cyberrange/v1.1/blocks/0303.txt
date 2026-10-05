@@ -1,0 +1,40 @@
+# Didactic deployment coordinator; no implicit rollback guarantee
+import os
+import subprocess
+import time
+import ssl
+from urllib.request import urlopen
+from urllib.parse import urlparse
+
+def deploy(project, health_url, ca_file, deadline_seconds=180):
+    if not project or any(c not in "abcdefghijklmnopqrstuvwxyz0123456789_-" for c in project):
+        raise ValueError("invalid explicit project name")
+    endpoint=urlparse(health_url)
+    if endpoint.scheme!="https" or not endpoint.hostname or endpoint.username or endpoint.password:
+        raise ValueError("HTTPS readiness URL required")
+    if type(deadline_seconds) is not int or not 1<=deadline_seconds<=600:
+        raise ValueError("finite readiness deadline required")
+    for path in (".env", "backend/.env", "certs/server.crt", "certs/server.key", ca_file):
+        if not os.path.isfile(path):
+            raise ValueError("required configuration or certificate absent")
+    context=ssl.create_default_context(cafile=ca_file)
+    command=["docker","compose","--project-name",project,"--env-file",".env",
+             "-f","docker-compose.yml","-f","docker-compose.prod.yml"]
+    # Quiet config validation avoids printing interpolated secrets.
+    subprocess.run(command+["config","--quiet"],check=True,timeout=30)
+    subprocess.run(command+["build"],check=True,timeout=1200)
+    subprocess.run(command+["up","-d","--wait","--wait-timeout","180"],check=True,timeout=240)
+    deadline=time.monotonic()+deadline_seconds
+    while time.monotonic()<deadline:
+        try:
+            with urlopen(health_url,context=context,timeout=min(5,max(0.1,deadline-time.monotonic()))) as response:
+                if response.status==200 and response.read(4097)==b'{"ready":true}':
+                    return {"project":project,"status":"readiness_confirmed"}
+        except OSError:
+            pass
+        time.sleep(min(1,max(0,deadline-time.monotonic())))
+    raise TimeoutError("readiness unconfirmed; retain inventory and inspect partial deployment")
+
+# Caller supplies HTTPS URL/CA and a genuine dependency readiness endpoint
+# matching this response contract. .env is consumed by Compose, never sourced
+# as shell code. No down/volume deletion; rollback is an explicit separate plan.

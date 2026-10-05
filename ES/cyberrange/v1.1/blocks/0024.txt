@@ -1,0 +1,12 @@
+# Didactic adapter contract; MCP registration depends on the pinned SDK.
+def build_tool_handler(access, catalog, jobs):
+    async def handle_call_tool(actor, name, arguments):
+        if name not in {"list_templates", "request_approved_deployment"}:
+            raise ValueError("unsupported tool")
+        scope = await access.authorize(actor, name, arguments)
+        if name == "list_templates":
+            return await catalog.available_templates(scope)
+        proposal = await catalog.reviewed_proposal(scope, arguments)
+        # Adapter must reserve capacity atomically and create an idempotent outbox.
+        return await jobs.enqueue_authorized(scope, proposal)
+    return handle_call_tool

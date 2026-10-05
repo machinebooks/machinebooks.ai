@@ -1,0 +1,15 @@
+# x64dbg-plugin/sylvarsec_bridge.py (schematic)
+import http.server
+import x64dbg                     # plugin API
+
+class BridgeHandler(http.server.BaseHTTPRequestHandler):
+    def do_POST(self):
+        body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+        op = body["op"]
+        if op == "disasm":
+            instrs = x64dbg.Disassemble(body["addr"], body["count"])
+            self._json({"instrs": instrs})
+        elif op == "read_mem":
+            data = x64dbg.ReadMemory(body["addr"], body["size"])
+            self._json({"hex": data.hex()})
+        # ...

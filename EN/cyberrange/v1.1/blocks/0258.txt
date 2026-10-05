@@ -1,0 +1,16 @@
+# Grant is server-created, already consumed/accepted, and checked for this exact session.
+async def connect(self, websocket, connection_type, session_id, grant):
+    if connection_type not in self.active_connections:
+        raise ValueError("unsupported connection type")
+    metadata = {"type": connection_type, "session_id": session_id, "grant": grant}
+    if not await self.access.still_authorized(metadata):
+        raise PermissionError("connection no longer authorized")
+    self.active_connections[connection_type].add(websocket)
+    self.connection_metadata[websocket] = metadata
+    self.active_sessions.setdefault(session_id, {"status": "unknown"})
+    try:
+        await self.recover_session_messages(session_id, websocket)
+    except BaseException:
+        self.disconnect(websocket)
+        raise
+    return session_id

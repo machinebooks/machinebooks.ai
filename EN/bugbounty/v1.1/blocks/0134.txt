@@ -1,0 +1,11 @@
+// Reconstructed pseudocode of the run_in_terminal handler
+async function handleRunInTerminal(args) {
+    const terminal = vscode.window.createTerminal({
+        name: "Copilot",
+        hideFromUser: false  // The terminal is visible, but...
+    });
+    // No command validation
+    terminal.sendText(args.command);
+    // The user can see the terminal if they look, but
+    // the payload already executed before they can react
+}

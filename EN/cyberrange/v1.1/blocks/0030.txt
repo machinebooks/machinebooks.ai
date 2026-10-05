@@ -1,0 +1,57 @@
+# Didactic example: patrones/backend/routers/__init__.py
+# Declarative registration of the 35 routers
+
+from importlib import import_module as _imp
+
+modules = [
+    # Authentication
+    "auth",                  # /api/auth — login, JWT, sessions
+
+    # Gaming and CTF
+    "gaming",                # /api/gaming — game zone, catalog
+    "ctf",                   # /api/ctf — flags, hints, validation
+    "challenges",            # /api/challenges — join challenges
+    "challenge_files",       # /api/challenge-files — attached files
+    "scoreboard",            # /api/scoreboard — leaderboards
+    "profile",               # /api/profile — stats, skills, badges
+
+    # Scenarios and infrastructure
+    "scenario",              # /api/scenario — CRUD scenarios
+    "topologies",            # /api/topologies — network topologies
+    "workzones",             # /api/workzones — workzone management
+    "catalog",               # /api/catalog — VM template catalog
+
+    # Attacks and simulation
+    "attack",                # /api/attack — attack execution
+    "traffic",               # /api/traffic — traffic generation
+    "ioc",                   # /api/ioc — IOCs and port mirroring
+
+    # Teams, MITRE, and community
+    "teams",                 # /api/teams — team management
+    "mitre_routes",          # /api/mitre — ATT&CK framework
+    "community",             # /api/community — forums and shared content
+
+    # Administration (15 routers)
+    "admin_dashboard",       # /api/admin/dashboard
+    "admin_users",           # /api/admin/users
+    "admin_machines",        # /api/admin/machines — full Proxmox
+    "admin_challenges",      # /api/admin/challenges
+    "admin_scenarios",       # /api/admin/scenarios
+    "admin_workzones",       # /api/admin/workzones
+    "admin_attacks",         # /api/admin/attacks
+    "admin_playbooks",       # /api/admin/playbooks — Ansible
+    "admin_teams",           # /api/admin/teams
+    "admin_skills_badges",   # /api/admin/skills-badges
+    "admin_database",        # /api/admin/database — SQL console
+    "admin_networks",        # /api/admin/networks
+    "admin_reports",         # /api/admin/reports
+    "admin_audit",           # /api/admin/audit
+    "audit_admin",           # /api/audit — administrative auditing
+
+    # WebSocket, scripts, and 5G
+    "ws_deploy",             # /api/ws — real-time deployments
+    "powershell",            # /api/powershell — remote scripts
+    "five_g",                # /api/5g — 5G network simulation
+]
+
+all_routers = [_imp(f".{m}", package="routers").router for m in modules]

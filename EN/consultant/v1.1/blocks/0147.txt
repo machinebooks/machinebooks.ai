@@ -1,0 +1,78 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+METHODOLOGY_UPDATE_PROMPT = """You are a methodology consultant for a
+technology consulting practice. Analyze the following patterns
+detected in lessons learned and generate concrete
+methodology update recommendations.
+
+DETECTED PATTERNS:
+{patterns}
+
+CURRENT METHODOLOGY (relevant sections):
+{current_methodology}
+
+For each recommendation, indicate:
+1. Methodology section affected
+2. Proposed change (specific text, not generic)
+3. Justification with pattern data
+4. Risk of not implementing the change
+5. Estimated impact if implemented
+6. Priority (high/medium/low)
+
+DO NOT recommend generic changes like "improve communication".
+Each change must be a specific instruction a project director
+can implement without ambiguity."""
+
+
+def generate_methodology_recommendations(
+    patterns: list[dict],
+    methodology_sections: dict[str, str],
+    anthropic_client: anthropic.Anthropic
+) -> list[dict]:
+    """Generates methodology update recommendations."""
+
+    # Filter patterns with high or medium confidence
+    relevant_patterns = [
+        p for p in patterns
+        if p.get("confidence") in ("high", "medium")
+        and p.get("affected_projects", 0) >= 3
+    ]
+
+    if not relevant_patterns:
+        return []
+
+    patterns_text = "\n\n".join(
+        f"PATTERN {i+1}: {p['description']}\n"
+        f"Affected projects: {p['affected_projects']}\n"
+        f"Root cause: {p['root_cause']}\n"
+        f"Aggregate impact: {p['aggregated_impact']}\n"
+        f"Confidence: {p['confidence']}"
+        for i, p in enumerate(relevant_patterns)
+    )
+
+    methodology_text = "\n\n".join(
+        f"## {section}\n{content}"
+        for section, content in methodology_sections.items()
+    )
+
+    message = anthropic_client.messages.create(
+        model="claude-opus-4-6",
+        max_tokens=4096,
+        messages=[{
+            "role": "user",
+            "content": METHODOLOGY_UPDATE_PROMPT.format(
+                patterns=patterns_text,
+                current_methodology=methodology_text
+            )
+        }]
+    )
+
+    recommendations = parse_json_response(message.content[0].text)
+
+    # Add traceability metadata
+    for rec in recommendations:
+        rec["generated_date"] = date.today().isoformat()
+        rec["source_patterns"] = [p["description"] for p in relevant_patterns]
+        rec["status"] = "pending_review"
+
+    return recommendations

@@ -1,0 +1,7 @@
+# backend/routers/auth.py — Logout con invalidación de sesión
+@router.post("/logout")
+def logout(user=Depends(get_current_user), db: Session = Depends(get_db)):
+    # Al regenerar el session_token, todos los tokens previos quedan invalidados
+    user.session_token = secrets.token_hex(32)
+    db.commit()
+    return {"message": "Sesión cerrada"}

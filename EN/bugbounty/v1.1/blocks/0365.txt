@@ -1,0 +1,35 @@
+// PEB unlink pseudocode (simplified for clarity)
+// Real structures use offsets documented by Microsoft
+
+void unlink_module_from_peb(HMODULE hMod) {
+    // Get the PEB from the TEB (Thread Environment Block)
+    PPEB peb = NtCurrentTeb()->ProcessEnvironmentBlock;
+    PPEB_LDR_DATA ldr = peb->Ldr;
+
+    // List 1: InLoadOrderModuleList
+    unlink_entry(&ldr->InLoadOrderModuleList, hMod,
+                 OFFSET_InLoadOrderLinks);
+
+    // List 2: InMemoryOrderModuleList
+    unlink_entry(&ldr->InMemoryOrderModuleList, hMod,
+                 OFFSET_InMemoryOrderLinks);
+
+    // List 3: InInitializationOrderModuleList
+    unlink_entry(&ldr->InInitializationOrderModuleList, hMod,
+                 OFFSET_InInitializationOrderLinks);
+}
+
+void unlink_entry(PLIST_ENTRY head, HMODULE target, int offset) {
+    PLIST_ENTRY current = head->Flink;
+    while (current != head) {
+        PLDR_DATA_TABLE_ENTRY entry = CONTAINING_RECORD(
+            current, LDR_DATA_TABLE_ENTRY, offset);
+        if (entry->DllBase == target) {
+            // Unlink from the doubly linked list
+            current->Blink->Flink = current->Flink;
+            current->Flink->Blink = current->Blink;
+            break;
+        }
+        current = current->Flink;
+    }
+}

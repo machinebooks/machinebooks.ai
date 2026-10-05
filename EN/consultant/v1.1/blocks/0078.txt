@@ -1,0 +1,60 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import anthropic
+from datetime import datetime, timedelta
+
+client = anthropic.Anthropic()
+
+def generate_technology_radar(
+    domains: list[str],
+    period: str = "weekly"
+) -> dict:
+    """
+    Generates a technology radar based on public sources:
+    technical blogs, regulatory publications, conferences.
+    """
+    processed_sources = []
+
+    for domain in domains:
+        # Collect recent articles and publications
+        articles = _search_recent_publications(
+            domain, period
+        )
+        # Collect regulatory changes
+        regulation = _search_regulatory_changes(
+            domain, period
+        )
+        processed_sources.append({
+            "domain": domain,
+            "articles": articles,
+            "regulation": regulation
+        })
+
+    # Analysis with Claude: cross sources and detect trends
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        messages=[{
+            "role": "user",
+            "content": f"""Analyze the following sources and generate a
+            structured technology radar.
+
+            Sources: {processed_sources}
+
+            For each identified trend, indicate:
+            1. Name and brief description (2-3 sentences)
+            2. Maturity level: emerging / in adoption / established
+            3. Relevance for technology consulting (high/medium/low)
+            4. Estimated window of opportunity
+            5. Competitors already positioning
+            6. Sources supporting the signal
+
+            Group by: AI and automation, cloud and infrastructure,
+            security and compliance, data and analytics.
+
+            Only include trends with at least 2 independent
+            sources supporting them."""
+        }]
+    )
+
+    return _parse_radar(message.content[0].text)

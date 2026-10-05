@@ -1,0 +1,43 @@
+"""
+tg_string_search.py -- Busqueda de cadenas relacionadas con depuracion
+Extrae strings del binario de Telegram y filtra por patrones relevantes.
+"""
+import subprocess
+import re
+
+def search_debug_strings(binary_path):
+    """Buscar cadenas de depuracion en el binario de Telegram."""
+    # Extraer strings del binario (minimo 8 caracteres)
+    result = subprocess.run(
+        ["strings", "-n", "8", binary_path],
+        capture_output=True, text=True
+    )
+    
+    patterns = [
+        r"debug",
+        r"webview.*debug",
+        r"devtools",
+        r"remote.debugging",
+        r"experimental",
+        r"options\.json",
+    ]
+    
+    findings = []
+    for line in result.stdout.splitlines():
+        for pattern in patterns:
+            if re.search(pattern, line, re.IGNORECASE):
+                findings.append(line.strip())
+                break
+    
+    # Eliminar duplicados y ordenar
+    unique = sorted(set(findings))
+    for f in unique:
+        print(f"  [+] {f}")
+    
+    return unique
+
+# Hallazgos relevantes:
+# [+] -debug
+# [+] Enable webview inspecting
+# [+] experimental_options.json
+# [+] webview-debug-enabled

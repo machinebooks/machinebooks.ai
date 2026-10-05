@@ -1,0 +1,39 @@
+# VM template model for the Cyber Range catalog
+# Didactic example: patrones/templates/models.py
+
+from sqlalchemy import Column, Integer, String, Boolean, JSON, Enum
+from sqlalchemy.orm import relationship
+
+class VMTemplate(Base):
+    __tablename__ = "vm_template"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), nullable=False)
+    proxmox_vmid = Column(Integer, unique=True)      # ID in Proxmox
+    os_type = Column(Enum("windows", "linux", "pfsense", "other"))
+    os_version = Column(String(50))                    # E.g.: "Windows Server 2022"
+
+    # Classification for search and AI scenario generation
+    category = Column(Enum(
+        "attacker",          # Kali, Parrot, offensive tools
+        "target_server",     # Servers vulnerable by design
+        "target_workstation",# User workstations
+        "infrastructure",    # AD, DNS, DHCP, SIEM, firewalls
+        "ot_device",         # Industrial device simulators
+        "custom"             # Custom templates by organizer
+    ))
+
+    # Required resources (for capacity calculation)
+    min_cpu = Column(Integer, default=2)
+    min_memory_mb = Column(Integer, default=2048)
+    min_disk_gb = Column(Integer, default=20)
+
+    # Metadata for AI scenario generation
+    description = Column(String(500))     # Technical description for Claude
+    services = Column(JSON)               # E.g.: ["ssh", "http", "smb"]
+    vulnerabilities = Column(JSON)        # E.g.: ["kerberoasting", "asreproast"]
+    mitre_techniques = Column(JSON)       # E.g.: ["T1558.003", "T1558.004"]
+
+    # Status and availability
+    is_active = Column(Boolean, default=True)
+    clone_count = Column(Integer, default=0)  # Cumulative usage

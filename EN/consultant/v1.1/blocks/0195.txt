@@ -1,0 +1,40 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+# Pseudocode only; not an executable SDK example
+# Pseudocode: Agent and tool are conceptual interfaces, not SDK imports
+import anthropic
+from datetime import datetime
+
+@tool
+def evaluar_postura_seguridad(cliente_id: str) -> dict:
+    """Evaluates the client's current security posture
+    against the agreed reference framework."""
+    # Obtains updated evidence via MCP
+    evidencias = obtener_evidencias_cliente(cliente_id)
+    controles = obtener_framework_cliente(cliente_id)
+
+    client = anthropic.Anthropic()
+    evaluacion = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        system="""You are a security auditor. Evaluate each control
+        against the provided evidence. Classify:
+        compliant / partially_compliant / non_compliant / no_evidence.
+        For non_compliant, indicate risk (high/medium/low) and
+        a concrete corrective action with estimated timeline.""",
+        messages=[{
+            "role": "user",
+            "content": f"Controls: {controles}\nEvidence: {evidencias}"
+        }]
+    )
+    return {"evaluacion": evaluacion.content, "fecha": datetime.now().isoformat()}
+
+@tool
+def generar_alerta_si_necesaria(evaluacion: dict,
+                                 umbral_riesgo: str = "alto") -> dict:
+    """Generates an alert only if there are non-compliant controls
+    with risk equal to or above the threshold."""
+    # Filters findings by risk threshold
+    # Generates alert with context and recommendation
+    # Sends to senior consultant if human intervention required
+    raise NotImplementedError("Required adapter is not implemented; no completed result")

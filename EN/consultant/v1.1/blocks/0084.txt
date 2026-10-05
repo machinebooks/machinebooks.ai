@@ -1,0 +1,83 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+# Illustrative configuration; keys alone do not implement an engine or authorize actions.
+    def evaluate_control(self, control: AuditControl) -> AuditControl:
+        """Evaluates a control against available evidence."""
+        # Find documents related to this control
+        relevant_docs = {
+            name: content for name, content in self._find_relevant_docs(control).items()
+            if isinstance(content, str) and content.strip()
+        }
+
+        if not relevant_docs:
+            control.status = "not_evaluated"
+            control.evidence_refs = []
+            control.finding = None
+            control.justification = (
+                "No documentation was found evidencing "
+                f"the implementation of {control.title}."
+            )
+            return control
+
+        # Build context with relevant evidence
+        evidence_context = "\n\n---\n\n".join([
+            f"**Document: {name}**\n{content[:4000]}"
+            for name, content in relevant_docs.items()
+        ])
+
+        response = self.client.messages.create(
+            model=self.model,
+            max_tokens=2048,
+            system=f"""You are an expert auditor in {self.framework}.
+Evaluate whether the presented evidence demonstrates compliance
+with the indicated control.
+
+Rules:
+- If evidence demonstrates full compliance: "complies"
+- If evidence is partial or outdated: "partial"
+- If evidence is insufficient: "not_evaluated"; judgment pending
+- Non-compliance requires sufficient evidence of a deviation
+- If the control doesn't apply to the context: "not_applicable"
+- ALWAYS include a textual quote from the relevant evidence
+- ALWAYS justify your evaluation with facts from the document
+- NEVER invent evidence that isn't in the documents""",
+            messages=[{
+                "role": "user",
+                "content": f"""Control: {control.control_id} — {control.title}
+Description: {control.description}
+
+Available evidence:
+{evidence_context}
+
+Respond in JSON:
+{{
+  "status": "complies|partial|non_compliant|not_applicable|not_evaluated",
+  "justification": "detailed explanation",
+  "evidence_quotes": ["textual quotes from the document"],
+  "gaps_identified": ["gaps detected"],
+  "risk_if_not_addressed": "risk if not remediated"
+}}"""
+            }]
+        )
+
+        result = json.loads(response.content[0].text)
+        allowed = ['complies', 'partial', 'non_compliant', 'not_applicable', 'not_evaluated']
+        if not isinstance(result, dict) or result.get("status") not in allowed:
+            raise ValueError("Invalid audit status; human review required")
+        if not isinstance(result.get("justification"), str):
+            raise ValueError("Missing audit justification")
+        quotes = result.get("evidence_quotes", [])
+        if result["status"] != "not_evaluated" and (
+            not isinstance(quotes, list) or not quotes
+            or any(not isinstance(q, str) or not q.strip()
+                   or not any(q in content for content in relevant_docs.values())
+                   for q in quotes)
+        ):
+            raise ValueError("Audit judgment requires verifiable evidence quotes")
+        control.status = result["status"]
+        control.finding = None
+        control.justification = result["justification"]
+        control.evidence_refs = [
+            name for name in relevant_docs.keys()
+        ]
+        return control

@@ -1,0 +1,6 @@
+Race Condition (prepare heap)
+    → OOB Write (corrupt List _size)
+    → OOB Read (find vtable address)
+    → UAF (overwrite vtable of freed layer)
+    → Stale Reference (use stale reference to invoke fake vtable)
+    → Controlled code execution

@@ -1,0 +1,22 @@
+# .claude/rules/calidad-entregables.md
+
+## Reglas de calidad para entregables de consultoría
+
+### Obligatorio en todo entregable
+- Incluir sección "Limitaciones y asunciones" (mínimo 3 puntos)
+- Incluir fecha de generación y versión del documento
+- Incluir clasificación de confidencialidad (Público / Interno / Restringido)
+- No incluir nombres de clientes — usar "la entidad" o "el organismo"
+- No incluir datos financieros sin escalar (factor 0.7-1.3)
+
+### Obligatorio en informes de auditoría
+- Todo hallazgo debe tener: descripción, evidencia, riesgo, recomendación, prioridad
+- Las prioridades usan escala: Crítico / Alto / Medio / Bajo
+- No usar "cumple/no cumple" binario — siempre incluir matiz y contexto
+- Referenciar el control normativo exacto (ej: "A.8.1 de ISO 27001:2022")
+
+### Obligatorio en propuestas técnicas
+- Toda estimación de esfuerzo debe incluir rango (mínimo-esperado-máximo)
+- Todo perfil profesional debe incluir certificaciones relevantes
+- La sección de diferencial debe contener al menos un dato cuantitativo
+- No usar superlativos sin dato que lo respalde ("el mejor" → "52% de win rate")

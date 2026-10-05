@@ -1,0 +1,122 @@
+# Didactic strict validation before approval; no deployment side effects.
+import ipaddress
+import json
+
+class ScenarioValidator:
+    def __init__(self,adapter):
+        self.adapter=adapter
+
+    async def validate(self,data,workzone_id,actor_id):
+        await self.adapter.authorize(actor_id,"scenario_propose",workzone_id)
+        try:
+            totals=self.validate_structure(data)
+        except (ValueError,TypeError,KeyError) as error:
+            return {"valid":False,"errors":[str(error)]}
+        # Checks return explicit booleans, not truthy objects. Adapters verify
+        # catalog releases, template/artifact digests, current/pending leases,
+        # disk usage and approved rules; requests cannot supply identity.
+        checks=await self.adapter.check_scoped_inventory(actor_id,workzone_id,data,totals)
+        required={"templates","artifacts","networks","resources","mitre","policy"}
+        valid=isinstance(checks,dict) and required<=checks.keys() and all(
+            checks[key] is True for key in required)
+        return {"valid":valid,"errors":[] if valid else ["inventory_checks_failed"]}
+
+    @staticmethod
+    def validate_structure(data):
+        fields={"name","description","category","difficulty","topology_config",
+            "vm_configs","network_configs","security_configs","flags","playbooks",
+            "storyline","objectives","evaluation_criteria","mitre_mapping",
+            "mitre_release","estimated_deploy_time","tags"}
+        if not isinstance(data,dict) or set(data)!=fields:
+            raise ValueError("invalid_fields")
+        encoded=json.dumps(data,allow_nan=False).encode("utf-8")
+        if len(encoded)>131072:
+            raise ValueError("oversized_specification")
+        if not isinstance(data["name"],str) or not 1<=len(data["name"])<=120:
+            raise ValueError("invalid_name")
+        if data["category"] not in {"red-team","blue-team","forensic","incident-response","mixed"}:
+            raise ValueError("invalid_category")
+        if data["difficulty"] not in {"beginner","intermediate","advanced","expert"}:
+            raise ValueError("invalid_difficulty")
+        for key in ("description","storyline","mitre_release"):
+            if not isinstance(data[key],str) or not 1<=len(data[key])<=10000:
+                raise ValueError("invalid_text")
+        topology=data["topology_config"]
+        if not isinstance(topology,dict) or set(topology)!={"nodes","networks","routing"}:
+            raise ValueError("invalid_topology")
+        def indexed(items,key,maximum):
+            if not isinstance(items,list) or not 1<=len(items)<=maximum:
+                raise ValueError("invalid_list_size")
+            if not all(isinstance(v,dict) and isinstance(v.get(key),str)
+                       and 1<=len(v[key])<=80 for v in items):
+                raise ValueError("invalid_identifiers")
+            result={v[key]:v for v in items}
+            if len(result)!=len(items):
+                raise ValueError("duplicate_identifiers")
+            return result
+        nodes=indexed(topology["nodes"],"id",50)
+        configs=indexed(data["vm_configs"],"node_id",50)
+        networks=indexed(topology["networks"],"id",20)
+        if set(nodes)!=set(configs) or data["network_configs"]!=topology["networks"]:
+            raise ValueError("incomplete_node_or_network_configuration")
+        subnets={};vlans=set()
+        for key,network in networks.items():
+            cidr=ipaddress.ip_network(network["cidr"],strict=True)
+            vlan=network["vlan"]
+            if cidr.version!=4 or type(vlan) is not int or not 1<=vlan<=4094 or vlan in vlans:
+                raise ValueError("invalid_network")
+            if any(cidr.overlaps(prior) for prior in subnets.values()):
+                raise ValueError("overlapping_networks")
+            subnets[key]=cidr;vlans.add(vlan)
+        addresses=set();totals={"cpu":0,"ram_mb":0,"disk_gb":0}
+        for key,node in nodes.items():
+            config=configs[key]
+            if node["network"] not in networks:
+                raise ValueError("unknown_network")
+            address=ipaddress.ip_address(node["ip"])
+            subnet=subnets[node["network"]]
+            if address not in subnet or address in {subnet.network_address,subnet.broadcast_address} or address in addresses:
+                raise ValueError("invalid_node_address")
+            addresses.add(address)
+            if type(config["template_id"]) is not int or config["template_id"]<=0 or config["template_id"]!=node["template_id"]:
+                raise ValueError("template_mismatch")
+            for resource,limit in (("cpu",128),("ram_mb",1048576),("disk_gb",10000)):
+                value=config[resource]
+                if type(value) is not int or not 1<=value<=limit:
+                    raise ValueError("invalid_resource")
+                totals[resource]+=value
+            if not isinstance(config["playbooks"],list) or not isinstance(config.get("custom_config",{}),dict):
+                raise ValueError("invalid_vm_configuration")
+        if not isinstance(topology["routing"],list) or len(topology["routing"])>100:
+            raise ValueError("invalid_routes")
+        for route in topology["routing"]:
+            if route["from"] not in networks or route["to"] not in networks or not isinstance(route["ports"],list) or not route["ports"]:
+                raise ValueError("invalid_route")
+            if any(type(p) is not int or not 1<=p<=65535 for p in route["ports"]):
+                raise ValueError("invalid_port")
+        flags=indexed(data["flags"],"id",100)
+        for flag in flags.values():
+            if flag["location"] not in nodes or type(flag["points"]) is not int or not 0<flag["points"]<=10000:
+                raise ValueError("invalid_flag")
+            if not all(isinstance(flag.get(k),str) and flag[k] for k in ("description","technique")):
+                raise ValueError("invalid_flag_metadata")
+        if not isinstance(data["security_configs"],dict):
+            raise ValueError("invalid_policy")
+        for key in ("playbooks","objectives","evaluation_criteria","tags"):
+            values=data[key]
+            if not isinstance(values,list) or len(values)>100 or not all(isinstance(v,str) and 1<=len(v)<=2000 for v in values):
+                raise ValueError("invalid_metadata_list")
+        if not data["objectives"] or not data["evaluation_criteria"]:
+            raise ValueError("missing_rubric")
+        if not isinstance(data["mitre_mapping"],list) or not data["mitre_mapping"] or len(data["mitre_mapping"])>100:
+            raise ValueError("invalid_mitre_mapping")
+        for entry in data["mitre_mapping"]:
+            if not isinstance(entry,dict) or not all(isinstance(entry.get(k),str) and entry[k] for k in ("technique_id","name","tactic","phase")):
+                raise ValueError("invalid_mitre_entry")
+        if type(data["estimated_deploy_time"]) is not int or not 1<=data["estimated_deploy_time"]<=1440:
+            raise ValueError("invalid_estimate")
+        return totals
+
+# Valid structure is not effective isolation or exploitability. Inventory
+# adapters and instructor review enforce release semantics and acceptable risk.
+# Deployment rechecks all inventory under transactional leases and approval.

@@ -1,0 +1,30 @@
+import hashlib
+import time
+import itertools
+
+def bruteforce_sha512_pin(target_hash: bytes, digits: int = 8):
+    """Fuerza bruta de PIN numerico contra hash SHA-512.
+    Version CPU para demostracion (la comparación ilustrativa 5,200,000/180,000 da ~28.9x; no es un benchmark controlado)."""
+    start = time.time()
+    attempts = 0
+
+    for combo in itertools.product("0123456789", repeat=digits):
+        pin = "".join(combo)
+        candidate = hashlib.sha512(pin.encode("utf-8")).digest()
+        attempts += 1
+
+        if candidate == target_hash:
+            elapsed = time.time() - start
+            print(f"[+] PIN encontrado: {pin}")
+            print(f"[+] Intentos: {attempts:,}")
+            print(f"[+] Tiempo: {elapsed:.2f}s")
+            print(f"[+] Velocidad: {attempts/elapsed:,.0f} hash/s")
+            return pin
+
+        if attempts % 1_000_000 == 0:
+            elapsed = time.time() - start
+            print(f"    Progreso: {attempts:,} intentos, "
+                  f"{elapsed:.1f}s, "
+                  f"{attempts/elapsed:,.0f} hash/s")
+
+    return None

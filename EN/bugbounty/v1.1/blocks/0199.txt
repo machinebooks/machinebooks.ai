@@ -1,0 +1,7 @@
+# 32-bit proxy DLL compilation
+i686-w64-mingw32-gcc -shared -o VERSION.dll version_proxy.c -lkernel32
+
+# IMPORTANT: verify target architecture
+file target.exe
+# target.exe: PE32 executable (GUI) Intel 80386 → use i686
+# target.exe: PE32+ executable (GUI) x86-64   → use x86_64

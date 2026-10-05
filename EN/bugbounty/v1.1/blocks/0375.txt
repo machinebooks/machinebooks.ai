@@ -1,0 +1,22 @@
+// src/server/mcp-client.ts (schematic)
+import { Client as McpClient } from "@modelcontextprotocol/sdk";
+
+export async function loadMcpServer(config) {
+  const client = new McpClient({ name: "sylvarsec", version: "1.0.0" });
+  await client.connect(config.transport);   // stdio | sse | ws
+
+  const { tools } = await client.listTools();
+  // Each MCP tool is exposed as a native tool,
+  // with namespace to avoid collisions
+  return tools.map(t => ({
+    schema: {
+      type: "function",
+      function: {
+        name: `mcp__${config.name}__${t.name}`,
+        description: t.description,
+        parameters: t.inputSchema,
+      },
+    },
+    handler: async (args) => client.callTool(t.name, args),
+  }));
+}

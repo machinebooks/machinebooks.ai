@@ -1,0 +1,19 @@
+Steam Client Service LPE PoC
+User: hunter
+Admin: False
+
+[+] C:\Program Files (x86)\Steam es ESCRIBIBLE
+[+] sc stop: EXITO (usuario puede detener SYSTEM)
+[+] sc start: servicio reiniciado
+[+] VERSION.dll: NO en Steam -> HIJACKABLE
+[+] USERENV.dll: NO en Steam -> HIJACKABLE
+[+] WTSAPI32.dll: NO en Steam -> HIJACKABLE
+[+] DBGHELP.dll: NO en Steam -> HIJACKABLE
+[+] dbgcore.dll: NO en Steam -> HIJACKABLE
+[+] bcrypt.dll: NO en Steam -> HIJACKABLE
+
+VULNERABILIDAD CONFIRMADA:
+- Directorio Steam escribible por Users
+- Servicio controlable por Users (start/stop)
+- Servicio corre como SYSTEM
+- 6 DLLs candidatas a hijacking

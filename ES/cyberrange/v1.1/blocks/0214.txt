@@ -1,0 +1,13 @@
+# Didactic measurement contract; no undefined aggregate values or causal inference.
+from datetime import timezone
+
+async def calculate_coaching_metrics(scope, period_start, period_end, adapter):
+    if period_start.tzinfo is None or period_end.tzinfo is None:
+        raise ValueError("aware time required")
+    start, end = period_start.astimezone(timezone.utc), period_end.astimezone(timezone.utc)
+    if start >= end or (end-start).days > 366:
+        raise ValueError("invalid period")
+    measurements = await adapter.measured_coaching_aggregates(scope, start, end)
+    # Adapter returns denominators, missing cases, observations and tariff references.
+    return {"measurements": measurements, "coverage": measurements.coverage,
+            "causal_effect": "not_established", "start_utc": start, "end_utc": end}

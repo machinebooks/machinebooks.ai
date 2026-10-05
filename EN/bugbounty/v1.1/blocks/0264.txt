@@ -1,0 +1,18 @@
+AsIO3.sys v1.2.41 (60,040 bytes)
+
+Dangerous imports:
+  - MmMapIoSpace       (physical memory mapping)
+  - MmUnmapIoSpace
+  - ZwMapViewOfSection  (memory section mapping)
+  - MmGetPhysicalAddress
+  - MmAllocateContiguousMemory
+
+ABSENT security imports:
+  - SePrivilegeCheck      (NOT IMPORTED)
+  - SeSinglePrivilegeCheck (NOT IMPORTED)
+  - SeAccessCheck          (NOT IMPORTED)
+
+IOCTL methods:
+  - 4 x METHOD_NEITHER    (unvalidated user pointers)
+  - 4 x OUT_DIRECT / IN_DIRECT
+  - 8 x BUFFERED

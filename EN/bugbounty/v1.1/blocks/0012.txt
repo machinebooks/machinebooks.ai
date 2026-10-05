@@ -1,0 +1,15 @@
+> In an authorized x64 binary with an identified wWinMain, break at its entry
+[plugin: verified symbol and address; breakpoint at wWinMain]
+[hit. RIP = 0x7ff6...]
+
+> What is in R8 at wWinMain entry?
+[plugin: read register R8]
+R8 = 0x000001f2... (third argument lpCmdLine; verify address and bounds)
+
+> Follow the pointer, give me the first 256 bytes as UTF-16
+[plugin: read memory 0x000001f2... 256 bytes, decode utf-16-le]
+"--app-path=C:/Users/.../discord_desktop_core/index.js --..."
+
+> Set a breakpoint on the discord_desktop_core module when it is loaded
+[plugin: bp on module load discord_desktop_core.node]
+[execution continues]

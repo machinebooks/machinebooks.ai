@@ -1,0 +1,15 @@
+def main():
+    drivers = sorted(Path("/lab/drivers").glob("*.sys"))
+    all_reports = []
+    for driver in drivers:
+        report = analyze_pe(driver)
+        all_reports.append(report)
+        # Automatic risk score: prioritizes research
+        if report["risk_score"] >= 9:
+            print(f"[!] {driver.name}: CRITICAL — investigate first")
+        elif report["risk_score"] >= 6:
+            print(f"[*] {driver.name}: HIGH — investigate second")
+
+    # Save complete report as JSON
+    with open("/lab/results/pe_analysis_report.json", "w") as f:
+        json.dump(all_reports, f, indent=2, default=str)

@@ -1,0 +1,125 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+import anthropic
+import json
+
+client = anthropic.Anthropic()
+
+# Tools the agent can invoke
+tools = [
+    {
+        "name": "buscar_proyectos_similares",
+        "description": (
+            "Searches for historical projects similar to the described project. "
+            "Returns the top N most similar with their similarity score."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "descripcion_alcance": {
+                    "type": "string",
+                    "description": "Scope description of the new project"
+                },
+                "tipo_servicio": {"type": "string"},
+                "sector": {"type": "string"},
+                "complejidad_regulatoria": {"type": "string"},
+                "tecnologias": {
+                    "type": "array",
+                    "items": {"type": "string"}
+                },
+                "top_n": {
+                    "type": "integer",
+                    "description": "Number of similar projects to return"
+                }
+            },
+            "required": [
+                "descripcion_alcance", "tipo_servicio", "sector"
+            ]
+        }
+    },
+    {
+        "name": "calcular_estimacion_calibrada",
+        "description": (
+            "Calculates calibrated effort estimate from "
+            "similar projects and their historical deviations."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "ids_proyectos_referencia": {
+                    "type": "array",
+                    "items": {"type": "string"}
+                },
+                "horas_estimadas_base": {
+                    "type": "number",
+                    "description": "Consultant's base estimate (hours)"
+                },
+                "nivel_confianza": {
+                    "type": "number",
+                    "description": "Desired confidence level (0.80, 0.90)"
+                }
+            },
+            "required": [
+                "ids_proyectos_referencia", "horas_estimadas_base"
+            ]
+        }
+    }
+]
+
+SYSTEM_PROMPT = """You are an effort estimation agent for technology
+consulting projects. Your job:
+
+1. Receive the description of a new project.
+2. Search for similar historical projects in the database.
+3. Analyze the historical deviations of those projects.
+4. Produce a calibrated estimate with confidence interval.
+
+Rules:
+- Always search for at least 5 similar projects.
+- If you find fewer than 3 with similarity > 0.6, flag as "low confidence".
+- Explain which projects you used as reference and why.
+- Include the average deviation ratio of the reference projects[^deviation_ratio].
+- Produce a range (P10-P90), not a single number.
+- Identify specific risk factors for the new project
+  that could increase deviation."""
+
+def ejecutar_estimacion(descripcion_proyecto: str) -> dict:
+    """Runs the estimation agent on a new project."""
+    messages = [
+        {"role": "user", "content": descripcion_proyecto}
+    ]
+    # Agent loop: the model invokes tools iteratively
+    for iteration in range(32):
+        response = client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=4096,
+            system=SYSTEM_PROMPT,
+            tools=tools,
+            messages=messages
+        )
+        # If the model finishes without invoking tools, return
+        if response.stop_reason == "end_turn":
+            return {
+                "estimacion": response.content[0].text,
+                "tokens_usados": response.usage.input_tokens
+                    + response.usage.output_tokens
+            }
+        if response.stop_reason != "tool_use":
+            raise ValueError("Incomplete or unsupported model stop reason")
+        # Process tool invocations
+        tool_results = []
+        for block in response.content:
+            if block.type == "tool_use":
+                resultado = ejecutar_herramienta(
+                    block.name, block.input
+                )
+                tool_results.append({
+                    "type": "tool_result",
+                    "tool_use_id": block.id,
+                    "content": json.dumps(resultado)
+                })
+        messages.append({"role": "assistant", "content": response.content})
+        if not tool_results:
+            raise ValueError("Tool-use response contains no tool calls")
+        messages.append({"role": "user", "content": tool_results})
+    raise RuntimeError("Tool loop limit reached; no completed estimate")

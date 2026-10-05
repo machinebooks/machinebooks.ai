@@ -1,0 +1,21 @@
+# Proposed continuous-training contract; no schedule or deploy is simulated
+def check_training_schedule(organization_id):
+    raise NotImplementedError("authorized policy and verified history required")
+
+def generate_and_deploy_scenario(spec):
+    raise NotImplementedError("approval, owned deployment and readiness receipt required")
+
+def evaluate_session(scenario_id, participant_id):
+    raise NotImplementedError("versioned rubric and authorized evidence required")
+
+def continuous_training_cycle(organization_id):
+    schedule = check_training_schedule(organization_id)
+    for item in schedule["approved_items"]:
+        receipt = generate_and_deploy_scenario(item)
+        if receipt.get("ready") is not True:
+            raise RuntimeError("deployment readiness unconfirmed")
+        # Assessment follows a completed exercise, never the deployment call.
+        yield receipt
+
+# Organizational policy supplies dates; NIS2 does not define a universal
+# 1 April deadline. Scores and labeled datasets require separate validation.

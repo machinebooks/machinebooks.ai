@@ -1,0 +1,5 @@
+# Compile the injector (finds Claude.exe and injects the DLL)
+gcc -o injector.exe injector.c -lkernel32
+
+# Compile the DLL that connects to the pipe
+gcc -shared -o pipe_inject.dll pipe_inject.c -lkernel32

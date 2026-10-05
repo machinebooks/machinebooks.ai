@@ -1,0 +1,27 @@
+// Typical WinVerifyTrust call
+LONG lStatus;
+WINTRUST_DATA WinTrustData;
+WINTRUST_FILE_INFO FileData;
+GUID WVTPolicyGUID = WINTRUST_ACTION_GENERIC_VERIFY_V2;
+
+// Configure FileData with the file path
+FileData.cbStruct = sizeof(WINTRUST_FILE_INFO);
+FileData.pcwszFilePath = L"C:\\path\\to\\binary.exe";
+FileData.hFile = NULL;
+FileData.pgKnownSubject = NULL;
+
+// Configure WinTrustData
+WinTrustData.cbStruct = sizeof(WINTRUST_DATA);
+WinTrustData.dwUIChoice = WTD_UI_NONE;  // No dialog
+WinTrustData.fdwRevocationChecks = WTD_REVOKE_NONE;
+WinTrustData.dwUnionChoice = WTD_CHOICE_FILE;
+WinTrustData.pFile = &FileData;
+WinTrustData.dwStateAction = WTD_STATEACTION_VERIFY;
+WinTrustData.dwProvFlags = WTD_SAFER_FLAG;
+
+// Verify
+lStatus = WinVerifyTrust(NULL, &WVTPolicyGUID, &WinTrustData);
+
+// lStatus == ERROR_SUCCESS → valid signature
+// lStatus == TRUST_E_NOSIGNATURE → no signature
+// lStatus == TRUST_E_BAD_DIGEST → broken signature (file modified)

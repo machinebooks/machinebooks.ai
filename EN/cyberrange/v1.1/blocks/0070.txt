@@ -1,0 +1,18 @@
+# Authorized bounded observation; unknown is distinct from disconnected.
+import asyncio
+from datetime import datetime, timezone
+
+async def get_network_status(actor, workzone_ref, access, inventory):
+    scope = await asyncio.wait_for(access.network_scope(actor, workzone_ref), 10)
+    try:
+        raw = await asyncio.wait_for(inventory.observe_network(scope), 20)
+    except TimeoutError:
+        return {"status": "unknown", "observed_at": None, "coverage": "timeout"}
+    value = inventory.validate_observation(raw, scope)
+    timestamp = datetime.fromisoformat(value["observed_at"].replace("Z", "+00:00"))
+    if timestamp.tzinfo is None or timestamp.utcoffset().total_seconds() != 0:
+        raise ValueError("UTC observation required")
+    return {"status": "observed", "observed_at": timestamp.astimezone(timezone.utc).isoformat(),
+        "coverage": value["coverage"], "vlan_id": value["vlan_id"],
+        "network_cidr": value["network_cidr"], "egress_status": value["egress_status"]}
+# The adapter validates typed fields, scope and coverage; no management endpoint is returned.

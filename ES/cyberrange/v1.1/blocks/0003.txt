@@ -1,0 +1,32 @@
+# YAML: proposed teaching flow; no complete private integration is proven.
+exercise_flow:
+  state: proposed
+  preparation:
+    - approve_objectives_and_versioned_rubric
+    - validate_catalog_artifacts_and_owned_resource_scope
+    - reserve_capacity_networks_and_leases_atomically
+    - record_authorized_participants_and_consent
+  deployment:
+    - record_idempotent_intent
+    - await_clone_and_boot_receipts
+    - validate_interface_subnet_routes_and_isolation
+    - apply_approved_playbooks_and_verify_services
+    - create_instance_flags_with_secret_reference_and_128_bit_hmac_verifier
+    - publish_observed_state_with_coverage_and_pending_resources
+  execution:
+    - revalidate_current_session_permission_and_resource_before_effects
+    - authorize_console_and_reviewed_action_catalog
+    - retain_minimized_events_with_utc_event_time_and_capture_time
+    - offer_optional_coaching_only_with_opt_in_and_review
+    - report_transport_latency_loss_and_recovery
+    - apply_shared_admission_limits_and_transactional_capture_ledger
+  evaluation:
+    - calculate_score_at_an_explicit_ledger_cutoff
+    - retain_rubric_version_and_expected_observed_catalog_ids
+    - review_evidence_gaps_and_teaching_interpretation
+    - perform_after_action_review
+  closure:
+    - reject_new_effects_after_lease_expiry
+    - revoke_grants_and_request_owned_resource_removal
+    - retain_pending_inventory_until_confirmed_absence
+    - preserve_required_evidence_under_retention_policy

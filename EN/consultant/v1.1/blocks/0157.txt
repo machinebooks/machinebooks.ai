@@ -1,0 +1,79 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+from dataclasses import dataclass
+from datetime import date, timedelta
+from enum import Enum
+from typing import Optional
+
+class PlanType(Enum):
+    SINGLE = "single"           # One assessment, no recurrence
+    QUARTERLY = "quarterly"     # Assessment every 3 months + consultant
+    CONTINUOUS = "continuous"   # Quarterly assessment + monitoring
+
+@dataclass
+class Subscription:
+    client_id: str
+    plan: PlanType
+    start_date: date
+    price_eur: float
+    consultant_hours_included: float  # Consultant hours per period
+    assessments_remaining: int
+    next_assessment_date: Optional[date] = None
+
+    @classmethod
+    def create_quarterly(cls, client_id: str) -> "Subscription":
+        """Quarterly plan: 4 assessments/year + 6h consultant."""
+        return cls(
+            client_id=client_id,
+            plan=PlanType.QUARTERLY,
+            start_date=date.today(),
+            price_eur=4500.0,       # €4,500/year
+            consultant_hours_included=6.0,  # Per quarter
+            assessments_remaining=4,
+            next_assessment_date=date.today() + timedelta(days=90),
+        )
+
+    @classmethod
+    def create_continuous(cls, client_id: str) -> "Subscription":
+        """Continuous plan: assessments + monitoring + 12h consultant."""
+        return cls(
+            client_id=client_id,
+            plan=PlanType.CONTINUOUS,
+            start_date=date.today(),
+            price_eur=9600.0,       # €9,600/year (€800/month)
+            consultant_hours_included=12.0,  # Per quarter
+            assessments_remaining=4,
+            next_assessment_date=date.today() + timedelta(days=90),
+        )
+
+    def is_assessment_due(self) -> bool:
+        """Checks if it's time to run a new assessment."""
+        if self.next_assessment_date is None:
+            return False
+        return date.today() >= self.next_assessment_date
+
+    def record_assessment(self):
+        """Records a completed assessment and schedules the next."""
+        self.assessments_remaining -= 1
+        if self.assessments_remaining > 0:
+            self.next_assessment_date = date.today() + timedelta(days=90)
+        else:
+            self.next_assessment_date = None
+
+def check_pending_assessments(
+    subscriptions: list[Subscription]
+) -> list[dict]:
+    """Generates alerts for assessments that need to be executed."""
+    alerts = []
+    for sub in subscriptions:
+        if sub.is_assessment_due():
+            alerts.append({
+                "client_id": sub.client_id,
+                "plan": sub.plan.value,
+                "action": "assessment_due",
+                "message": (
+                    f"Quarterly assessment pending. "
+                    f"{sub.assessments_remaining} remaining in period."
+                ),
+            })
+    return alerts

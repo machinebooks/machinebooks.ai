@@ -1,0 +1,11 @@
+# Locate the UWP Telegram installation
+$pkg = Get-AppxPackage | Where-Object { $_.Name -like "*Telegram*" }
+$installDir = $pkg.InstallLocation
+
+# Examine the main binary
+Get-Item "$installDir\Telegram\Telegram.exe" |
+    Select-Object Name, Length, LastWriteTime
+
+# Result:
+# Name           Length      LastWriteTime
+# Telegram.exe   187800064   2026-03-28 14:22:31

@@ -1,0 +1,15 @@
+# extract_all.py -- HTTP server that captures requests
+# from Claude Code redirected via ANTHROPIC_BASE_URL
+
+import http.server, json
+
+class CaptureHandler(http.server.BaseHTTPRequestHandler):
+    def do_POST(self):
+        length = int(self.headers['Content-Length'])
+        body = json.loads(self.rfile.read(length))
+        # body contains system prompt + tools
+        with open("captured_request.json", "w") as f:
+            json.dump(body, f, indent=2)
+        # Respond with error so Claude shows
+        # an error message without sending data to Anthropic
+        self.send_error(500)

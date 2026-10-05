@@ -1,0 +1,11 @@
+Analyze this PE report. The AsIO3.sys driver imports:
+- MmMapIoSpace, MmUnmapIoSpace (ntoskrnl.exe)
+- ZwMapViewOfSection, ZwUnmapViewOfSection (ntoskrnl.exe)
+- MmGetPhysicalAddress, MmAllocateContiguousMemory (ntoskrnl.exe)
+- IoCreateDevice, IoCreateSymbolicLink (ntoskrnl.exe)
+
+Does NOT import: SePrivilegeCheck, SeSinglePrivilegeCheck, SeAccessCheck
+
+Strings: \Device\Asusgio3, \Device\PhysicalMemory
+
+What types of vulnerabilities should I look for?

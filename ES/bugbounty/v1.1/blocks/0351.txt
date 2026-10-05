@@ -1,0 +1,12 @@
+# Vector 1: activar modo debug via CLI
+# Requiere cerrar Telegram antes de relanzar
+Stop-Process -Name "Telegram" -Force -ErrorAction SilentlyContinue
+Start-Sleep -Seconds 2
+
+# Lanzar con flag -debug
+& "$env:LOCALAPPDATA\Packages\TelegramMessengerLLP.TelegramDesktop_t4vj0pshhgkwm\LocalCache\Roaming\Telegram Desktop\Telegram.exe" -debug
+
+# Verificar que el proceso arrancó con el flag
+Get-CimInstance Win32_Process |
+    Where-Object { $_.Name -eq "Telegram.exe" } |
+    Select-Object CommandLine

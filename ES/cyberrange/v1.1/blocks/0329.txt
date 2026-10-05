@@ -1,0 +1,6 @@
+# Request teardown; preserve rows and evidence until every resource is confirmed absent
+async def close_workzone(actor, workzone_id, api, request_id):
+    job = await api.request_owned_teardown_once(actor, workzone_id, request_id)
+    receipt = await api.teardown_receipt(actor, job.id)
+    return {"job_id": job.id, "closed": receipt.get("all_confirmed") is True,
+            "pending": receipt.get("pending", []), "evidence_retained": True}

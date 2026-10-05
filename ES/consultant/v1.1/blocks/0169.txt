@@ -1,0 +1,6 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+# Pseudocode: classify all segments locally; unknown sensitivity requires human review
+# No API call is authorized by classification alone
+def classify_semantic(text, project_policy, local_classifier):
+    return local_classifier.classify_all(text, project_policy)

@@ -1,0 +1,49 @@
+# Educational pseudocode: incomplete fragment; do not run as a complete application.
+# Required adapters must validate authenticated scope, input/output schemas, provenance and review.
+def evaluar_seccion(
+    seccion: SeccionGenerada,
+    contexto: ContextoPropuesta,
+    criterio_relevante: dict
+) -> dict:
+    """Evaluates a section's quality against tender criteria."""
+
+    prompt_evaluacion = f"""Evaluate this technical proposal section as if you were
+the evaluator at the public body commissioning the project.
+
+EVALUATION CRITERION:
+- Name: {criterio_relevante['nombre']}
+- Maximum score: {criterio_relevante['puntuacion_maxima']} points
+- Description: {criterio_relevante.get('descripcion', 'Not specified')}
+
+SECTION TO EVALUATE:
+{seccion.contenido}
+
+RELEVANT TENDER REQUIREMENTS:
+{chr(10).join(f'- {r["descripcion"]}' for r in contexto.requisitos_pliego[:15])}
+
+Respond in JSON with this structure:
+{{
+    "puntuacion_estimada": <number from 0 to {criterio_relevante['puntuacion_maxima']}>,
+    "fortalezas": ["list of strengths"],
+    "carencias": ["list of specific shortcomings"],
+    "sugerencias_mejora": ["list of concrete improvements"],
+    "especificidad": <1-10, how well adapted to the specific client>,
+    "riesgo_generico": <true/false, if it reads like a reused template>
+}}"""
+
+    response = client_anthropic.messages.create(
+        model="claude-haiku-4-5",  # Haiku for fast evaluation
+        max_tokens=1024,
+        messages=[{"role": "user", "content": prompt_evaluacion}]
+    )
+
+    import json
+    evaluacion = json.loads(response.content[0].text)
+
+    # Update the section with the score
+    seccion.score_quality = (
+        evaluacion["puntuacion_estimada"] /
+        criterio_relevante["puntuacion_maxima"] * 100
+    )
+
+    return evaluacion

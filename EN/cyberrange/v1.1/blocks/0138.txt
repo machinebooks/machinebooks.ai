@@ -1,0 +1,19 @@
+# Hint unlock shares the capture transaction and concrete instance relation
+from datetime import datetime, timezone
+
+def unlock_hint(adapter,actor,instance_id,hint_id):
+    adapter.authorize(actor.id,"hint_unlock",instance_id)
+    with adapter.hint_transaction(actor.id,instance_id) as transaction:
+        instance=transaction.lock_owned_instance()
+        if instance.state!="open" or instance.expires_at.tzinfo is None or datetime.now(timezone.utc)>=instance.expires_at:
+            raise ValueError("active unexpired instance required")
+        hint=transaction.get_hint_for_instance(hint_id)
+        if hint is None or hint.flag_id is None:
+            raise ValueError("explicit hint/flag/instance relation required")
+        if transaction.get_capture(hint.flag_id) is not None:
+            raise ValueError("already captured")
+        use=transaction.get_or_insert_unique_hint_use(hint.id,hint.flag_id)
+        return {"hint":hint.text,"use_id":use.id,"penalty_pct":use.frozen_penalty_pct}
+
+# Unlock records assistance once; capture later applies its frozen penalty.
+# Chapter 11's abbreviated schema requires the corresponding migration.

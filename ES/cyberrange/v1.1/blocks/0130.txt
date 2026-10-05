@@ -1,0 +1,23 @@
+# SQLAlchemy 2.x teaching envelope; migration and integrity controls require integration.
+from datetime import datetime, timezone
+from sqlalchemy import Column, DateTime, Integer, String
+
+def create_audit_model(Base):
+    class AuditLog(Base):
+        __tablename__ = "audit_logs"
+        id = Column(Integer, primary_key=True)
+        scope_ref = Column(String(128), nullable=False)
+        actor_ref = Column(String(128), nullable=False)
+        request_ref = Column(String(128), nullable=False)
+        event_type = Column(String(64), nullable=False)
+        category = Column(String(32), nullable=False)
+        severity = Column(String(16), nullable=False)
+        status = Column(String(16), nullable=False)
+        reason_code = Column(String(64))
+        created_at = Column(DateTime(timezone=True), nullable=False,
+            default=lambda: datetime.now(timezone.utc))
+        review_version = Column(Integer, nullable=False, default=0)
+        review_status = Column(String(16), nullable=False, default="pending")
+    return AuditLog
+# Opaque references remain controlled data. Raw username/IP/session/body/details are excluded.
+# The adapter normalizes UTC, enforces scope and appends separate immutable review history.
