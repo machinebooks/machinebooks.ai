@@ -1,0 +1,79 @@
+# GNU Make/Bash educational interface; private build/runtime assets are prerequisites.
+SHELL := /bin/bash
+.SHELLFLAGS := -eu -o pipefail -c
+.ONESHELL:
+.RECIPEPREFIX := >
+COMPOSE_DEV := docker compose --env-file .env.dev -f docker-compose.yml -p grc-dev
+COMPOSE_PROD := docker compose --env-file .env.prod -f docker-compose.prod.yml -p grc-prod
+export MESSAGE BACKUP_PATH SNAPSHOT_WINDOW_APPROVED CONFIRM_DEV_RESTORE CONFIRM_DEV_DATA_LOSS
+BACKUP_DIR := ./backups/$(shell date -u +%Y%m%dT%H%M%SZ)
+.PHONY: help up down rebuild logs shell-api shell-db migrate migrate-new seed seed-rag test test-cov backup restore prod-up prod-down prod-logs prod-backup prod-status nuke
+
+help:
+>@echo "Targets explícitos; revise contexto, secretos y autorización antes de ejecutar."
+up:
+>$(COMPOSE_DEV) up -d --build
+down:
+>$(COMPOSE_DEV) down
+rebuild:
+>$(COMPOSE_DEV) up -d --build --force-recreate
+logs:
+>$(COMPOSE_DEV) logs -f --tail=100
+shell-api:
+>$(COMPOSE_DEV) exec fastapi /bin/bash
+shell-db:
+>$(COMPOSE_DEV) exec mysql mysql --defaults-extra-file=/run/secrets/mysql_client_cnf grc_db
+migrate:
+>$(COMPOSE_DEV) exec fastapi alembic upgrade head
+migrate-new:
+>test -n "$${MESSAGE:?A migration message is required}"
+>$(COMPOSE_DEV) exec fastapi alembic revision --autogenerate -m "$${MESSAGE:?A migration message is required}"
+seed:
+>$(COMPOSE_DEV) exec fastapi python -m scripts.seed_all
+seed-rag:
+>$(COMPOSE_DEV) exec fastapi python -m scripts.seed_rag_corpus
+test:
+>$(COMPOSE_DEV) exec fastapi pytest tests/ -v --tb=short
+test-cov:
+>$(COMPOSE_DEV) exec fastapi pytest tests/ --cov=app --cov-report=html
+
+# Operator approves a coordinated write/DDL pause before this development-only example.
+backup:
+>test "$${SNAPSHOT_WINDOW_APPROVED:-}" = "1"
+>umask 077
+>mkdir -p "$(BACKUP_DIR)"
+>$(COMPOSE_DEV) exec -T mysql mysqldump --defaults-extra-file=/run/secrets/mysql_backup_cnf --single-transaction --routines --triggers --no-tablespaces --set-gtid-purged=OFF grc_db | gzip > "$(BACKUP_DIR)/grc_db.sql.gz"
+>$(COMPOSE_DEV) exec -T fastapi tar czf - -C /app/uploads . > "$(BACKUP_DIR)/uploads.tar.gz"
+>$(COMPOSE_DEV) exec -T fastapi tar czf - -C /app/reports . > "$(BACKUP_DIR)/reports.tar.gz"
+>for archive in "$(BACKUP_DIR)"/*.gz; do gzip -t "$$archive"; done
+>(cd "$(BACKUP_DIR)" && sha256sum *.gz > SHA256SUMS)
+>@echo "Artefactos creados; recuperación completa pendiente de prueba."
+
+# Destructive SQL restore is confined to an authorized disposable development target.
+restore:
+>test "$${CONFIRM_DEV_RESTORE:-}" = "YES"
+>test -n "$${BACKUP_PATH:?An approved backup path is required}"
+>(cd "$${BACKUP_PATH:?An approved backup path is required}" && sha256sum -c SHA256SUMS)
+>gzip -dc "$${BACKUP_PATH:?An approved backup path is required}/grc_db.sql.gz" | $(COMPOSE_DEV) exec -T mysql mysql --defaults-extra-file=/run/secrets/mysql_backup_cnf grc_db
+>@echo "SQL restaurado; archivos y recuperación de aplicación pendientes."
+
+prod-up:
+>test -f .env.prod
+>$(COMPOSE_PROD) up -d --build
+prod-down:
+>$(COMPOSE_PROD) down
+prod-logs:
+>$(COMPOSE_PROD) logs -f --tail=200
+prod-status:
+>$(COMPOSE_PROD) ps
+prod-backup:
+>@echo "Use el trabajo de backup de producción con ámbito y ventana aprobados."
+>@exit 1
+nuke:
+>test "$${CONFIRM_DEV_DATA_LOSS:-}" = "YES"
+>$(COMPOSE_DEV) down -v
+# Backup client file is a protected Compose secret; never put passwords on argv.
+# Missing tools or export failures abort; no swallowed tar errors or remote host Mountpoint access.
+# Checksums/CRC are corruption checks. Restore also needs files, configuration, keys and a real
+# isolated recovery test; this SQL example does not restore the entire platform or prove RPO/RTO.
+# Directory uniqueness/concurrency, retention and production snapshot workflows are not supplied.

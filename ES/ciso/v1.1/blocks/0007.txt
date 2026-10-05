@@ -1,0 +1,17 @@
+# Representative file references; the backend must explicitly implement each reader.
+# Secret files are provisioned outside Git and mounted read-only for the service.
+JWT_ALGORITHM=RS256
+JWT_PRIVATE_KEY_FILE=/run/secrets/jwt_private_key
+JWT_PUBLIC_KEY_FILE=/run/secrets/jwt_public_key
+ENCRYPTION_KEY_FILE=/run/secrets/data_encryption_key
+ANTHROPIC_API_KEY_FILE=/run/secrets/anthropic_api_key
+DATABASE_URL_FILE=/run/secrets/database_url
+REDIS_URL_FILE=/run/secrets/redis_url
+MFA_REQUIRED_ROLES=admin,compliance_officer,security_officer
+PKI_ENABLED=true
+# PKI still requires validated chain, revocation, proxy trust and actual tests.
+# Provider/model/fallback destinations come from authorized tenant policy.
+# No fallback is automatically allowed because an environment variable names it.
+# Core privacy, risk, compliance, security and AI infrastructure remains available.
+# Licensing restricts explicitly optional modules through current server policy.
+# Desktop and core remain private permanently; only educational examples are public.

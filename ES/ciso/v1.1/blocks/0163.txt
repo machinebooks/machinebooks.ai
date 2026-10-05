@@ -1,0 +1,52 @@
+from datetime import datetime, timezone
+from celery import shared_task
+from celery.exceptions import SoftTimeLimitExceeded
+from app.worker.jobs import authorized_risk_job, TransientServiceError
+
+@shared_task(
+    bind=True, name="app.tasks.ai.run_risk_analysis", queue="ai",
+    soft_time_limit=300, time_limit=360, max_retries=2, acks_late=True)
+def run_risk_analysis(self, job_id):
+    # Registry binds an approved request to actor/tenant/assets/methodology and job claim.
+    context = authorized_risk_job(job_id)
+    with context.claim_once() as claim:
+        if claim.completed_receipt is not None:
+            return claim.completed_receipt
+        asset_ids = context.approved_asset_ids()
+        if not 1 <= len(asset_ids) <= 1000 or len(set(asset_ids)) != len(asset_ids):
+            raise ValueError("Risk asset batch is empty, duplicated or excessive")
+        started = datetime.now(timezone.utc)
+        context.jobs.mark_running(job_id, started)
+        try:
+            agent = context.authorized_risk_agent()
+            for index, asset_id in enumerate(asset_ids):
+                context.recheck_authorization()
+                if context.results.has_checkpoint(job_id, asset_id):
+                    continue
+                asset = context.load_authorized_asset(asset_id)
+                # Agent uses the scoped policy/budget/usage runtime on every model/tool call.
+                draft = agent.analyze_asset(asset)
+                context.results.save_draft_once(job_id, asset_id, draft)
+                progress = 20 + int((index + 1) / len(asset_ids) * 60)
+                context.jobs.save_progress(job_id, progress, "asset_analysis")
+                self.update_state(state="PROGRESS", meta={"progress": progress})
+            recommendations = agent.generate_recommendations(context.analysis_id)
+            receipt = context.results.complete_draft_once(
+                job_id, recommendations, completed_at=datetime.now(timezone.utc),
+                usage=agent.known_and_unknown_usage(), review_required=True)
+            return receipt
+        except SoftTimeLimitExceeded:
+            context.jobs.mark_timeout_and_uncertain_attempts(job_id)
+            return {"job_id": job_id, "status": "timeout",
+                    "partial_results": context.results.has_any_checkpoint(job_id)}
+        except TransientServiceError:
+            context.jobs.mark_retry_pending(job_id)
+            raise self.retry(exc=RuntimeError("Transient analysis service failure"),
+                             countdown=min(300, 30 * 2 ** self.request.retries)) from None
+        except Exception:
+            context.jobs.mark_failed_redacted(job_id)
+            raise RuntimeError("Risk draft analysis failed") from None
+# Adapters own/close sessions, scoped atomic transitions, unique checkpoints and attempt ledgers.
+# Redelivery is not exactly-once execution: reconcile in-flight calls and partial provider charges.
+# Policy/auth/schema/metering failures are permanent here; no legal decision is made from a draft.
+# Hard worker termination can leave uncertain state; tested reconciliation is required.

@@ -1,0 +1,73 @@
+# Educational DPIA draft adapter: controller review and DPO advice remain separate.
+from dataclasses import dataclass, field
+from math import isfinite
+from typing import AsyncGenerator
+from uuid import uuid4
+import json
+
+@dataclass
+class DPIAWorkflowState:
+    processing_id: int
+    results: dict = field(default_factory=dict)
+    steps: list[dict] = field(default_factory=list)
+    total_tokens: int | None = 0
+    total_cost_eur: float | None = 0.0
+
+class DPIAWorkflow:
+    STEPS = (("privacy", "analyze_treatment"), ("risk", "assess_dpia_risks"),
+             ("compliance", "verify_dpia_compliance"), ("report_writer", "generate_dpia_report"))
+
+    def __init__(self, run_step, policy):
+        if not callable(run_step):
+            raise TypeError("A verified asynchronous step adapter is required")
+        self.run_step, self.policy = run_step, policy
+
+    async def execute(self, processing_id: int, tenant_id: int) -> AsyncGenerator[dict, None]:
+        if (type(processing_id) is not int or processing_id <= 0
+                or type(tenant_id) is not int or tenant_id <= 0):
+            raise ValueError("Invalid processing or tenant identifier")
+        # Required policy uses current actor, tenant, permissions and same-tenant processing.
+        scope = await self.policy.authorize_processing(tenant_id, processing_id)
+        state = DPIAWorkflowState(processing_id)
+        for number, (agent, action) in enumerate(self.STEPS, 1):
+            task_id = str(uuid4())
+            yield {"type": "step_transition", "agent": agent, "step_number": number,
+                   "total_steps": len(self.STEPS), "status": "running"}
+            try:
+                result = await self.run_step(
+                    agent_name=agent, action=action, task_id=task_id, scope=scope,
+                    params={"processing_id": processing_id, "corporate_id": tenant_id,
+                            "previous_results": dict(state.results)})
+                if not isinstance(result, dict) or result.get("status") != "completed":
+                    raise RuntimeError("The step did not complete")
+                output, tokens = result["output"], result.get("total_tokens")
+                if not isinstance(output, dict) or len(json.dumps(output).encode()) > 32768:
+                    raise ValueError("Invalid bounded step output")
+                if tokens is not None and (type(tokens) is not int or tokens < 0):
+                    raise ValueError("Invalid token metric")
+                cost = result.get("total_cost_eur")
+                if cost is not None and (isinstance(cost, bool) or not isinstance(cost, (int, float))
+                                         or not isfinite(cost) or cost < 0):
+                    raise ValueError("Invalid EUR cost metric")
+                # A USD amount is not EUR; the adapter needs a documented FX attribution.
+                if cost is not None and result.get("cost_currency") != "EUR":
+                    raise ValueError("EUR currency attribution required")
+                state.results[agent] = output
+                state.total_tokens = (None if tokens is None or state.total_tokens is None
+                                      else state.total_tokens + tokens)
+                state.total_cost_eur = (None if cost is None or state.total_cost_eur is None
+                                        else state.total_cost_eur + cost)
+                state.steps.append({"agent": agent, "status": "completed", "task_id": task_id})
+                yield {"type": "agent_completed", "agent": agent, "tokens": tokens,
+                       "cost_eur": None if cost is None else round(cost, 4)}
+            except Exception as exc:
+                state.steps.append({"agent": agent, "status": "failed", "task_id": task_id})
+                yield {"type": "error", "agent": agent, "error_type": type(exc).__name__}
+                break
+        complete = len(state.results) == len(self.STEPS)
+        yield {"type": "workflow_completed", "processing_id": processing_id,
+               "completed_steps": len(state.results), "total_steps": len(self.STEPS),
+               "status": "draft_pending_review" if complete else "partial_draft_pending_review",
+               "total_tokens": state.total_tokens,
+               "total_cost_eur": (None if state.total_cost_eur is None
+                                  else round(state.total_cost_eur, 4))}

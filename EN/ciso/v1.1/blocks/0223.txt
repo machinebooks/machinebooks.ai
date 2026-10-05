@@ -1,0 +1,26 @@
+from datetime import datetime, timedelta, timezone
+
+async def get_compliance_evidence(self):
+    self.policy.authorize_evidence_read(self.corporate_id)
+    end = datetime.now(timezone.utc)
+    start = end - timedelta(days=365)
+    # Required adapter scopes actor/tenant, soft-delete and period/cohort; reports source
+    # counts, denominators, unknown/zero targets, distinct completions and data provenance.
+    data = await self.policy.authorized_evidence_summary(self.db, self.corporate_id, start, end)
+    return {
+        "period_start": start.isoformat(), "period_end": end.isoformat(),
+        "window": "rolling_365_days",
+        "policies_published_as_of_end": data.published_policies,
+        "campaigns_completed_in_window": data.completed_campaigns,
+        "training_assignment_completion_rate": data.known_assignment_completion_rate,
+        "unknown_target_campaigns": data.unknown_target_campaigns,
+        "zero_target_campaigns": data.zero_target_campaigns,
+        "phishing_click_rate_known_cohorts": data.known_cohort_click_rate,
+        "phishing_measurement_coverage": data.phishing_measurement_coverage,
+        "culture_score_known_components": data.known_culture_score,
+        "source_manifest": data.approved_source_manifest,
+        "review_required": True,
+    }
+# Aggregates are review material, not proof of effective training, anonymity or compliance.
+# Missing measurements remain None; assignment totals are not distinct organizational people.
+# Retain lawful source evidence, measure representativeness and allow auditor/contextual review.

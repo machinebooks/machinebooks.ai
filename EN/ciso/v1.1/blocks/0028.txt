@@ -1,0 +1,36 @@
+# Read-only deadline signals for one authorized tenant.
+# An hourly internal check must not postpone immediate Art.33/34 action.
+from celery import shared_task
+from datetime import datetime, timezone
+from app.models.privacy import DataBreach
+from app.core.database import get_db_session
+
+@shared_task(name="privacy.check_breach_deadlines", queue="notifications")
+def check_breach_deadlines(corporate_id: int):
+    if type(corporate_id) is not int or corporate_id < 1:
+        raise ValueError("Invalid tenant")
+    now = datetime.now(timezone.utc)
+    with get_db_session() as db:
+        breaches = db.query(DataBreach).filter(
+            DataBreach.corporate_id == corporate_id,
+            DataBreach.is_deleted.is_(False),
+            DataBreach.notified_authority_at.is_(None),
+            DataBreach.authority_notification_required.is_not(False),
+        ).all()
+        alerts = []
+        for breach in breaches:
+            deadline = breach.notification_deadline
+            if not isinstance(deadline, datetime):
+                alerts.append({"breach_id": breach.id, "level": "review_required"})
+                continue
+            # MySQL DATETIME is known to store UTC without offset in this example.
+            deadline = deadline.replace(tzinfo=timezone.utc) if deadline.tzinfo is None else deadline.astimezone(timezone.utc)
+            hours_left = (deadline - now).total_seconds() / 3600
+            level = "critical" if hours_left <= 0 else "high" if hours_left <= 24 else "medium" if hours_left <= 48 else None
+            if level:
+                alerts.append({"breach_id": breach.id, "level": level,
+                               "decision_pending": breach.authority_notification_required is None,
+                               "hours_remaining": hours_left})
+    # Persistence/deduplication and scoped recipient delivery need an outbox not shown here.
+    return {"corporate_id": corporate_id, "breaches_checked": len(breaches),
+            "signals": alerts, "checked_at": now.isoformat().replace("+00:00", "Z")}

@@ -1,0 +1,41 @@
+from datetime import datetime, timezone
+import math
+from sqlalchemy import select
+from app.models.policy_awareness import AwarenessCompletion, CampaignStatus
+
+async def submit_completion(self, campaign_id, data, user_id):
+    campaign = await authorized_campaign(self, campaign_id, user_id, "submit_own_completion")
+    if campaign.status != CampaignStatus.ACTIVE:
+        raise ValueError("Campaign is not active")
+    if not isinstance(data, dict) or set(data) != {"answers"}:
+        raise ValueError("Only bounded learner answers are accepted")
+    # Server adapter verifies target membership, activity evidence/answer key, limits and
+    # server-owned passing threshold/attempt count. No client user_id/score/passing_score.
+    grade = await self.policy.validate_and_grade_approved_activity(campaign, user_id, data["answers"])
+    if grade.score is not None and (
+        type(grade.score) not in (int, float) or not math.isfinite(grade.score)
+        or not 0 <= grade.score <= 100):
+        raise ValueError("Invalid server grade")
+    if type(grade.attempts) is not int or not 1 <= grade.attempts <= 100:
+        raise ValueError("Invalid server attempt count")
+    if grade.passed is not None and type(grade.passed) is not bool:
+        raise ValueError("Invalid server pass decision")
+    row = await self.db.scalar(select(AwarenessCompletion).where(
+        AwarenessCompletion.corporate_id == self.corporate_id,
+        AwarenessCompletion.campaign_id == campaign_id,
+        AwarenessCompletion.user_id == user_id).with_for_update())
+    if row is None:
+        row = AwarenessCompletion(
+            corporate_id=self.corporate_id, campaign_id=campaign_id,
+            user_id=user_id, created_by=user_id)
+        self.db.add(row)
+    row.status, row.score, row.passed = "completed", grade.score, grade.passed
+    row.attempts, row.answers = grade.attempts, grade.minimized_answers
+    row.completed_at = datetime.now(timezone.utc)
+    row.updated_by = user_id
+    row.is_deleted = False
+    await self.db.flush()
+    return {"id": row.id, "score": row.score, "passed": row.passed, "attempts": row.attempts}
+# Method continues the service above; campaign lock and unique constraint prevent duplicate rows.
+# Caller owns commit/rollback and statistics recalculation from distinct authorized completions.
+# Grade/answer storage needs access/retention policy; completion is not proven training effectiveness.

@@ -1,0 +1,57 @@
+# Historical bcrypt option; migration/Argon2id selection requires a separate reviewed policy.
+import bcrypt
+import jwt
+from datetime import datetime, timezone
+from math import ceil, isfinite
+from uuid import UUID
+from app.security.redis_client import redis_client
+from app.security.jwt_tokens import create_access_token_with_kid, decode_token_with_kid
+
+JWT_EXPIRATION_MINUTES = 60
+JWT_LEEWAY_SECONDS = 30
+
+def password_bytes(plain):
+    if not isinstance(plain, str):
+        raise ValueError("Invalid password input")
+    encoded = plain.encode("utf-8")
+    if not 1 <= len(encoded) <= 72:
+        raise ValueError("Bcrypt accepts at most 72 bytes; no silent truncation")
+    return encoded
+
+def hash_password(plain: str) -> str:
+    return bcrypt.hashpw(password_bytes(plain), bcrypt.gensalt(rounds=12)).decode("ascii")
+
+def verify_password(plain: str, hashed: str) -> bool:
+    try:
+        return bcrypt.checkpw(password_bytes(plain), hashed.encode("ascii"))
+    except (ValueError, UnicodeError):
+        return False
+
+def create_access_token(user_id, corporate_id, roles, mfa_verified=False):
+    return create_access_token_with_kid(user_id, corporate_id, roles, mfa_verified)
+
+async def decode_token(token: str) -> dict:
+    claims = decode_token_with_kid(token)
+    if await is_token_revoked(claims["jti"]):
+        raise jwt.InvalidTokenError("Access unavailable or token revoked")
+    return claims
+
+async def revoke_token(jti: str, exp_timestamp: float) -> None:
+    # Only verified current-session claims may reach this boundary.
+    UUID(jti)
+    if (isinstance(exp_timestamp, bool) or not isinstance(exp_timestamp, (int, float))
+            or not isfinite(exp_timestamp)):
+        raise ValueError("Invalid verified expiry")
+    now = datetime.now(timezone.utc).timestamp()
+    ttl = ceil(exp_timestamp + JWT_LEEWAY_SECONDS - now)
+    if not 0 < ttl <= 3630:
+        raise ValueError("Verified expiry outside access-token policy")
+    await redis_client.setex(f"blocklist:{jti}", ttl, "revoked")
+
+async def is_token_revoked(jti: str) -> bool:
+    UUID(jti)
+    try:
+        return bool(await redis_client.exists(f"blocklist:{jti}"))
+    except Exception:
+        # Required configured async client: TLS/auth/timeouts; failure denies access.
+        return True

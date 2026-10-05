@@ -1,0 +1,96 @@
+# Partial processor record; scores/flags need supporting evidence and controller assessment.
+# Nullable review states are not proof of compliance or lawful international transfer.
+from enum import Enum as PyEnum
+# Data Processor Model — GDPR Art. 28
+# Includes periodic assessment and contract tracking
+
+from sqlalchemy import (
+    Column, String, Text, Boolean, BigInteger,
+    ForeignKey, DateTime, JSON, Enum as SQLEnum, Float
+)
+from app.models.base import BaseModel
+
+
+class ProcessorStatus(str, PyEnum):
+    """Processor status in the management lifecycle."""
+    ACTIVE = "active"                 # Current contract and assessment up to date
+    PENDING_REVIEW = "pending_review" # Assessment pending or overdue
+    SUSPENDED = "suspended"           # Suspended for non-compliance
+    TERMINATED = "terminated"         # Relationship ended
+
+
+class DataProcessor(BaseModel):
+    """Data processor (GDPR Art. 28).
+
+    Each processor has a record, periodic assessment,
+    and linked contract. Related to one or more
+    processing activities from the records of processing activities (Ch. 4).
+    """
+    __tablename__ = "data_processors"
+
+    # --- Processor identification ---
+    name = Column(String(255), nullable=False,
+                  comment="Processor's legal name")
+    tax_id = Column(String(50), comment="Processor's tax ID")
+    country = Column(String(2), default="ES",
+                     comment="Processor's country (ISO 3166-1 alpha-2 code)")
+    contact_name = Column(String(255),
+                          comment="Contact person")
+    contact_email = Column(String(255),
+                           comment="Contact email")
+    dpo_name = Column(String(255), nullable=True,
+                      comment="Processor's DPO, if applicable")
+    dpo_contact = Column(String(255), nullable=True,
+                         comment="Processor's DPO contact")
+
+    # --- Status and classification ---
+    status = Column(SQLEnum(ProcessorStatus),
+                    default=ProcessorStatus.PENDING_REVIEW)
+    risk_level = Column(String(20), default="medium",
+                        comment="Risk level: low, medium, high, critical")
+    services_description = Column(Text,
+                                  comment="Description of services provided")
+    data_categories_processed = Column(
+        JSON, comment='Categories of data processed')
+    special_categories = Column(
+        Boolean, default=False,
+        comment="Does it process Art. 9 data?")
+
+    # --- Contract (Art. 28.3) ---
+    contract_signed = Column(Boolean, default=False,
+                             comment="Processing agreement signed?")
+    contract_date = Column(DateTime, nullable=True,
+                           comment="Contract signing date")
+    contract_expiry = Column(DateTime, nullable=True,
+                             comment="Contract expiration date")
+    contract_reference = Column(String(255), nullable=True,
+                                comment="Contract document reference")
+    contract_compliant_art28 = Column(
+        Boolean, default=False,
+        comment="Does the contract meet all Art. 28.3 requirements?")
+
+    # --- Sub-processors (Art. 28.2 and 28.4) ---
+    has_sub_processors = Column(Boolean, default=False,
+                                comment="Does it use sub-processors?")
+    sub_processors = Column(
+        JSON, nullable=True,
+        comment='List of authorized sub-processors')
+    sub_processor_authorization = Column(
+        String(20), default="specific",
+        comment="Authorization type: specific or general (Art. 28.2)")
+
+    # --- Periodic assessment ---
+    last_evaluation_date = Column(DateTime, nullable=True)
+    last_evaluation_score = Column(Float, nullable=True,
+                                   comment="Score 0-100 from questionnaire")
+    next_review_date = Column(DateTime, nullable=True,
+                              comment="Next scheduled review")
+    evaluation_notes = Column(Text, nullable=True)
+
+    # --- International transfers ---
+    international_transfer = Column(
+        Boolean, default=False,
+        comment="Does the processor transfer data outside the EEA?")
+    transfer_countries = Column(JSON, nullable=True)
+    transfer_safeguard = Column(String(50), nullable=True,
+                                comment="Safeguard type: adequacy, scc, bcr...")

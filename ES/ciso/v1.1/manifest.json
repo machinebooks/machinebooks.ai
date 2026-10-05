@@ -1,0 +1,2838 @@
+{
+  "editorial_version": "1.1",
+  "source_word_sha256": "9270a3058cde59ed1e8e4c67b52b35a404823ce2ceffb2f82b481132148460e9",
+  "source_file": "El-CISO-y-la-Maquina.docx",
+  "language": "es",
+  "scope": "educational SourceCode blocks; private desktop and core excluded",
+  "extraction": "literal w:t, line breaks w:br/w:cr and tabs w:tab in document order; UTF-8 without added headers",
+  "block_count": 235,
+  "execution_status": "not established by extraction",
+  "manuscript_final_four_sha256": {
+    "El-CISO-y-la-Maquina.docx": "9270a3058cde59ed1e8e4c67b52b35a404823ce2ceffb2f82b481132148460e9",
+    "El-CISO-y-la-Maquina.epub": "82dcde8845d9345c7d278899adcc4bc3a0666b3e3802b386c3a6842b718e1f48",
+    "The-CISO-and-the-Machine.docx": "dcf8fb0cde2e30e4ff083b4114517684db74187328b4aa2765d1dc65afd2725d",
+    "The-CISO-and-the-Machine.epub": "367a9cd64289519d9c33bd2806549977ad698a883e9e9131f4ed655bdaa68916"
+  },
+  "blocks": [
+    {
+      "id": 1,
+      "file": "blocks/0001.txt",
+      "word_paragraph_index_zero_based": 386,
+      "heading_context": [
+        "Capítulo 1 — El CISO ya no lee PDFs",
+        "3. Implementación",
+        "Estructura base: FastAPI con seguridad integrada"
+      ],
+      "sha256": "939f04f34f3be0b2a458675f74084941f2ca7fafba28230d56e19bdf66681ebe",
+      "bytes": 1332
+    },
+    {
+      "id": 2,
+      "file": "blocks/0002.txt",
+      "word_paragraph_index_zero_based": 394,
+      "heading_context": [
+        "Capítulo 1 — El CISO ya no lee PDFs",
+        "3. Implementación",
+        "El patrón de routers por dominio regulatorio"
+      ],
+      "sha256": "24ce998ab00f997d363e9f95acce6421048cf50fa6d202970d9845b8ae1808f4",
+      "bytes": 937
+    },
+    {
+      "id": 3,
+      "file": "blocks/0003.txt",
+      "word_paragraph_index_zero_based": 469,
+      "heading_context": [
+        "Capítulo 2 — El Arquitecto de IA en territorio regulatorio",
+        "3. Implementación",
+        "Ingeniería de contexto para un proyecto GRC"
+      ],
+      "sha256": "20132a3d20a02488fa0f727ccfe77e03aa959d56b57e63db7bf5de81edb46f56",
+      "bytes": 1428
+    },
+    {
+      "id": 4,
+      "file": "blocks/0004.txt",
+      "word_paragraph_index_zero_based": 495,
+      "heading_context": [
+        "Capítulo 2 — El Arquitecto de IA en territorio regulatorio",
+        "3. Implementación",
+        "Del artículo 30 al modelo de datos: un ejemplo completo"
+      ],
+      "sha256": "b3c57ef192eb8a071b3324c29b584276da6a32981667f8029b63fa016ed732a8",
+      "bytes": 4805
+    },
+    {
+      "id": 5,
+      "file": "blocks/0005.txt",
+      "word_paragraph_index_zero_based": 517,
+      "heading_context": [
+        "Capítulo 2 — El Arquitecto de IA en territorio regulatorio",
+        "3. Implementación",
+        "Claude API para agentes de compliance en producción"
+      ],
+      "sha256": "4bfe2fe84cd33283287f9144e08576278744f86eb9e7ca5991e3fe5c537178fd",
+      "bytes": 2225
+    },
+    {
+      "id": 6,
+      "file": "blocks/0006.txt",
+      "word_paragraph_index_zero_based": 578,
+      "heading_context": [
+        "Capítulo 3 — El ecosistema técnico: de legacy a FastAPI soberano",
+        "3. Implementación",
+        "Catálogo histórico de diecisiete servicios Docker"
+      ],
+      "sha256": "43eababaab9fadb5ecfa991730febdf0857b10a5d9a632bf858e118fa3f4fe9b",
+      "bytes": 6471
+    },
+    {
+      "id": 7,
+      "file": "blocks/0007.txt",
+      "word_paragraph_index_zero_based": 583,
+      "heading_context": [
+        "Capítulo 3 — El ecosistema técnico: de legacy a FastAPI soberano",
+        "3. Implementación",
+        "Configuración como contrato de despliegue"
+      ],
+      "sha256": "8b5fce6b94887e87e078fab3c0e59b93b27f51dbfc8491cd3aa0a8857b13e1f3",
+      "bytes": 1038
+    },
+    {
+      "id": 8,
+      "file": "blocks/0008.txt",
+      "word_paragraph_index_zero_based": 591,
+      "heading_context": [
+        "Capítulo 3 — El ecosistema técnico: de legacy a FastAPI soberano",
+        "3. Implementación",
+        "BaseModel compartido: el cimiento de los noventa modelos"
+      ],
+      "sha256": "d539a9870c1b3d4ae81bdec89c8428c80820eea396868af525f5380bbf080533",
+      "bytes": 1637
+    },
+    {
+      "id": 9,
+      "file": "blocks/0009.txt",
+      "word_paragraph_index_zero_based": 601,
+      "heading_context": [
+        "Capítulo 3 — El ecosistema técnico: de legacy a FastAPI soberano",
+        "3. Implementación",
+        "El patrón de startup: seed automático del corpus normativo"
+      ],
+      "sha256": "a0f4a385ff19147b8f4444b21473c8f5330ab968fc32234da4060c140dad0f6b",
+      "bytes": 1643
+    },
+    {
+      "id": 10,
+      "file": "blocks/0010.txt",
+      "word_paragraph_index_zero_based": 720,
+      "heading_context": [
+        "Capítulo 4 — El Registro de Actividades de Tratamiento (Art. 30 RGPD)",
+        "3. Implementación",
+        "El modelo de datos: Art. 30 convertido en SQLAlchemy"
+      ],
+      "sha256": "b5ace853d139e03ec4846cce875577b263101f9f3649b0844079470fbb758bce",
+      "bytes": 6571
+    },
+    {
+      "id": 11,
+      "file": "blocks/0011.txt",
+      "word_paragraph_index_zero_based": 728,
+      "heading_context": [
+        "Capítulo 4 — El Registro de Actividades de Tratamiento (Art. 30 RGPD)",
+        "3. Implementación",
+        "API REST con validación Pydantic"
+      ],
+      "sha256": "250f710f836efbc99f794083c4db66dae9ee2751d32d1d162501f4c60972093a",
+      "bytes": 2809
+    },
+    {
+      "id": 12,
+      "file": "blocks/0012.txt",
+      "word_paragraph_index_zero_based": 733,
+      "heading_context": [
+        "Capítulo 4 — El Registro de Actividades de Tratamiento (Art. 30 RGPD)",
+        "3. Implementación",
+        "API REST con validación Pydantic"
+      ],
+      "sha256": "3c9a1887e89cb1b20816d1cb1aa80ecc5f99be4da061226d3efbd56f01cd7293",
+      "bytes": 2795
+    },
+    {
+      "id": 13,
+      "file": "blocks/0013.txt",
+      "word_paragraph_index_zero_based": 741,
+      "heading_context": [
+        "Capítulo 4 — El Registro de Actividades de Tratamiento (Art. 30 RGPD)",
+        "3. Implementación",
+        "El agente de privacidad: borrador automático desde lenguaje natural"
+      ],
+      "sha256": "0e6e34f1d0bcd75a06a27e7f76043da21949f77bc2f66a75a12903accf02934a",
+      "bytes": 4843
+    },
+    {
+      "id": 14,
+      "file": "blocks/0014.txt",
+      "word_paragraph_index_zero_based": 744,
+      "heading_context": [
+        "Capítulo 4 — El Registro de Actividades de Tratamiento (Art. 30 RGPD)",
+        "3. Implementación",
+        "El agente de privacidad: borrador automático desde lenguaje natural"
+      ],
+      "sha256": "4a1a858a9f7011be997e9685d0c861a215f09b62c62a7035f776f7b8f131667c",
+      "bytes": 1263
+    },
+    {
+      "id": 15,
+      "file": "blocks/0015.txt",
+      "word_paragraph_index_zero_based": 748,
+      "heading_context": [
+        "Capítulo 4 — El Registro de Actividades de Tratamiento (Art. 30 RGPD)",
+        "3. Implementación",
+        "Catálogos sectoriales como seed data"
+      ],
+      "sha256": "a90dae2765651d41656bb237fa10599a1bb3fce81dd9eb13c79f6f887ac85899",
+      "bytes": 4513
+    },
+    {
+      "id": 16,
+      "file": "blocks/0016.txt",
+      "word_paragraph_index_zero_based": 752,
+      "heading_context": [
+        "Capítulo 4 — El Registro de Actividades de Tratamiento (Art. 30 RGPD)",
+        "3. Implementación",
+        "El RAT como sistema vivo: alertas y revisión periódica"
+      ],
+      "sha256": "384e129eb4bfdd8da57ac965468af454f56badacfe97ecd7e216a9d7315a290a",
+      "bytes": 2900
+    },
+    {
+      "id": 17,
+      "file": "blocks/0017.txt",
+      "word_paragraph_index_zero_based": 855,
+      "heading_context": [
+        "Capítulo 5 — Evaluaciones de impacto y derechos del interesado",
+        "3. Implementación",
+        "El modelo de datos: DPIA desde el Art. 35"
+      ],
+      "sha256": "c666fb1904b535b7dc4829769b6244fece69b2a26b05931f862460166266fc71",
+      "bytes": 5037
+    },
+    {
+      "id": 18,
+      "file": "blocks/0018.txt",
+      "word_paragraph_index_zero_based": 863,
+      "heading_context": [
+        "Capítulo 5 — Evaluaciones de impacto y derechos del interesado",
+        "3. Implementación",
+        "El modelo de solicitud de derechos ARCO+"
+      ],
+      "sha256": "86b47ade0b4803b24dfadac1d949fdd1a729fb4821051e76160f28b52a7b4bf5",
+      "bytes": 6749
+    },
+    {
+      "id": 19,
+      "file": "blocks/0019.txt",
+      "word_paragraph_index_zero_based": 870,
+      "heading_context": [
+        "Capítulo 5 — Evaluaciones de impacto y derechos del interesado",
+        "3. Implementación",
+        "Endpoint representativo: resolución de solicitud con validación de plazo"
+      ],
+      "sha256": "00d37431ca0d4b8eef20de459e809be509929a81ace23524adc5cf8e629e988a",
+      "bytes": 3075
+    },
+    {
+      "id": 20,
+      "file": "blocks/0020.txt",
+      "word_paragraph_index_zero_based": 874,
+      "heading_context": [
+        "Capítulo 5 — Evaluaciones de impacto y derechos del interesado",
+        "3. Implementación",
+        "Agente que genera borrador de DPIA desde tratamiento existente"
+      ],
+      "sha256": "5598aebfbbccd45b10a78b90fb9bd4cdb14d773160e70226ff31c7774ef82279",
+      "bytes": 2230
+    },
+    {
+      "id": 21,
+      "file": "blocks/0021.txt",
+      "word_paragraph_index_zero_based": 877,
+      "heading_context": [
+        "Capítulo 5 — Evaluaciones de impacto y derechos del interesado",
+        "3. Implementación",
+        "Agente que genera borrador de DPIA desde tratamiento existente"
+      ],
+      "sha256": "bb4c4e58144b6de1462b9fd738a8f3b2d48331bf7a5b2a90ec1248ffc8186898",
+      "bytes": 2665
+    },
+    {
+      "id": 22,
+      "file": "blocks/0022.txt",
+      "word_paragraph_index_zero_based": 882,
+      "heading_context": [
+        "Capítulo 5 — Evaluaciones de impacto y derechos del interesado",
+        "3. Implementación",
+        "Tarea Celery para alertas de vencimiento de plazos"
+      ],
+      "sha256": "d36b846743788c9a0e472b0b436f304007288bdf431b055f114d5409a89db21d",
+      "bytes": 1386
+    },
+    {
+      "id": 23,
+      "file": "blocks/0023.txt",
+      "word_paragraph_index_zero_based": 884,
+      "heading_context": [
+        "Capítulo 5 — Evaluaciones de impacto y derechos del interesado",
+        "3. Implementación",
+        "Tarea Celery para alertas de vencimiento de plazos"
+      ],
+      "sha256": "a161fe2eb1b6db78ba00875d5788f5cc08df6f97bbd731bbbd7884f6fc84d54f",
+      "bytes": 535
+    },
+    {
+      "id": 24,
+      "file": "blocks/0024.txt",
+      "word_paragraph_index_zero_based": 970,
+      "heading_context": [
+        "Capítulo 6 — Brechas, encargados y transferencias internacionales",
+        "3. Implementación",
+        "Modelo SQLAlchemy de brecha de seguridad"
+      ],
+      "sha256": "8fb3db69837ba039676dbcd2c1d29fe8e3add2c284fe21795fc9972c446dfbb1",
+      "bytes": 8318
+    },
+    {
+      "id": 25,
+      "file": "blocks/0025.txt",
+      "word_paragraph_index_zero_based": 977,
+      "heading_context": [
+        "Capítulo 6 — Brechas, encargados y transferencias internacionales",
+        "3. Implementación",
+        "Modelo de encargado de tratamiento"
+      ],
+      "sha256": "c143431d220f59627dc627d6ab5785945f04214cf28362cad15cf9655a4c913c",
+      "bytes": 4479
+    },
+    {
+      "id": 26,
+      "file": "blocks/0026.txt",
+      "word_paragraph_index_zero_based": 979,
+      "heading_context": [
+        "Capítulo 6 — Brechas, encargados y transferencias internacionales",
+        "3. Implementación",
+        "Modelo de encargado de tratamiento"
+      ],
+      "sha256": "0d027d60ccfc9499ca196bdd2c107672e606e8c6b2dedd7612f60013fc011d1e",
+      "bytes": 6515
+    },
+    {
+      "id": 27,
+      "file": "blocks/0027.txt",
+      "word_paragraph_index_zero_based": 983,
+      "heading_context": [
+        "Capítulo 6 — Brechas, encargados y transferencias internacionales",
+        "3. Implementación",
+        "Detector de PII con patrones regex españoles"
+      ],
+      "sha256": "d81cd6cc46298de0a8a8d774284ae48f011d7ec23461201a095ac8909d03735f",
+      "bytes": 6954
+    },
+    {
+      "id": 28,
+      "file": "blocks/0028.txt",
+      "word_paragraph_index_zero_based": 990,
+      "heading_context": [
+        "Capítulo 6 — Brechas, encargados y transferencias internacionales",
+        "3. Implementación",
+        "Tarea Celery de alerta de 72 horas"
+      ],
+      "sha256": "08e5635d9702a2cf2c9fb3dbfc042c7dcbce50f42f0037f9fb2999d8bccf9406",
+      "bytes": 2045
+    },
+    {
+      "id": 29,
+      "file": "blocks/0029.txt",
+      "word_paragraph_index_zero_based": 992,
+      "heading_context": [
+        "Capítulo 6 — Brechas, encargados y transferencias internacionales",
+        "3. Implementación",
+        "Tarea Celery de alerta de 72 horas"
+      ],
+      "sha256": "8612c20fadceb91169617f461c946af1f9a1250673871021e5a313ce595c8e6b",
+      "bytes": 1007
+    },
+    {
+      "id": 30,
+      "file": "blocks/0030.txt",
+      "word_paragraph_index_zero_based": 996,
+      "heading_context": [
+        "Capítulo 6 — Brechas, encargados y transferencias internacionales",
+        "3. Implementación",
+        "API de registro de brecha con cálculo automático de deadline"
+      ],
+      "sha256": "1d4fad9449414c818f5867baed6cc1a6627fd29207613249ce0dc2c916b629f8",
+      "bytes": 2488
+    },
+    {
+      "id": 31,
+      "file": "blocks/0031.txt",
+      "word_paragraph_index_zero_based": 1008,
+      "heading_context": [
+        "Capítulo 6 — Brechas, encargados y transferencias internacionales",
+        "3. Implementación",
+        "Integración con el agente de privacidad"
+      ],
+      "sha256": "74ed90e410ab589cdc0b92f4953dd51039ceccce7c1d247bacdded405001323c",
+      "bytes": 3097
+    },
+    {
+      "id": 32,
+      "file": "blocks/0032.txt",
+      "word_paragraph_index_zero_based": 1160,
+      "heading_context": [
+        "Capítulo 7 — Gestión de riesgos: de MAGERIT a FAIR en una sola plataforma",
+        "3. Implementación",
+        "El modelo de datos: estructura relacional común"
+      ],
+      "sha256": "13e60911a632311eb40102d24221e0fab5de45bca0a09f4b57638a487fabc09d",
+      "bytes": 3198
+    },
+    {
+      "id": 33,
+      "file": "blocks/0033.txt",
+      "word_paragraph_index_zero_based": 1164,
+      "heading_context": [
+        "Capítulo 7 — Gestión de riesgos: de MAGERIT a FAIR en una sola plataforma",
+        "3. Implementación",
+        "El modelo de activo"
+      ],
+      "sha256": "7231a2bb9f7a8a4bf1039bc12338b9976ec02ba1ce1957766c3935c62155093a",
+      "bytes": 2166
+    },
+    {
+      "id": 34,
+      "file": "blocks/0034.txt",
+      "word_paragraph_index_zero_based": 1168,
+      "heading_context": [
+        "Capítulo 7 — Gestión de riesgos: de MAGERIT a FAIR en una sola plataforma",
+        "3. Implementación",
+        "El escenario de riesgo: donde converge todo"
+      ],
+      "sha256": "aa3fbbc9a54d55016d136ad863e665458c0e54266d4612a1997fbb9dfc97e062",
+      "bytes": 3514
+    },
+    {
+      "id": 35,
+      "file": "blocks/0035.txt",
+      "word_paragraph_index_zero_based": 1172,
+      "heading_context": [
+        "Capítulo 7 — Gestión de riesgos: de MAGERIT a FAIR en una sola plataforma",
+        "3. Implementación",
+        "El cálculo de riesgo: lógica condicionada por metodología"
+      ],
+      "sha256": "ec3cc484e1cec51afe74867e1d69a1797538cf3ab8aed58dd254917d7f84b5ee",
+      "bytes": 4169
+    },
+    {
+      "id": 36,
+      "file": "blocks/0036.txt",
+      "word_paragraph_index_zero_based": 1176,
+      "heading_context": [
+        "Capítulo 7 — Gestión de riesgos: de MAGERIT a FAIR en una sola plataforma",
+        "3. Implementación",
+        "La herramienta del agente de riesgo"
+      ],
+      "sha256": "c9ca7f81ac4f35340102ab7711c026119da0365d35434b192e84fab2d419e05c",
+      "bytes": 3344
+    },
+    {
+      "id": 37,
+      "file": "blocks/0037.txt",
+      "word_paragraph_index_zero_based": 1179,
+      "heading_context": [
+        "Capítulo 7 — Gestión de riesgos: de MAGERIT a FAIR en una sola plataforma",
+        "3. Implementación",
+        "El endpoint de matriz de riesgo"
+      ],
+      "sha256": "bb11f9a1a716e6f4c00fd41a10d9733c63e8420bbad6c1870744677b33196c41",
+      "bytes": 2426
+    },
+    {
+      "id": 38,
+      "file": "blocks/0038.txt",
+      "word_paragraph_index_zero_based": 1183,
+      "heading_context": [
+        "Capítulo 7 — Gestión de riesgos: de MAGERIT a FAIR en una sola plataforma",
+        "3. Implementación",
+        "Plan de tratamiento y controles"
+      ],
+      "sha256": "877638629fc7de5c830198bea2ea133fbe6c3d1e44fc0540afe1357de85e0f1e",
+      "bytes": 2916
+    },
+    {
+      "id": 39,
+      "file": "blocks/0039.txt",
+      "word_paragraph_index_zero_based": 1186,
+      "heading_context": [
+        "Capítulo 7 — Gestión de riesgos: de MAGERIT a FAIR en una sola plataforma",
+        "3. Implementación",
+        "Configuración de escalas por metodología"
+      ],
+      "sha256": "45b673e52ae104a0af58bb778227b6aa4306f0a451c93b8407de3010079917de",
+      "bytes": 1352
+    },
+    {
+      "id": 40,
+      "file": "blocks/0040.txt",
+      "word_paragraph_index_zero_based": 1190,
+      "heading_context": [
+        "Capítulo 7 — Gestión de riesgos: de MAGERIT a FAIR en una sola plataforma",
+        "3. Implementación",
+        "Ejemplo de consulta del agente"
+      ],
+      "sha256": "3231794cd835c347ad354d18bae51011700b86435ccd509929a0c749ff08afe1",
+      "bytes": 1305
+    },
+    {
+      "id": 41,
+      "file": "blocks/0041.txt",
+      "word_paragraph_index_zero_based": 1278,
+      "heading_context": [
+        "Capítulo 8 — Marcos de cumplimiento: ENS, ISO 27001, ISO 27701",
+        "3. Implementación",
+        "Modelo de datos"
+      ],
+      "sha256": "49a7c14f67adcd2889ddff5fc07d01f401b7097f50ac67572c724c70f39255fc",
+      "bytes": 2040
+    },
+    {
+      "id": 42,
+      "file": "blocks/0042.txt",
+      "word_paragraph_index_zero_based": 1280,
+      "heading_context": [
+        "Capítulo 8 — Marcos de cumplimiento: ENS, ISO 27001, ISO 27701",
+        "3. Implementación",
+        "Modelo de datos"
+      ],
+      "sha256": "449d0bd9dc9ceb65257ec510a2ba3eb74196c5442d531521612fbf90a0d1f924",
+      "bytes": 2433
+    },
+    {
+      "id": 43,
+      "file": "blocks/0043.txt",
+      "word_paragraph_index_zero_based": 1282,
+      "heading_context": [
+        "Capítulo 8 — Marcos de cumplimiento: ENS, ISO 27001, ISO 27701",
+        "3. Implementación",
+        "Modelo de datos"
+      ],
+      "sha256": "fb290a867c17e9cabbe865201181541ca215ba498b5ccfc1a7dbcae8899032ae",
+      "bytes": 1590
+    },
+    {
+      "id": 44,
+      "file": "blocks/0044.txt",
+      "word_paragraph_index_zero_based": 1284,
+      "heading_context": [
+        "Capítulo 8 — Marcos de cumplimiento: ENS, ISO 27001, ISO 27701",
+        "3. Implementación",
+        "Modelo de datos"
+      ],
+      "sha256": "ae593adb6219b42c9a8bc0249c22494d3cd3a267642f4b1dffd642c98834a7c3",
+      "bytes": 1628
+    },
+    {
+      "id": 45,
+      "file": "blocks/0045.txt",
+      "word_paragraph_index_zero_based": 1287,
+      "heading_context": [
+        "Capítulo 8 — Marcos de cumplimiento: ENS, ISO 27001, ISO 27701",
+        "3. Implementación",
+        "Precarga de marcos: seed data"
+      ],
+      "sha256": "d835bfbf5d1ee3dc1682c9e42671ba24e4b368355988dc26338652034a591ae8",
+      "bytes": 3619
+    },
+    {
+      "id": 46,
+      "file": "blocks/0046.txt",
+      "word_paragraph_index_zero_based": 1289,
+      "heading_context": [
+        "Capítulo 8 — Marcos de cumplimiento: ENS, ISO 27001, ISO 27701",
+        "3. Implementación",
+        "Precarga de marcos: seed data"
+      ],
+      "sha256": "51f26c45a130d1d47cc7e69380bc0757e7443f6d1a997b2fa98e2f48d4d473b1",
+      "bytes": 2095
+    },
+    {
+      "id": 47,
+      "file": "blocks/0047.txt",
+      "word_paragraph_index_zero_based": 1292,
+      "heading_context": [
+        "Capítulo 8 — Marcos de cumplimiento: ENS, ISO 27001, ISO 27701",
+        "3. Implementación",
+        "Endpoint de gap analysis"
+      ],
+      "sha256": "fb0a2a9749e0321098ee3a961af137d58f2f1b45887f0543b9831a0e097c924e",
+      "bytes": 4697
+    },
+    {
+      "id": 48,
+      "file": "blocks/0048.txt",
+      "word_paragraph_index_zero_based": 1295,
+      "heading_context": [
+        "Capítulo 8 — Marcos de cumplimiento: ENS, ISO 27001, ISO 27701",
+        "3. Implementación",
+        "Herramienta del agente: evaluate_control_gap"
+      ],
+      "sha256": "1a994a44d40ab0fad3a6210349240e9ef5bc29d7ed4fde51d693437185d0c5fc",
+      "bytes": 1661
+    },
+    {
+      "id": 49,
+      "file": "blocks/0049.txt",
+      "word_paragraph_index_zero_based": 1298,
+      "heading_context": [
+        "Capítulo 8 — Marcos de cumplimiento: ENS, ISO 27001, ISO 27701",
+        "3. Implementación",
+        "Generación de la SoA"
+      ],
+      "sha256": "ccf6d413ee93b742095bf71ce24813e0f7061adc2d883004011e113977c5faf2",
+      "bytes": 2448
+    },
+    {
+      "id": 50,
+      "file": "blocks/0050.txt",
+      "word_paragraph_index_zero_based": 1301,
+      "heading_context": [
+        "Capítulo 8 — Marcos de cumplimiento: ENS, ISO 27001, ISO 27701",
+        "3. Implementación",
+        "Mapeo cruzado ENS ↔ ISO 27001"
+      ],
+      "sha256": "f20b7e5f575a90d7d9ccf5ff788100e051ad0f6f3017e1f1ce502fcad09b5361",
+      "bytes": 2663
+    },
+    {
+      "id": 51,
+      "file": "blocks/0051.txt",
+      "word_paragraph_index_zero_based": 1304,
+      "heading_context": [
+        "Capítulo 8 — Marcos de cumplimiento: ENS, ISO 27001, ISO 27701",
+        "3. Implementación",
+        "Consulta con el agente de compliance"
+      ],
+      "sha256": "4783d2367c2b0ea8643198cc4940508eafe7edff108009014eef631e089f9f3e",
+      "bytes": 1436
+    },
+    {
+      "id": 52,
+      "file": "blocks/0052.txt",
+      "word_paragraph_index_zero_based": 1403,
+      "heading_context": [
+        "Capítulo 9 — NIS2, DORA y el tsunami regulatorio europeo",
+        "3. Implementación",
+        "El middleware RequireModule"
+      ],
+      "sha256": "58a45880e8bbceffdf693410fa3c2b9bc8ec4b1c8103fcb1019ab58f7e0b12b4",
+      "bytes": 3045
+    },
+    {
+      "id": 53,
+      "file": "blocks/0053.txt",
+      "word_paragraph_index_zero_based": 1406,
+      "heading_context": [
+        "Capítulo 9 — NIS2, DORA y el tsunami regulatorio europeo",
+        "3. Implementación",
+        "El modelo LicenseModule"
+      ],
+      "sha256": "d0d4cc0ac615d109f8e77cfabf4558aedd0540b76dc9fdeea352fd267051e07c",
+      "bytes": 2152
+    },
+    {
+      "id": 54,
+      "file": "blocks/0054.txt",
+      "word_paragraph_index_zero_based": 1409,
+      "heading_context": [
+        "Capítulo 9 — NIS2, DORA y el tsunami regulatorio europeo",
+        "3. Implementación",
+        "El modelo de notificación NIS2"
+      ],
+      "sha256": "8a2eaa4e32a09ad409c6edd4bf26a68bcb390511db34f6bd7b343161c443042d",
+      "bytes": 7136
+    },
+    {
+      "id": 55,
+      "file": "blocks/0055.txt",
+      "word_paragraph_index_zero_based": 1413,
+      "heading_context": [
+        "Capítulo 9 — NIS2, DORA y el tsunami regulatorio europeo",
+        "3. Implementación",
+        "El modelo DORA: incidentes TIC y proveedores"
+      ],
+      "sha256": "e73d30596319e0b9150ff4ef45f9acebd3c3ea44236f780fa67b9e0c661eda01",
+      "bytes": 5275
+    },
+    {
+      "id": 56,
+      "file": "blocks/0056.txt",
+      "word_paragraph_index_zero_based": 1417,
+      "heading_context": [
+        "Capítulo 9 — NIS2, DORA y el tsunami regulatorio europeo",
+        "3. Implementación",
+        "El modelo BCM: BIA, RTO y RPO"
+      ],
+      "sha256": "49cc6d4a72ac1aae21cb5d405312db2bb10934ed8183871a981349abe40bea9c",
+      "bytes": 4923
+    },
+    {
+      "id": 57,
+      "file": "blocks/0057.txt",
+      "word_paragraph_index_zero_based": 1420,
+      "heading_context": [
+        "Capítulo 9 — NIS2, DORA y el tsunami regulatorio europeo",
+        "3. Implementación",
+        "Tarea Celery de sincronización de licencias"
+      ],
+      "sha256": "87899ed46ed1271adadde6b47c9b46bd9529f82884989100a61c053e0d81d685",
+      "bytes": 2471
+    },
+    {
+      "id": 58,
+      "file": "blocks/0058.txt",
+      "word_paragraph_index_zero_based": 1422,
+      "heading_context": [
+        "Capítulo 9 — NIS2, DORA y el tsunami regulatorio europeo",
+        "3. Implementación",
+        "Ejemplo de endpoint protegido por licencia"
+      ],
+      "sha256": "f3ac0d533898747c2826d6353076fb0940e1243675ed8baae751b18a62e470f5",
+      "bytes": 2666
+    },
+    {
+      "id": 59,
+      "file": "blocks/0059.txt",
+      "word_paragraph_index_zero_based": 1426,
+      "heading_context": [
+        "Capítulo 9 — NIS2, DORA y el tsunami regulatorio europeo",
+        "3. Implementación",
+        "Generación asistida con Claude"
+      ],
+      "sha256": "c23db42cba78bc46543440f17e4aa38bab29abec0b66c8a5c327da2a970ab2a3",
+      "bytes": 3251
+    },
+    {
+      "id": 60,
+      "file": "blocks/0060.txt",
+      "word_paragraph_index_zero_based": 1542,
+      "heading_context": [
+        "Capítulo 10 — Arquitectura multi-proveedor LLM para entornos clasificados",
+        "3. Implementación",
+        "El modelo de datos"
+      ],
+      "sha256": "e91bd8e983323bfe238a3e1bd8f06fdf1cfd7bc2dae1cbc06d1886681ad9b17f",
+      "bytes": 3777
+    },
+    {
+      "id": 61,
+      "file": "blocks/0061.txt",
+      "word_paragraph_index_zero_based": 1547,
+      "heading_context": [
+        "Capítulo 10 — Arquitectura multi-proveedor LLM para entornos clasificados",
+        "3. Implementación",
+        "El LLM Factory"
+      ],
+      "sha256": "719165afb01029758542748e504a1abd406a09ae60a907a7791714116b5ebc1a",
+      "bytes": 7570
+    },
+    {
+      "id": 62,
+      "file": "blocks/0062.txt",
+      "word_paragraph_index_zero_based": 1554,
+      "heading_context": [
+        "Capítulo 10 — Arquitectura multi-proveedor LLM para entornos clasificados",
+        "3. Implementación",
+        "El health check"
+      ],
+      "sha256": "f3dff23c76b4b6759e111ae584b179e6dc93c579a3479af216ab14799fb65483",
+      "bytes": 2327
+    },
+    {
+      "id": 63,
+      "file": "blocks/0063.txt",
+      "word_paragraph_index_zero_based": 1559,
+      "heading_context": [
+        "Capítulo 10 — Arquitectura multi-proveedor LLM para entornos clasificados",
+        "3. Implementación",
+        "El cost tracker"
+      ],
+      "sha256": "ab581007c0f626329f63d74928702deb2934fa8bf78ee6fd7e7a6e2a9502a0d8",
+      "bytes": 4128
+    },
+    {
+      "id": 64,
+      "file": "blocks/0064.txt",
+      "word_paragraph_index_zero_based": 1564,
+      "heading_context": [
+        "Capítulo 10 — Arquitectura multi-proveedor LLM para entornos clasificados",
+        "3. Implementación",
+        "Endpoint de administración"
+      ],
+      "sha256": "c99643a6c02c9f0b510b45fa9c81ced55f9372033b385eda52fe8144a32cc5da",
+      "bytes": 6084
+    },
+    {
+      "id": 65,
+      "file": "blocks/0065.txt",
+      "word_paragraph_index_zero_based": 1569,
+      "heading_context": [
+        "Capítulo 10 — Arquitectura multi-proveedor LLM para entornos clasificados",
+        "3. Implementación",
+        "Ejemplo completo: del chat del CISO al fallback local"
+      ],
+      "sha256": "18cc1e8c91638ce9799c16b186022252abf53b611a8b1fe99648d061378b8968",
+      "bytes": 1359
+    },
+    {
+      "id": 66,
+      "file": "blocks/0066.txt",
+      "word_paragraph_index_zero_based": 1642,
+      "heading_context": [
+        "Capítulo 11 — RAG normativo: cuando el LLM lee la ley",
+        "3. Implementación",
+        "Modelos de datos: RAGCollection y RAGDocument"
+      ],
+      "sha256": "2af0bd09d606a0f60dbd64e106f64ae6e76cf861b1fb4d51468153c0d77fe7ae",
+      "bytes": 2415
+    },
+    {
+      "id": 67,
+      "file": "blocks/0067.txt",
+      "word_paragraph_index_zero_based": 1646,
+      "heading_context": [
+        "Capítulo 11 — RAG normativo: cuando el LLM lee la ley",
+        "3. Implementación",
+        "Pipeline de ingestión"
+      ],
+      "sha256": "8a970912f142b16ba169e737cb3821049c5a133d8d4e701da23fea160c262605",
+      "bytes": 3380
+    },
+    {
+      "id": 68,
+      "file": "blocks/0068.txt",
+      "word_paragraph_index_zero_based": 1650,
+      "heading_context": [
+        "Capítulo 11 — RAG normativo: cuando el LLM lee la ley",
+        "3. Implementación",
+        "Generación de embeddings y upsert en Qdrant"
+      ],
+      "sha256": "fb3bd0934bbfc2a3e17d101cff3a4f4bfe9cdfa03699588f420e687509928c5d",
+      "bytes": 4436
+    },
+    {
+      "id": 69,
+      "file": "blocks/0069.txt",
+      "word_paragraph_index_zero_based": 1654,
+      "heading_context": [
+        "Capítulo 11 — RAG normativo: cuando el LLM lee la ley",
+        "3. Implementación",
+        "Script de seed normativo"
+      ],
+      "sha256": "650e1ac324865b9db059c5627ff310d68a8f32fcc0a31f74b6bdb55c330eab21",
+      "bytes": 6025
+    },
+    {
+      "id": 70,
+      "file": "blocks/0070.txt",
+      "word_paragraph_index_zero_based": 1658,
+      "heading_context": [
+        "Capítulo 11 — RAG normativo: cuando el LLM lee la ley",
+        "3. Implementación",
+        "Búsqueda semántica: de pregunta a contexto"
+      ],
+      "sha256": "f57ed085fbd4132466f805399b1de428d8801adfdf7f1506f333d9de0d7b740c",
+      "bytes": 3368
+    },
+    {
+      "id": 71,
+      "file": "blocks/0071.txt",
+      "word_paragraph_index_zero_based": 1663,
+      "heading_context": [
+        "Capítulo 11 — RAG normativo: cuando el LLM lee la ley",
+        "3. Implementación",
+        "El puente: de chunks a respuesta del LLM"
+      ],
+      "sha256": "3dda8b787d3293fca453f05f2ad85a3421612439fd5a063489f6b2e0539b55e5",
+      "bytes": 3115
+    },
+    {
+      "id": 72,
+      "file": "blocks/0072.txt",
+      "word_paragraph_index_zero_based": 1667,
+      "heading_context": [
+        "Capítulo 11 — RAG normativo: cuando el LLM lee la ley",
+        "3. Implementación",
+        "Endpoint de búsqueda RAG"
+      ],
+      "sha256": "3383566fe5087cbd50f63bd989f271b0ac147fd2cb039653cfc15d4a2b4fdbfb",
+      "bytes": 1994
+    },
+    {
+      "id": 73,
+      "file": "blocks/0073.txt",
+      "word_paragraph_index_zero_based": 1712,
+      "heading_context": [
+        "Capítulo 11 — RAG normativo: cuando el LLM lee la ley",
+        "3. Implementación",
+        "Integración con agentes y el orquestador"
+      ],
+      "sha256": "6ebf659b9e6810377067afd11cf7d37c247d767d4d3e3ec8ed67af013bac7f5f",
+      "bytes": 1538
+    },
+    {
+      "id": 74,
+      "file": "blocks/0074.txt",
+      "word_paragraph_index_zero_based": 1790,
+      "heading_context": [
+        "Capítulo 12 — Agentes especializados: privacidad, riesgo y compliance",
+        "3. Implementación",
+        "BaseAgent: el contrato de todo agente"
+      ],
+      "sha256": "ac0fff2b70a783af43815429623ea76087bd868e95be5d2c497ddd3aba439847",
+      "bytes": 4339
+    },
+    {
+      "id": 75,
+      "file": "blocks/0075.txt",
+      "word_paragraph_index_zero_based": 1795,
+      "heading_context": [
+        "Capítulo 12 — Agentes especializados: privacidad, riesgo y compliance",
+        "3. Implementación",
+        "PrivacyAgent: generación de análisis RGPD"
+      ],
+      "sha256": "8d4f0397642b3f59f3c9070bca97f8f69c66ae814c06f3260ee1cf8c2bed843c",
+      "bytes": 4122
+    },
+    {
+      "id": 76,
+      "file": "blocks/0076.txt",
+      "word_paragraph_index_zero_based": 1800,
+      "heading_context": [
+        "Capítulo 12 — Agentes especializados: privacidad, riesgo y compliance",
+        "3. Implementación",
+        "RiskAgent: matriz de riesgos y riesgo residual"
+      ],
+      "sha256": "9e661c848bc3ed16c4dc1fe35b1456524f749fb5ab9199579291204b8ef60f29",
+      "bytes": 3570
+    },
+    {
+      "id": 77,
+      "file": "blocks/0077.txt",
+      "word_paragraph_index_zero_based": 1805,
+      "heading_context": [
+        "Capítulo 12 — Agentes especializados: privacidad, riesgo y compliance",
+        "3. Implementación",
+        "ComplianceAgent: gap analysis y cumplimiento"
+      ],
+      "sha256": "1c987232152be07a5c3aee62f4a05a5e47118d5c50fc393a548816cb273b3de5",
+      "bytes": 4274
+    },
+    {
+      "id": 78,
+      "file": "blocks/0078.txt",
+      "word_paragraph_index_zero_based": 1810,
+      "heading_context": [
+        "Capítulo 12 — Agentes especializados: privacidad, riesgo y compliance",
+        "3. Implementación",
+        "Modelo AgentTask y AgentTrace"
+      ],
+      "sha256": "d594e2be2099c907890f25e9ad6e5be9bc46a2d46425c70d4da283937455a6d8",
+      "bytes": 2698
+    },
+    {
+      "id": 79,
+      "file": "blocks/0079.txt",
+      "word_paragraph_index_zero_based": 1816,
+      "heading_context": [
+        "Capítulo 12 — Agentes especializados: privacidad, riesgo y compliance",
+        "3. Implementación",
+        "Ejemplo con Claude API: agente de privacidad"
+      ],
+      "sha256": "fa4aef35455acd8235f2e7b263baaf3311efbdcf911ddd1c1e43d11714205eb7",
+      "bytes": 2930
+    },
+    {
+      "id": 80,
+      "file": "blocks/0080.txt",
+      "word_paragraph_index_zero_based": 1821,
+      "heading_context": [
+        "Capítulo 12 — Agentes especializados: privacidad, riesgo y compliance",
+        "3. Implementación",
+        "Registro de herramientas y routing"
+      ],
+      "sha256": "0511e16e232dc52a507193d5df45075be86a6657baf65e2932e5e98a72af2136",
+      "bytes": 3696
+    },
+    {
+      "id": 81,
+      "file": "blocks/0081.txt",
+      "word_paragraph_index_zero_based": 1904,
+      "heading_context": [
+        "Capítulo 13 — El orquestador: copiloto del CISO",
+        "3. Implementación",
+        "El orquestador central: tres modos en una clase"
+      ],
+      "sha256": "d04da04416dfdb74b03ee281cc0de2c0e23d93e7e50c38ad2e7dd21082706e0f",
+      "bytes": 3672
+    },
+    {
+      "id": 82,
+      "file": "blocks/0082.txt",
+      "word_paragraph_index_zero_based": 1908,
+      "heading_context": [
+        "Capítulo 13 — El orquestador: copiloto del CISO",
+        "3. Implementación",
+        "Clasificación de intención"
+      ],
+      "sha256": "b38bc32f3cdc8bb1ddd38321da8cd626a8fad65ecc1d83aaa32ab14ef4993d2c",
+      "bytes": 2356
+    },
+    {
+      "id": 83,
+      "file": "blocks/0083.txt",
+      "word_paragraph_index_zero_based": 1913,
+      "heading_context": [
+        "Capítulo 13 — El orquestador: copiloto del CISO",
+        "3. Implementación",
+        "Streaming SSE: respuestas en tiempo real"
+      ],
+      "sha256": "b0dd2d06097d65a1e01590b541fa4586724784c873ed45a256fc31ffb5f3f91e",
+      "bytes": 2656
+    },
+    {
+      "id": 84,
+      "file": "blocks/0084.txt",
+      "word_paragraph_index_zero_based": 1925,
+      "heading_context": [
+        "Capítulo 13 — El orquestador: copiloto del CISO",
+        "3. Implementación",
+        "Pipeline de guardrails"
+      ],
+      "sha256": "2460ff2d6bd3d2c043244dbc010c1b01a0e6368b895e1f92e78b634d877ef25c",
+      "bytes": 3734
+    },
+    {
+      "id": 85,
+      "file": "blocks/0085.txt",
+      "word_paragraph_index_zero_based": 1930,
+      "heading_context": [
+        "Capítulo 13 — El orquestador: copiloto del CISO",
+        "3. Implementación",
+        "Orquestación multi-agente: el ejemplo de la DPIA"
+      ],
+      "sha256": "dafe127bf4ae65c94778902caddc890da332d499abcc71ecb34fce36d403097d",
+      "bytes": 4406
+    },
+    {
+      "id": 86,
+      "file": "blocks/0086.txt",
+      "word_paragraph_index_zero_based": 1936,
+      "heading_context": [
+        "Capítulo 13 — El orquestador: copiloto del CISO",
+        "3. Implementación",
+        "Ejecución del modo CHAT_RAG: consulta normativa con fuentes"
+      ],
+      "sha256": "996c85cb731ccdfd05ec912108727f2e1a188b5aad7039b14e730c8a8b365e4d",
+      "bytes": 2847
+    },
+    {
+      "id": 87,
+      "file": "blocks/0087.txt",
+      "word_paragraph_index_zero_based": 1941,
+      "heading_context": [
+        "Capítulo 13 — El orquestador: copiloto del CISO",
+        "3. Implementación",
+        "Modelo de sesión de chat"
+      ],
+      "sha256": "721e134bc40ffbaf52a7d26231982ce6bad9ede7540801d905179149af43e334",
+      "bytes": 2199
+    },
+    {
+      "id": 88,
+      "file": "blocks/0088.txt",
+      "word_paragraph_index_zero_based": 1946,
+      "heading_context": [
+        "Capítulo 13 — El orquestador: copiloto del CISO",
+        "3. Implementación",
+        "Trazabilidad de extremo a extremo"
+      ],
+      "sha256": "c88e6a2ce000570e8531fb7a9636ff5ffee4f671de744f971dc02caf74bdfbab",
+      "bytes": 2041
+    },
+    {
+      "id": 89,
+      "file": "blocks/0089.txt",
+      "word_paragraph_index_zero_based": 2058,
+      "heading_context": [
+        "Capítulo 14 — Gobernanza de IA y conformidad con el AI Act europeo",
+        "3. Implementación",
+        "Modelo de inventario y descubrimiento"
+      ],
+      "sha256": "1e8c5962fa63ddbd28790f8298d58455e3f7e9ac4152f97e8382247343cccfa7",
+      "bytes": 4148
+    },
+    {
+      "id": 90,
+      "file": "blocks/0090.txt",
+      "word_paragraph_index_zero_based": 2062,
+      "heading_context": [
+        "Capítulo 14 — Gobernanza de IA y conformidad con el AI Act europeo",
+        "3. Implementación",
+        "Pre-clasificación heurística de riesgo"
+      ],
+      "sha256": "e6627df4c87b5735951ecf4ace2da0fb791f307503ffb6db7b901f4d3a6925c7",
+      "bytes": 3773
+    },
+    {
+      "id": 91,
+      "file": "blocks/0091.txt",
+      "word_paragraph_index_zero_based": 2066,
+      "heading_context": [
+        "Capítulo 14 — Gobernanza de IA y conformidad con el AI Act europeo",
+        "3. Implementación",
+        "Evaluación de conformidad: los siete checkpoints"
+      ],
+      "sha256": "c5eb59ea68a95e049046e3f7d6eba84b5c8c47df94bc2036b1520cfe744e7dd5",
+      "bytes": 2978
+    },
+    {
+      "id": 92,
+      "file": "blocks/0092.txt",
+      "word_paragraph_index_zero_based": 2070,
+      "heading_context": [
+        "Capítulo 14 — Gobernanza de IA y conformidad con el AI Act europeo",
+        "3. Implementación",
+        "Endpoint de evaluación con scoring"
+      ],
+      "sha256": "26cb000b6104faa2badece626450c8e583702451a7c66c1cb6212dd388a94798",
+      "bytes": 6335
+    },
+    {
+      "id": 93,
+      "file": "blocks/0093.txt",
+      "word_paragraph_index_zero_based": 2074,
+      "heading_context": [
+        "Capítulo 14 — Gobernanza de IA y conformidad con el AI Act europeo",
+        "3. Implementación",
+        "Monitorización continua: métricas y alertas"
+      ],
+      "sha256": "0ce09f0571fb2758547e8162d193ff43a842c6b785f63d7acd89abb8a4f5843e",
+      "bytes": 2567
+    },
+    {
+      "id": 94,
+      "file": "blocks/0094.txt",
+      "word_paragraph_index_zero_based": 2076,
+      "heading_context": [
+        "Capítulo 14 — Gobernanza de IA y conformidad con el AI Act europeo",
+        "3. Implementación",
+        "Monitorización continua: métricas y alertas"
+      ],
+      "sha256": "74ff21154736bb4ea22b06ca9630fd4f6b48f18f54abec6b71356d5274d568bc",
+      "bytes": 2431
+    },
+    {
+      "id": 95,
+      "file": "blocks/0095.txt",
+      "word_paragraph_index_zero_based": 2080,
+      "heading_context": [
+        "Capítulo 14 — Gobernanza de IA y conformidad con el AI Act europeo",
+        "3. Implementación",
+        "Controles de gobernanza e incidentes"
+      ],
+      "sha256": "4dbbf2da33dce4fd6c3b95f6c1694d851616a8b9d34ba5f8b23952c43e635768",
+      "bytes": 2555
+    },
+    {
+      "id": 96,
+      "file": "blocks/0096.txt",
+      "word_paragraph_index_zero_based": 2084,
+      "heading_context": [
+        "Capítulo 14 — Gobernanza de IA y conformidad con el AI Act europeo",
+        "3. Implementación",
+        "Integración con el agente de compliance"
+      ],
+      "sha256": "1cd7039e4b3abc2830ecaf37cbd4d8fe865995583f2d30ff1f49011cd5660e19",
+      "bytes": 2857
+    },
+    {
+      "id": 97,
+      "file": "blocks/0097.txt",
+      "word_paragraph_index_zero_based": 2088,
+      "heading_context": [
+        "Capítulo 14 — Gobernanza de IA y conformidad con el AI Act europeo",
+        "3. Implementación",
+        "Tarea Celery de monitorización periódica"
+      ],
+      "sha256": "39e5a3986a0a983db0dde0e1a74f9515bda1468461330e24248f15c577ea1332",
+      "bytes": 2582
+    },
+    {
+      "id": 98,
+      "file": "blocks/0098.txt",
+      "word_paragraph_index_zero_based": 2193,
+      "heading_context": [
+        "Capítulo 15 — Autenticación en capas: JWT, LDAP, SAML 2.0, PKI/mTLS",
+        "3. Implementación",
+        "Módulo de seguridad: hash, JWT y verificación"
+      ],
+      "sha256": "914c09139c371429e7fd3d0e179739d0e89f0dab2418af5436b757ad1b9b7b81",
+      "bytes": 2276
+    },
+    {
+      "id": 99,
+      "file": "blocks/0099.txt",
+      "word_paragraph_index_zero_based": 2198,
+      "heading_context": [
+        "Capítulo 15 — Autenticación en capas: JWT, LDAP, SAML 2.0, PKI/mTLS",
+        "3. Implementación",
+        "Middleware de autenticación multi-método"
+      ],
+      "sha256": "636c90563bdac797ba48c2af438f1b93a96055ec40c01b07c5ce2535db05a351",
+      "bytes": 2485
+    },
+    {
+      "id": 100,
+      "file": "blocks/0100.txt",
+      "word_paragraph_index_zero_based": 2203,
+      "heading_context": [
+        "Capítulo 15 — Autenticación en capas: JWT, LDAP, SAML 2.0, PKI/mTLS",
+        "3. Implementación",
+        "Endpoint de login con soporte multi-método"
+      ],
+      "sha256": "2aac0c2bfbf2897c188a5c4002f41cd7ff04d4a6c08a5e10b58fd90760b58395",
+      "bytes": 2774
+    },
+    {
+      "id": 101,
+      "file": "blocks/0101.txt",
+      "word_paragraph_index_zero_based": 2209,
+      "heading_context": [
+        "Capítulo 15 — Autenticación en capas: JWT, LDAP, SAML 2.0, PKI/mTLS",
+        "3. Implementación",
+        "Integración LDAP con TLS"
+      ],
+      "sha256": "8941e339969d82845c2c6979558ec626da66a0753c69e61a94372b80f31ae473",
+      "bytes": 2693
+    },
+    {
+      "id": 102,
+      "file": "blocks/0102.txt",
+      "word_paragraph_index_zero_based": 2214,
+      "heading_context": [
+        "Capítulo 15 — Autenticación en capas: JWT, LDAP, SAML 2.0, PKI/mTLS",
+        "3. Implementación",
+        "Verificación PKI: extracción de certificado y OCSP"
+      ],
+      "sha256": "997be9f97356baf7fd395f2ecf703fac763ad28dafe1b4233c6ecc2a5b3552eb",
+      "bytes": 3285
+    },
+    {
+      "id": 103,
+      "file": "blocks/0103.txt",
+      "word_paragraph_index_zero_based": 2219,
+      "heading_context": [
+        "Capítulo 15 — Autenticación en capas: JWT, LDAP, SAML 2.0, PKI/mTLS",
+        "3. Implementación",
+        "MFA con TOTP: generación y verificación"
+      ],
+      "sha256": "a6167a4a16f2e9eb1f48141d63be03dc4b24cf8193bda6ebae3c7558cdf2adb1",
+      "bytes": 1543
+    },
+    {
+      "id": 104,
+      "file": "blocks/0104.txt",
+      "word_paragraph_index_zero_based": 2225,
+      "heading_context": [
+        "Capítulo 15 — Autenticación en capas: JWT, LDAP, SAML 2.0, PKI/mTLS",
+        "3. Implementación",
+        "Configuración Nginx para mTLS"
+      ],
+      "sha256": "3374df003785443afe61e33e41899ea0ffc3abe5cd5682280b19d78ac33030ca",
+      "bytes": 1890
+    },
+    {
+      "id": 105,
+      "file": "blocks/0105.txt",
+      "word_paragraph_index_zero_based": 2230,
+      "heading_context": [
+        "Capítulo 15 — Autenticación en capas: JWT, LDAP, SAML 2.0, PKI/mTLS",
+        "3. Implementación",
+        "Flujo SAML 2.0: SP-initiated SSO"
+      ],
+      "sha256": "6562cc9b1fdf7b423bd312ad473c87668bb4512f7de46490adef062516c469fe",
+      "bytes": 3351
+    },
+    {
+      "id": 106,
+      "file": "blocks/0106.txt",
+      "word_paragraph_index_zero_based": 2235,
+      "heading_context": [
+        "Capítulo 15 — Autenticación en capas: JWT, LDAP, SAML 2.0, PKI/mTLS",
+        "3. Implementación",
+        "Protección contra ataques de fuerza bruta"
+      ],
+      "sha256": "0cfe31dc3a1ad5c605ed449def53da66b20f86d44c1563d7624f5546b18e2322",
+      "bytes": 2459
+    },
+    {
+      "id": 107,
+      "file": "blocks/0107.txt",
+      "word_paragraph_index_zero_based": 2241,
+      "heading_context": [
+        "Capítulo 15 — Autenticación en capas: JWT, LDAP, SAML 2.0, PKI/mTLS",
+        "3. Implementación",
+        "Rotación de claves JWT"
+      ],
+      "sha256": "9ec5e2ac640f8902569ac7ecca5ccaafdd998237be2769abd6923ecb541d10b4",
+      "bytes": 2941
+    },
+    {
+      "id": 108,
+      "file": "blocks/0108.txt",
+      "word_paragraph_index_zero_based": 2253,
+      "heading_context": [
+        "Capítulo 15 — Autenticación en capas: JWT, LDAP, SAML 2.0, PKI/mTLS",
+        "3. Implementación",
+        "Integración con Claude Code: cómo se construyó"
+      ],
+      "sha256": "59918b6a5dd7a5bae2481ef666dffd1a09faad8bf5d8176268660ed0a0de0c33",
+      "bytes": 538
+    },
+    {
+      "id": 109,
+      "file": "blocks/0109.txt",
+      "word_paragraph_index_zero_based": 2336,
+      "heading_context": [
+        "Capítulo 16 — RBAC, multi-tenancy y control de acceso",
+        "3. Implementación",
+        "TenantMiddleware: el filtro que no se puede olvidar"
+      ],
+      "sha256": "15aad59bf65ca7953c790f5881971548572ab0d38a6812286f65fe6b64bf35a6",
+      "bytes": 2111
+    },
+    {
+      "id": 110,
+      "file": "blocks/0110.txt",
+      "word_paragraph_index_zero_based": 2341,
+      "heading_context": [
+        "Capítulo 16 — RBAC, multi-tenancy y control de acceso",
+        "3. Implementación",
+        "Repositorio con filtro automático por tenant"
+      ],
+      "sha256": "61ad8556d84142b70a8f443cf0618ffd5ee88eb8ea4065ce0da2b5fb268e791e",
+      "bytes": 5013
+    },
+    {
+      "id": 111,
+      "file": "blocks/0111.txt",
+      "word_paragraph_index_zero_based": 2346,
+      "heading_context": [
+        "Capítulo 16 — RBAC, multi-tenancy y control de acceso",
+        "3. Implementación",
+        "Dependency de permisos: el decorador que protege endpoints"
+      ],
+      "sha256": "665380df00b141c2613283d1525f6cab03b33fbbc7a410c28d2c57953bc3fd30",
+      "bytes": 1070
+    },
+    {
+      "id": 112,
+      "file": "blocks/0112.txt",
+      "word_paragraph_index_zero_based": 2351,
+      "heading_context": [
+        "Capítulo 16 — RBAC, multi-tenancy y control de acceso",
+        "3. Implementación",
+        "Modelo de Role y Permission"
+      ],
+      "sha256": "da84c53bb897a8bc3642b1b8eefec79c4a026dfa604d29b5a711b91ff843e8dc",
+      "bytes": 1680
+    },
+    {
+      "id": 113,
+      "file": "blocks/0113.txt",
+      "word_paragraph_index_zero_based": 2355,
+      "heading_context": [
+        "Capítulo 16 — RBAC, multi-tenancy y control de acceso",
+        "3. Implementación",
+        "Modelo de Role y Permission"
+      ],
+      "sha256": "30d44ccb74a5054062169bf48fe7e29faa79efdfa61f3c15aca9af0d9bd3db0e",
+      "bytes": 191
+    },
+    {
+      "id": 114,
+      "file": "blocks/0114.txt",
+      "word_paragraph_index_zero_based": 2359,
+      "heading_context": [
+        "Capítulo 16 — RBAC, multi-tenancy y control de acceso",
+        "3. Implementación",
+        "LicenseModule: el gate técnico por tenant"
+      ],
+      "sha256": "3c8d64de923ba7293e4590efb9d6894fcc25e04baada34afe9d33cb15f3de222",
+      "bytes": 2185
+    },
+    {
+      "id": 115,
+      "file": "blocks/0115.txt",
+      "word_paragraph_index_zero_based": 2362,
+      "heading_context": [
+        "Capítulo 16 — RBAC, multi-tenancy y control de acceso",
+        "3. Implementación",
+        "LicenseModule: el gate técnico por tenant"
+      ],
+      "sha256": "37e8ffe71f1a11d33162bdd391b15ccd081479fc4ccf6ce8af889e593df7f901",
+      "bytes": 1342
+    },
+    {
+      "id": 116,
+      "file": "blocks/0116.txt",
+      "word_paragraph_index_zero_based": 2367,
+      "heading_context": [
+        "Capítulo 16 — RBAC, multi-tenancy y control de acceso",
+        "3. Implementación",
+        "Endpoint protegido: la composición completa"
+      ],
+      "sha256": "777df920d7d9d93a60cd023c36dc34e7469e6732fe66577d1f48ed9c16472f1a",
+      "bytes": 3147
+    },
+    {
+      "id": 117,
+      "file": "blocks/0117.txt",
+      "word_paragraph_index_zero_based": 2372,
+      "heading_context": [
+        "Capítulo 16 — RBAC, multi-tenancy y control de acceso",
+        "3. Implementación",
+        "Queries de reporting: el caso especial"
+      ],
+      "sha256": "c555b1479b6a77b94b42573bb3ea7a146da69086264679e85cdb44257e6e31f4",
+      "bytes": 2231
+    },
+    {
+      "id": 118,
+      "file": "blocks/0118.txt",
+      "word_paragraph_index_zero_based": 2470,
+      "heading_context": [
+        "Capítulo 17 — Hardening: headers, WAF, cifrado y trazabilidad SIEM",
+        "3. Implementación",
+        "SecurityHeadersMiddleware"
+      ],
+      "sha256": "a71e33cf07b13aacccfb4fa693b0efc51507128ade07c4954f45495ee00c6d45",
+      "bytes": 2236
+    },
+    {
+      "id": 119,
+      "file": "blocks/0119.txt",
+      "word_paragraph_index_zero_based": 2474,
+      "heading_context": [
+        "Capítulo 17 — Hardening: headers, WAF, cifrado y trazabilidad SIEM",
+        "3. Implementación",
+        "AuditMiddleware con registro dual"
+      ],
+      "sha256": "4fdfd5a86d6744edd6594cf7011081f6d9cdac4cf0a160828990dd2cbe6f7358",
+      "bytes": 5602
+    },
+    {
+      "id": 120,
+      "file": "blocks/0120.txt",
+      "word_paragraph_index_zero_based": 2477,
+      "heading_context": [
+        "Capítulo 17 — Hardening: headers, WAF, cifrado y trazabilidad SIEM",
+        "3. Implementación",
+        "RateLimitMiddleware con Redis"
+      ],
+      "sha256": "8779d3c251235e71ffd58f709d01e68b6261aea7601bc08d5b19162765711eac",
+      "bytes": 4302
+    },
+    {
+      "id": 121,
+      "file": "blocks/0121.txt",
+      "word_paragraph_index_zero_based": 2480,
+      "heading_context": [
+        "Capítulo 17 — Hardening: headers, WAF, cifrado y trazabilidad SIEM",
+        "3. Implementación",
+        "RequestIDMiddleware para trazabilidad"
+      ],
+      "sha256": "ef60eacaf73263e79504372c3f734ebf0552eb70aa2b7aa0e1b7c9c2ff6a88e0",
+      "bytes": 554
+    },
+    {
+      "id": 122,
+      "file": "blocks/0122.txt",
+      "word_paragraph_index_zero_based": 2483,
+      "heading_context": [
+        "Capítulo 17 — Hardening: headers, WAF, cifrado y trazabilidad SIEM",
+        "3. Implementación",
+        "Cifrado AES-256-GCM para campos sensibles"
+      ],
+      "sha256": "1f38eac0fb1893cfe73c22c411a6d693eed8f738f8279006dba75623c520b2a2",
+      "bytes": 2038
+    },
+    {
+      "id": 123,
+      "file": "blocks/0123.txt",
+      "word_paragraph_index_zero_based": 2487,
+      "heading_context": [
+        "Capítulo 17 — Hardening: headers, WAF, cifrado y trazabilidad SIEM",
+        "3. Implementación",
+        "Cifrado AES-256-GCM para campos sensibles"
+      ],
+      "sha256": "c9d6c7769655e51dd96d9a4a3b7b63dcf1598a2a430c4530a10b9e956826531f",
+      "bytes": 1029
+    },
+    {
+      "id": 124,
+      "file": "blocks/0124.txt",
+      "word_paragraph_index_zero_based": 2490,
+      "heading_context": [
+        "Capítulo 17 — Hardening: headers, WAF, cifrado y trazabilidad SIEM",
+        "3. Implementación",
+        "Configuración Nginx como WAF"
+      ],
+      "sha256": "bf0dedb3006fb336cf5392445af3de50d9133de358de263bd275980f693eb5c1",
+      "bytes": 2120
+    },
+    {
+      "id": 125,
+      "file": "blocks/0125.txt",
+      "word_paragraph_index_zero_based": 2496,
+      "heading_context": [
+        "Capítulo 17 — Hardening: headers, WAF, cifrado y trazabilidad SIEM",
+        "3. Implementación",
+        "Registro de middleware en FastAPI"
+      ],
+      "sha256": "1bce610ad93b9c8c6c65d49736f9b4437dfc3d661b317793ee53538914ab6910",
+      "bytes": 1318
+    },
+    {
+      "id": 126,
+      "file": "blocks/0126.txt",
+      "word_paragraph_index_zero_based": 2502,
+      "heading_context": [
+        "Capítulo 17 — Hardening: headers, WAF, cifrado y trazabilidad SIEM",
+        "3. Implementación",
+        "Generación de clave de cifrado con Claude Code"
+      ],
+      "sha256": "840a8e12d317b76a470254f42f2d554c64655bc040a820088c7c75563719cc54",
+      "bytes": 390
+    },
+    {
+      "id": 127,
+      "file": "blocks/0127.txt",
+      "word_paragraph_index_zero_based": 2505,
+      "heading_context": [
+        "Capítulo 17 — Hardening: headers, WAF, cifrado y trazabilidad SIEM",
+        "3. Implementación",
+        "Modelo de datos de audit trail"
+      ],
+      "sha256": "3975df16862076151b82c8ab1123766f192d0e6bf09d14fe260445991fce92db",
+      "bytes": 1705
+    },
+    {
+      "id": 128,
+      "file": "blocks/0128.txt",
+      "word_paragraph_index_zero_based": 2518,
+      "heading_context": [
+        "Capítulo 17 — Hardening: headers, WAF, cifrado y trazabilidad SIEM",
+        "3. Implementación",
+        "La prueba del auditor"
+      ],
+      "sha256": "76df360831395c1b3f61e8d8c0bfaf4bbdb64a42f636c16e601111792e53457e",
+      "bytes": 1881
+    },
+    {
+      "id": 129,
+      "file": "blocks/0129.txt",
+      "word_paragraph_index_zero_based": 2589,
+      "heading_context": [
+        "Capítulo 18 — 32 módulos en una SPA: arquitectura React para GRC",
+        "3. Implementación",
+        "Estructura de módulos: convención sobre configuración"
+      ],
+      "sha256": "235658defc27ccba2966f43d7edabf2ded7e266f522dcfbb131c25b7943ad092",
+      "bytes": 755
+    },
+    {
+      "id": 130,
+      "file": "blocks/0130.txt",
+      "word_paragraph_index_zero_based": 2595,
+      "heading_context": [
+        "Capítulo 18 — 32 módulos en una SPA: arquitectura React para GRC",
+        "3. Implementación",
+        "Lazy loading: carga solo lo que necesitas"
+      ],
+      "sha256": "bb4d04fea90c5a7ef724c423105e73ec973868ee3b1d42952fcc163f3a8da1e5",
+      "bytes": 3127
+    },
+    {
+      "id": 131,
+      "file": "blocks/0131.txt",
+      "word_paragraph_index_zero_based": 2601,
+      "heading_context": [
+        "Capítulo 18 — 32 módulos en una SPA: arquitectura React para GRC",
+        "3. Implementación",
+        "El cliente API: Axios con interceptores"
+      ],
+      "sha256": "eeab13d372c6e6365527bf301133f01be15d74ac19c9ca131d5149a7ba30411d",
+      "bytes": 3399
+    },
+    {
+      "id": 132,
+      "file": "blocks/0132.txt",
+      "word_paragraph_index_zero_based": 2608,
+      "heading_context": [
+        "Capítulo 18 — 32 módulos en una SPA: arquitectura React para GRC",
+        "3. Implementación",
+        "El store de módulos licenciados"
+      ],
+      "sha256": "32faf85a1df3188b215b551fcd13b07d852f042e4ca13d0e535d339fcfeb8c37",
+      "bytes": 1561
+    },
+    {
+      "id": 133,
+      "file": "blocks/0133.txt",
+      "word_paragraph_index_zero_based": 2613,
+      "heading_context": [
+        "Capítulo 18 — 32 módulos en una SPA: arquitectura React para GRC",
+        "3. Implementación",
+        "Formularios regulatorios: DPIA con validación Zod"
+      ],
+      "sha256": "38a2fa5037be8b7bf094fba880f753dbf202b235e5b5cf0a3d3dce3844550208",
+      "bytes": 2591
+    },
+    {
+      "id": 134,
+      "file": "blocks/0134.txt",
+      "word_paragraph_index_zero_based": 2616,
+      "heading_context": [
+        "Capítulo 18 — 32 módulos en una SPA: arquitectura React para GRC",
+        "3. Implementación",
+        "Formularios regulatorios: DPIA con validación Zod"
+      ],
+      "sha256": "ba1391ccb376b865695cc078ab59a58048953e756c845cdc3abeb68279a47f97",
+      "bytes": 2985
+    },
+    {
+      "id": 135,
+      "file": "blocks/0135.txt",
+      "word_paragraph_index_zero_based": 2621,
+      "heading_context": [
+        "Capítulo 18 — 32 módulos en una SPA: arquitectura React para GRC",
+        "3. Implementación",
+        "Tablas con paginación servidor: el patrón arquitectónico"
+      ],
+      "sha256": "c140ac8eec80b34b30ba9e5dbe8c2ded3e678bbe0df8ed6fd8e518c9d52cb9ee",
+      "bytes": 1001
+    },
+    {
+      "id": 136,
+      "file": "blocks/0136.txt",
+      "word_paragraph_index_zero_based": 2626,
+      "heading_context": [
+        "Capítulo 18 — 32 módulos en una SPA: arquitectura React para GRC",
+        "3. Implementación",
+        "Configuración Vite: code splitting inteligente"
+      ],
+      "sha256": "746aab7d25a90421276a311dd09b21af237d7904f9c16a20a7e4677431a69090",
+      "bytes": 1549
+    },
+    {
+      "id": 137,
+      "file": "blocks/0137.txt",
+      "word_paragraph_index_zero_based": 2632,
+      "heading_context": [
+        "Capítulo 18 — 32 módulos en una SPA: arquitectura React para GRC",
+        "3. Implementación",
+        "Accesibilidad con Radix UI y axe-core"
+      ],
+      "sha256": "31e75e90cb8231d5fc71918815ad26782dc3e821e7d9a3435aa742c338f0855a",
+      "bytes": 784
+    },
+    {
+      "id": 138,
+      "file": "blocks/0138.txt",
+      "word_paragraph_index_zero_based": 2636,
+      "heading_context": [
+        "Capítulo 18 — 32 módulos en una SPA: arquitectura React para GRC",
+        "3. Implementación",
+        "Internacionalización: react-i18next con detección automática"
+      ],
+      "sha256": "3a2ffba60dbd131fea4c96c9e673f285b9e6c04126b8a0a6744edef18a1a84c3",
+      "bytes": 509
+    },
+    {
+      "id": 139,
+      "file": "blocks/0139.txt",
+      "word_paragraph_index_zero_based": 2638,
+      "heading_context": [
+        "Capítulo 18 — 32 módulos en una SPA: arquitectura React para GRC",
+        "3. Implementación",
+        "Internacionalización: react-i18next con detección automática"
+      ],
+      "sha256": "c8b81c29e4620889de7d9fca893f6cff743d5947b253bab7f1d350ae19b0f0b2",
+      "bytes": 278
+    },
+    {
+      "id": 140,
+      "file": "blocks/0140.txt",
+      "word_paragraph_index_zero_based": 2711,
+      "heading_context": [
+        "Capítulo 19 — Dashboards, formularios regulatorios y copiloto IA",
+        "3. Implementación",
+        "Dashboard con Recharts: el CMI del CISO"
+      ],
+      "sha256": "ec1f72c53d32671c3403727e4925d7bc5c21b36fafb8d86a6a4af14e7e63c859",
+      "bytes": 3921
+    },
+    {
+      "id": 141,
+      "file": "blocks/0141.txt",
+      "word_paragraph_index_zero_based": 2714,
+      "heading_context": [
+        "Capítulo 19 — Dashboards, formularios regulatorios y copiloto IA",
+        "3. Implementación",
+        "Dashboard con Recharts: el CMI del CISO"
+      ],
+      "sha256": "f85879fad199f87bd5599affb57b52eb750a069190ba598b4d0181c8e21d2f33",
+      "bytes": 1612
+    },
+    {
+      "id": 142,
+      "file": "blocks/0142.txt",
+      "word_paragraph_index_zero_based": 2720,
+      "heading_context": [
+        "Capítulo 19 — Dashboards, formularios regulatorios y copiloto IA",
+        "3. Implementación",
+        "Tablas regulatorias: las columnas de dominio GRC"
+      ],
+      "sha256": "22e73985913f4b16a46c90636c332bc5975774502e18033b7aa89339b7355945",
+      "bytes": 1836
+    },
+    {
+      "id": 143,
+      "file": "blocks/0143.txt",
+      "word_paragraph_index_zero_based": 2723,
+      "heading_context": [
+        "Capítulo 19 — Dashboards, formularios regulatorios y copiloto IA",
+        "3. Implementación",
+        "Tablas regulatorias: las columnas de dominio GRC"
+      ],
+      "sha256": "349c846e0bc182521192f6eb7790f397e0b77d61085b4e31a49275935915d280",
+      "bytes": 2247
+    },
+    {
+      "id": 144,
+      "file": "blocks/0144.txt",
+      "word_paragraph_index_zero_based": 2727,
+      "heading_context": [
+        "Capítulo 19 — Dashboards, formularios regulatorios y copiloto IA",
+        "3. Implementación",
+        "Formulario de brecha: React Hook Form + Zod para el Art. 33"
+      ],
+      "sha256": "a6ecec53478069582e2ccb1e0935c456076d349001e71ead2f668b8059197f2d",
+      "bytes": 1786
+    },
+    {
+      "id": 145,
+      "file": "blocks/0145.txt",
+      "word_paragraph_index_zero_based": 2731,
+      "heading_context": [
+        "Capítulo 19 — Dashboards, formularios regulatorios y copiloto IA",
+        "3. Implementación",
+        "Formulario de brecha: React Hook Form + Zod para el Art. 33"
+      ],
+      "sha256": "9e7c97f6a90dae2d90df90fce98e3ce857a551706ce3d93198a00adcf4199ab1",
+      "bytes": 2436
+    },
+    {
+      "id": 146,
+      "file": "blocks/0146.txt",
+      "word_paragraph_index_zero_based": 2735,
+      "heading_context": [
+        "Capítulo 19 — Dashboards, formularios regulatorios y copiloto IA",
+        "3. Implementación",
+        "Componente de chat con streaming SSE"
+      ],
+      "sha256": "8aab0a2afd1d4fb5a623f67114bdda86d025183db6a66e5e62776a720da6dd73",
+      "bytes": 6126
+    },
+    {
+      "id": 147,
+      "file": "blocks/0147.txt",
+      "word_paragraph_index_zero_based": 2737,
+      "heading_context": [
+        "Capítulo 19 — Dashboards, formularios regulatorios y copiloto IA",
+        "3. Implementación",
+        "Componente de chat con streaming SSE"
+      ],
+      "sha256": "1ea8c577b76a12e9a4d3e5f3937b26e8431c9c067cb219f51d70787276bac1a3",
+      "bytes": 2190
+    },
+    {
+      "id": 148,
+      "file": "blocks/0148.txt",
+      "word_paragraph_index_zero_based": 2742,
+      "heading_context": [
+        "Capítulo 19 — Dashboards, formularios regulatorios y copiloto IA",
+        "3. Implementación",
+        "Exportación directa: Excel, PDF y Word"
+      ],
+      "sha256": "0a51763e59eb2e1c137cc48279d850029cc0d13d4930da3b23a57a3fd73e8df3",
+      "bytes": 4630
+    },
+    {
+      "id": 149,
+      "file": "blocks/0149.txt",
+      "word_paragraph_index_zero_based": 2857,
+      "heading_context": [
+        "Capítulo 20 — Docker Compose: 17 servicios para un GRC on-premise",
+        "3. Implementación",
+        "Fragmento docker-compose.yml de desarrollo: quince servicios declarados"
+      ],
+      "sha256": "8a706708fbbb6fd8d29fa71ad6a088ea488d673cb8bc384596e73eb30f5187b1",
+      "bytes": 9055
+    },
+    {
+      "id": 150,
+      "file": "blocks/0150.txt",
+      "word_paragraph_index_zero_based": 2861,
+      "heading_context": [
+        "Capítulo 20 — Docker Compose: 17 servicios para un GRC on-premise",
+        "3. Implementación",
+        "El docker-compose.prod.yml: lo que cambia en producción"
+      ],
+      "sha256": "3c524aaa5ae6ac94516242edcef88ca4c649b914256da17c74443b0079c274dc",
+      "bytes": 8290
+    },
+    {
+      "id": 151,
+      "file": "blocks/0151.txt",
+      "word_paragraph_index_zero_based": 2869,
+      "heading_context": [
+        "Capítulo 20 — Docker Compose: 17 servicios para un GRC on-premise",
+        "3. Implementación",
+        "El Makefile: la interfaz que unifica todo"
+      ],
+      "sha256": "7031a9a97e08621f5304d9ea921854c385d49f8004f0f5556141da71e843d41c",
+      "bytes": 3737
+    },
+    {
+      "id": 152,
+      "file": "blocks/0152.txt",
+      "word_paragraph_index_zero_based": 2874,
+      "heading_context": [
+        "Capítulo 20 — Docker Compose: 17 servicios para un GRC on-premise",
+        "3. Implementación",
+        "Configuración de redes Docker: la DMZ en miniatura"
+      ],
+      "sha256": "52eac5bf379cfd80bba384796d975259e79da337b0aa428e9ec461bc0efa25e6",
+      "bytes": 1672
+    },
+    {
+      "id": 153,
+      "file": "blocks/0153.txt",
+      "word_paragraph_index_zero_based": 2877,
+      "heading_context": [
+        "Capítulo 20 — Docker Compose: 17 servicios para un GRC on-premise",
+        "3. Implementación",
+        "Configuración de redes Docker: la DMZ en miniatura"
+      ],
+      "sha256": "743dbda10fa7a2f409528fb53fbb2ae700518dd3648e3645597e74facba40c6d",
+      "bytes": 2234
+    },
+    {
+      "id": 154,
+      "file": "blocks/0154.txt",
+      "word_paragraph_index_zero_based": 2886,
+      "heading_context": [
+        "Capítulo 20 — Docker Compose: 17 servicios para un GRC on-premise",
+        "3. Implementación",
+        "Estrategia de backup: los volúmenes Docker no son backup"
+      ],
+      "sha256": "0ada57fbf8c2f556f5c869aa98320db949e14b56b3bd8e84ed225d7f2f86abcb",
+      "bytes": 3616
+    },
+    {
+      "id": 155,
+      "file": "blocks/0155.txt",
+      "word_paragraph_index_zero_based": 2889,
+      "heading_context": [
+        "Capítulo 20 — Docker Compose: 17 servicios para un GRC on-premise",
+        "3. Implementación",
+        "Health checks y orden de arranque: el patrón wait-for-it ya no es necesario"
+      ],
+      "sha256": "e9ed476e01c4ed57fb8af33a7e6e5367a5fd7958d6a417536a56b5975c7f4f5b",
+      "bytes": 98
+    },
+    {
+      "id": 156,
+      "file": "blocks/0156.txt",
+      "word_paragraph_index_zero_based": 2892,
+      "heading_context": [
+        "Capítulo 20 — Docker Compose: 17 servicios para un GRC on-premise",
+        "3. Implementación",
+        "Health checks y orden de arranque: el patrón wait-for-it ya no es necesario"
+      ],
+      "sha256": "2ed82ed3edbf7fd21a5d7ea83d797fa436c4be4635482b162de7e85290f2f64d",
+      "bytes": 408
+    },
+    {
+      "id": 157,
+      "file": "blocks/0157.txt",
+      "word_paragraph_index_zero_based": 2902,
+      "heading_context": [
+        "Capítulo 20 — Docker Compose: 17 servicios para un GRC on-premise",
+        "3. Implementación",
+        "Variables de entorno y el fichero .env.prod"
+      ],
+      "sha256": "e8fa95cf4bddd46a0f3fb7cf4ce05bb9c97f1608b774f44e1944a8d2901aae6d",
+      "bytes": 338
+    },
+    {
+      "id": 158,
+      "file": "blocks/0158.txt",
+      "word_paragraph_index_zero_based": 2904,
+      "heading_context": [
+        "Capítulo 20 — Docker Compose: 17 servicios para un GRC on-premise",
+        "3. Implementación",
+        "Variables de entorno y el fichero .env.prod"
+      ],
+      "sha256": "f278a356d6f32f57853824bb6144693e168b78f883531ccc4fa06c8e4b107acc",
+      "bytes": 1348
+    },
+    {
+      "id": 159,
+      "file": "blocks/0159.txt",
+      "word_paragraph_index_zero_based": 2909,
+      "heading_context": [
+        "Capítulo 20 — Docker Compose: 17 servicios para un GRC on-premise",
+        "3. Implementación",
+        "Lo que Docker Compose no resuelve"
+      ],
+      "sha256": "01f619967fa0b765ca3ff5aab3252333bf1b3100e4de3ce063305c87dd3aea1f",
+      "bytes": 192
+    },
+    {
+      "id": 160,
+      "file": "blocks/0160.txt",
+      "word_paragraph_index_zero_based": 2914,
+      "heading_context": [
+        "Capítulo 20 — Docker Compose: 17 servicios para un GRC on-premise",
+        "3. Implementación",
+        "Lo que Docker Compose no resuelve"
+      ],
+      "sha256": "969fb021d5651c36dde9e8e25d3a4a114ce4f802014831a8fb6857306c6f067d",
+      "bytes": 147
+    },
+    {
+      "id": 161,
+      "file": "blocks/0161.txt",
+      "word_paragraph_index_zero_based": 2975,
+      "heading_context": [
+        "Capítulo 21 — Tareas asíncronas: Celery para un GRC que no bloquea",
+        "3. Implementación",
+        "Configuración de Celery con 5 colas"
+      ],
+      "sha256": "3f2516b92e4ec2bc0f9a1868c4fa70c9adbbfe7919baf72ac8315e8644b1abee",
+      "bytes": 2346
+    },
+    {
+      "id": 162,
+      "file": "blocks/0162.txt",
+      "word_paragraph_index_zero_based": 2981,
+      "heading_context": [
+        "Capítulo 21 — Tareas asíncronas: Celery para un GRC que no bloquea",
+        "3. Implementación",
+        "Beat schedule completo"
+      ],
+      "sha256": "0948f976064064e5f2b0735ffa29b7b1b362475184ce66ace97262ed60f4db5d",
+      "bytes": 1998
+    },
+    {
+      "id": 163,
+      "file": "blocks/0163.txt",
+      "word_paragraph_index_zero_based": 2986,
+      "heading_context": [
+        "Capítulo 21 — Tareas asíncronas: Celery para un GRC que no bloquea",
+        "3. Implementación",
+        "Tarea de análisis IA con soft limit y retry"
+      ],
+      "sha256": "1176939b89b87ff402cf10379358c3d6f083676def282ff20f4ce65ea4bd3fc6",
+      "bytes": 3119
+    },
+    {
+      "id": 164,
+      "file": "blocks/0164.txt",
+      "word_paragraph_index_zero_based": 2995,
+      "heading_context": [
+        "Capítulo 21 — Tareas asíncronas: Celery para un GRC que no bloquea",
+        "3. Implementación",
+        "Tarea de alerta de vencimiento regulatorio"
+      ],
+      "sha256": "10e47fc5226e5e1ad4245916e242c04681c5f501794da32a5d00d3bc3269cfd6",
+      "bytes": 3435
+    },
+    {
+      "id": 165,
+      "file": "blocks/0165.txt",
+      "word_paragraph_index_zero_based": 3000,
+      "heading_context": [
+        "Capítulo 21 — Tareas asíncronas: Celery para un GRC que no bloquea",
+        "3. Implementación",
+        "Generación de informes con progreso"
+      ],
+      "sha256": "82e547554cc6195fa46a8837234da772050e8e534f2b3cf8bf233567825fb547",
+      "bytes": 2462
+    },
+    {
+      "id": 166,
+      "file": "blocks/0166.txt",
+      "word_paragraph_index_zero_based": 3004,
+      "heading_context": [
+        "Capítulo 21 — Tareas asíncronas: Celery para un GRC que no bloquea",
+        "3. Implementación",
+        "Endpoint que lanza tarea y devuelve task_id"
+      ],
+      "sha256": "375b8353282b750a09a381bb634829e613e1e75914e789580428646f0669a9e2",
+      "bytes": 2951
+    },
+    {
+      "id": 167,
+      "file": "blocks/0167.txt",
+      "word_paragraph_index_zero_based": 3009,
+      "heading_context": [
+        "Capítulo 21 — Tareas asíncronas: Celery para un GRC que no bloquea",
+        "3. Implementación",
+        "Workers en Docker Compose"
+      ],
+      "sha256": "97c82a8374a68a15b1a7f431f3dde668084f3d9ea81d575f91cd22027b39aa1b",
+      "bytes": 2683
+    },
+    {
+      "id": 168,
+      "file": "blocks/0168.txt",
+      "word_paragraph_index_zero_based": 3101,
+      "heading_context": [
+        "Capítulo 22 — Observabilidad: Prometheus, Grafana y SIEM para compliance",
+        "3. Implementación",
+        "Prometheus + FastAPI Instrumentator"
+      ],
+      "sha256": "09fc1257a0081dfe5a50b28dbe4eddeb204c6507b83f413f46e36e3bb54caad8",
+      "bytes": 3337
+    },
+    {
+      "id": 169,
+      "file": "blocks/0169.txt",
+      "word_paragraph_index_zero_based": 3106,
+      "heading_context": [
+        "Capítulo 22 — Observabilidad: Prometheus, Grafana y SIEM para compliance",
+        "3. Implementación",
+        "Prometheus + FastAPI Instrumentator"
+      ],
+      "sha256": "ea27834458c7effd8cd996af87207e07b03f55a877a98289a1ac609e00cbc351",
+      "bytes": 1002
+    },
+    {
+      "id": 170,
+      "file": "blocks/0170.txt",
+      "word_paragraph_index_zero_based": 3108,
+      "heading_context": [
+        "Capítulo 22 — Observabilidad: Prometheus, Grafana y SIEM para compliance",
+        "3. Implementación",
+        "Prometheus + FastAPI Instrumentator"
+      ],
+      "sha256": "2fca02f6ec0406a322299892724657eab9c5ae90e069f36a3e884b506f0729d1",
+      "bytes": 987
+    },
+    {
+      "id": 171,
+      "file": "blocks/0171.txt",
+      "word_paragraph_index_zero_based": 3112,
+      "heading_context": [
+        "Capítulo 22 — Observabilidad: Prometheus, Grafana y SIEM para compliance",
+        "3. Implementación",
+        "Dashboard Grafana para compliance"
+      ],
+      "sha256": "dd15da951429459584051f58d157a9d4080a02450284d959f8ef70f94890ed94",
+      "bytes": 5894
+    },
+    {
+      "id": 172,
+      "file": "blocks/0172.txt",
+      "word_paragraph_index_zero_based": 3119,
+      "heading_context": [
+        "Capítulo 22 — Observabilidad: Prometheus, Grafana y SIEM para compliance",
+        "3. Implementación",
+        "Dashboard Grafana para compliance"
+      ],
+      "sha256": "2bffd9604b8b9337f11a221fb49b852dd8d2b41df4b5bda452d6a96db927b43b",
+      "bytes": 899
+    },
+    {
+      "id": 173,
+      "file": "blocks/0173.txt",
+      "word_paragraph_index_zero_based": 3124,
+      "heading_context": [
+        "Capítulo 22 — Observabilidad: Prometheus, Grafana y SIEM para compliance",
+        "3. Implementación",
+        "Structured logging con structlog"
+      ],
+      "sha256": "16e998b30839d45327d96a053de0572deb20db4ddac5af881a743f659a26ab9b",
+      "bytes": 2457
+    },
+    {
+      "id": 174,
+      "file": "blocks/0174.txt",
+      "word_paragraph_index_zero_based": 3127,
+      "heading_context": [
+        "Capítulo 22 — Observabilidad: Prometheus, Grafana y SIEM para compliance",
+        "3. Implementación",
+        "Structured logging con structlog"
+      ],
+      "sha256": "acf2fa25e94934ba945169c9d0e628f4da0238d4d74138fb30142f1c4af38cbb",
+      "bytes": 1987
+    },
+    {
+      "id": 175,
+      "file": "blocks/0175.txt",
+      "word_paragraph_index_zero_based": 3133,
+      "heading_context": [
+        "Capítulo 22 — Observabilidad: Prometheus, Grafana y SIEM para compliance",
+        "3. Implementación",
+        "Formato CEF para SIEM"
+      ],
+      "sha256": "b4f83286d0ab16f0bf9614da5cb8eb7a3e53dfb33cbb765f89598f86164e7335",
+      "bytes": 3006
+    },
+    {
+      "id": 176,
+      "file": "blocks/0176.txt",
+      "word_paragraph_index_zero_based": 3140,
+      "heading_context": [
+        "Capítulo 22 — Observabilidad: Prometheus, Grafana y SIEM para compliance",
+        "3. Implementación",
+        "OpenTelemetry: tracing distribuido"
+      ],
+      "sha256": "bfcf2589272277b0535fbd99424046988f888578b7aa8a1ac810996764667eda",
+      "bytes": 3091
+    },
+    {
+      "id": 177,
+      "file": "blocks/0177.txt",
+      "word_paragraph_index_zero_based": 3144,
+      "heading_context": [
+        "Capítulo 22 — Observabilidad: Prometheus, Grafana y SIEM para compliance",
+        "3. Implementación",
+        "OpenTelemetry: tracing distribuido"
+      ],
+      "sha256": "7434e8ce1aa39192fa8949999d2519915b2c73eef5b04615eb93ac156914dffe",
+      "bytes": 1112
+    },
+    {
+      "id": 178,
+      "file": "blocks/0178.txt",
+      "word_paragraph_index_zero_based": 3148,
+      "heading_context": [
+        "Capítulo 22 — Observabilidad: Prometheus, Grafana y SIEM para compliance",
+        "3. Implementación",
+        "Access log: la tabla de auditoría"
+      ],
+      "sha256": "bf279afd80b84cfc4af467fe3d23f90d3248922a99526c888efd4e93a180de12",
+      "bytes": 1637
+    },
+    {
+      "id": 179,
+      "file": "blocks/0179.txt",
+      "word_paragraph_index_zero_based": 3153,
+      "heading_context": [
+        "Capítulo 22 — Observabilidad: Prometheus, Grafana y SIEM para compliance",
+        "3. Implementación",
+        "Reglas de alerta para compliance"
+      ],
+      "sha256": "4d16f4e7230baefb2fe5ae7d4176f51b6cd4bcb3a578d559b19d28f34c5039ee",
+      "bytes": 2000
+    },
+    {
+      "id": 180,
+      "file": "blocks/0180.txt",
+      "word_paragraph_index_zero_based": 3158,
+      "heading_context": [
+        "Capítulo 22 — Observabilidad: Prometheus, Grafana y SIEM para compliance",
+        "3. Implementación",
+        "Registro de operaciones de IA y evaluación del requisito aplicable"
+      ],
+      "sha256": "556d61d50f310519eff46e72eed764736ff6c4b9c659b297361b48253a1990b3",
+      "bytes": 2482
+    },
+    {
+      "id": 181,
+      "file": "blocks/0181.txt",
+      "word_paragraph_index_zero_based": 3216,
+      "heading_context": [
+        "Capítulo 23 — Testing de un GRC: cuando el bug es incumplimiento",
+        "3. Implementación",
+        "Estructura de directorios"
+      ],
+      "sha256": "be1f7bc86b258864e3cc38c0a4b2ba5945314168e6307fc968f66cf0e843cca5",
+      "bytes": 1520
+    },
+    {
+      "id": 182,
+      "file": "blocks/0182.txt",
+      "word_paragraph_index_zero_based": 3220,
+      "heading_context": [
+        "Capítulo 23 — Testing de un GRC: cuando el bug es incumplimiento",
+        "3. Implementación",
+        "Test QA de privacidad: validación del Art. 30"
+      ],
+      "sha256": "6a8a2393dbdda0a1be8acd679ff67540ee482a18aaefced5e0e8f1e48b889508",
+      "bytes": 1312
+    },
+    {
+      "id": 183,
+      "file": "blocks/0183.txt",
+      "word_paragraph_index_zero_based": 3224,
+      "heading_context": [
+        "Capítulo 23 — Testing de un GRC: cuando el bug es incumplimiento",
+        "3. Implementación",
+        "Test de brecha con validación del plazo de 72 horas"
+      ],
+      "sha256": "ba652fcd95b7b9b7fe126a554e3ca3fc7ba7bcdd32f63a9b46ae8e4b7f87a0d1",
+      "bytes": 605
+    },
+    {
+      "id": 184,
+      "file": "blocks/0184.txt",
+      "word_paragraph_index_zero_based": 3228,
+      "heading_context": [
+        "Capítulo 23 — Testing de un GRC: cuando el bug es incumplimiento",
+        "3. Implementación",
+        "Test de RBAC: cada rol solo accede a lo permitido"
+      ],
+      "sha256": "cce3b9fd3cd0837447717ebaa08afee3a36cf4ce1d06002c8e863f30fa156c78",
+      "bytes": 2000
+    },
+    {
+      "id": 185,
+      "file": "blocks/0185.txt",
+      "word_paragraph_index_zero_based": 3232,
+      "heading_context": [
+        "Capítulo 23 — Testing de un GRC: cuando el bug es incumplimiento",
+        "3. Implementación",
+        "Test E2E de generación de DPIA en PDF"
+      ],
+      "sha256": "5ad96b836cbae149f991df048d14848b9ea9aaba4a45094eec3dbb0c623c471e",
+      "bytes": 1554
+    },
+    {
+      "id": 186,
+      "file": "blocks/0186.txt",
+      "word_paragraph_index_zero_based": 3236,
+      "heading_context": [
+        "Capítulo 23 — Testing de un GRC: cuando el bug es incumplimiento",
+        "3. Implementación",
+        "Test de PII detector: DNI, IBAN y falsos positivos"
+      ],
+      "sha256": "1f005b8de8d87a7488e4d41471dc85f7cab814a521d655fb18bba2c72aa24190",
+      "bytes": 1424
+    },
+    {
+      "id": 187,
+      "file": "blocks/0187.txt",
+      "word_paragraph_index_zero_based": 3240,
+      "heading_context": [
+        "Capítulo 23 — Testing de un GRC: cuando el bug es incumplimiento",
+        "3. Implementación",
+        "Frontend: Vitest para unitarios, Playwright para E2E"
+      ],
+      "sha256": "9c0988503c4be3754c0687c1de68551f20377c316019331359edc38b571a7553",
+      "bytes": 2536
+    },
+    {
+      "id": 188,
+      "file": "blocks/0188.txt",
+      "word_paragraph_index_zero_based": 3244,
+      "heading_context": [
+        "Capítulo 23 — Testing de un GRC: cuando el bug es incumplimiento",
+        "3. Implementación",
+        "Accesibilidad con axe-core"
+      ],
+      "sha256": "da9e8f5344cf65dbb6e4b27ae091ed659fcae4d4600fc4e2f17c1108209cf937",
+      "bytes": 1130
+    },
+    {
+      "id": 189,
+      "file": "blocks/0189.txt",
+      "word_paragraph_index_zero_based": 3248,
+      "heading_context": [
+        "Capítulo 23 — Testing de un GRC: cuando el bug es incumplimiento",
+        "3. Implementación",
+        "Integración en CI: el pipeline regulatorio"
+      ],
+      "sha256": "fa307c6522c717fbc95f929998da62ed8e5f9c9685dfd3a27c51f6acf8b7e6a4",
+      "bytes": 944
+    },
+    {
+      "id": 190,
+      "file": "blocks/0190.txt",
+      "word_paragraph_index_zero_based": 3254,
+      "heading_context": [
+        "Capítulo 23 — Testing de un GRC: cuando el bug es incumplimiento",
+        "3. Implementación",
+        "Test de regresión regulatoria: cuando cambia la ley"
+      ],
+      "sha256": "2e20e79ec2b9a8698ed0a51fa40d6b1406891780a3925cf592db7393415b5f65",
+      "bytes": 520
+    },
+    {
+      "id": 191,
+      "file": "blocks/0191.txt",
+      "word_paragraph_index_zero_based": 3259,
+      "heading_context": [
+        "Capítulo 23 — Testing de un GRC: cuando el bug es incumplimiento",
+        "3. Implementación",
+        "Generación de informes de tests como evidencia de auditoría"
+      ],
+      "sha256": "76d1be1c3dd68752c119fae35b37aaf1a3aa78978bf0afc4505207da8e924fdb",
+      "bytes": 195
+    },
+    {
+      "id": 192,
+      "file": "blocks/0192.txt",
+      "word_paragraph_index_zero_based": 3260,
+      "heading_context": [
+        "Capítulo 23 — Testing de un GRC: cuando el bug es incumplimiento",
+        "3. Implementación",
+        "Generación de informes de tests como evidencia de auditoría"
+      ],
+      "sha256": "b3e5e155e025c076bd967ddb21b2c7dddac32ca61d961bdb77f51f91d3283f22",
+      "bytes": 1835
+    },
+    {
+      "id": 193,
+      "file": "blocks/0193.txt",
+      "word_paragraph_index_zero_based": 3346,
+      "heading_context": [
+        "Capítulo 24 — Calidad de IA: métricas, drift y supervisión humana",
+        "3. Implementación",
+        "Modelo de tracking por llamada"
+      ],
+      "sha256": "e0b876dfd162ddc9b32f1314adc9b7d69d1c8fe3ecdc5a9959c18cb4b6b85962",
+      "bytes": 3161
+    },
+    {
+      "id": 194,
+      "file": "blocks/0194.txt",
+      "word_paragraph_index_zero_based": 3352,
+      "heading_context": [
+        "Capítulo 24 — Calidad de IA: métricas, drift y supervisión humana",
+        "3. Implementación",
+        "Modelo de calidad por respuesta"
+      ],
+      "sha256": "461daa62bd315fad10938d11eba309189e3da201ccc44500692bf76fd176d8b8",
+      "bytes": 2042
+    },
+    {
+      "id": 195,
+      "file": "blocks/0195.txt",
+      "word_paragraph_index_zero_based": 3358,
+      "heading_context": [
+        "Capítulo 24 — Calidad de IA: métricas, drift y supervisión humana",
+        "3. Implementación",
+        "Modelo de métricas agregadas y umbrales"
+      ],
+      "sha256": "e89e61987c188df628e9bcc0e10c59beca8b984c5966206bfae8853dad23d43c",
+      "bytes": 2326
+    },
+    {
+      "id": 196,
+      "file": "blocks/0196.txt",
+      "word_paragraph_index_zero_based": 3363,
+      "heading_context": [
+        "Capítulo 24 — Calidad de IA: métricas, drift y supervisión humana",
+        "3. Implementación",
+        "Modelo de presupuestos"
+      ],
+      "sha256": "9e1d7f68016b9957a5ca6aa1fdb556e03de6022ca73f52d3ea64c6b561542ddf",
+      "bytes": 1159
+    },
+    {
+      "id": 197,
+      "file": "blocks/0197.txt",
+      "word_paragraph_index_zero_based": 3368,
+      "heading_context": [
+        "Capítulo 24 — Calidad de IA: métricas, drift y supervisión humana",
+        "3. Implementación",
+        "Tarea Celery de cálculo periódico de métricas"
+      ],
+      "sha256": "f34e8d6a6e82eb31f9676d27bc7d24661740efbc355be2f998d7b862213b7d8d",
+      "bytes": 8583
+    },
+    {
+      "id": 198,
+      "file": "blocks/0198.txt",
+      "word_paragraph_index_zero_based": 3370,
+      "heading_context": [
+        "Capítulo 24 — Calidad de IA: métricas, drift y supervisión humana",
+        "3. Implementación",
+        "Tarea Celery de cálculo periódico de métricas"
+      ],
+      "sha256": "da69aeb34f96e1d47943ee463ce5216eaa5a00b12f8d77628ebfbc63b3cc2077",
+      "bytes": 492
+    },
+    {
+      "id": 199,
+      "file": "blocks/0199.txt",
+      "word_paragraph_index_zero_based": 3374,
+      "heading_context": [
+        "Capítulo 24 — Calidad de IA: métricas, drift y supervisión humana",
+        "3. Implementación",
+        "Detección de drift con Population Stability Index"
+      ],
+      "sha256": "2fbee524db0e6977a80d0e3cbe8b1383549c29ff3571ffb63719ab3b3e573431",
+      "bytes": 4242
+    },
+    {
+      "id": 200,
+      "file": "blocks/0200.txt",
+      "word_paragraph_index_zero_based": 3379,
+      "heading_context": [
+        "Capítulo 24 — Calidad de IA: métricas, drift y supervisión humana",
+        "3. Implementación",
+        "Endpoint de dashboard de IA"
+      ],
+      "sha256": "14541eaf78f384152fa7d7e7ef72949431af6b7c6d1b08f7217425659f36ac09",
+      "bytes": 2255
+    },
+    {
+      "id": 201,
+      "file": "blocks/0201.txt",
+      "word_paragraph_index_zero_based": 3384,
+      "heading_context": [
+        "Capítulo 24 — Calidad de IA: métricas, drift y supervisión humana",
+        "3. Implementación",
+        "Alerta de superación de presupuesto"
+      ],
+      "sha256": "be76c00fefacd105ff29a0b8314bbbe110e7160173dd50acbdf398eb714d4485",
+      "bytes": 2741
+    },
+    {
+      "id": 202,
+      "file": "blocks/0202.txt",
+      "word_paragraph_index_zero_based": 3453,
+      "heading_context": [
+        "Capítulo 25 — Vigilancia normativa: cuando la regulación cambia más rápido que el sprint",
+        "3. Implementación",
+        "Modelo de datos: fuentes, actualizaciones y alertas"
+      ],
+      "sha256": "0ad3ee92bd3f6f306c71cac0cf79e23a2ff9708cc60406c642ceaf7acd108748",
+      "bytes": 2616
+    },
+    {
+      "id": 203,
+      "file": "blocks/0203.txt",
+      "word_paragraph_index_zero_based": 3456,
+      "heading_context": [
+        "Capítulo 25 — Vigilancia normativa: cuando la regulación cambia más rápido que el sprint",
+        "3. Implementación",
+        "Modelo de datos: fuentes, actualizaciones y alertas"
+      ],
+      "sha256": "edf557c95688dafbe841d7c0d1fa9d27cd348649209eecabe0ee8e6dc05c9583",
+      "bytes": 3126
+    },
+    {
+      "id": 204,
+      "file": "blocks/0204.txt",
+      "word_paragraph_index_zero_based": 3462,
+      "heading_context": [
+        "Capítulo 25 — Vigilancia normativa: cuando la regulación cambia más rápido que el sprint",
+        "3. Implementación",
+        "Servicio de dashboard y lógica de negocio"
+      ],
+      "sha256": "da9cd52b8454d5f90efd82502161fbe76487a93a1ded350865770f3bfb04f559",
+      "bytes": 2073
+    },
+    {
+      "id": 205,
+      "file": "blocks/0205.txt",
+      "word_paragraph_index_zero_based": 3465,
+      "heading_context": [
+        "Capítulo 25 — Vigilancia normativa: cuando la regulación cambia más rápido que el sprint",
+        "3. Implementación",
+        "Servicio de dashboard y lógica de negocio"
+      ],
+      "sha256": "c2219148c9261199416ce25f2c48e14574953340a249db2f6b69e5f0df48d317",
+      "bytes": 933
+    },
+    {
+      "id": 206,
+      "file": "blocks/0206.txt",
+      "word_paragraph_index_zero_based": 3470,
+      "heading_context": [
+        "Capítulo 25 — Vigilancia normativa: cuando la regulación cambia más rápido que el sprint",
+        "3. Implementación",
+        "Análisis de impacto con LLM"
+      ],
+      "sha256": "4506069b9bb6b6a3f2d74ff3d5a52d81e3c8e831f9a7708cfc01370fa74424b6",
+      "bytes": 2348
+    },
+    {
+      "id": 207,
+      "file": "blocks/0207.txt",
+      "word_paragraph_index_zero_based": 3476,
+      "heading_context": [
+        "Capítulo 25 — Vigilancia normativa: cuando la regulación cambia más rápido que el sprint",
+        "3. Implementación",
+        "API REST y endpoints"
+      ],
+      "sha256": "9b4afbc091d64ed5384708a4ef12855f8ca546af82ea28773cdc9cb4221f0ecb",
+      "bytes": 3484
+    },
+    {
+      "id": 208,
+      "file": "blocks/0208.txt",
+      "word_paragraph_index_zero_based": 3481,
+      "heading_context": [
+        "Capítulo 25 — Vigilancia normativa: cuando la regulación cambia más rápido que el sprint",
+        "3. Implementación",
+        "Tarea Celery para monitorización periódica"
+      ],
+      "sha256": "f514f938114262512ca822bc9014f8c5d839f51f493590c8cec3cb6605a88144",
+      "bytes": 1937
+    },
+    {
+      "id": 209,
+      "file": "blocks/0209.txt",
+      "word_paragraph_index_zero_based": 3487,
+      "heading_context": [
+        "Capítulo 25 — Vigilancia normativa: cuando la regulación cambia más rápido que el sprint",
+        "3. Implementación",
+        "Interfaz de usuario: timeline y alertas"
+      ],
+      "sha256": "a2723d5dfa9537153b853d317215de8a0efc8bf3e3dfae2d277442341db032c8",
+      "bytes": 858
+    },
+    {
+      "id": 210,
+      "file": "blocks/0210.txt",
+      "word_paragraph_index_zero_based": 3492,
+      "heading_context": [
+        "Capítulo 25 — Vigilancia normativa: cuando la regulación cambia más rápido que el sprint",
+        "3. Implementación",
+        "Configuración de fuentes y seed inicial"
+      ],
+      "sha256": "8ea32a9a2f3c16162ec5b6d8a2e39460d226d6be506dfffc779e6e6212831177",
+      "bytes": 2402
+    },
+    {
+      "id": 211,
+      "file": "blocks/0211.txt",
+      "word_paragraph_index_zero_based": 3497,
+      "heading_context": [
+        "Capítulo 25 — Vigilancia normativa: cuando la regulación cambia más rápido que el sprint",
+        "3. Implementación",
+        "Patrón de integración con el módulo de compliance"
+      ],
+      "sha256": "c5fb3194759485e997ac9e0c58875548d6e58d05a856b7dc672fe0fc128d5b26",
+      "bytes": 1548
+    },
+    {
+      "id": 212,
+      "file": "blocks/0212.txt",
+      "word_paragraph_index_zero_based": 3501,
+      "heading_context": [
+        "Capítulo 25 — Vigilancia normativa: cuando la regulación cambia más rápido que el sprint",
+        "3. Implementación",
+        "Notificaciones y flujo de escalado"
+      ],
+      "sha256": "80a85a769492d37735f6771a33afcb03a1b3248702c424c60378216d484c37e0",
+      "bytes": 1523
+    },
+    {
+      "id": 213,
+      "file": "blocks/0213.txt",
+      "word_paragraph_index_zero_based": 3575,
+      "heading_context": [
+        "Capítulo 26 — Políticas, concienciación y cultura de seguridad",
+        "3. Implementación",
+        "Modelo de datos: políticas, campañas y simulaciones"
+      ],
+      "sha256": "874cd035e2da38898007d1a5fcad48bc04bd70b74ffe749aab761db1fa211163",
+      "bytes": 3506
+    },
+    {
+      "id": 214,
+      "file": "blocks/0214.txt",
+      "word_paragraph_index_zero_based": 3579,
+      "heading_context": [
+        "Capítulo 26 — Políticas, concienciación y cultura de seguridad",
+        "3. Implementación",
+        "Modelo de datos: políticas, campañas y simulaciones"
+      ],
+      "sha256": "a928eea1ba79784929963a19b0de1eaa1554a5749204992f31a136816c7362f1",
+      "bytes": 3024
+    },
+    {
+      "id": 215,
+      "file": "blocks/0215.txt",
+      "word_paragraph_index_zero_based": 3582,
+      "heading_context": [
+        "Capítulo 26 — Políticas, concienciación y cultura de seguridad",
+        "3. Implementación",
+        "Modelo de simulaciones de phishing"
+      ],
+      "sha256": "a9c43398f9e67c4a222b6a89b4ee5946f4c5e8e77cdc3aa493c87864ea9cc0cf",
+      "bytes": 2054
+    },
+    {
+      "id": 216,
+      "file": "blocks/0216.txt",
+      "word_paragraph_index_zero_based": 3587,
+      "heading_context": [
+        "Capítulo 26 — Políticas, concienciación y cultura de seguridad",
+        "3. Implementación",
+        "Scoring de cultura de seguridad"
+      ],
+      "sha256": "a9db517c29abc12c5bb57b29c0a2224191f85f946a3f05deed8b37b2cfd18713",
+      "bytes": 1365
+    },
+    {
+      "id": 217,
+      "file": "blocks/0217.txt",
+      "word_paragraph_index_zero_based": 3592,
+      "heading_context": [
+        "Capítulo 26 — Políticas, concienciación y cultura de seguridad",
+        "3. Implementación",
+        "Servicio de dashboard con métricas cruzadas"
+      ],
+      "sha256": "6d61ce46c54549dc17085ca77fd6bf46cd96863c8f85a1a169744b7b72f10410",
+      "bytes": 2539
+    },
+    {
+      "id": 218,
+      "file": "blocks/0218.txt",
+      "word_paragraph_index_zero_based": 3596,
+      "heading_context": [
+        "Capítulo 26 — Políticas, concienciación y cultura de seguridad",
+        "3. Implementación",
+        "Gestión del ciclo de vida de campañas"
+      ],
+      "sha256": "46cc8eee09aae7071f5db796262ad6d749620cb3d5a0909fdd8dbd8036e5ecc2",
+      "bytes": 3062
+    },
+    {
+      "id": 219,
+      "file": "blocks/0219.txt",
+      "word_paragraph_index_zero_based": 3601,
+      "heading_context": [
+        "Capítulo 26 — Políticas, concienciación y cultura de seguridad",
+        "3. Implementación",
+        "Registro de completitud y cálculo automático de tasas"
+      ],
+      "sha256": "0f4d801affbdb7dc7751aad1ca9cb1428eab49b00c9fcb08cf339bce687d05d8",
+      "bytes": 2420
+    },
+    {
+      "id": 220,
+      "file": "blocks/0220.txt",
+      "word_paragraph_index_zero_based": 3606,
+      "heading_context": [
+        "Capítulo 26 — Políticas, concienciación y cultura de seguridad",
+        "3. Implementación",
+        "Generación de contenido con IA"
+      ],
+      "sha256": "9709e2fc72c47d44151c586ff5cab5bca620ee25650f4266db75f3bcfd0dc00d",
+      "bytes": 2410
+    },
+    {
+      "id": 221,
+      "file": "blocks/0221.txt",
+      "word_paragraph_index_zero_based": 3611,
+      "heading_context": [
+        "Capítulo 26 — Políticas, concienciación y cultura de seguridad",
+        "3. Implementación",
+        "Interfaz de usuario: cinco pestañas para un programa completo"
+      ],
+      "sha256": "e8943f81325ea89be42276ca63a0cd27daaa01a2af58e4ce85a6a4bf2c6099c8",
+      "bytes": 1081
+    },
+    {
+      "id": 222,
+      "file": "blocks/0222.txt",
+      "word_paragraph_index_zero_based": 3617,
+      "heading_context": [
+        "Capítulo 26 — Políticas, concienciación y cultura de seguridad",
+        "3. Implementación",
+        "Tarea periódica de revisión de políticas"
+      ],
+      "sha256": "0e342369bf30670a7a30c9900e87c8c6bee4965983d68a56eb6c4d12101212a5",
+      "bytes": 1916
+    },
+    {
+      "id": 223,
+      "file": "blocks/0223.txt",
+      "word_paragraph_index_zero_based": 3621,
+      "heading_context": [
+        "Capítulo 26 — Políticas, concienciación y cultura de seguridad",
+        "3. Implementación",
+        "Integración con compliance como evidencia de control"
+      ],
+      "sha256": "b9713ca39de6f7990db1d1bccaded997a928839b2fa0e80c90cec898038428c7",
+      "bytes": 1576
+    },
+    {
+      "id": 224,
+      "file": "blocks/0224.txt",
+      "word_paragraph_index_zero_based": 3699,
+      "heading_context": [
+        "Capítulo 27 — El cuadro de mando del CISO: KPIs cruzados para la dirección",
+        "3. Implementación",
+        "Servicio de agregación: consultar ocho módulos en una sola llamada"
+      ],
+      "sha256": "095d075f99d1814750a1987c3f272c336cb15f5c6677640ebc7e1ed736354843",
+      "bytes": 7266
+    },
+    {
+      "id": 225,
+      "file": "blocks/0225.txt",
+      "word_paragraph_index_zero_based": 3706,
+      "heading_context": [
+        "Capítulo 27 — El cuadro de mando del CISO: KPIs cruzados para la dirección",
+        "3. Implementación",
+        "Endpoint REST"
+      ],
+      "sha256": "f7e22cfcf6dfb709ba1a9356a4f4fb250b545e3156e0a5ab08eaa7cff27b9841",
+      "bytes": 670
+    },
+    {
+      "id": 226,
+      "file": "blocks/0226.txt",
+      "word_paragraph_index_zero_based": 3712,
+      "heading_context": [
+        "Capítulo 27 — El cuadro de mando del CISO: KPIs cruzados para la dirección",
+        "3. Implementación",
+        "Interfaz de usuario: la pantalla que el CISO proyecta"
+      ],
+      "sha256": "88910e8610a9014533a7664b4fd7d2e27d4044bb614a7a906a7466265fcc526f",
+      "bytes": 1286
+    },
+    {
+      "id": 227,
+      "file": "blocks/0227.txt",
+      "word_paragraph_index_zero_based": 3715,
+      "heading_context": [
+        "Capítulo 27 — El cuadro de mando del CISO: KPIs cruzados para la dirección",
+        "3. Implementación",
+        "Interfaz de usuario: la pantalla que el CISO proyecta"
+      ],
+      "sha256": "751a656a5510a0aaa68558c646cd16c40373e350fb5207628a5f2bcb3469e66f",
+      "bytes": 501
+    },
+    {
+      "id": 228,
+      "file": "blocks/0228.txt",
+      "word_paragraph_index_zero_based": 3718,
+      "heading_context": [
+        "Capítulo 27 — El cuadro de mando del CISO: KPIs cruzados para la dirección",
+        "3. Implementación",
+        "Interfaz de usuario: la pantalla que el CISO proyecta"
+      ],
+      "sha256": "7825fccdea2bea46029ccc9af3cd931d632aedff3d5b83ece936009d7bf4ec2e",
+      "bytes": 415
+    },
+    {
+      "id": 229,
+      "file": "blocks/0229.txt",
+      "word_paragraph_index_zero_based": 3722,
+      "heading_context": [
+        "Capítulo 27 — El cuadro de mando del CISO: KPIs cruzados para la dirección",
+        "3. Implementación",
+        "Composición del dashboard completo"
+      ],
+      "sha256": "8629bb3f39e368b4adcc56da495018c13b51997f7827e3fc6d928ed8b10b609a",
+      "bytes": 2665
+    },
+    {
+      "id": 230,
+      "file": "blocks/0230.txt",
+      "word_paragraph_index_zero_based": 3727,
+      "heading_context": [
+        "Capítulo 27 — El cuadro de mando del CISO: KPIs cruzados para la dirección",
+        "3. Implementación",
+        "Formateo de cifras para ejecutivos"
+      ],
+      "sha256": "c473f1ea1dee331a0f93f402d0ae43037303cab7415a86970dd9446e178172ee",
+      "bytes": 119
+    },
+    {
+      "id": 231,
+      "file": "blocks/0231.txt",
+      "word_paragraph_index_zero_based": 3730,
+      "heading_context": [
+        "Capítulo 27 — El cuadro de mando del CISO: KPIs cruzados para la dirección",
+        "3. Implementación",
+        "Umbrales cromáticos del indicador económico de ciber-riesgo"
+      ],
+      "sha256": "458bc67353ab3a995d863110249249642576d2860737720cdf29217dfd2b0eb1",
+      "bytes": 321
+    },
+    {
+      "id": 232,
+      "file": "blocks/0232.txt",
+      "word_paragraph_index_zero_based": 3735,
+      "heading_context": [
+        "Capítulo 27 — El cuadro de mando del CISO: KPIs cruzados para la dirección",
+        "3. Implementación",
+        "Exportación PDF para el comité"
+      ],
+      "sha256": "f5bd0d9e3e22ce738a7cf9cc3ca3d455942193511123bba933b380ba6ff1e40b",
+      "bytes": 3082
+    },
+    {
+      "id": 233,
+      "file": "blocks/0233.txt",
+      "word_paragraph_index_zero_based": 3740,
+      "heading_context": [
+        "Capítulo 27 — El cuadro de mando del CISO: KPIs cruzados para la dirección",
+        "3. Implementación",
+        "Generación de informe narrativo con IA"
+      ],
+      "sha256": "d689f7e056480c9a0ac94231e3d16b055a8bd7620b5a3fad89c80635a9793445",
+      "bytes": 2273
+    },
+    {
+      "id": 234,
+      "file": "blocks/0234.txt",
+      "word_paragraph_index_zero_based": 3746,
+      "heading_context": [
+        "Capítulo 27 — El cuadro de mando del CISO: KPIs cruzados para la dirección",
+        "3. Implementación",
+        "Consideraciones de rendimiento"
+      ],
+      "sha256": "0bb46d89f3b0faefb3d6703ad1d296c82b62f35625fe2aefb16d784b4e9aa2fd",
+      "bytes": 1854
+    },
+    {
+      "id": 235,
+      "file": "blocks/0235.txt",
+      "word_paragraph_index_zero_based": 3759,
+      "heading_context": [
+        "Capítulo 27 — El cuadro de mando del CISO: KPIs cruzados para la dirección",
+        "3. Implementación",
+        "Comparación temporal y snapshots históricos"
+      ],
+      "sha256": "d1708b62a4e5b99b7f0914de6ffc218f89d9e4f8b1670e6ada3bd5a608d83574",
+      "bytes": 1386
+    }
+  ]
+}

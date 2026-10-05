@@ -1,0 +1,73 @@
+# Middleware de verificación de licencia de módulo
+# Se inyecta como dependencia en los routers de módulos premium
+
+from enum import Enum as PyEnum
+from datetime import datetime, timezone
+from fastapi import Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
+from app.database import get_db
+from app.auth.dependencies import get_current_user
+from app.models.license import LicenseModule, LicenseStatus
+
+
+class ModuleName(str, PyEnum):
+    """Módulos licenciables disponibles.
+
+    Cada valor corresponde a un módulo sectorial que se activa
+    por licencia. El core (privacidad, riesgo, cumplimiento)
+    no exige estas licencias sectoriales; su acceso sigue sujeto a la
+    licencia general de la aplicación y a los permisos correspondientes.
+    """
+    NIS2 = "nis2"
+    DORA = "dora"
+    DSA = "dsa"
+    BCM = "bcm"
+    WHISTLEBLOWING = "whistleblowing"
+    PCI_DSS = "pci_dss"
+    ISO_22301 = "iso_22301"
+
+
+class RequireModule:
+    """Dependency injection que verifica licencia activa.
+
+    Uso:
+        @router.get("/nis2/incidents",
+                     dependencies=[Depends(RequireModule(ModuleName.NIS2))])
+    """
+
+    def __init__(self, module: ModuleName):
+        if not isinstance(module, ModuleName):
+            raise ValueError("A premium ModuleName is required")
+        self.module = module
+
+    def __call__(
+        self,
+        current_user=Depends(get_current_user),
+        db: Session = Depends(get_db)
+    ):
+        tenant = current_user.corporate_id
+        if type(tenant) is not int or tenant < 1:
+            raise HTTPException(status_code=403, detail="Cliente no autorizado")
+        license_record = db.query(LicenseModule).filter(
+            LicenseModule.corporate_id == tenant,
+            LicenseModule.module_name == self.module.value,
+            LicenseModule.is_deleted.is_(False),
+        ).one_or_none()
+        if license_record is None or license_record.status not in {
+            LicenseStatus.ACTIVE, LicenseStatus.TRIAL
+        }:
+            raise HTTPException(status_code=403, detail="Licencia no activa")
+        now = datetime.now(timezone.utc)
+        starts = license_record.starts_at
+        expires = license_record.expires_at
+        if not isinstance(starts, datetime) or (expires is not None and not isinstance(expires, datetime)):
+            raise HTTPException(status_code=403, detail="Periodo de licencia no válido")
+        # This schema stores UTC in MySQL DATETIME; normalize that known boundary.
+        starts = starts.replace(tzinfo=timezone.utc) if starts.tzinfo is None else starts.astimezone(timezone.utc)
+        if expires is not None:
+            expires = expires.replace(tzinfo=timezone.utc) if expires.tzinfo is None else expires.astimezone(timezone.utc)
+        if starts > now or (expires is not None and expires <= now):
+            raise HTTPException(status_code=403, detail="Licencia fuera de su periodo activo")
+        # Read-only gate; it does not replace role, resource or operation authorization.
+        return license_record

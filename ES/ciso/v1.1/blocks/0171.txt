@@ -1,0 +1,230 @@
+{
+  "dashboard": {
+    "title": "GRC Platform - Panorama operativo",
+    "panels": [
+      {
+        "title": "Latencia API por endpoint (p95)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum by (le, handler) (rate(grc_api_latency_seconds_bucket{job=\"grc-backend\"}[5m])))",
+            "legendFormat": "{{handler}}",
+            "refId": "A"
+          }
+        ],
+        "description": "Señal operativa de rendimiento; no acredita por sí sola una medida ENS.",
+        "id": 1,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "noValue": "Sin datos"
+          },
+          "overrides": []
+        }
+      },
+      {
+        "title": "Intentos LLM (última hora)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum by (provider, model) (increase(grc_llm_requests_total[1h]))",
+            "legendFormat": "{{provider}}/{{model}}",
+            "refId": "A"
+          }
+        ],
+        "description": "Intentos observados; no sustituyen el registro individual exigible según alcance.",
+        "id": 2,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "noValue": "Sin datos"
+          },
+          "overrides": []
+        }
+      },
+      {
+        "title": "Latencia LLM (p95)",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum by (le, provider, model) (rate(grc_llm_latency_seconds_bucket[5m])))",
+            "legendFormat": "{{provider}}/{{model}}",
+            "refId": "A"
+          }
+        ],
+        "id": 3,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "noValue": "Sin datos",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "value": null,
+                  "color": "green"
+                },
+                {
+                  "value": 5,
+                  "color": "green"
+                },
+                {
+                  "value": 15,
+                  "color": "orange"
+                },
+                {
+                  "value": 30,
+                  "color": "red"
+                }
+              ]
+            }
+          },
+          "overrides": []
+        }
+      },
+      {
+        "title": "Tokens consumidos (última hora)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum by (provider, direction) (increase(grc_llm_tokens_total[1h]))",
+            "legendFormat": "{{provider}} {{direction}}",
+            "refId": "A"
+          }
+        ],
+        "description": "Tokens conocidos; la cobertura y los intentos con uso desconocido se revisan por separado.",
+        "id": 4,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "noValue": "Sin datos"
+          },
+          "overrides": []
+        }
+      },
+      {
+        "title": "Tareas Celery activas por cola",
+        "type": "bargauge",
+        "targets": [
+          {
+            "expr": "grc_celery_tasks_active{job=\"grc-celery-exporter\"}",
+            "legendFormat": "{{queue}}",
+            "refId": "A"
+          }
+        ],
+        "id": 5,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 16
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "noValue": "Sin datos"
+          },
+          "overrides": []
+        },
+        "description": "Activas según contrato del exporter; no representa tareas pendientes ni capacidad reservada."
+      },
+      {
+        "title": "Errores HTTP 5xx (últimas 24h)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(increase(http_requests_total{status=\"5xx\"}[24h]))",
+            "legendFormat": "5xx totales",
+            "refId": "A"
+          }
+        ],
+        "id": 6,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 16
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "noValue": "Sin datos",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "value": null,
+                  "color": "green"
+                },
+                {
+                  "value": 10,
+                  "color": "orange"
+                },
+                {
+                  "value": 50,
+                  "color": "red"
+                }
+              ]
+            }
+          },
+          "overrides": []
+        }
+      }
+    ],
+    "schemaVersion": 39,
+    "timezone": "utc",
+    "refresh": "30s",
+    "__inputs": [
+      {
+        "name": "DS_PROMETHEUS",
+        "label": "Prometheus",
+        "description": "Fuente autorizada del despliegue",
+        "type": "datasource",
+        "pluginId": "prometheus",
+        "pluginName": "Prometheus"
+      }
+    ]
+  }
+}

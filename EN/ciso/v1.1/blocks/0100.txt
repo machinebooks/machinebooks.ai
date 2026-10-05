@@ -1,0 +1,55 @@
+from typing import Literal
+from fastapi import APIRouter, HTTPException, Depends, Request
+from pydantic import BaseModel, Field, ConfigDict
+from app.security.security_utils import create_access_token, revoke_token
+from app.security.auth_middleware import authenticate_request
+from app.security.identity import identity_adapter
+from app.database import get_db
+
+router = APIRouter(prefix="/api/v1/auth", tags=["authentication"])
+
+class LoginRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    username: str = Field(min_length=1, max_length=200)
+    password: str = Field(min_length=1, max_length=1024)
+    mfa_code: str | None = Field(None, pattern=r"^\d{6}$")
+    auth_method: Literal["local", "ldap"] = "local"
+
+class LoginResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    expires_in: int
+    mfa_required: bool = False
+
+@router.post("/login", response_model=LoginResponse)
+async def login(payload: LoginRequest, http_request: Request, db=Depends(get_db)):
+    # Required adapter consumes atomic IP/account limits, verifies credentials and active tenant.
+    user = await identity_adapter.verify_login_attempt(http_request, payload, db)
+    if not user:
+        raise HTTPException(401, "Invalid credentials")
+    mfa_verified = False
+    if identity_adapter.user_requires_mfa(user):
+        if not user.mfa_secret:
+            raise HTTPException(403, "MFA enrollment required")
+        if not payload.mfa_code:
+            return LoginResponse(access_token="", expires_in=0, mfa_required=True)
+        # Adapter atomically consumes TOTP, rejects replay and applies attempt limits.
+        mfa_verified = await identity_adapter.consume_totp(user, payload.mfa_code)
+        if not mfa_verified:
+            raise HTTPException(401, "Invalid MFA code")
+    await identity_adapter.authorize_login(user, mfa_verified)
+    token = create_access_token(user.id, user.corporate_id,
+                                [r.name for r in user.roles], mfa_verified)
+    await identity_adapter.audit_login(http_request, user, payload.auth_method, mfa_verified)
+    return LoginResponse(access_token=token, expires_in=3600)
+
+@router.post("/logout")
+async def logout(request: Request, current_user: dict = Depends(authenticate_request)):
+    if current_user["auth_method"] == "jwt":
+        # These values originate only from signature/issuer/audience/expiry-verified claims.
+        await revoke_token(current_user["verified_jti"], current_user["verified_exp"])
+    else:
+        # Cookie path requires CSRF; the adapter owns session/certificate logout semantics.
+        await identity_adapter.revoke_current_session(request, current_user)
+    await identity_adapter.audit_logout(current_user)
+    return {"detail": "Session closed"}

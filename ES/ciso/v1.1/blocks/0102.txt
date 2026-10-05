@@ -1,0 +1,86 @@
+import urllib.parse
+from datetime import datetime, timezone
+from typing import Optional
+from cryptography.x509.verification import PolicyBuilder, Store, VerificationError
+from cryptography import x509
+from cryptography.x509.ocsp import OCSPRequestBuilder, load_der_ocsp_response
+from cryptography.hazmat.primitives import hashes, serialization
+import httpx
+import base64
+
+# CAs de confianza cargadas al arranque
+TRUSTED_CA_CERTS = load_trusted_cas("/etc/ssl/trusted-cas/")
+
+
+def parse_x509_certificate(cert_pem_urlencoded: str) -> dict:
+    """Parsea el certificado que Nginx pasa como header URL-encoded.
+    Extrae CN, serial, emisor, fechas y extensiones relevantes."""
+    cert_pem = urllib.parse.unquote(cert_pem_urlencoded)
+    cert = x509.load_pem_x509_certificate(cert_pem.encode())
+
+    return {
+        "subject_cn": cert.subject.get_attributes_for_oid(
+            x509.oid.NameOID.COMMON_NAME
+        )[0].value,
+        "issuer_cn": cert.issuer.get_attributes_for_oid(
+            x509.oid.NameOID.COMMON_NAME
+        )[0].value,
+        "serial_number": cert.serial_number,
+        "not_before": cert.not_valid_before_utc,
+        "not_after": cert.not_valid_after_utc,
+        "cert_object": cert,
+    }
+
+
+def verify_certificate_chain(cert_info: dict) -> bool:
+    """Delegate client path validation to cryptography; revocation is separate."""
+    cert = cert_info["cert_object"]
+    try:
+        store = Store(list(TRUSTED_CA_CERTS.values()))
+        verifier = (PolicyBuilder().store(store)
+                    .time(datetime.now(timezone.utc)).build_client_verifier())
+        verifier.verify(cert, cert_info.get("intermediates", []))
+        return True
+    except (VerificationError, ValueError, TypeError):
+        return False
+
+
+async def is_certificate_revoked(cert_info: dict) -> bool:
+    """Verifica revocación contra OCSP y CRL (fallback).
+    En entornos de defensa, ambos mecanismos son obligatorios."""
+    cert = cert_info["cert_object"]
+
+    # Intentar OCSP primero (más actualizado)
+    try:
+        ocsp_url = extract_ocsp_url(cert)
+        if ocsp_url:
+            revoked = await check_ocsp(cert, ocsp_url)
+            if revoked is not None:
+                return revoked
+    except Exception as e:
+        logger.warning(f"OCSP no disponible: {e}")
+
+    # Fallback a CRL
+    try:
+        crl_url = extract_crl_url(cert)
+        if crl_url:
+            return await check_crl(cert, crl_url)
+    except Exception as e:
+        logger.warning(f"CRL no disponible: {e}")
+
+    # Si ni OCSP ni CRL están disponibles, denegar (fail-closed)
+    logger.error("No se pudo verificar revocación — denegando acceso")
+    return True
+
+
+async def check_ocsp(cert: x509.Certificate, ocsp_url: str) -> Optional[bool]:
+    """Use an integration adapter; never accept an unverified GOOD response."""
+    from app.services.pki_verifier import validated_ocsp_status
+    # Contract: approved destination, signed authorized responder, matching
+    # CertID, response status, freshness, nonce policy and bounded response.
+    status = await validated_ocsp_status(cert, ocsp_url, timeout=5.0)
+    if status == "GOOD":
+        return False
+    if status == "REVOKED":
+        return True
+    return None  # UNKNOWN/unverified is not evidence of a valid certificate.

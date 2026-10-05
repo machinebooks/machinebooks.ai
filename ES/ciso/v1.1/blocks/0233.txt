@@ -1,0 +1,34 @@
+import json
+
+async def generate_executive_narrative(current_data, previous_data, organization_name,
+                                       period, context, runtime):
+    await runtime.authorize_executive_read(context)
+    # Adapter validates tenant/actor scope, period, cohort/definitions/coverage, currency
+    # and approved minimal aggregates; no identifiers/raw records may reach the provider.
+    current = await runtime.approved_dashboard_aggregates(context, current_data, period)
+    if not current.has_meaningful_known_data:
+        return {"draft": None, "reason": "insufficient_known_data", "review_required": True}
+    previous = None
+    if previous_data is not None:
+        previous = await runtime.comparable_previous_aggregates(context, previous_data, current)
+    payload = {"current": current.public_aggregates,
+               "previous_comparable": previous.public_aggregates if previous is not None else None,
+               "coverage": current.coverage,
+               "comparison_available": previous is not None}
+    text = json.dumps(payload, ensure_ascii=False)
+    if len(text) > 12000:
+        raise ValueError("Executive aggregate context exceeds its bound")
+    organization = await runtime.approved_organization_label(context, organization_name)
+    result = await runtime.complete(
+        context, service_name="executive_narrative",
+        messages=[{"role": "user", "content":
+        f"Prepare an executive DRAFT for {organization}, period {period}. "
+        "Use only supplied known aggregates. Do not infer progress or causality when "
+        "previous scope/coverage is absent or incomparable. State uncertainty and "
+        "data coverage; distinguish internal indicators from legal conformity. "
+        "Suggest at most3priorities for human review.\n" + text}])
+    draft = await runtime.validate_executive_draft(context, result["content"], payload)
+    return {"draft": draft, "comparison_available": previous is not None, "review_required": True}
+# Historical Claude integration uses the configured authorized metered runtime; no provider
+# call occurs solely to fill an empty dashboard. Numerical/legal review remains required.
+# Summary does not establish ROI, portfolio VaR, certification or correctness of underlying data.

@@ -1,0 +1,13 @@
+frontend/src/locales/
+├── es/
+│   ├── common.json       ← Traducciones compartidas (navegación, errores, botones)
+│   ├── privacy.json      ← Traducciones del módulo de privacidad
+│   ├── risk.json          ← Traducciones del módulo de riesgo
+│   └── compliance.json   ← Traducciones del módulo de cumplimiento
+├── en/
+│   ├── common.json
+│   ├── privacy.json
+│   └── ...
+└── pt/
+    ├── common.json
+    └── ...

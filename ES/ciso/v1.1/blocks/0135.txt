@@ -1,0 +1,24 @@
+import { useQuery } from '@tanstack/react-query'
+interface PaginatedFilters { page: number; page_size: number }
+interface PaginatedResponse<T> {
+  items: T[]; total: number; page: number; page_size: number; total_pages: number
+}
+// scopeKey changes with actor, tenant and authorization revision; never a token.
+// The backend independently verifies identity and permissions for every request.
+export function usePaginatedTable<T>(
+  scopeKey: string | null, key: string,
+  fetcher: (filters: PaginatedFilters, signal: AbortSignal) =>
+    Promise<PaginatedResponse<T>>,
+  filters: PaginatedFilters,
+) {
+  return useQuery({
+    queryKey: [scopeKey, key, filters], enabled: scopeKey !== null,
+    queryFn: ({ signal }) => {
+      if (scopeKey === null) throw new Error('Contexto no disponible')
+      return fetcher(filters, signal)
+    },
+    placeholderData: (previous, query) =>
+      query?.queryKey[0] === scopeKey && query?.queryKey[1] === key ? previous : undefined,
+    staleTime: 30_000,
+  })
+}

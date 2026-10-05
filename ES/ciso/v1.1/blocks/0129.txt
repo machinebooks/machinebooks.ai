@@ -1,0 +1,24 @@
+frontend/src/modules/
+├── privacy/
+│   ├── PrivacyPage.tsx        ← Página raíz con tabs/subrutas
+│   ├── ExcelImportDialog.tsx  ← Componentes específicos
+│   └── ...
+├── risk/
+│   ├── RiskPage.tsx
+│   ├── MethodologiesPage.tsx
+│   ├── AssetStudioPage.tsx
+│   └── ...
+├── compliance/
+│   ├── CompliancePage.tsx
+│   ├── GapWizardPage.tsx
+│   └── ...
+├── ai-governance/
+│   └── AIGovernancePage.tsx
+├── dora/
+│   └── DORAPage.tsx
+├── nis2/
+│   └── NIS2Page.tsx
+├── whistleblowing/
+│   ├── WhistleblowingPage.tsx
+│   └── AnonymousWhistleblowingPage.tsx
+└── ... (32 módulos en total)

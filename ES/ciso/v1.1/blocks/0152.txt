@@ -1,0 +1,21 @@
+                    ┌─────────────────────┐
+                    │     Internet /       │
+                    │  Red corporativa     │
+                    └────────┬────────────┘
+                             │ :443
+                    ┌────────▼────────────┐
+                    │       nginx         │
+                    │  (TLS termination)  │
+      ┌─────────────┤  spd_frontend +     │
+      │             │  spd_backend        │
+      │             └────────┬────────────┘
+      │                      │
+┌─────▼─────┐     ┌─────────▼──────────────────────────────────┐
+│  frontend  │     │              spd_backend                    │
+│ (React)    │     │                                             │
+│            │     │  fastapi ──► mysql     celery-worker        │
+│ spd_frontend     │     │   ──► redis     celery-beat          │
+│ SOLO       │     │     │   ──► qdrant    prometheus            │
+└────────────┘     │     └───►   ollama    grafana               │
+                   │                                             │
+                   └─────────────────────────────────────────────┘

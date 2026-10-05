@@ -1,0 +1,74 @@
+# Historical Messages SDK illustration; provider is optional, human approval and destination authorization are required.
+# This function handles the three illustrated phases; progress/intermediate reports require their own workflow.
+# Assisted generation of NIS2 notification draft
+# The CISO reviews and modifies before sending — never automatic submission
+
+import anthropic
+
+client = anthropic.Anthropic()
+
+
+def generate_nis2_notification_draft(
+    incident: dict,
+    phase: str,
+    existing_notifications: list
+) -> str:
+    """Generates a NIS2 notification draft for a phase.
+
+    The draft follows the structure required by NIS2 Art. 23.
+    The CISO ALWAYS reviews and modifies before sending.
+    """
+    phase_instructions = {
+        "early_warning": (
+            "Generate a concise early warning. Must include: "
+            "brief incident description, whether unlawful or malicious "
+            "acts are suspected, and whether it may have cross-border impact. "
+            "Does not require deep analysis — it is a first communication."
+        ),
+        "formal": (
+            "Generate a formal notification updating the early "
+            "warning. Must include: initial severity and impact "
+            "assessment, known indicators of compromise, and first "
+            "response measures adopted."
+        ),
+        "final_report": (
+            "Generate a detailed final report. Must include: "
+            "complete incident description and timeline, "
+            "threat type or probable main cause, mitigation measures "
+            "applied and ongoing, severity and impact, and cross-border "
+            "repercussions where applicable. Do not invent missing information."
+        ),
+    }
+
+    if phase not in phase_instructions:
+        raise ValueError("Unsupported illustrated notification phase")
+    # Only an authorized, minimized summary and previous drafts may reach this provider.
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=2048,
+        system=(
+            "You are an assistant specialized in cybersecurity and "
+            "European regulatory compliance. You generate NIS2 "
+            "notification drafts (Directive 2022/2555) that the CISO "
+            "will review before sending to the competent authority. "
+            "Use precise technical language without embellishment. Structure "
+            "the notification with clear sections."
+        ),
+        messages=[{
+            "role": "user",
+            "content": (
+                f"Incident: {incident['title']}\n"
+                f"Description: {incident['description']}\n"
+                f"Severity: {incident['severity']}\n"
+                f"Detected: {incident['detected_at']}\n"
+                f"Affected services: {incident['affected_services']}\n"
+                f"Malicious?: {incident['is_malicious']}\n"
+                f"Cross-border?: {incident['is_cross_border']}\n\n"
+                f"Phase: {phase}\n"
+                f"Instructions: {phase_instructions[phase]}\n\n"
+                f"Previous notifications: {existing_notifications}"
+            )
+        }]
+    )
+
+    return message.content[0].text

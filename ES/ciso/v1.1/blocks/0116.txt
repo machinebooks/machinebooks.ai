@@ -1,0 +1,51 @@
+# Core risk routes use current operation permissions and an actor-bound repository policy.
+from fastapi import APIRouter, Depends, HTTPException, Request, Query
+from sqlalchemy import select, update
+from datetime import datetime, timezone
+from app.auth.permissions import require_permission
+from app.repositories.base import BaseRepository
+from app.models.risk import RiskAssessment
+from app.schemas.risk import RiskAssessmentUpdate
+from app.risk.current_policy import risk_policy
+from app.database import get_db
+
+router = APIRouter(prefix="/api/v1/risks", tags=["risk"])
+
+@router.get("/assessments", dependencies=[Depends(require_permission("risk", "read"))])
+async def list_risk_assessments(request: Request, skip: int = Query(0, ge=0, le=100000),
+                                limit: int = Query(50, ge=1, le=100), db=Depends(get_db)):
+    policy = risk_policy.for_actor(request.state.current_identity, db)
+    repo = BaseRepository(RiskAssessment, db, request.state.corporate_id, policy)
+    items = await repo.get_all(skip=skip, limit=limit)
+    return {"items": [policy.serialize_authorized_entity(item) for item in items],
+            "returned_count": len(items)}
+
+@router.put("/assessments/{assessment_id}", dependencies=[Depends(require_permission("risk", "write"))])
+async def update_risk_assessment(assessment_id: int, payload: RiskAssessmentUpdate,
+                                 request: Request, db=Depends(get_db)):
+    if type(payload.version) is not int or payload.version < 1 or assessment_id <= 0:
+        raise HTTPException(422, "Identificador y versión positivos requeridos")
+    cid, uid = request.state.corporate_id, request.state.user_id
+    policy = risk_policy.for_actor(request.state.current_identity, db)
+    await policy.authorize("write", cid, uid)
+    protected = {"id", "corporate_id", "version", "row_version", "created_by", "created_at",
+                 "updated_by", "updated_at", "deleted_by", "deleted_at", "is_deleted"}
+    values = payload.model_dump(exclude_unset=True, exclude=protected)
+    # Adapter validates patch fields and every same-tenant relation before the atomic write.
+    await policy.validate_update(values, cid)
+    values.update(row_version=payload.version + 1, updated_by=uid,
+                  updated_at=datetime.now(timezone.utc))
+    result = await db.execute(update(RiskAssessment).where(
+        RiskAssessment.id == assessment_id, RiskAssessment.corporate_id == cid,
+        RiskAssessment.is_deleted.is_(False), RiskAssessment.row_version == payload.version,
+    ).values(**values).execution_options(synchronize_session=False))
+    if result.rowcount != 1:
+        await db.rollback()
+        raise HTTPException(409, "Registro no disponible o conflicto de versión")
+    await db.commit()
+    entity = await db.scalar(select(RiskAssessment).where(
+        RiskAssessment.id == assessment_id, RiskAssessment.corporate_id == cid,
+        RiskAssessment.is_deleted.is_(False),
+    ).execution_options(populate_existing=True))
+    return policy.serialize_authorized_entity(entity)
+# Policy adapters/DTOs and real DB transaction behavior require application integration tests.

@@ -1,0 +1,62 @@
+# Synthetic case; no API request or analysis printing at import time.
+# The caller owns the authorized Messages client and destination policy.
+import json
+from datetime import datetime, timezone
+from anthropic import Anthropic
+
+processing_data = {'name': 'Gestión de incidentes de seguridad',
+ 'purpose': 'Registro y seguimiento de incidentes de ciberseguridad',
+ 'legal_basis': 'Pendiente: comprobar norma concreta, ámbito y condición del '
+                'Art6.1.c; ENS24 no determina por sí solo la base de todo '
+                'tratamiento.',
+ 'data_categories': ['datos identificativos',
+                     'datos de conexión',
+                     'logs de actividad'],
+ 'data_subjects': ['empleados', 'usuarios del sistema'],
+ 'retention': 'Pendiente de justificación: Art78LOPDGDD regula prescripción de '
+              'sanciones y no establece cinco años generales para estos logs.'}
+
+normative_context = (
+    'Art35.3.a: evaluación sistemática y exhaustiva de '
+    'aspectos personales basada en tratamiento automatizado, '
+    'incluida elaboración de perfiles, sobre la que se basen'
+    ' decisiones con efectos jurídicos o similares significativos.'
+    ' Art35.3.b: a gran escala categorías especiales'
+    ' Art9.1 o datos de condenas e infracciones Art10. '
+    'Art35.3.c: observación sistemática a gran escala de zona'
+    ' de acceso público. Revisar también Art35.1, la lista '
+    'AEPD35.4 y excepciones35.5 cuando procedan. El responsable'
+    ' decide y solicita asesoramiento del DPD designado.'
+    ' Fuentes y versiones deben verificarse para el caso.'
+)
+
+def draft_incident_processing_dpia(*, client: Anthropic, model: str) -> dict:
+    prompt = (
+        'Prepara un borrador de evaluación de necesidad de DPIA,'
+        ' proporcionalidad, riesgos y medidas. No inventes '
+        'información; conserva desconocidos y dudas. Cita fuentes'
+        ' comprobables. No adoptes la decisión del responsable.'
+    )
+    message = client.messages.create(
+        model=model, max_tokens=4096, temperature=0.2,
+        system=prompt,
+        messages=[{"role": "user", "content": json.dumps({
+            "synthetic_processing": processing_data,
+            "normative_context": normative_context,
+        }, ensure_ascii=False)}],
+    )
+    draft = "\n".join(block.text for block in message.content
+                      if getattr(block, "type", None) == "text")
+    return {
+        "status": "draft", "requires_human_review": True,
+        "draft": draft,
+        "trace": {
+            "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+            "model": message.model,
+            "tokens_input": message.usage.input_tokens,
+            "tokens_output": message.usage.output_tokens,
+            "stop_reason": message.stop_reason,
+            "cost_usd": None,
+            "cost_scope": "unknown_without_dated_contract_rates",
+        },
+    }

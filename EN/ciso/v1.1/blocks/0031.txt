@@ -1,0 +1,78 @@
+# Historical Messages SDK illustration; approved provider is optional, caller owns its lifecycle.
+# Didactic example: privacy agent assistance
+# in breach assessment — suggests but does not decide
+
+import anthropic
+
+
+BREACH_ASSESSMENT_PROMPT = """You are a data protection expert agent
+specialized in managing security breaches under the GDPR.
+
+Analyze the following personal data breach and provide:
+1. Recommended severity (low, medium, high, critical)
+2. Data categories likely affected
+3. Whether it likely affects special categories (Art. 9)
+4. Whether you recommend notification to the competent authority (Art. 33) and why
+5. Whether you recommend communication to data subjects (Art. 34) and why
+6. Recommended immediate measures
+
+RULES:
+- Art.33: the controller notifies without undue delay and, where feasible,
+  within 72 hours of awareness, unless a rights risk is unlikely. Do not turn
+  data categories into an automatic notification decision.
+- Art.34: assess high risk and 34.3 exceptions; communication does not
+  automatically wait for notification to the authority.
+- When data is missing, mark the decision pending and identify gaps.
+- The controller decides with DPO advice where designated.
+
+BREACH:
+Title: {title}
+Description: {description}
+Estimated affected: {affected_count}
+Type: {breach_type}
+"""
+
+
+async def assess_breach_with_agent(
+    title: str,
+    description: str,
+    affected_count: int,
+    breach_type: str,
+    *, client: anthropic.AsyncAnthropic, model: str
+) -> dict:
+    """Draft assistance; model judgments are not calibrated probabilities.
+
+    The controller decides with DPO advice where designated.
+    """
+    # Approved client/model and minimized description are server preconditions.
+    if affected_count is not None and (type(affected_count) is not int or affected_count < 0):
+        raise ValueError("Invalid affected count")
+    if not all(isinstance(value, str) and value.strip() for value in (title, description, breach_type, model)):
+        raise ValueError("Missing draft context")
+
+    if len(title) > 200 or len(description) > 8000 or len(breach_type) > 100:
+        raise ValueError("Draft input exceeds approved bounds")
+
+    message = await client.messages.create(
+        model=model,
+        max_tokens=1024,
+        messages=[{
+            "role": "user",
+            "content": BREACH_ASSESSMENT_PROMPT.format(
+                title=title,
+                description=description,
+                affected_count="Unknown" if affected_count is None else affected_count,
+                breach_type=breach_type
+            )
+        }]
+    )
+
+    return {
+        "assessment": message.content[0].text,
+        "model": model,
+        "tokens_used": message.usage.input_tokens + message.usage.output_tokens,
+        "disclaimer": (
+            "This assessment is an AI-generated suggestion. "
+            "The controller decides, with DPO advice where designated."
+        )
+    }

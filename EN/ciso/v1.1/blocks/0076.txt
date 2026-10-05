@@ -1,0 +1,71 @@
+# Partial synchronous gateway contract; all operations must enforce tenant
+# and actor authorization. No private ORM serializer or agent method is assumed.
+import json
+import math
+
+class RiskAgent(BaseAgent):
+    TOOLS = ["query_risks", "calculate_risk_matrix", "evaluate_control_gap"]
+
+    def __init__(self, llm_service, db_session, *, corporate_id, tools, model):
+        if type(corporate_id) is not int or corporate_id < 1:
+            raise ValueError("A verified corporate context is required")
+        if not isinstance(model, str) or not model:
+            raise ValueError("An authorized model is required")
+        super().__init__("risk", llm_service, db_session)
+        self.corporate_id = corporate_id
+        self.tools = tools
+        self.model = model
+
+    def gather_data(self, params: dict) -> dict:
+        filters = dict(params.get("filters") or {})
+        filters.update(corporate_id=self.corporate_id, is_deleted=False)
+        risks = self.tools.query_risks(filters=filters)
+        methodology = self.tools.get_active_methodology(
+            corporate_id=self.corporate_id)
+        if not isinstance(methodology, dict) or not methodology.get("id"):
+            raise ValueError("An authorized active methodology is required")
+        ids = [risk["id"] for risk in risks]
+        return {
+            "risks": risks, "methodology": methodology,
+            "matrix": self.tools.calculate_risk_matrix(
+                corporate_id=self.corporate_id,
+                methodology_id=methodology["id"], risk_ids=ids),
+            "control_gaps": self.tools.evaluate_control_gap(
+                corporate_id=self.corporate_id, risk_ids=ids),
+        }
+
+    def analyze(self, gathered: dict, params: dict) -> dict:
+        context = json.dumps(gathered, ensure_ascii=False, allow_nan=False)
+        if len(context) > 30000:
+            raise ValueError("Reduce the authorized context")
+        response = self.llm_service.invoke(
+            model=self.model, system=(
+                'Review risks using the supplied methodology, units'
+                ' and criteria. Do not use impact times likelihood'
+                ' as a universal rule or convert an ordinal '
+                'scale into money. FAIR needs loss frequencies and'
+                ' distributions with their assumptions. Flag '
+                'uncertainty and stale evidence; draft proposed '
+                'measures. Do not invent data or declare conformance.'
+            ),
+            messages=[{"role": "user", "content": context}],
+            max_tokens=4096, temperature=0.2,
+        )
+        self.total_tokens += response.usage.total_tokens
+        cost = getattr(response, "cost", None)
+        currency = getattr(response, "cost_currency", None)
+        self.cost_known = (type(cost) in (int, float) and math.isfinite(cost)
+                           and cost >= 0 and isinstance(currency, str) and bool(currency))
+        if self.cost_known:
+            self.total_cost += cost
+        return {
+            "risk_analysis": response.content, "matrix_summary": gathered["matrix"],
+            "critical_risks": None, "model_used": response.model,
+            "tokens": response.usage.total_tokens,
+            "cost": cost if self.cost_known else None,
+                "cost_currency": currency if self.cost_known else None,
+        }
+
+    def generate_output(self, analysis: dict, params: dict) -> dict:
+        return {"type": "risk_analysis", **analysis,
+                "status": "draft", "requires_human_review": True}

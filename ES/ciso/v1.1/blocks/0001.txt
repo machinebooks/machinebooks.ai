@@ -1,0 +1,29 @@
+# Partial application structure; application supplies the imported middleware and routers.
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI(
+    title="Plataforma GRC",
+    version="1.0.0",
+    docs_url=None,      # Swagger deshabilitado en producción
+    redoc_url=None,      # ReDoc deshabilitado en producción
+    openapi_url=None,    # Schema OpenAPI no expuesto públicamente
+)
+
+# add_middleware prepends: last registered is outermost.
+# Tenant resolves current identity; incoming: RequestID -> Headers -> Audit -> Tenant -> RateLimit.
+app.add_middleware(RateLimitMiddleware)
+app.add_middleware(TenantMiddleware)
+app.add_middleware(AuditMiddleware)
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(RequestIDMiddleware)
+
+# 30+ routers por dominio regulatorio
+app.include_router(privacy_router, prefix="/api/v1/privacy")
+app.include_router(risk_router, prefix="/api/v1/risk")
+app.include_router(compliance_router, prefix="/api/v1/compliance")
+app.include_router(nis2_router, prefix="/api/v1/nis2")
+app.include_router(dora_router, prefix="/api/v1/dora")
+app.include_router(ai_router, prefix="/api/v1/ai")
+app.include_router(agents_router, prefix="/api/v1/agents")
+# This registration is illustrative; run current auth, early-response and preflight integration tests.

@@ -1,0 +1,48 @@
+# Didactic NIS2 registration; jurisdiction/significance and RBAC are prerequisites.
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.auth.dependencies import get_current_user
+from app.modules.licensing import RequireModule, ModuleName
+from app.models.nis2 import NIS2Incident, NIS2Notification, NIS2NotificationPhase
+from app.schemas.nis2 import NIS2IncidentCreate
+from app.services.nis2 import nis2_deadlines, generate_incident_code
+from app.policy.nis2 import authorize_nis2_write
+# Required adapter: current-tenant RBAC, applicability and linked-record validation.
+# NIS2IncidentCreate must forbid extras; the code allocator needs tenant uniqueness.
+
+router = APIRouter(prefix="/api/v1/nis2", tags=["NIS2"],
+                   dependencies=[Depends(RequireModule(ModuleName.NIS2))])
+
+@router.post("/incidents", status_code=201)
+def create_nis2_incident(data: NIS2IncidentCreate,
+                         user=Depends(get_current_user), db: Session = Depends(get_db)):
+    # Adapter must also authorize the user's write action; license alone is insufficient.
+    authorize_nis2_write(user, data)
+    if data.awareness_at.tzinfo is None:
+        raise HTTPException(422, "Awareness timestamp requires a time zone")
+    deadlines = nis2_deadlines(data.awareness_at, trust_service=data.trust_service)
+    values = data.model_dump(exclude={"awareness_at", "trust_service"})
+    for protected in ("id", "corporate_id", "created_by", "incident_code", "early_warning_deadline",
+                      "formal_notification_deadline", "final_report_deadline"):
+        values.pop(protected, None)
+    incident = NIS2Incident(
+        **values, corporate_id=user.corporate_id, created_by=user.id,
+        incident_code=generate_incident_code(db, user.corporate_id),
+        awareness_at=data.awareness_at,
+        early_warning_deadline=deadlines["early_warning"],
+        formal_notification_deadline=deadlines["formal_notification"],
+        final_report_deadline=None,
+    )
+    db.add(incident)
+    db.flush()
+    for phase, deadline in [
+        (NIS2NotificationPhase.EARLY_WARNING, deadlines["early_warning"]),
+        (NIS2NotificationPhase.FORMAL_NOTIFICATION, deadlines["formal_notification"]),
+    ]:
+        db.add(NIS2Notification(corporate_id=user.corporate_id, created_by=user.id,
+                               incident_id=incident.id, phase=phase,
+                               deadline=deadline, status="pending"))
+    # Final/progress deadlines are created after notification/incident handling.
+    db.commit()
+    return {"id": incident.id, "code": incident.incident_code}

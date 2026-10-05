@@ -1,0 +1,72 @@
+# Continuation of the policy model imports. Store UTC and normalize MySQL timestamps at the boundary.
+class CampaignStatus(str, enum.Enum):
+    PLANNED = "planned"
+    ACTIVE = "active"
+    COMPLETED = "completed"
+    CANCELLED = "cancelled"
+
+
+class CampaignType(str, enum.Enum):
+    ELEARNING = "elearning"
+    WORKSHOP = "workshop"
+    VIDEO = "video"
+    QUIZ = "quiz"
+    PHISHING = "phishing"
+    NEWSLETTER = "newsletter"
+
+
+class AwarenessCampaign(BaseModel):
+    """Cybersecurity training/awareness campaign."""
+    __tablename__ = "pa_awareness_campaigns"
+
+    title: Mapped[str] = mapped_column(String(500), nullable=False)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    campaign_type: Mapped[CampaignType] = mapped_column(
+        Enum(CampaignType), nullable=False,
+        default=CampaignType.ELEARNING
+    )
+    status: Mapped[CampaignStatus] = mapped_column(
+        Enum(CampaignStatus), nullable=False,
+        default=CampaignStatus.PLANNED
+    )
+    target_audience: Mapped[list[str] | None] = mapped_column(
+        JSON, nullable=True,
+        comment='["all_employees", "IT", "management"]'
+    )
+    target_count: Mapped[int | None] = mapped_column(
+        Integer, nullable=True,
+        comment="Number of target recipients"
+    )
+    completed_count: Mapped[int] = mapped_column(
+        Integer, default=0, nullable=False
+    )
+    pass_rate: Mapped[float | None] = mapped_column(
+        Float, nullable=True,
+        comment="Pass rate 0-100"
+    )
+    ai_personalized: Mapped[bool] = mapped_column(
+        Boolean, default=False, nullable=False,
+        comment="AI-adapted content for the employee profile"
+    )
+    start_date: Mapped[datetime | None] = mapped_column(DATETIME(fsp=6), nullable=True)
+    end_date: Mapped[datetime | None] = mapped_column(DATETIME(fsp=6), nullable=True)
+    average_score: Mapped[float | None] = mapped_column(Float, nullable=True)
+
+    __table_args__ = (UniqueConstraint("corporate_id", "id"),)
+# Campaign target_count is a reviewed distinct recipient snapshot, not arbitrary client data.
+
+class AwarenessCompletion(BaseModel):
+    __tablename__ = "pa_awareness_completions"
+    campaign_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    user_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="completed")
+    completed_at: Mapped[datetime] = mapped_column(DATETIME(fsp=6), nullable=False)
+    score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    passed: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    attempts: Mapped[int] = mapped_column(Integer, nullable=False)
+    answers: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    __table_args__ = (
+        ForeignKeyConstraint(["corporate_id", "campaign_id"],
+                             ["pa_awareness_campaigns.corporate_id", "pa_awareness_campaigns.id"]),
+        UniqueConstraint("corporate_id", "campaign_id", "user_id"),
+    )

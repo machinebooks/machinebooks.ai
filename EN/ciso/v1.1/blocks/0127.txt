@@ -1,0 +1,48 @@
+# Didactic example: models/audit.py
+
+from datetime import datetime, timezone
+from sqlalchemy import (
+    Column, Integer, String, DateTime, Text, Index
+)
+from app.models.base import BaseModel
+
+
+class AuditTrail(BaseModel):
+    """Audit record for mutating operations.
+
+    Indices optimized for the most frequent queries:
+    - DPO searches by corporate_id + resource + date range
+    - Admin searches by user_id + date range
+    - SOC searches by IP + status_code + date range
+    """
+    __tablename__ = "audit_trail"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(String(100), nullable=False, index=True)
+    corporate_id = Column(String(50), nullable=False, index=True)
+    action = Column(String(10), nullable=False)     # POST, PUT, PATCH, DELETE
+    resource = Column(String(500), nullable=False)   # /api/treatments/123
+    status_code = Column(Integer, nullable=False)
+    ip_address = Column(String(45), nullable=False)  # IPv6 compatible
+    user_agent = Column(Text, nullable=True)
+    request_id = Column(String(36), nullable=False, index=True)
+    duration_ms = Column(Integer, nullable=True)
+    timestamp = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+        index=True,
+    )
+
+    __table_args__ = (
+        # Composite index for DPO searches
+        Index(
+            "ix_audit_tenant_resource_ts",
+            "corporate_id", "resource", "timestamp"
+        ),
+        # Composite index for SOC searches
+        Index(
+            "ix_audit_ip_status_ts",
+            "ip_address", "status_code", "timestamp"
+        ),
+    )

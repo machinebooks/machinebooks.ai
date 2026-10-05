@@ -1,0 +1,61 @@
+from datetime import datetime, timezone
+from pathlib import Path
+from tempfile import TemporaryDirectory
+import gzip
+import hashlib
+import shutil
+import subprocess
+from celery import shared_task
+from app.maintenance.backup_jobs import authorized_backup_job
+
+@shared_task(name="backup_database", queue="maintenance", bind=True, max_retries=2,
+             soft_time_limit=3670, time_limit=3700)
+def backup_database(self, job_id):
+    # Server registry checks privileged actor, approved scope, quota and idempotent job claim.
+    context = authorized_backup_job(job_id)
+    completed = context.completed_receipt()
+    if completed is not None:
+        return completed
+    root = context.approved_backup_root().resolve(strict=True)
+    client_file = context.approved_mysql_client_file().resolve(strict=True)
+    context.validate_protected_paths(root, client_file)
+    with context.exclusive_snapshot_window():
+        # Window coordinates writes/DDL and document storage for the declared scope.
+        with TemporaryDirectory(prefix="grc-backup-", dir=root) as directory:
+            working = Path(directory)
+            raw, compressed = working / "database.sql", working / "database.sql.gz"
+            try:
+                with raw.open("xb") as output:
+                    subprocess.run(
+                        ["mysqldump", f"--defaults-extra-file={client_file}",
+                         "--single-transaction", "--routines", "--triggers",
+                         "--no-tablespaces", "--set-gtid-purged=OFF", context.database_name],
+                        stdout=output, stderr=subprocess.DEVNULL,
+                        timeout=3600, check=True)
+            except subprocess.TimeoutExpired:
+                raise self.retry(exc=RuntimeError("Backup timed out"), countdown=300) from None
+            except subprocess.CalledProcessError:
+                # Do not persist a dump or retry a permanent credential/configuration error.
+                raise RuntimeError("Database backup failed") from None
+            if raw.stat().st_size == 0 or raw.stat().st_size > context.max_dump_bytes:
+                raise RuntimeError("Backup dump size is outside its approved bound")
+            with raw.open("rb") as source, gzip.open(compressed, "wb") as target:
+                shutil.copyfileobj(source, target, length=1024 * 1024)
+            raw.unlink()
+            with gzip.open(compressed, "rb") as verify:
+                while verify.read(1024 * 1024):
+                    pass  # Read entire gzip stream/CRC before publishing the artifact.
+            digest = hashlib.sha256()
+            with compressed.open("rb") as source:
+                for chunk in iter(lambda: source.read(1024 * 1024), b""):
+                    digest.update(chunk)
+            # Adapter captures authorized files in the same snapshot window, hashes each,
+            # protects/encrypts storage and atomically commits the complete manifest.
+            manifest = context.capture_documents_and_manifest(
+                working, database_file=compressed.name, database_sha256=digest.hexdigest(),
+                captured_at=datetime.now(timezone.utc).isoformat())
+            return context.commit_snapshot_and_receipt(working, manifest)
+# Filesystem/container quota limits must apply while dumping, not only after size checking.
+# InnoDB --single-transaction is not a global snapshot across DDL/nontransactional tables/files.
+# No retention deletion is performed here; approved scope/policy and restore tests are separate.
+# CRC/SHA detect corruption; they establish neither authenticity nor recoverability by themselves.

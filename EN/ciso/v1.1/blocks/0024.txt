@@ -1,0 +1,170 @@
+def utc_instant(value):
+    return value.replace(tzinfo=timezone.utc) if value.tzinfo is None else value.astimezone(timezone.utc)
+
+# Data Breach Model — designed from GDPR Art. 33-34
+# State machine with automatic 72-hour clock
+
+from enum import Enum as PyEnum
+from datetime import datetime, timedelta, timezone
+from sqlalchemy import (
+    Column, String, Text, Boolean, BigInteger, Integer,
+    ForeignKey, DateTime, JSON, Enum as SQLEnum, UniqueConstraint
+)
+from app.models.base import BaseModel  # multi-tenant, audit, soft delete
+
+
+class BreachStatus(str, PyEnum):
+    """Breach lifecycle — controlled transitions."""
+    DETECTED = "detected"               # Initial registration
+    INVESTIGATING = "investigating"     # Investigation in progress
+    ASSESSED = "assessed"               # Assessed: notification decision
+    NOTIFIED_AUTHORITY = "notified_authority"   # Art. 33 — Notified to AEPD
+    NOTIFIED_SUBJECTS = "notified_subjects"    # Art. 34 — Notified to data subjects
+    CLOSED = "closed"                   # Resolved and documented
+
+
+class BreachSeverity(str, PyEnum):
+    """Internal triage labels, not legal Art.33/34 notification decisions."""
+    LOW = "low"           # No appreciable risk
+    MEDIUM = "medium"     # Low-medium risk
+    HIGH = "high"  # Internal triage only
+    CRITICAL = "critical"  # Internal triage only
+
+
+class BreachType(str, PyEnum):
+    """Classification by type of impact on data."""
+    CONFIDENTIALITY = "confidentiality"   # Unauthorized access
+    INTEGRITY = "integrity"               # Unauthorized alteration
+    AVAILABILITY = "availability"         # Loss of access
+    MIXED = "mixed"                       # Combination of types
+
+
+# Valid transitions: prevents illegal jumps in the lifecycle
+# Workflow states must not postpone Art.33 phased notification or Art.34 communication.
+VALID_TRANSITIONS = {
+    BreachStatus.DETECTED: [BreachStatus.INVESTIGATING, BreachStatus.ASSESSED,
+                            BreachStatus.NOTIFIED_AUTHORITY, BreachStatus.NOTIFIED_SUBJECTS, BreachStatus.CLOSED],
+    BreachStatus.INVESTIGATING: [BreachStatus.ASSESSED, BreachStatus.NOTIFIED_AUTHORITY,
+                                 BreachStatus.NOTIFIED_SUBJECTS, BreachStatus.CLOSED],
+    BreachStatus.ASSESSED: [BreachStatus.NOTIFIED_AUTHORITY, BreachStatus.NOTIFIED_SUBJECTS, BreachStatus.CLOSED],
+    BreachStatus.NOTIFIED_AUTHORITY: [BreachStatus.NOTIFIED_SUBJECTS, BreachStatus.CLOSED],
+    BreachStatus.NOTIFIED_SUBJECTS: [BreachStatus.NOTIFIED_AUTHORITY, BreachStatus.CLOSED],
+    BreachStatus.CLOSED: [],
+}
+
+
+class DataBreach(BaseModel):
+    """Partial GDPR breach registry with a 72-hour reference clock.
+
+    Art.33 requires notification without undue delay and, where feasible,
+    within 72 hours unless the breach is unlikely to create a rights risk.
+    Constructor calculation is not an immutable field or full state guard.
+    Application controls, phased reporting, evidence and contextual human
+    decisions remain required; MySQL DATETIME is normalized UTC here.
+    """
+    __tablename__ = "data_breaches"
+    __table_args__ = (UniqueConstraint("corporate_id", "code"),)
+
+    # --- Identification ---
+    code = Column(String(50), nullable=False,
+                  comment="Code: BREACH-2025-001")
+    title = Column(String(500), nullable=False,
+                   comment="Short description of the breach")
+    description = Column(Text, nullable=False,
+                         comment="Detailed description of the incident")
+
+    # --- Classification ---
+    breach_type = Column(SQLEnum(BreachType), nullable=False,
+                         comment="Confidentiality, integrity, availability")
+    severity = Column(SQLEnum(BreachSeverity), nullable=False,
+                      comment="Internal label; Art.33/34 decisions documented separately")
+    status = Column(SQLEnum(BreachStatus), default=BreachStatus.DETECTED,
+                    comment="Current state in the state machine")
+
+    # --- Timing (Art. 33.1 — 72 hours) ---
+    detected_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None),
+                         comment="Moment of detection/awareness")
+    awareness_at = Column(DateTime, nullable=False)
+    authority_notification_required = Column(Boolean, nullable=True)
+    notification_decision_reason = Column(Text, nullable=True)
+    notification_deadline = Column(
+        DateTime, nullable=False,
+        comment="awareness_at + 72h — automatically calculated")
+    notified_authority_at = Column(
+        DateTime, nullable=True,
+        comment="Actual timestamp of AEPD notification")
+    notified_subjects_at = Column(
+        DateTime, nullable=True,
+        comment="Timestamp of communication to data subjects")
+    closed_at = Column(DateTime, nullable=True)
+
+    # --- Impact (Art. 33.3) ---
+    affected_count = Column(Integer, nullable=True,
+                            comment="Estimated number of affected data subjects")
+    data_categories_affected = Column(
+        JSON, comment='["identifying", "financial", "health"]')
+    special_categories_affected = Column(
+        Boolean, nullable=True, default=None,
+        comment="Does it affect Art. 9 data?")
+
+    # --- Response ---
+    root_cause = Column(Text, comment="Identified root cause")
+    measures_taken = Column(JSON,
+                            comment='Measures adopted for mitigation')
+    measures_proposed = Column(JSON,
+                               comment='Measures proposed to prevent recurrence')
+
+    # --- AEPD Notification ---
+    authority_reference = Column(
+        String(100), nullable=True,
+        comment="AEPD case number, if applicable")
+    notify_subjects_required = Column(
+        Boolean, nullable=True,
+        comment="Art. 34 — Does it require communication to data subjects?")
+
+    # --- Responsible parties ---
+    reported_by = Column(BigInteger, ForeignKey("users.id"),
+                         comment="Who detected/reported the breach")
+    dpo_id = Column(BigInteger, ForeignKey("users.id"),
+                    comment="DPO assigned to manage the breach")
+
+    def __init__(self, **kwargs):
+        if "notification_deadline" in kwargs:
+            raise ValueError("Deadline is calculated from awareness, not caller input")
+        awareness = kwargs.get("awareness_at")
+        if not isinstance(awareness, datetime) or awareness.tzinfo is None or awareness.utcoffset() is None:
+            raise ValueError("Awareness requires an explicit time zone")
+        awareness = awareness.astimezone(timezone.utc).replace(tzinfo=None)
+        kwargs["awareness_at"] = awareness
+        kwargs["notification_deadline"] = awareness + timedelta(hours=72)
+        super().__init__(**kwargs)
+
+    def can_transition_to(self, new_status: BreachStatus) -> bool:
+        if new_status not in VALID_TRANSITIONS.get(self.status, []):
+            return False
+        if new_status == BreachStatus.CLOSED:
+            # Unknown decisions cannot be silently closed as not notifiable.
+            if type(self.authority_notification_required) is not bool or type(self.notify_subjects_required) is not bool:
+                return False
+            if not self.notification_decision_reason:
+                return False
+            if self.authority_notification_required and self.notified_authority_at is None:
+                return False
+            if self.notify_subjects_required and self.notified_subjects_at is None:
+                return False
+        return True
+
+    @property
+    def hours_remaining(self) -> float:
+        """Hours remaining until the notification deadline."""
+        if self.notified_authority_at or self.authority_notification_required is False:
+            return 0  # Already notified
+        delta = utc_instant(self.notification_deadline) - datetime.now(timezone.utc)
+        return max(0, delta.total_seconds() / 3600)
+
+    @property
+    def is_overdue(self) -> bool:
+        """True if the 72-hour deadline has passed without notification."""
+        if self.notified_authority_at or self.authority_notification_required is False:
+            return False
+        return datetime.now(timezone.utc) > utc_instant(self.notification_deadline)

@@ -1,0 +1,25 @@
+async def create_review_tasks_from_impact(approval_id, context, compliance_service):
+    # Approval is a persisted human decision bound to tenant/actor/update/draft revision.
+    approval = await context.load_authorized_human_approval(approval_id)
+    if approval.status != "approved" or not approval.human_approved:
+        raise PermissionError("Reviewed impact approval is required")
+    controls = approval.reviewed_controls
+    if len(controls) > 50:
+        raise ValueError("Approved control batch exceeds its bound")
+    created = []
+    for control in controls:
+        if control["priority"] not in {"low", "medium", "high"}:
+            raise ValueError("Invalid reviewed priority")
+        context.recheck_task_write_permission()
+        # Service verifies exact tenant/framework edition/control, assigns actor and creates
+        # once under a unique approval/update/control key in the owned transaction.
+        task = await compliance_service.create_review_task_once(
+            corporate_id=context.corporate_id, user_id=context.user_id,
+            approval_id=approval.id, update_id=approval.update_id,
+            framework=control["framework"], edition=control["edition"],
+            control_code=control["control_id"], reason=control["approved_reason"],
+            priority=control["priority"])
+        created.append(task)
+    return created
+# Caller owns commit/rollback; uniqueness and authorization are tested adapter contracts.
+# Raw affected_controls/severity from an LLM do not authorize any write or legal due date.

@@ -1,0 +1,49 @@
+# conftest.py at the project root; audit one outcome per item and phase.
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+import pytest
+
+_results = {}
+
+def pytest_sessionstart(session):
+    _results.clear()
+
+def pytest_collection_modifyitems(items):
+    for item in items:
+        reference = (item.function.__doc__ or "").split(":", 1)[0]
+        _results[item.nodeid] = {
+            "test": item.nodeid,
+            "regulatory_ref": reference if item.get_closest_marker("regulatory") else None,
+            "phases": {}, "result": "NOT_RUN",
+        }
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    report = (yield).get_result()
+    entry = _results[item.nodeid]
+    phase = {
+        "outcome": report.outcome, "duration": report.duration,
+        "wasxfail": getattr(report, "wasxfail", None),
+    }
+    entry["phases"][report.when] = phase
+    if report.failed:
+        entry["result"] = "FAIL" if report.when == "call" else "ERROR"
+    elif entry["result"] not in {"FAIL", "ERROR"}:
+        if report.skipped:
+            entry["result"] = "XFAIL" if phase["wasxfail"] else "SKIP"
+        elif report.when == "call":
+            entry["result"] = "XPASS" if phase["wasxfail"] else "PASS"
+
+def pytest_sessionfinish(session, exitstatus):
+    directory = Path(session.config.rootpath) / "reports"
+    directory.mkdir(parents=True, exist_ok=True)
+    report = {
+        "run_at_utc": datetime.now(timezone.utc).isoformat(),
+        "session_exitstatus": int(exitstatus),
+        "total_tests": len(_results), "results": list(_results.values()),
+        "scope": "Collected items; collection errors require pytest diagnostics",
+    }
+    (directory / "qa_audit_report.json").write_text(
+        json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
+    )

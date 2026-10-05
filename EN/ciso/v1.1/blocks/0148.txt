@@ -1,0 +1,99 @@
+# Didactic export of bounded, already authorized row data.
+from io import BytesIO
+from html import escape
+from fastapi import APIRouter, Request, Query, Depends, HTTPException
+from app.auth.dependencies import get_current_user, get_tenant
+
+router = APIRouter(prefix="/privacy")
+from fastapi.responses import Response
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill
+from docx import Document
+from weasyprint import HTML
+
+HEADERS = ["Name", "Legal basis", "Purpose", "Data categories",
+           "Data subject categories", "Recipients", "Transfers",
+           "Retention", "DPIA status", "Last review"]
+
+def _bounded_rows(rows):
+    if len(rows) > 501:
+        raise HTTPException(413, "Export exceeds the limit")
+    total = 0
+    for row in rows:
+        if len(row) != len(HEADERS):
+            raise HTTPException(422, "Invalid row shape")
+        for value in row:
+            text = "" if value is None else str(value)
+            total += len(text.encode("utf-8"))
+            if len(text) > 4000 or total > 1_000_000:
+                raise HTTPException(413, "Export exceeds the limit")
+    return rows
+
+def _response(data, kind):
+    media = {"xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+             "pdf": "application/pdf",
+             "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"}
+    return Response(data, media_type=media[kind], headers={
+        "Content-Disposition": f'attachment; filename="RAT_export.{kind}"',
+        "Cache-Control": "no-store",
+    })
+
+def _export_xlsx(rows):
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "RAT"
+    sheet.append(HEADERS)
+    for cell in sheet[1]:
+        cell.font = Font(bold=True, color="FFFFFF")
+        cell.fill = PatternFill(start_color="1E3A5F", fill_type="solid")
+    for row in rows:
+        sheet.append([str(value) if value is not None else "" for value in row])
+        for cell in sheet[sheet.max_row]:
+            cell.data_type = "s"  # User data cannot become an Excel formula.
+    buffer = BytesIO()
+    workbook.save(buffer)
+    return _response(buffer.getvalue(), "xlsx")
+
+def _export_pdf(rows):
+    header = "".join("<th>" + escape(value) + "</th>" for value in HEADERS)
+    content = "".join("<tr>" + "".join("<td>" + escape(str(value) if value is not None else "") + "</td>"
+                                      for value in row) + "</tr>" for row in rows)
+    def deny_fetch(url, *args, **kwargs):
+        raise ValueError("External resources disabled")
+    html = '<html lang="en"><body><h1>Processing registry</h1><table><tr>'
+    html += header + "</tr>" + content + "</table></body></html>"
+    return _response(HTML(string=html, url_fetcher=deny_fetch).write_pdf(), "pdf")
+
+def _export_docx(rows):
+    document = Document()
+    document.add_heading("Processing registry", 0)
+    table = document.add_table(rows=1, cols=len(HEADERS))
+    for cell, value in zip(table.rows[0].cells, HEADERS):
+        cell.text = value
+    for values in rows:
+        for cell, value in zip(table.add_row().cells, values):
+            cell.text = str(value) if value is not None else ""
+    buffer = BytesIO()
+    document.save(buffer)
+    return _response(buffer.getvalue(), "docx")
+
+@router.get("/treatments/export")
+async def export_treatments(request: Request,
+                            format: str = Query(pattern="^(xlsx|pdf|docx)$"),
+                            legal_basis: str | None = None, dpia_status: str | None = None,
+                            user=Depends(get_current_user),
+                            corporate_id: int = Depends(get_tenant)):
+    adapters = request.app.state.export_adapters
+    await adapters.permissions.authorize(user, corporate_id, "privacy:export")
+    filters = {"legal_basis": legal_basis, "dpia_status": dpia_status}
+    rows = await adapters.treatments.authorized_rows(user, corporate_id, filters, limit=501)
+    rows = _bounded_rows(rows)
+    if len(rows) > 500:
+        return await adapters.jobs.enqueue_export(user, corporate_id, format, filters)
+    # Run the blocking renderer outside the ASGI event loop.
+    return await adapters.renderer.run({"xlsx": _export_xlsx, "pdf": _export_pdf,
+                                        "docx": _export_docx}[format], rows)
+
+# Partial registry excerpt, not the complete Article 30(1)/(2) record.
+# Adapter rechecks job/download authorization and lawful scope/retention; no public links.
+# Renderer worker requires CPU/memory/time limits and tests for layout and field completeness.

@@ -1,0 +1,23 @@
+# Optional module gate; current RBAC and application-wide admission remain separate.
+from fastapi import Depends, HTTPException, Request
+from app.database import get_db
+from app.licensing.current_policy import module_policy
+
+class RequireModule:
+    def __init__(self, module_code: str):
+        self.module_code = module_code
+
+    async def __call__(self, request: Request, db=Depends(get_db)):
+        identity = getattr(request.state, "current_identity", None)
+        cid = getattr(request.state, "corporate_id", None)
+        if not isinstance(identity, dict) or type(cid) is not int or cid <= 0:
+            raise HTTPException(401, "Tenant not identified")
+        # Required reviewed server catalog determines core/optional scope; no Community edition.
+        module_policy.require_declared_module(self.module_code)
+        if module_policy.is_core(self.module_code):
+            return
+        # Adapter must check current license revision/revocation before serving any cached record.
+        entry = await module_policy.load_current_license(identity, cid, self.module_code, db)
+        if not entry or entry.corporate_id != cid or not entry.is_valid():
+            raise HTTPException(403, "Module unavailable for this organization")
+# is_valid checks the UTC interval, not user permissions or current commercial revocation.

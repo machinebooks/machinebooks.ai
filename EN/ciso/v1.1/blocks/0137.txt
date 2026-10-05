@@ -1,0 +1,14 @@
+import { vi, expect, test } from "vitest";
+import { render, screen } from '@testing-library/react'
+import { axe, toHaveNoViolations } from 'jest-axe'
+import { DPIAForm } from '@/modules/privacy/DPIAForm'
+
+expect.extend(toHaveNoViolations)
+test('Initial-state labels and limited DOM check', async () => {
+  const { container } = render(<DPIAForm onSubmit={vi.fn()} />)
+  expect(screen.getByRole('textbox', { name: 'Processing description' })).toBeTruthy()
+  expect(screen.getByRole('button', { name: 'Save assessment' })).toBeTruthy()
+  expect(await axe(container)).toHaveNoViolations()
+})
+// This limited DOM check is not WCAG conformance; test populated/error/conditional
+// states, real keyboard/screen-reader operation, focus, zoom and contrast separately.

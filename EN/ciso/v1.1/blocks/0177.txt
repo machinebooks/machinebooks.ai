@@ -1,0 +1,21 @@
+# Alternative collector fragment under services in the complete base topology.
+services:
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.96.0  # Historical case tag.
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes:
+      - ./config/otel-collector.yml:/etc/otelcol/config.yaml:ro
+    secrets: [otlp_server_key, otlp_server_certificate, otlp_trusted_client_ca]
+    networks: [spd_backend]
+    restart: unless-stopped
+secrets:
+  otlp_server_key:
+    file: ${OTLP_SERVER_KEY_FILE:?Set the protected server-key file}
+  otlp_server_certificate:
+    file: ${OTLP_SERVER_CERTIFICATE_FILE:?Set the server-certificate file}
+  otlp_trusted_client_ca:
+    file: ${OTLP_TRUSTED_CLIENT_CA_FILE:?Set the approved client-CA file}
+# No host OTLP port is published. Network attachment alone does not provide authentication.
+# Required collector config enables receiver mTLS, mounted key/cert/client CA, approved
+# exporter destination, minimization/resource limits and reviewed retention. Test the merge.
+# A mounted config/certificate is not proof that encryption or a working collector exists.

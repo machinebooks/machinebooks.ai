@@ -1,0 +1,43 @@
+from datetime import datetime, timezone
+from sqlalchemy import (
+    Column, BigInteger, Integer, String, Numeric, DateTime, Text, JSON,
+    UniqueConstraint, ForeignKeyConstraint,
+)
+from sqlalchemy.orm import relationship
+from app.models.base import BaseModel
+
+class CopilotSession(BaseModel):
+    __tablename__ = "copilot_sessions"
+    user_id = Column(BigInteger, nullable=False)
+    module_context = Column(String(50), nullable=False)
+    title = Column(String(200), nullable=True)
+    total_tokens = Column(Integer, nullable=True)
+    total_cost_eur = Column(Numeric(18, 8), nullable=True)
+    unknown_usage_calls = Column(Integer, default=0, nullable=False)
+    message_count = Column(Integer, default=0, nullable=False)
+    messages = relationship("CopilotMessage", back_populates="session", viewonly=True)
+    __table_args__ = (UniqueConstraint("corporate_id", "id"),)
+    # BaseModel.id is the internal BigInteger key; uuid is the opaque external handle.
+    # Server resolves and authorizes current user/tenant ownership before every use.
+
+class CopilotMessage(BaseModel):
+    __tablename__ = "copilot_messages"
+    session_id = Column(BigInteger, nullable=False)
+    role = Column(String(20), nullable=False)
+    content = Column(Text, nullable=False)
+    mode = Column(String(30), nullable=True)
+    agents_invoked = Column(JSON, nullable=True)
+    execution_steps = Column(JSON, nullable=True)
+    tokens_used = Column(Integer, nullable=True)
+    cost_eur = Column(Numeric(18, 8), nullable=True)
+    duration_ms = Column(Integer, nullable=True)
+    guardrail_flags = Column(JSON, nullable=True)
+    recorded_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    session = relationship("CopilotSession", back_populates="messages", viewonly=True)
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["corporate_id", "session_id"], ["copilot_sessions.corporate_id", "copilot_sessions.id"]),
+    )
+# Persist only approved minimized content/events; protect access, retention and erasure.
+# User identity, allowed roles and atomic aggregate updates need server validation.
+# NULL denotes unknown usage/cost; storing these fields does not ensure complete metering.

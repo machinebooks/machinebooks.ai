@@ -1,0 +1,30 @@
+// Partial draft schema; final legal review is a separate server transition.
+// Unknown values are nullable; validation never postpones controller duties or sends notices.
+import { z } from "zod";
+
+const nullableText = z.string().max(5000).nullable();
+const nullableCategories = z.array(z.string().min(1).max(200)).max(100).nullable();
+export const breachFormSchema = z.strictObject({
+  nature: z.enum(["confidentiality", "integrity", "availability", "combined"]).nullable(),
+  description: nullableText,
+  affected_categories: nullableCategories,
+  estimated_affected_count: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER).nullable(),
+  affected_record_types: nullableCategories,
+  estimated_records_count: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER).nullable(),
+  // Legacy names denote DPO OR another contact; server mapping is required.
+  dpo_name: z.string().max(200).nullable(),
+  dpo_email: z.email().max(320).nullable(),
+  dpo_phone: z.string().max(100).nullable(),
+  probable_consequences: nullableText,
+  measures_taken: nullableText,
+  detected_at: z.iso.datetime({ offset: true }).nullable(),
+  // Controller awareness starts the applicable Art33 clock; record it when established.
+  awareness_at: z.iso.datetime({ offset: true }).nullable(),
+  detection_source: z.enum(["internal_monitoring", "user_report", "external_notification",
+                           "audit", "automated_alert", "other"]).nullable(),
+  severity: z.enum(["low", "medium", "high", "critical"]).nullable(),
+  // Art34 communication to subjects is distinct from an Art33 authority draft.
+  notify_data_subjects: z.boolean().nullable(),
+  affected_treatment_ids: z.array(z.number().int().positive()).max(100).optional(),
+});
+export type BreachFormData = z.infer<typeof breachFormSchema>;

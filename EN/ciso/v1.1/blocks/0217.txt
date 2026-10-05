@@ -1,0 +1,63 @@
+# Fragment: application supplies scoped _count; averages are unweighted simulation averages.
+class PolicyAwarenessService:
+    """Main policies and awareness service."""
+
+    def __init__(self, db: AsyncSession, corporate_id: int, policy):
+        if type(corporate_id) is not int or corporate_id <= 0:
+            raise ValueError("A trusted positive corporate_id is required")
+        self.db = db
+        self.corporate_id = corporate_id
+        self.policy = policy  # Trusted server policy bound to the authenticated actor.
+
+    async def get_dashboard(self) -> dict:
+        """Dashboard with cross-referenced metrics from all three axes."""
+        self.policy.authorize_dashboard_read(self.corporate_id)
+        cid = self.corporate_id
+
+        # Policies by status
+        pol_q = await self.db.execute(
+            select(
+                SecurityPolicy.status,
+                func.count(SecurityPolicy.id)
+            ).where(
+                SecurityPolicy.corporate_id == cid,
+                SecurityPolicy.is_deleted == False
+            ).group_by(SecurityPolicy.status)
+        )
+        policies_by_status = {r[0]: r[1] for r in pol_q.all()}
+        total_policies = sum(policies_by_status.values())
+
+        # Active campaigns
+        active_campaigns = await self._count(
+            AwarenessCampaign,
+            AwarenessCampaign.corporate_id == cid,
+            AwarenessCampaign.is_deleted.is_(False),
+            AwarenessCampaign.status == CampaignStatus.ACTIVE
+        )
+
+        # Average phishing click rate
+        avg_click_q = await self.db.execute(
+            select(func.avg(PhishingSimulation.click_rate)).where(
+                PhishingSimulation.corporate_id == cid,
+                PhishingSimulation.is_deleted == False,
+                PhishingSimulation.click_rate.isnot(None)
+            )
+        )
+        avg_click_rate = avg_click_q.scalar()
+
+        total_phishing = (await self.db.execute(
+            select(func.count(PhishingSimulation.id)).where(
+                PhishingSimulation.corporate_id == cid,
+                PhishingSimulation.is_deleted.is_(False),
+            )
+        )).scalar_one()
+
+        return {
+            "total_policies": total_policies,
+            "total_phishing_simulations": total_phishing,
+            "policies_by_status": policies_by_status,
+            "active_campaigns": active_campaigns,
+            "avg_phishing_click_rate": (
+                round(avg_click_rate, 1) if avg_click_rate is not None else None
+            ),
+        }

@@ -1,0 +1,41 @@
+# Required adapter: current tenant/RBAC, licensed sources, bounded files/results and job access.
+# stage_and_enqueue must enforce immutable staging, file/hash validation and transactional outbox.
+from typing import Literal
+from fastapi import APIRouter, Depends, Query, Form, UploadFile
+from app.auth.dependencies import get_current_user
+from app.rag.dependencies import get_authorized_rag_adapter
+
+router = APIRouter(prefix="/rag", tags=["RAG"])
+
+@router.get("/search")
+async def search_normative(
+    query: str = Query(..., min_length=5, max_length=500),
+    regulation: str | None = Query(None, max_length=100),
+    top_k: int = Query(5, ge=1, le=20),
+    current_user=Depends(get_current_user),
+    adapter=Depends(get_authorized_rag_adapter),
+):
+    scope = await adapter.authorize(current_user, "rag:search")
+    # The adapter must reject stale or cross-tenant collections and return coverage/source versions.
+    return await adapter.search(scope, query=query, regulation=regulation,
+                                top_k=top_k, max_source_chars=8000)
+
+@router.post("/documents/ingest", status_code=202)
+async def ingest_document(
+    file: UploadFile,
+    title: str = Form(..., min_length=1, max_length=200),
+    regulation: str = Form(..., min_length=1, max_length=100),
+    source_type: Literal["regulation", "guide", "standard"] = Form(...),
+    rights_reference: str = Form(..., min_length=1, max_length=500),
+    authority: str | None = Form(None, max_length=200),
+    current_user=Depends(get_current_user),
+    adapter=Depends(get_authorized_rag_adapter),
+):
+    scope = await adapter.authorize(current_user, "rag:admin")
+    job = await adapter.stage_and_enqueue(
+        scope, file=file, max_bytes=20 * 1024 * 1024,
+        title=title, regulation=regulation, source_type=source_type,
+        rights_reference=rights_reference, authority=authority,
+    )
+    return {"status": "queued", "task_id": job.id,
+            "message": "Documento en cola; indexación pendiente."}

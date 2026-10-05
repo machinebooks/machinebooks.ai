@@ -1,0 +1,84 @@
+# Original didactic municipal templates, not an official AEPD catalog.
+# Spanish jurisdiction; partial drafts require controller review and DPO advice where designated.
+# Uses the introductory DataProcessingActivity/LegalBasis model shown earlier.
+# Authorize corporate_id/created_by at the server before calling with a fresh Session.
+from sqlalchemy import select
+
+MUNICIPAL_DRAFT_TEMPLATES = [{'name': 'Padrón municipal de habitantes',
+  'purposes': ['Gestión del padrón municipal'],
+  'legal_basis': 'legal_obligation',
+  'legal_basis_detail': 'Art. 6.1.c RGPD — Ley 7/1985 LBRL Art. 16',
+  'data_subject_categories': ['ciudadanos_empadronados'],
+  'personal_data_categories': ['identificativos',
+                               'contacto',
+                               'nacionalidad',
+                               'estudios'],
+  'special_categories': False,
+  'retention_period': 'Determinar según normativa de padrón, finalidades y '
+                      'tabla de valoración archivística aplicable; no afirmar '
+                      'permanencia universal.'},
+ {'name': 'Gestión tributaria municipal',
+  'purposes': ['Gestión y recaudación de tributos municipales'],
+  'legal_basis': 'legal_obligation',
+  'legal_basis_detail': 'Art. 6.1.c RGPD — RDL 2/2004 TRLRHL',
+  'data_subject_categories': ['contribuyentes'],
+  'personal_data_categories': ['identificativos',
+                               'contacto',
+                               'económico-financieros'],
+  'special_categories': False,
+  'retention_period': 'Determinar según categoría documental y norma; la '
+                      'prescripción Art.66 LGT no implica borrado automático a '
+                      'cuatro años.'},
+ {'name': 'Videovigilancia',
+  'purposes': ['Seguridad de personas, bienes e instalaciones'],
+  'legal_basis': 'public_interest',
+  'legal_basis_detail': 'Art.6.1.e RGPD y Art.22 LOPDGDD para seguridad de '
+                        'instalaciones; valorar régimen especial si son '
+                        'cámaras policiales.',
+  'data_subject_categories': ['personas_captadas_por_camaras'],
+  'personal_data_categories': ['imagen'],
+  'special_categories': False,
+  'retention_period': 'Máximo un mes desde captación, con la excepción y '
+                      'puesta a disposición de autoridad del Art.22.3 '
+                      'LOPDGDD.'},
+ {'name': 'Registro de entrada y salida',
+  'purposes': ['Gestión documental de entrada y salida'],
+  'legal_basis': 'legal_obligation',
+  'legal_basis_detail': 'Art. 6.1.c RGPD — Ley 39/2015 LPACAP Art. 16',
+  'data_subject_categories': ['ciudadanos', 'representantes'],
+  'personal_data_categories': ['identificativos', 'contacto'],
+  'special_categories': False,
+  'retention_period': 'Según normativa archivística aplicable'}]
+
+
+def seed_sector_catalog(session, corporate_id: int, sector: str,
+                        created_by: int, controller_name: str):
+    if type(corporate_id) is not int or corporate_id < 1:
+        raise ValueError("Invalid tenant")
+    if type(created_by) is not int or created_by < 1:
+        raise ValueError("Invalid actor")
+    if sector != "municipal":
+        raise ValueError("Only the illustrated municipal templates are supported")
+    if not isinstance(controller_name, str) or not controller_name.strip() or len(controller_name) > 255:
+        raise ValueError("Invalid controller name")
+    created = 0
+    with session.begin():
+        for number, template in enumerate(MUNICIPAL_DRAFT_TEMPLATES, start=1):
+            code = f"RAT-SEED-MUNICIPAL-{number:03d}"
+            existing = session.scalar(select(DataProcessingActivity).where(
+                DataProcessingActivity.corporate_id == corporate_id,
+                DataProcessingActivity.code == code,
+            ))
+            if existing is not None:
+                # Preserve human changes and archived entries; restoration is a separate decision.
+                continue
+            data = dict(template)
+            data["legal_basis"] = LegalBasis(data["legal_basis"])
+            session.add(DataProcessingActivity(
+                **data, corporate_id=corporate_id, created_by=created_by,
+                status="draft", code=code, controller_name=controller_name.strip(),
+            ))
+            created += 1
+    # (corporate_id, code) must be unique in the schema: a concurrent insert rolls back.
+    return {"sector": sector, "treatments_created": created,
+            "status": "draft_pending_controller_review"}

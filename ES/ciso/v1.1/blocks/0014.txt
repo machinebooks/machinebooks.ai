@@ -1,0 +1,38 @@
+{
+  "name": "Gestión de nóminas",
+  "purposes": [
+    "Cálculo y pago de nóminas",
+    "Cumplimiento obligaciones fiscales y laborales"
+  ],
+  "legal_basis": "legal_obligation",
+  "legal_basis_confidence": "requiere_confirmacion",
+  "legal_basis_detail": "Art. 6.1.c RGPD — Obligación legal del empleador (ET, LGSS, LIRPF)",
+  "data_subject_categories": [
+    "empleados"
+  ],
+  "personal_data_categories": [
+    "identificativos",
+    "contacto",
+    "económico-financieros",
+    "profesionales",
+    "seguridad_social",
+    "datos_bancarios"
+  ],
+  "special_categories": null,
+  "recipients": [
+    "Gestoría externa (encargado del tratamiento)",
+    "AEAT (obligación legal)",
+    "TGSS (obligación legal)"
+  ],
+  "international_transfers": null,
+  "retention_period": "Pendiente de determinar por categoría documental y normas aplicables; Art.66 LGT no fija un mínimo universal de conservación de nóminas.",
+  "retention_criteria": "Revisar finalidades, obligaciones laborales/fiscales, prescripción e interrupciones, archivo y bloqueo cuando corresponda.",
+  "security_measures": [
+    "cifrado_reposo",
+    "control_acceso_rbac",
+    "copias_seguridad",
+    "registro_accesos"
+  ],
+  "dpia_required": null,
+  "risk_level": "pending_review"
+}

@@ -1,0 +1,138 @@
+from calendar import monthrange
+from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
+
+def add_calendar_months(instant, months, calendar_zone="Europe/Madrid"):
+    # Calendar arithmetic only: applicable end-of-day/holiday rules need policy.
+    if instant.tzinfo is None:
+        raise ValueError("A timestamp with an explicit time zone is required")
+    local = instant.astimezone(ZoneInfo(calendar_zone))
+    month_number = local.year * 12 + local.month - 1 + months
+    year, month = divmod(month_number, 12)
+    month += 1
+    day = min(local.day, monthrange(year, month)[1])
+    return local.replace(year=year, month=month, day=day).astimezone(timezone.utc)
+
+
+# Data Subject Rights Request Model — designed from Art. 15-22 GDPR
+# Workflow with legal deadlines as design constraints
+
+from datetime import datetime, timedelta
+from enum import Enum as PyEnum
+from sqlalchemy import (
+    Column, String, Text, Boolean, BigInteger,
+    ForeignKey, DateTime, JSON, Enum as SQLEnum, Date
+)
+from app.models.base import BaseModel
+
+
+class RightType(str, PyEnum):
+    """Data subject rights per Art. 15-22 GDPR."""
+    ACCESS = "access"                    # Art. 15 — Access
+    RECTIFICATION = "rectification"      # Art. 16 — Rectification
+    ERASURE = "erasure"                  # Art. 17 — Erasure (right to be forgotten)
+    RESTRICTION = "restriction"          # Art. 18 — Restriction of processing
+    PORTABILITY = "portability"          # Art. 20 — Portability
+    OBJECTION = "objection"              # Art. 21 — Objection
+    AUTOMATED_DECISION = "automated"     # Art. 22 — Automated decisions
+
+
+class RequestStatus(str, PyEnum):
+    """Rights request workflow states."""
+    RECEIVED = "received"                        # Registered, deadline started
+    IDENTITY_VERIFICATION = "identity_verification"  # Art. 12.6 — Verifying identity
+    IN_PROGRESS = "in_progress"                  # Identity verified, executing
+    RESOLVED = "resolved"                        # Request executed
+    NOTIFIED = "notified"                        # Response communicated to data subject
+    CLOSED = "closed"                            # Process finalized
+    EXTENDED = "extended"                        # Art. 12.3 — Deadline extended (+2 months)
+
+
+class RequestResolution(str, PyEnum):
+    """Request outcome."""
+    GRANTED = "granted"                  # Fully granted
+    PARTIALLY_GRANTED = "partially"      # Partially granted
+    DENIED = "denied"                    # Denied with justification
+    WITHDRAWN = "withdrawn"              # Withdrawn by the data subject
+
+
+class SubjectRightsRequest(BaseModel):
+    """Rights request with one calendar month from receipt under Article 12.3.
+
+    Where justified by complexity and number of requests, the total may extend
+    by two further calendar months. Notify the extension and reasons within
+    the first month. Applicable calendar/end-of-day rules need legal policy.
+    """
+    __tablename__ = "subject_rights_requests"
+
+    # --- Identification ---
+    code = Column(String(50), unique=True,
+                  comment="Code: SRR-2026-001")
+    status = Column(SQLEnum(RequestStatus), default=RequestStatus.RECEIVED)
+
+    # --- Right exercised ---
+    right_type = Column(SQLEnum(RightType), nullable=False,
+                        comment="Art. 15-22 — Type of right exercised")
+
+    # --- Applicant data ---
+    requester_name = Column(String(255), nullable=False,
+                            comment="Data subject name")
+    requester_id_type = Column(String(50),
+                               comment="National ID, passport")
+    requester_id_number = Column(String(100),
+                                 comment="Document number; configure encryption in the storage integration")
+    requester_email = Column(String(255),
+                             comment="Contact email; configure encryption in the storage integration")
+    requester_phone = Column(String(50), nullable=True)
+    is_representative = Column(Boolean, default=False,
+                               comment="Is a representative acting?")
+    representative_name = Column(String(255), nullable=True)
+    representative_document = Column(String(255), nullable=True,
+                                     comment="Representative's accreditation")
+
+    # --- Reception channel ---
+    reception_channel = Column(String(50),
+                               comment="web_form, email, postal, in_person")
+    reception_details = Column(Text, nullable=True,
+                               comment="Channel reference: registry no., email, etc.")
+
+    # --- Dates and legal deadlines ---
+    received_date = Column(DateTime, nullable=False,
+                           comment="Reception date — starts Art. 12.3 countdown")
+    deadline_date = Column(DateTime, nullable=False,
+                           comment="Deadline: received_date + one calendar month")
+    extended = Column(Boolean, default=False,
+                      comment="Deadline extended? (Art. 12.3 paragraph 2)")
+    extension_reason = Column(Text, nullable=True,
+                              comment="Reason for extension")
+    extension_notified_date = Column(DateTime, nullable=True,
+                                     comment="Date the extension was notified")
+    resolved_date = Column(DateTime, nullable=True)
+    notified_date = Column(DateTime, nullable=True)
+
+    # --- Identity verification ---
+    identity_verified = Column(Boolean, default=False)
+    identity_verification_method = Column(String(100), nullable=True,
+                                          comment="Electronic ID, digital certificate, in-person")
+    identity_verified_at = Column(DateTime, nullable=True)
+    identity_verified_by = Column(BigInteger, nullable=True)
+
+    # --- Resolution ---
+    resolution = Column(SQLEnum(RequestResolution), nullable=True)
+    resolution_summary = Column(Text, nullable=True,
+                                comment="Resolution summary")
+    denial_reason = Column(Text, nullable=True,
+                           comment="Justification if denied (mandatory)")
+
+    # --- Affected processing activities ---
+    affected_activities = Column(
+        JSON, comment='IDs of processing activities affected by the request')
+
+    # --- Assignment ---
+    assigned_to = Column(BigInteger, ForeignKey("users.id"), nullable=True,
+                         comment="Person responsible for managing the request")
+
+    # --- Calculated fields on creation ---
+    @staticmethod
+    def calculate_deadline(received_date, extended=False):
+        return add_calendar_months(received_date, 3 if extended else 1)

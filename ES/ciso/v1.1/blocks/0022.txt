@@ -1,0 +1,29 @@
+# Daily internal alerts; not automatic rejection of requests.
+from datetime import datetime, timezone
+from celery import shared_task
+
+@shared_task(name="privacy.check_rights_deadlines")
+def check_rights_deadlines():
+    from app.services.privacy_deadlines import repository, alert_outbox
+    now = datetime.now(timezone.utc)
+    checked = 0
+    for request in repository.without_response_communicated():
+        # Includes fulfilled/rejected items until a response is communicated.
+        checked += 1
+        deadline = request.deadline_date
+        # Integration contract: stored naive DATETIME values represent UTC.
+        if deadline.tzinfo is None:
+            deadline = deadline.replace(tzinfo=timezone.utc)
+        else:
+            deadline = deadline.astimezone(timezone.utc)
+        remaining = (deadline - now).total_seconds() / 86400
+        level = ("overdue" if remaining < 0 else "critical" if remaining <= 1
+                 else "urgent" if remaining <= 7 else "warning" if remaining <= 15 else None)
+        if level:
+            alert_outbox.enqueue_once(
+                key=(request.corporate_id, request.id, level, now.date()),
+                corporate_id=request.corporate_id,
+                payload={"request_id": request.id, "level": level,
+                         "deadline": deadline.isoformat()},
+            )
+    return {"requests_checked": checked}

@@ -1,0 +1,47 @@
+# Historical Nginx fragment; TLS, PKI/proxy trust and complete deployment need tests.
+upstream api_backend { server fastapi:8000; }
+server {
+    listen 443 ssl http2;
+    server_name _;
+    ssl_certificate /etc/nginx/certs/server.crt;
+    ssl_certificate_key /etc/nginx/certs/server.key;
+    ssl_protocols TLSv1.3;
+    # HSTS scope/preload must be approved for the domain; no automatic preload enrollment.
+    add_header Strict-Transport-Security "max-age=31536000" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options "DENY" always;
+    # Static frontend avoids inline scripts; no undefined nonce variable.
+    # Inline styles are a reviewed compatibility concession, not an injection guarantee.
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
+
+    location / { proxy_pass http://frontend:80; }
+    location /api/ {
+        proxy_pass http://api_backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 130s;
+        proxy_send_timeout 130s;
+        client_max_body_size 50M;
+    }
+    location = /api/v1/copilot/chat {
+        proxy_pass http://api_backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_buffering off;
+        proxy_cache off;
+        gzip off;
+        proxy_read_timeout 130s;
+        proxy_send_timeout 130s;
+        client_max_body_size 16k;
+    }
+    location ~ ^/(adminer|flower|redis-commander) { return 404; }
+}
+# Backend validates its trusted proxy boundary; browser headers are never identity.
+# SSE uses the same authenticated/authorized application route as other API requests.
+# This fragment is not the separate mTLS certificate validation/relay configuration.

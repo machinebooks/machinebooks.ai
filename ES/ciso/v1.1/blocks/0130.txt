@@ -1,0 +1,54 @@
+import { lazy, Suspense, type ReactNode, type LazyExoticComponent, type ComponentType } from 'react'
+import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { useAuthorizedContext } from '@/auth/authorizedContext'
+import AppLayout from '@/components/AppLayout'
+import LoadingSpinner from '@/components/common/LoadingSpinner'
+
+function ModuleGuard({ moduleKey, children }: { moduleKey: string; children: ReactNode }) {
+  const context = useAuthorizedContext()
+  if (context.status === 'loading') return <LoadingSpinner fullPage />
+  if (context.status !== 'ready') return <Navigate to="/login" replace />
+  if (!context.allowedModules.includes(moduleKey)) return <Navigate to="/dashboard" replace />
+  return <div key={context.scopeKey}>{children}</div>
+}
+
+export function AiGuard({ children }: { children: ReactNode }) {
+  const context = useAuthorizedContext()
+  if (context.status === 'loading') return <LoadingSpinner fullPage />
+  if (context.status !== 'ready') return <Navigate to="/login" replace />
+  if (!context.aiEnabled) return <Navigate to="/dashboard" replace />
+  return <div key={context.scopeKey}>{children}</div>
+}
+
+const DashboardPage = lazy(() => import('@/modules/dashboard/DashboardPage'))
+const PrivacyPage = lazy(() => import('@/modules/privacy/PrivacyPage'))
+const RiskPage = lazy(() => import('@/modules/risk/RiskPage'))
+const CompliancePage = lazy(() => import('@/modules/compliance/CompliancePage'))
+const NIS2Page = lazy(() => import('@/modules/nis2/NIS2Page'))
+const DORAPage = lazy(() => import('@/modules/dora/DORAPage'))
+const AIGovernancePage = lazy(() => import('@/modules/ai-governance/AIGovernancePage'))
+const NotFoundPage = lazy(() => import('@/components/NotFoundPage'))
+
+const withSuspense = (Component: LazyExoticComponent<ComponentType>) => (
+  <Suspense fallback={<LoadingSpinner fullPage />}><Component /></Suspense>
+)
+const withModule = (key: string, Component: LazyExoticComponent<ComponentType>) => (
+  <ModuleGuard moduleKey={key}>{withSuspense(Component)}</ModuleGuard>
+)
+export const router = createBrowserRouter([
+  { element: <AppLayout />, children: [
+    { path: '/dashboard', element: withSuspense(DashboardPage) },
+    { path: '/privacy/*', element: withModule('privacy', PrivacyPage) },
+    { path: '/risk/*', element: withModule('risk', RiskPage) },
+    { path: '/compliance/*', element: withModule('compliance', CompliancePage) },
+    { path: '/nis2/*', element: withModule('nis2', NIS2Page) },
+    { path: '/dora/*', element: withModule('dora', DORAPage) },
+    { path: '/ai-governance/*', element: withModule('ai_governance', AIGovernancePage) },
+  ] },
+  { path: '*', element: withSuspense(NotFoundPage) },
+])
+// Required context adapter refreshes server permissions/licenses and clears scoped state,
+// pending requests and query caches on actor/tenant/authorization changes and logout.
+// Client guards improve navigation only; every endpoint independently authenticates,
+// authorizes the action and checks optional-module validity. Core stays available.
+// This public educational fragment is separate from the permanently private core/Desktop.

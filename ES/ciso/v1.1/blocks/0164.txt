@@ -1,0 +1,63 @@
+from datetime import datetime, timezone
+from celery import shared_task
+from app.models.privacy import DataBreach, BreachStatus
+from app.worker.jobs import authorized_deadline_job
+
+def utc(value):
+    return value.replace(tzinfo=timezone.utc) if value.tzinfo is None else value.astimezone(timezone.utc)
+
+@shared_task(name="app.tasks.notifications.check_breach_deadlines",
+             queue="notifications", soft_time_limit=60, time_limit=90)
+def check_breach_deadlines(job_id):
+    context = authorized_deadline_job(job_id, kind="breaches")
+    now = datetime.now(timezone.utc)
+    count = 0
+    with context.session_scope() as db:
+        rows = db.query(DataBreach).filter(
+            DataBreach.corporate_id == context.corporate_id,
+            DataBreach.is_deleted.is_(False), DataBreach.status != BreachStatus.CLOSED,
+            DataBreach.notified_authority_at.is_(None),
+            DataBreach.authority_notification_required.is_not(False),
+        ).limit(1001).all()
+        if len(rows) > 1000:
+            raise ValueError("Deadline batch exceeds its bound")
+        for breach in rows:
+            if breach.authority_notification_required is None:
+                level = "decision_pending_review"
+            else:
+                remaining = (utc(breach.notification_deadline) - now).total_seconds() / 3600
+                level = ("over_72h" if remaining < 0 else
+                         "within_12h" if remaining <= 12 else
+                         "within_24h" if remaining <= 24 else None)
+            if level is not None:
+                context.outbox.alert_once(
+                    db, corporate_id=context.corporate_id, actor_id=context.user_id,
+                    record_id=breach.id, kind="breach_deadline", stage=level)
+                count += 1
+        db.commit()
+    return {"records_checked": len(rows), "alert_candidates": count, "checked_at": now.isoformat()}
+
+@shared_task(name="app.tasks.notifications.check_rights_deadlines",
+             queue="notifications", soft_time_limit=60, time_limit=90)
+def check_rights_deadlines(job_id):
+    context = authorized_deadline_job(job_id, kind="rights")
+    now = datetime.now(timezone.utc)
+    count = 0
+    with context.session_scope() as db:
+        # Adapter filters tenant/soft-delete/unfinished requests, validates Article 12.3
+        # calendar-month due dates and documented extensions, and bounds the batch.
+        rows = context.authorized_pending_rights(db, limit=1000)
+        for request in rows:
+            remaining = (utc(request.deadline_date) - now).total_seconds() / 86400
+            level = "overdue" if remaining < 0 else "within_5d" if remaining <= 5 else None
+            if level is not None:
+                context.outbox.alert_once(
+                    db, corporate_id=context.corporate_id, actor_id=context.user_id,
+                    record_id=request.id, kind="rights_deadline", stage=level)
+                count += 1
+        db.commit()
+    return {"records_checked": len(rows), "alert_candidates": count, "checked_at": now.isoformat()}
+# Adapter outbox is transactional/idempotent and minimizes protected notification content.
+# Art.33 starts at controller awareness, requires action without undue delay and may be phased.
+# Art.34 high-risk communication is a separate decision/workflow, without an invented 72h limit.
+# These internal alerts do not submit notifications or determine exemptions/legal conformity.

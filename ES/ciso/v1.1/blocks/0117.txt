@@ -1,0 +1,35 @@
+# Partial reporting repository; application supplies domain models and actor-bound policy.
+from sqlalchemy import select, func, case
+from sqlalchemy.ext.asyncio import AsyncSession
+
+class ReportingRepository:
+    def __init__(self, session: AsyncSession, corporate_id: int, policy):
+        if type(corporate_id) is not int or corporate_id <= 0:
+            raise ValueError("A trusted positive tenant identifier is required")
+        self.session, self.corporate_id, self.policy = session, corporate_id, policy
+
+    async def get_risk_summary(self) -> dict:
+        await self.policy.authorize("report_read", self.corporate_id)
+        query = (select(RiskAssessment.risk_level, func.count(RiskAssessment.id).label("count"))
+                 .where(RiskAssessment.corporate_id == self.corporate_id,
+                        RiskAssessment.is_deleted.is_(False))
+                 .group_by(RiskAssessment.risk_level))
+        result = await self.session.execute(query)
+        return {row.risk_level: row.count for row in result.all()}
+
+    async def get_compliance_dashboard(self) -> list[dict]:
+        await self.policy.authorize("report_read", self.corporate_id)
+        query = (select(Framework.name, func.count(Control.id).label("total_controls"),
+                        func.sum(case((Control.status == "implemented", 1), else_=0)).label("implemented"))
+                 .join(Control, Control.framework_id == Framework.id)
+                 .where(Framework.corporate_id == self.corporate_id,
+                        Framework.is_deleted.is_(False), Control.corporate_id == self.corporate_id,
+                        Control.is_deleted.is_(False))
+                 .group_by(Framework.id, Framework.name))
+        result = await self.session.execute(query)
+        return [{"framework": row.name, "total": row.total_controls,
+                 "implemented": row.implemented,
+                 "percentage": round(row.implemented / row.total_controls * 100, 1)
+                 if row.total_controls else None} for row in result.all()]
+# Status counts are internal workflow indicators; evidence/applicability needs separate review.
+# Domain RiskAssessment is supplied by the application; this is not every risk-method model.

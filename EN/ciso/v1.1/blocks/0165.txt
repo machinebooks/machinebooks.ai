@@ -1,0 +1,41 @@
+from datetime import datetime, timezone
+from celery import shared_task
+from app.worker.jobs import authorized_report_job
+
+@shared_task(bind=True, name="app.tasks.reports.generate_compliance_report",
+             queue="reports", soft_time_limit=120, time_limit=150, acks_late=True)
+def generate_compliance_report(self, job_id):
+    context = authorized_report_job(job_id)
+    with context.claim_once() as claim:
+        if claim.completed_receipt is not None:
+            return claim.completed_receipt
+        framework_ids = context.approved_framework_ids()
+        if (not 1 <= len(framework_ids) <= 10
+                or len(set(framework_ids)) != len(framework_ids)
+                or context.format not in {"pdf", "docx", "xlsx"}):
+            raise ValueError("Invalid approved report request")
+        context.jobs.mark_running(job_id, datetime.now(timezone.utc))
+        try:
+            builder = context.authorized_report_builder()
+            for index, framework_id in enumerate(framework_ids):
+                context.recheck_authorization()
+                # Builder enforces framework tenant/edition, object permissions and bounds.
+                data = builder.collect_framework_data(framework_id)
+                builder.render_section(framework_id, data)
+                if context.include_ai_summary:
+                    # Summary adapter minimizes input and uses authorized metered runtime.
+                    builder.generate_ai_summary(framework_id, data, review_required=True)
+                progress = int((index + 1) / len(framework_ids) * 90)
+                context.jobs.save_progress(job_id, progress, "framework_draft")
+                self.update_state(state="PROGRESS", meta={"progress": progress})
+            artifact = builder.compile(format=context.format)
+            context.validate_protected_artifact(artifact)
+            return context.results.complete_artifact_once(
+                job_id, artifact, completed_at=datetime.now(timezone.utc),
+                review_required=True)
+        except Exception:
+            context.jobs.mark_failed_redacted(job_id)
+            raise RuntimeError("Report draft generation failed") from None
+# Adapters close sessions, keep artifact IDs private, check quotas/escaping/renderer limits,
+# atomically persist state and handle redelivery/partial attempts. No blanket retry is shown.
+# Download rechecks current authorization; a Celery SUCCESS flag alone is not report approval.

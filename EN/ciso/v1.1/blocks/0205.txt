@@ -1,0 +1,19 @@
+# Rolling-day view of at most 100 rows; not a complete calendar-quarter/year report.
+async def get_timeline(self, days: int = 90) -> list[dict]:
+    """Recent updates ordered chronologically.
+
+    Configurable days parameter: 90 for quarterly reports,
+    30 for monthly tracking, 365 for annual review.
+    """
+    if type(days) is not int or not 1 <= days <= 365:
+        raise ValueError("days must be an integer between 1 and 365")
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    result = await self.db.execute(
+        select(RegulatoryUpdate).where(
+            RegulatoryUpdate.corporate_id == self.corporate_id,
+            RegulatoryUpdate.is_deleted == False,
+            RegulatoryUpdate.created_at >= cutoff,
+        ).order_by(RegulatoryUpdate.created_at.desc(), RegulatoryUpdate.id.desc())
+        .limit(100)
+    )
+    return [u.to_dict() for u in result.scalars().all()]

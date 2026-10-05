@@ -1,0 +1,27 @@
+# Local illustrative profiles; these are not official method catalogs or scales.
+# Five ordinal values in this example do not implement the complete MAGERIT method.
+METHODOLOGY_CONFIGS = {
+    "magerit_v3": {
+        "name": "Perfil local inspirado en MAGERIT v3",
+        "official_source": "MAGERIT v3, Libro I, Ministerio de Hacienda, 2012",
+        "impact_dimensions": ["availability", "integrity", "confidentiality",
+                              "authenticity", "traceability"],
+        "probability_scale": {1: "Muy baja", 2: "Baja", 3: "Media",
+                              4: "Alta", 5: "Muy alta"},
+        "impact_scale": {1: "Muy bajo", 2: "Bajo", 3: "Medio",
+                         4: "Alto", 5: "Muy alto"},
+        "risk_calculation": "local_ordinal_matrix",
+        "requires_approved_algorithm": True,
+    },
+    "fair": {
+        "name": "Perfil de integración Open FAIR",
+        "official_source": "The Open Group, Open FAIR Body of Knowledge",
+        "risk_calculation": "frequency_and_loss_distributions",
+        "currency": "EUR",
+        "period": "annual",
+        "requires_documented_distributions": True,
+        "requires_approved_algorithm": True,
+    },
+}
+# Currency/period and ordinal labels are case settings, not method mandates.
+# Rights, editions, algorithm adapters, uncertainty and validation are required.

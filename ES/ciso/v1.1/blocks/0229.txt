@@ -1,0 +1,63 @@
+// Required integration supplies validated DTOs, components and a current server scope.
+export default function ExecutiveDashboardPage() {
+  const scope = useSessionContext()
+  const { data: d, isLoading } = useQuery<ExecutiveDashboard>({
+    queryKey: ['executive-dashboard', scope.tenantId, scope.actorId, scope.permissionEpoch],
+    enabled: scope.ready,
+    staleTime: 0,
+    queryFn: executiveApi.getDashboard,
+  })
+
+  if (!scope.ready) return <EmptyState />
+  if (isLoading) return <LoadingSkeleton />
+  if (!d) return <EmptyState />
+
+  const varColor = d.cyber_risk.sum_scenario_ale_p95_eur == null
+    ? 'text-gray-500'
+    : d.cyber_risk.sum_scenario_ale_p95_eur > 5e6
+    ? 'text-red-600'
+    : d.cyber_risk.sum_scenario_ale_p95_eur > 1e6
+      ? 'text-orange-600'
+      : 'text-green-600'
+
+  return (
+    <div className="space-y-6">
+      {/* Band 1: global score and selected KPIs */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <ScoreGauge score={d.overall_grc_score} label="GRC Score" />
+        <KPI label="Suma p95 ALE de escenarios"
+          value={d.cyber_risk.sum_scenario_ale_p95_eur == null
+            ? 'N/A' : `${fmt(d.cyber_risk.sum_scenario_ale_p95_eur)} EUR`}
+          color={varColor} />
+        <KPI label="NIS2 Compliance"
+          value={d.nis2.compliance_score == null
+            ? 'N/A' : `${d.nis2.compliance_score}%`}
+          sub={`${d.nis2.compliant}/${d.nis2.total_requirements}`} />
+        <KPI label="Proveedores"
+          value={d.tprm.total_suppliers}
+          sub={`${d.tprm.critical_suppliers} críticos; ${d.tprm.unassessed_suppliers} pendientes`} />
+        <KPI label="Click rate phishing"
+          value={d.policy_awareness.avg_phishing_click_rate != null
+            ? `${d.policy_awareness.avg_phishing_click_rate}%`
+            : 'N/A'} />
+      </div>
+
+      {/* Band 2: module cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <ModuleCard title="Third-Party Risk" accent="border-l-blue-500">
+          <Metric label="Score medio"
+            value={d.tprm.avg_supplier_score != null
+              ? `${d.tprm.avg_supplier_score}/100` : 'N/A'} />
+          <Metric label="Hallazgos abiertos"
+            value={d.tprm.open_findings} />
+        </ModuleCard>
+        {/* Additional module cards are not implemented in this fragment. */}
+      </div>
+
+      {/* Band 3: framework results */}
+      <ComplianceFrameworksBand frameworks={d.compliance_frameworks} />
+    </div>
+  )
+}
+// The API adapter unwraps {data}, validates field shapes and rejects stale scope.
+// Do not reuse data across tenant, actor or permission-epoch changes.

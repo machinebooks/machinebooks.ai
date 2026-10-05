@@ -1,0 +1,51 @@
+// Partial layout: supply all schema fields, labels, errors and authorized record selectors.
+// Backend must validate tenant/RBAC, awareness, phased information and legal-review transitions.
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { breachFormSchema, type BreachFormData } from "./breach.schema";
+import api from "@/api/client";
+
+function BreachNotificationForm() {
+  const [requestAuthorityDraft, setRequestAuthorityDraft] = useState(false);
+  const form = useForm<BreachFormData>({
+    resolver: zodResolver(breachFormSchema),
+    defaultValues: {
+      nature: null, description: null, affected_categories: null,
+      estimated_affected_count: null, affected_record_types: null,
+      estimated_records_count: null, dpo_name: null, dpo_email: null, dpo_phone: null,
+      probable_consequences: null, measures_taken: null,
+      detected_at: null, awareness_at: null, detection_source: null, severity: null,
+      notify_data_subjects: null, affected_treatment_ids: [],
+    },
+  });
+  const onSubmit = async (data: BreachFormData) => {
+    try {
+      const { data: breach } = await api.post<{ id: number }>(
+        "/api/v1/privacy/breaches", data);
+      // Explicit request for an authority draft; this never sends an external notification.
+      if (requestAuthorityDraft) {
+        await api.post(`/api/v1/privacy/breaches/${breach.id}/draft-notification`);
+      }
+    } catch {
+      form.setError("root", { message: "No se pudo completar la operación; compruebe el registro guardado." });
+    }
+  };
+  return (
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <fieldset className="rounded-lg border p-4">
+        <legend>Borrador de brecha — información disponible</legend>
+        {/* Supply the remaining schema fields; this fragment is not a complete form. */}
+      </fieldset>
+      <label htmlFor="authority-draft">
+        <input id="authority-draft" type="checkbox" checked={requestAuthorityDraft}
+          onChange={(event) => setRequestAuthorityDraft(event.target.checked)} />
+        Solicitar borrador para la autoridad (Art. 33)
+      </label>
+      {form.formState.errors.root && <p role="alert">{form.formState.errors.root.message}</p>}
+      <button type="submit" disabled={form.formState.isSubmitting}>
+        Guardar borrador de brecha
+      </button>
+    </form>
+  );
+}

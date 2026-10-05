@@ -1,0 +1,13 @@
+# Pure timing checks: awareness is distinct from technical detection.
+from datetime import datetime, timedelta, timezone
+import pytest
+
+@pytest.mark.regulatory
+def test_article33_awareness_clock():
+    awareness = datetime(2026, 3, 28, 22, tzinfo=timezone.utc)
+    detection = awareness - timedelta(hours=5)
+    deadline = awareness + timedelta(hours=72)
+    assert deadline - awareness == timedelta(hours=72)
+    assert deadline != detection + timedelta(hours=72)
+    assert awareness + timedelta(hours=80) > deadline
+    # These assertions do not prove API alerts, notification or authority acceptance.

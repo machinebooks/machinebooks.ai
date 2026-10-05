@@ -1,0 +1,63 @@
+# Risk Model — designed from public methodologies
+# Common relational structure, content conditioned by methodology
+
+from enum import Enum as PyEnum
+from sqlalchemy import (
+    Column, String, Text, Integer, Float, Boolean, BigInteger,
+    ForeignKey, DateTime, JSON, Enum as SQLEnum
+)
+from sqlalchemy.orm import relationship
+from app.models.base import BaseModel  # multi-tenant, audit, soft delete
+
+
+class RiskMethodology(str, PyEnum):
+    """Supported risk analysis methodologies.
+
+    All are public documentation from official bodies.
+    Each defines its own taxonomies and scales.
+    """
+    MAGERIT_V3 = "magerit_v3"  # Configurable adaptation; ENS does not mandate MAGERIT.
+    ISO_27005 = "iso_27005"              # ISO/IEC — complements ISO 27001
+    NIST_SP_800_30 = "nist_sp_800_30"    # NIST, U.S. — federal government
+    FAIR = "fair"                         # The Open Group — quantitative
+    OCTAVE_ALLEGRO = "octave_allegro"    # Carnegie Mellon — info-centric
+    EBIOS_RM = "ebios_rm"  # ANSSI methodology; applicability depends on context.
+    MEHARI = "mehari"                     # CLUSIF, France
+    CRAMM = "cramm"                       # UK Government
+    IT_GRUNDSCHUTZ = "it_grundschutz"    # BSI, Germany
+    AS_NZS_4360 = "as_nzs_4360"         # Australia/New Zealand
+    ISO_31000 = "iso_31000"              # ISO — generic risk management
+    NIST_CSF = "nist_csf"               # NIST Cybersecurity Framework
+    COBIT = "cobit"                       # ISACA — IT governance
+    RISK_IT = "risk_it"                   # ISACA — IT risk
+    CUSTOM = "custom"                     # Custom methodology
+
+
+class AssetType(str, PyEnum):
+    """Asset types — superset of all methodologies.
+
+    MAGERIT defines [S], [D], [SW], [HW], [COM], [AUX], [L], [P].
+    ISO 27005 defines primary assets and supporting assets.
+    NIST uses an information system classification.
+    The methodology field filters which types are valid.
+    """
+    SERVICE = "service"           # [S] MAGERIT: services
+    DATA = "data"                 # [D] MAGERIT: data/information
+    SOFTWARE = "software"         # [SW] MAGERIT: applications
+    HARDWARE = "hardware"         # [HW] MAGERIT: equipment
+    NETWORK = "network"           # [COM] MAGERIT: communications
+    AUXILIARY = "auxiliary"        # [AUX] MAGERIT: auxiliary equipment
+    FACILITY = "facility"         # [L] MAGERIT: facilities
+    PERSONNEL = "personnel"       # [P] MAGERIT: personnel
+    PROCESS = "process"           # ISO 27005: business process
+    INFORMATION = "information"   # ISO 27005: information asset
+    THIRD_PARTY = "third_party"   # NIS2/DORA: ICT provider
+    OTHER = "other"
+
+
+class TreatmentStrategy(str, PyEnum):
+    """Risk treatment strategies — ISO 31000."""
+    MITIGATE = "mitigate"       # Reduce probability or impact
+    TRANSFER = "transfer"       # Transfer to third party (insurance, outsourcing)
+    AVOID = "avoid"             # Eliminate the activity generating the risk
+    ACCEPT = "accept"           # Formally accept with justification

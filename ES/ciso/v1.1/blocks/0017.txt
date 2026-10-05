@@ -1,0 +1,112 @@
+# DPIA model — designed from Art. 35 GDPR
+# Each section corresponds to an Art. 35.7 paragraph
+
+from enum import Enum as PyEnum
+from sqlalchemy import (
+    Column, String, Text, Boolean, BigInteger,
+    ForeignKey, DateTime, JSON, UniqueConstraint, Enum as SQLEnum
+)
+from app.models.base import BaseModel  # multi-tenant, audit, soft delete
+
+
+class DPIAStatus(str, PyEnum):
+    """DPIA states per regulatory lifecycle."""
+    DRAFT = "draft"                          # Initial draft
+    UNDER_REVIEW = "under_review"            # Under competent review
+    APPROVED = "approved"                    # Controller review recorded; other obligations remain
+    PRIOR_CONSULTATION = "prior_consultation"  # Art. 36 — Prior consultation with AEPD
+    REJECTED = "rejected"                    # Draft returned for revision
+
+
+class SectionStatus(str, PyEnum):
+    """Status of each individual DPIA section."""
+    EMPTY = "empty"                # No content
+    DRAFT = "draft"                # Draft generated (by agent or manually)
+    REVIEWED = "reviewed"          # Reviewed by the designated reviewer
+    APPROVED = "approved"          # Controller decision recorded
+    NEEDS_REVISION = "needs_revision"  # Returned for correction
+
+
+class DPIA(BaseModel):
+    """Data Protection Impact Assessment (Art. 35 GDPR).
+
+    Linked to one or more ROPA processing activities (Ch. 4).
+    Common fields require scoped authorization, audit and lawful retention controls.
+    """
+    __tablename__ = "dpias"
+    __table_args__ = (UniqueConstraint("corporate_id", "code"),)
+
+    # --- Identification ---
+    title = Column(String(255), nullable=False,
+                   comment="Descriptive DPIA title")
+    code = Column(String(50),
+                  comment="Internal code: DPIA-2026-001")
+    status = Column(SQLEnum(DPIAStatus), default=DPIAStatus.DRAFT,
+                    comment="Overall DPIA status")
+
+    # --- Link to processing activity(ies) ---
+    primary_activity_id = Column(
+        BigInteger, ForeignKey("data_processing_activities.id"),
+        nullable=False,
+        comment="Primary processing activity originating the DPIA")
+
+    # --- Art. 35.7.a — Systematic description of processing ---
+    description_content = Column(
+        Text, comment="Description of processing operations and purposes")
+    description_status = Column(
+        SQLEnum(SectionStatus), default=SectionStatus.EMPTY)
+    description_reviewed_at = Column(DateTime, nullable=True)
+    description_reviewed_by = Column(BigInteger, nullable=True)
+
+    # --- Art. 35.7.b — Necessity and proportionality ---
+    necessity_content = Column(
+        Text, comment="Assessment of necessity and proportionality")
+    necessity_status = Column(
+        SQLEnum(SectionStatus), default=SectionStatus.EMPTY)
+    necessity_reviewed_at = Column(DateTime, nullable=True)
+    necessity_reviewed_by = Column(BigInteger, nullable=True)
+
+    # --- Art. 35.7.c — Risks to rights and freedoms ---
+    risks_content = Column(
+        Text, comment="Assessment of identified risks")
+    risks_identified = Column(
+        JSON, comment='List of risks: [{"risk": "...", "likelihood": "...", "impact": "..."}]')
+    risks_status = Column(
+        SQLEnum(SectionStatus), default=SectionStatus.EMPTY)
+    risks_reviewed_at = Column(DateTime, nullable=True)
+    risks_reviewed_by = Column(BigInteger, nullable=True)
+
+    # --- Art. 35.7.d — Mitigation measures ---
+    measures_content = Column(
+        Text, comment="Measures envisaged to address the risks")
+    measures_proposed = Column(
+        JSON, comment='[{"measure": "...", "risk_addressed": "...", "status": "planned|implemented"}]')
+    measures_status = Column(
+        SQLEnum(SectionStatus), default=SectionStatus.EMPTY)
+    measures_reviewed_at = Column(DateTime, nullable=True)
+    measures_reviewed_by = Column(BigInteger, nullable=True)
+
+    # --- GT29/EDPB criteria met ---
+    gt29_criteria = Column(
+        JSON, comment='Criteria met: ["scoring", "automated_decisions", ...]')
+    gt29_criteria_count = Column(
+        BigInteger, default=0,
+        comment="Number of GT29 criteria met (review signal; not an automatic legal decision)")
+
+    # --- Result and approval ---
+    residual_risk_level = Column(
+        String(20), comment="low, medium, high, very_high")
+    dpo_opinion = Column(Text, comment="Formal DPO opinion")
+    controller_reviewed_at = Column(DateTime, nullable=True)
+    controller_reviewed_by = Column(BigInteger, nullable=True)
+    dpo_advice_at = Column(DateTime, nullable=True)
+    requires_prior_consultation = Column(
+        Boolean, default=None, nullable=True,
+        comment="Art. 36 — Does it require prior consultation with the AEPD?")
+
+    # --- Lifecycle ---
+    initiated_at = Column(DateTime, comment="DPIA initiation date")
+    completed_at = Column(DateTime, nullable=True,
+                          comment="Completion date")
+    next_review_date = Column(DateTime, nullable=True,
+                              comment="Next scheduled review")

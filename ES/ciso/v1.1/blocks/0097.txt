@@ -1,0 +1,51 @@
+# Didactic adapter contract: tenant-scoped reads and durable alert outbox.
+from celery import shared_task
+from datetime import datetime, timedelta, timezone
+
+@shared_task(queue="maintenance", name="ai.check_ai_monitoring_alerts")
+def check_ai_monitoring_alerts():
+    from app.services.ai_monitoring import monitoring_repository, alert_outbox
+    now = datetime.now(timezone.utc)
+    systems_checked = 0
+    alerts_generated = 0
+    # The repository applies the authorized maintenance scope per tenant.
+    for record in monitoring_repository.active_records():
+        systems_checked += 1
+        # Monitoring policy is organizational; GPAI is not a system risk class.
+        for metric_type, metrics in monitoring_repository.recent_metrics(
+            corporate_id=record.corporate_id, record_id=record.id,
+            since=now - timedelta(days=30),
+        ).items():
+            if not metrics:
+                continue
+            metrics = sorted(metrics, key=lambda metric: metric.created_at)
+            latest = metrics[-1]
+            result = evaluate_metric(
+                metric_type, latest.value,
+                {"warning": latest.threshold_warning,
+                 "alert": latest.threshold_alert,
+                 "critical": latest.threshold_critical},
+                [metric.value for metric in metrics],
+            )
+            if result["needs_action"]:
+                # Atomic unique key avoids duplicate notifications on retries.
+                created = alert_outbox.enqueue_once(
+                    key=(record.corporate_id, record.id, latest.id,
+                         result["alert_level"]),
+                    corporate_id=record.corporate_id,
+                    payload={"record_id": record.id, "metric": str(metric_type),
+                             "value": latest.value, **result},
+                )
+                alerts_generated += int(created)
+        # Ninety days is an internal review policy, not an AI Act deadline.
+        for assessment in monitoring_repository.stale_assessments(
+            corporate_id=record.corporate_id, record_id=record.id,
+            before=now - timedelta(days=90),
+        ):
+            alerts_generated += int(alert_outbox.enqueue_once(
+                key=(record.corporate_id, assessment.id, "stale", now.date()),
+                corporate_id=record.corporate_id,
+                payload={"assessment_id": assessment.id, "reason": "review_due"},
+            ))
+    return {"systems_checked": systems_checked,
+            "alerts_generated": alerts_generated, "timestamp": now.isoformat()}

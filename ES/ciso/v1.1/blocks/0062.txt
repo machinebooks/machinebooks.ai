@@ -1,0 +1,44 @@
+from celery import shared_task
+from datetime import datetime, timezone
+from app.models.ai import AIProvider
+from app.services.ai.llm_factory import LLMFactory
+from app.services.ai.runtime import authorized_health_context
+
+@shared_task(name="ai.health_check_providers", queue="maintenance")
+def health_check_all_providers(job_id):
+    # Server-side job registry supplies scope, service actor and required adapters.
+    context = authorized_health_context(job_id)
+    results = []
+    with context.session_scope() as db:
+        providers = db.query(AIProvider).filter_by(
+            corporate_id=context.corporate_id, is_active=True,
+            is_deleted=False).limit(101).all()
+        if len(providers) > 100:
+            raise ValueError("Health batch exceeds the configured bound")
+        factory = LLMFactory(
+            db, corporate_id=context.corporate_id, user_id=context.user_id,
+            policy=context.policy, budget=context.budget,
+            secrets=context.secrets, usage_writer=context.usage_writer)
+        for provider in providers:
+            service = context.health_service_for(provider.id)
+            config = factory.get_service_config(service)
+            if (config.provider_id != provider.id
+                    or config.fallback_provider_id is not None
+                    or config.local_fallback_provider_id is not None):
+                raise ValueError("Health service must target exactly one provider")
+            try:
+                result = factory.call(
+                    service, [{"role": "user", "content": "Respond only with OK."}])
+                healthy = result["content"].strip() == "OK"
+                provider.last_latency_ms = result["latency_ms"]
+            except Exception:
+                # Runtime/ledger records retain charge uncertainty; no raw SDK exception.
+                healthy = False
+                provider.last_latency_ms = None
+            provider.last_health_check = datetime.now(timezone.utc)
+            results.append({"provider": provider.name, "healthy": healthy,
+                            "latency_ms": provider.last_latency_ms})
+        db.commit()
+    return results
+# Schedule is deployment configuration, not established by this decorator.
+# A successful probe establishes this small authorized request only, not all capabilities.

@@ -1,0 +1,5 @@
+# Linux host provisioning by an authorized administrator.
+chmod 600 .env.prod  # Owner can read and write; group/others have no access.
+chown root:root .env.prod
+# Protect referenced secret files/directories and grant only required container UID access.
+# Compose file-backed secrets are mounts, not proof of encrypted storage or a vault.

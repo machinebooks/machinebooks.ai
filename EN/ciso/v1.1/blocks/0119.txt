@@ -1,0 +1,156 @@
+# Didactic example: middleware/audit.py
+
+import json
+import logging
+import socket
+import time
+from datetime import datetime, timezone
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+from starlette.responses import Response
+
+# Logger configured to send to the SIEM via Syslog
+siem_logger = logging.getLogger("siem")
+
+MUTATING_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
+
+
+class AuditMiddleware(BaseHTTPMiddleware):
+    """Logs mutating operations to both DB and SIEM simultaneously.
+
+    Only intercepts POST, PUT, PATCH, DELETE.
+    GETs are not audited to avoid excessive volume.
+    """
+
+    async def dispatch(self, request: Request, call_next) -> Response:
+        if request.method not in MUTATING_METHODS:
+            return await call_next(request)
+
+        start_time = time.time()
+
+        # Extract user information from the JWT token (if present)
+        client_ip = request.client.host if request.client else "unknown"
+
+        response = await call_next(request)
+
+        # Read identity after downstream authentication/tenant middleware.
+        user_id = getattr(request.state, "user_id", "anonymous")
+        corporate_id = getattr(request.state, "corporate_id", "unknown")
+        request_id = getattr(request.state, "request_id", "no-id")
+
+        duration_ms = int((time.time() - start_time) * 1000)
+
+        # 1. Database record (DPO internal queries)
+        audit_entry = {
+            "user_id": user_id,
+            "corporate_id": corporate_id,
+            "action": request.method,
+            "resource": str(request.url.path),
+            "status_code": response.status_code,
+            "ip_address": client_ip,
+            "user_agent": request.headers.get("user-agent", ""),
+            "request_id": request_id,
+            "duration_ms": duration_ms,
+            "timestamp": datetime.now(timezone.utc),
+        }
+        # Async insertion into the audit_trail table
+        await self._persist_to_database(audit_entry)
+
+        # 2. Forward to the SIEM in CEF format
+        cef_message = self._format_cef(audit_entry)
+        siem_logger.info(cef_message)
+
+        return response
+
+    async def _persist_to_database(self, entry: dict) -> None:
+        """Inserts the audit record into the audit_trail table.
+
+        Uses an independent DB session to avoid interfering
+        with the main request transaction.
+        """
+        from app.database import async_session_audit
+        from app.models.audit import AuditTrail
+
+        async with async_session_audit() as session:
+            record = AuditTrail(**entry)
+            session.add(record)
+            await session.commit()
+
+    @staticmethod
+    def _escape_cef_field(value: str) -> str:
+        """Escape special characters in CEF extension values.
+
+        CEF requires escaping: backslash, pipe, equals, and newlines.
+        Without escaping, an attacker can inject fake CEF fields or
+        corrupt SIEM event parsing.
+        """
+        if not isinstance(value, str):
+            value = str(value)
+        return (
+            value
+            .replace("\\", "\\\\")
+            .replace("|", "\\|")
+            .replace("=", "\\=")
+            .replace("\n", "\\n")
+            .replace("\r", "\\r")
+        )
+
+    def _format_cef(self, entry: dict) -> str:
+        """Generates a CEF (Common Event Format) message.
+
+        CEF is the industry standard that SIEMs (QRadar, Splunk,
+        ArcSight, Sentinel) consume natively.
+
+        Format: CEF:Version|Vendor|Product|Version|EventID|Name|Severity|Extensions
+
+        All extension values are escaped to prevent CEF injection.
+        """
+        # Map status code to CEF severity (0-10)
+        severity = self._status_to_severity(entry["status_code"])
+        esc = self._escape_cef_field
+
+        # Map HTTP method to event ID
+        event_ids = {
+            "POST": "100", "PUT": "200",
+            "PATCH": "300", "DELETE": "400"
+        }
+        event_id = event_ids.get(entry["action"], "999")
+
+        extensions = (
+            f"src={esc(entry['ip_address'])} "
+            f"suser={esc(entry['user_id'])} "
+            f"cs1={esc(entry['corporate_id'])} cs1Label=TenantID "
+            f"cs2={esc(entry['request_id'])} cs2Label=RequestID "
+            f"request={esc(entry['resource'])} "
+            f"outcome={entry['status_code']} "
+            f"cn1={entry['duration_ms']} cn1Label=DurationMs "
+            f"rt={esc(entry['timestamp'])}"
+        )
+
+        # Event name in the header is also escaped
+        event_name = esc(f"{entry['action']} {entry['resource']}")
+
+        return (
+            f"CEF:0|GRCPlatform|GRC|1.0|{event_id}|"
+            f"{event_name}|"
+            f"{severity}|{extensions}"
+        )
+
+    @staticmethod
+    def _status_to_severity(status_code: int) -> int:
+        """Maps HTTP status code to CEF severity.
+
+        4xx are mapped to medium severity (possible attack or error),
+        5xx to high severity (system failure).
+        """
+        if 200 <= status_code < 300:
+            return 1   # Informational
+        elif 300 <= status_code < 400:
+            return 2   # Low
+        elif status_code in (401, 403):
+            return 6   # High — possible unauthorized access attempt
+        elif 400 <= status_code < 500:
+            return 4   # Medium
+        elif status_code >= 500:
+            return 8   # Very high — system failure
+        return 3       # Unknown → medium-low

@@ -1,0 +1,181 @@
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.models import (Supplier, SupplierFinding, NIS2Requirement,
+                        CyberRiskScenario, SecurityPolicy, PhishingSimulation,
+                        SecurityCultureScore, AIModelDiscovery, ComplianceFramework)
+
+
+class ExecutiveDashboardService:
+    """Partial authorized KPI aggregation, not a legal compliance assessment."""
+
+    def __init__(self, db: AsyncSession, corporate_id: int, actor, policy):
+        self.db = db
+        policy.require_executive_access(actor, corporate_id)
+        policy.require_approved_kpi_definitions(corporate_id)
+        self.cid = corporate_id
+        self.policy = policy
+
+    async def _count(self, model, *extra_filters) -> int:
+        """Count scoped nondeleted records."""
+        filters = [
+            model.corporate_id == self.cid,
+            model.is_deleted == False,
+            *extra_filters,
+        ]
+        r = await self.db.execute(
+            select(func.count(model.id)).where(*filters)
+        )
+        return r.scalar() or 0
+
+    async def get_dashboard(self) -> dict:
+        """Aggregate the defined current scope; absent data remain unknown."""
+
+        # ─── TPRM (Chapter 9) ──────────────────────────
+        total_suppliers = await self._count(Supplier)
+        critical_suppliers = await self._count(
+            Supplier, Supplier.criticality == "critical"
+        )
+        open_findings = await self._count(
+            SupplierFinding,
+            SupplierFinding.status.in_(["open", "overdue"])
+        )
+
+        avg_score_q = await self.db.execute(
+            select(func.avg(Supplier.risk_score)).where(
+                Supplier.corporate_id == self.cid,
+                Supplier.is_deleted == False,
+                Supplier.risk_score.isnot(None)
+            )
+        )
+        avg_supplier_score = self.policy.normalize_supplier_score(avg_score_q.scalar())
+        evaluated_suppliers = await self._count(Supplier, Supplier.risk_score.isnot(None))
+
+        # ─── NIS2 (Chapter 9) ──────────────────────────
+        nis2_total = await self._count(NIS2Requirement)
+        nis2_compliant = await self._count(
+            NIS2Requirement,
+            NIS2Requirement.status == "compliant"
+        )
+        nis2_score = round(nis2_compliant / nis2_total * 100, 1) if nis2_total else None
+
+        # ─── Cyber Risk (Chapter 7) ────────────────────
+        var95_q = await self.db.execute(
+            select(func.sum(CyberRiskScenario.ale_p95)).where(
+                CyberRiskScenario.corporate_id == self.cid,
+                CyberRiskScenario.is_deleted == False,
+                CyberRiskScenario.ale_p95.isnot(None)
+            )
+        )
+        cyber_var_95 = var95_q.scalar()
+
+        # ─── Policy & Awareness (Chapter 26) ───────────
+        total_policies = await self._count(SecurityPolicy)
+        published = await self._count(
+            SecurityPolicy,
+            SecurityPolicy.status == "published"
+        )
+
+        avg_click_q = await self.db.execute(
+            select(func.avg(PhishingSimulation.click_rate)).where(
+                PhishingSimulation.corporate_id == self.cid,
+                PhishingSimulation.is_deleted == False,
+                PhishingSimulation.click_rate.isnot(None)
+            )
+        )
+        avg_phishing_click = avg_click_q.scalar()
+
+        avg_culture_q = await self.db.execute(
+            select(func.avg(SecurityCultureScore.overall_score)).where(
+                SecurityCultureScore.corporate_id == self.cid,
+                SecurityCultureScore.is_deleted == False
+            )
+        )
+        avg_culture = avg_culture_q.scalar()
+
+        # ─── AI Governance (Chapter 14) ─────────────────
+        total_ai_models = await self._count(AIModelDiscovery)
+        high_risk_ai = await self._count(
+            AIModelDiscovery,
+            AIModelDiscovery.is_high_risk == True
+        )
+
+        # ─── Compliance Frameworks (Chapter 8) ─────────
+        frameworks_q = await self.db.execute(
+            select(
+                ComplianceFramework.name,
+                ComplianceFramework.compliance_score
+            ).where(
+                ComplianceFramework.corporate_id == self.cid,
+                ComplianceFramework.is_deleted == False
+            ).order_by(ComplianceFramework.id).limit(101)
+        )
+        frameworks = [
+            {"name": r[0], "score": r[1]}
+            for r in frameworks_q.all()
+        ]
+
+        if len(frameworks) > 100:
+            raise ValueError('Incomplete framework coverage; pagination is required')
+
+        # ─── Overall GRC Score ───────────────────────────
+        scores = []
+        if avg_supplier_score is not None:
+            scores.append(avg_supplier_score)
+        if nis2_score is not None:
+            scores.append(nis2_score)
+        if avg_culture is not None:
+            scores.append(avg_culture)
+        for f in frameworks:
+            if f["score"] is not None:
+                scores.append(f["score"])
+
+        overall = (
+            round(sum(scores) / max(len(scores), 1), 1)
+            if scores else None
+        )
+
+        return {
+            "overall_grc_score": overall,
+            "definition": "mean_of_known_normalized_scores",
+            "coverage": "current_scoped_records",
+            "legal_conformity": "not_assessed",
+            "tprm": {
+                "total_suppliers": total_suppliers,
+                "critical_suppliers": critical_suppliers,
+                "evaluated_suppliers": evaluated_suppliers,
+                "unassessed_suppliers": total_suppliers - evaluated_suppliers,
+                "avg_supplier_score": (
+                    round(avg_supplier_score, 1)
+                    if avg_supplier_score is not None else None
+                ),
+                "open_findings": open_findings,
+            },
+            "nis2": {
+                "compliance_score": nis2_score,
+                "total_requirements": nis2_total,
+                "compliant": nis2_compliant,
+            },
+            "cyber_risk": {
+                "sum_scenario_ale_p95_eur": (
+                    round(cyber_var_95, 0)
+                    if cyber_var_95 is not None else None
+                ),
+            },
+            "policy_awareness": {
+                "total_policies": total_policies,
+                "published_policies": published,
+                "avg_phishing_click_rate": (
+                    round(avg_phishing_click, 1)
+                    if avg_phishing_click is not None else None
+                ),
+                "avg_culture_score": (
+                    round(avg_culture, 1)
+                    if avg_culture is not None else None
+                ),
+            },
+            "ai_governance": {
+                "total_ai_models": total_ai_models,
+                "high_risk_models": high_risk_ai,
+            },
+            "compliance_frameworks": frameworks,
+        }

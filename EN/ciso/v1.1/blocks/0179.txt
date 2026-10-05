@@ -1,0 +1,40 @@
+# Example operational thresholds, to validate against the actual emitted metric series.
+groups:
+  - name: grc_security_alerts
+    rules:
+      - alert: HighAuthFailureRate
+        expr: sum(rate(grc_auth_failures_total[5m])) > 0.5
+        for: 2m
+        labels: {severity: critical}
+        annotations:
+          summary: "High rate of HTTP 401 login responses"
+          description: "More than 30 HTTP 401 responses per minute for 2 minutes"
+      - alert: LLMLatencyHigh
+        expr: histogram_quantile(0.95, sum by (le, provider, model) (rate(grc_llm_latency_seconds_bucket[5m]))) > 30
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: "LLM attempt p95 exceeds 30 seconds"
+      - alert: CeleryQueueBacklog
+        expr: grc_celery_tasks_pending{queue="ai",job="grc-celery-exporter"} > 50
+        for: 10m
+        labels: {severity: warning}
+        annotations:
+          summary: "AI queue has pending tasks"
+          description: "More than 50 pending tasks for 10 minutes; a valid exporter is required"
+      - alert: HighErrorRate
+        expr: (sum(rate(http_requests_total{status="5xx"}[5m])) / sum(rate(http_requests_total[5m])) > 0.05) and (sum(rate(http_requests_total[5m])) > 0)
+        for: 5m
+        labels: {severity: critical}
+        annotations:
+          summary: "5xx rate exceeds 5% with observed traffic"
+      - alert: MetricsTargetUnavailable
+        expr: up{job=~"grc-backend|grc-celery-exporter"} == 0
+        for: 2m
+        labels: {severity: warning}
+        annotations:
+          summary: "Metrics target is unavailable"
+# Pending is broker backlog, not the active-worker gauge. Exporter must implement/validate
+# separate pending/active series, inspection freshness and unknown/unavailable states.
+# Thresholds are case policy, not ENS/NIS2/AI Act obligations or evidence of legal compliance.
+# Missing series are not zero. Test rule inputs, restarts, no traffic and collector outages.

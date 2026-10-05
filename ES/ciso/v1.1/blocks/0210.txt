@@ -1,0 +1,62 @@
+from app.services.regulatory_watch import RegulatoryWatchService
+
+DEFAULT_SOURCES = [
+    {
+        "name": "BOE - Boletín Oficial del Estado",
+        "source_type": "official_journal",
+        "url": "https://boe.es/diario_boe/",
+        "country": "ES",
+        "check_frequency": "daily",
+        "notes": "Leyes, RD, resoluciones de ámbito estatal"
+    },
+    {
+        "name": "DOUE - Diario Oficial de la UE",
+        "source_type": "official_journal",
+        "url": "https://eur-lex.europa.eu/",
+        "country": "EU",
+        "check_frequency": "daily",
+        "notes": "Reglamentos, directivas y decisiones europeas"
+    },
+    {
+        "name": "AEPD - Agencia Española de Protección de Datos",
+        "source_type": "regulator",
+        "url": "https://www.aepd.es/",
+        "country": "ES",
+        "check_frequency": "weekly",
+        "notes": "Guías, circulares, resoluciones de privacidad"
+    },
+    {
+        "name": "ENISA - Agencia de Ciberseguridad de la UE",
+        "source_type": "sector_authority",
+        "url": "https://www.enisa.europa.eu/",
+        "country": "EU",
+        "check_frequency": "weekly",
+        "notes": "Guías técnicas, informes de amenazas"
+    },
+    {
+        "name": "CCN-CERT - Centro Criptológico Nacional",
+        "source_type": "sector_authority",
+        "url": "https://www.ccn-cert.cni.es/",
+        "country": "ES",
+        "check_frequency": "weekly",
+        "notes": "Guías CCN-STIC, alertas de seguridad"
+    },
+]
+
+
+async def seed_regulatory_sources(db, corporate_id, user_id, policy):
+    policy.authorize_seed(corporate_id, user_id)
+    svc = RegulatoryWatchService(db, corporate_id)
+    created = 0
+    for source_data in DEFAULT_SOURCES:
+        data = dict(source_data)
+        data["url"] = await policy.approve_source_url(corporate_id, user_id, data["url"])
+        data["is_active"] = False  # Activation requires the reviewed source/fetch configuration.
+        if not await svc.source_exists_scoped(data["name"]):
+            await svc.create_source(data, user_id)
+            created += 1
+    await db.flush()
+    return created
+# Caller owns transaction/rollback; unique corporate_id/name resolves concurrent seeds.
+# Sources differ: BOE/DOUE publish binding texts, guides need their own authority/scope review.
+# Public URL does not grant unrestricted corpus rights or prove a deployed fetch/analysis pipeline.

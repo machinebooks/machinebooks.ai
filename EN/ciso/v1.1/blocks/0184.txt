@@ -1,0 +1,35 @@
+import pytest
+
+# Internal case policy, not a universal ENS/ISO role matrix.
+RBAC_MATRIX = {
+    "admin": {"treatments": "rw", "controls": "rw", "risks": "rw", "users": "rw"},
+    "ciso": {"treatments": "r", "controls": "rw", "risks": "rw", "users": "r"},
+    "dpo": {"treatments": "rw", "controls": "r", "risks": "r", "users": "n"},
+    "compliance_officer": {"treatments": "r", "controls": "rw", "risks": "r", "users": "n"},
+    "analyst": {"treatments": "r", "controls": "r", "risks": "r", "users": "n"},
+    "auditor": {"treatments": "r", "controls": "r", "risks": "r", "users": "n"},
+}
+READ_WRITE = {"GET", "POST", "PUT", "PATCH", "DELETE"}
+
+@pytest.mark.asyncio
+@pytest.mark.regulatory
+@pytest.mark.parametrize("role", list(RBAC_MATRIX))
+async def test_rbac_case_policy(client, auth_headers_for_role, api_cases, role):
+    headers = await auth_headers_for_role(role)
+    # Fixture uses existing same-tenant records, valid payloads/paths and isolated cleanup.
+    for resource, permission in RBAC_MATRIX[role].items():
+        allowed = READ_WRITE if permission == "rw" else {"GET"} if permission == "r" else set()
+        for case in api_cases.for_resource(resource):
+            response = await client.request(
+                case.method, case.path, headers=headers, json=case.payload)
+            if case.method in allowed:
+                assert response.status_code == case.success_status
+                api_cases.assert_success_payload(response, case)
+            else:
+                assert response.status_code == 403
+        other_tenant = api_cases.other_tenant_existing_record(resource)
+        response = await client.get(other_tenant.path, headers=headers)
+        assert response.status_code == 404
+# Exact statuses and payload effects reject 500/405/422 masquerading as permission success.
+# Fixtures must bind action/object/tenant and verify read/write persistence; these are required
+# test contracts, not supplied platform tests. This matrix does not prove legal conformity.

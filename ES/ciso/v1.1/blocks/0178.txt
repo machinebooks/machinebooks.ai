@@ -1,0 +1,28 @@
+from datetime import datetime, timezone
+from sqlalchemy import Column, BigInteger, Integer, String, DateTime, JSON, Index
+from app.models.base import BaseModel
+
+class AccessLog(BaseModel):
+    __tablename__ = "access_log"
+    recorded_at = Column(DateTime, default=lambda: datetime.now(timezone.utc),
+                         nullable=False, index=True)
+    actor_id = Column(BigInteger, nullable=True)
+    action = Column(String(50), nullable=False)
+    result = Column(String(20), nullable=False)
+    failure_kind = Column(String(30), nullable=True)
+    module = Column(String(50), nullable=True)
+    resource_type = Column(String(50), nullable=True)
+    resource_id = Column(BigInteger, nullable=True)
+    request_id = Column(String(36), nullable=False)
+    approved_details = Column(JSON, nullable=True)
+    __table_args__ = (
+        Index("ix_access_scope_action_time", "corporate_id", "action", "recorded_at"),
+    )
+# BaseModel provides corporate_id/id; validate actor/resource attribution at write boundary.
+# Approved details exclude credentials, tokens, prompt/content and raw exception strings.
+# Model columns and absent methods do not make a table immutable or append-only.
+# Runtime database role must enforce INSERT/authorized SELECT without UPDATE/DELETE;
+# separate audited retention/erasure privileges apply to approved policy and legal holds.
+# Test ORM/schema privileges and scoped reader queries on the actual DB; this defines no grants.
+# Audit identities are personal data where applicable, with protected purpose/access/retention;
+# they do not belong in unrestricted operational logs or anonymous metric labels.

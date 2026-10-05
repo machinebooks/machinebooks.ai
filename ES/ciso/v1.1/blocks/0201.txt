@@ -1,0 +1,50 @@
+from celery import shared_task
+from datetime import datetime, timezone
+from decimal import Decimal
+from sqlalchemy import func, or_
+from app.database import SessionLocal
+from app.models import BudgetConfig, LLMUsageLog
+from app.jobs import policy, outbox
+
+@shared_task(queue="maintenance", name="ai.check_budget_alerts")
+def check_budget_alerts(corporate_id, job_id):
+    context = policy.require_authorized_job(
+        job_id, "ai.check_budget_alerts", corporate_id)
+    now = datetime.now(timezone.utc)
+    start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    with SessionLocal.begin() as db:
+        budget = db.query(BudgetConfig).filter_by(
+            corporate_id=corporate_id, is_active=True).one_or_none()
+        if budget is None or budget.monthly_budget_usd is None:
+            return {"status": "no_budget_configured"}
+        limit = Decimal(str(budget.monthly_budget_usd))
+        if not limit.is_finite() or limit <= 0:
+            return {"status": "requires_budget_policy_review"}
+        query = db.query(LLMUsageLog).filter(
+            LLMUsageLog.corporate_id == corporate_id,
+            LLMUsageLog.created_at >= start,
+            LLMUsageLog.created_at <= now)
+        unknown = query.filter(or_(LLMUsageLog.cost_total.is_(None),
+                                   LLMUsageLog.cost_currency.is_(None),
+                                   LLMUsageLog.cost_currency != "USD")).count()
+        if unknown or not query.count():
+            return {"status": "cost_unknown", "monthly_cost_usd": None,
+                    "unknown_records": unknown}
+        total = Decimal(str(query.with_entities(func.sum(LLMUsageLog.cost_total)).scalar()))
+        if not total.is_finite() or total < 0:
+            raise ValueError("Invalid persisted cost")
+        pct = total / limit * 100
+        threshold = Decimal(str(budget.alert_threshold_pct))
+        if not threshold.is_finite() or not 0 <= threshold <= 100:
+            raise ValueError("Invalid budget threshold")
+        if pct >= threshold:
+            level = "critical" if pct >= 100 else "warning"
+            outbox.enqueue_once_in_transaction(
+                db, context, key=f"budget:{start.isoformat()}:{level}",
+                kind="budget_review", payload={
+                    "level": level, "monthly_cost_usd": str(total),
+                    "budget_pct": str(pct), "requested_policy": budget.action_on_limit})
+        return {"status": "estimated_metered_cost", "monthly_cost_usd": str(total),
+                "budget_pct": str(pct), "enforcement": "separate_approved_policy"}
+# Outbox scope/unique key and meter reconciliation are required adapters.
+# This task requests review; it does not switch models or authorize paid calls.

@@ -1,0 +1,79 @@
+from datetime import datetime, timezone
+from decimal import Decimal, InvalidOperation
+from sqlalchemy import Column, Integer, String, Numeric, Boolean, DateTime
+from app.models.base import BaseModel
+from app.models.ai import AIProvider
+
+class AIUsageRecord(BaseModel):
+    __tablename__ = "ai_usage_records"
+    service_name = Column(String(100), nullable=False)
+    provider_name = Column(String(100), nullable=False)
+    model_name = Column(String(200), nullable=False)
+    input_tokens = Column(Integer, nullable=True)
+    output_tokens = Column(Integer, nullable=True)
+    latency_ms = Column(Integer, nullable=True)
+    estimated_cost_native = Column(Numeric(18, 8), nullable=True)
+    native_currency = Column(String(3), nullable=True)
+    estimated_cost_eur = Column(Numeric(18, 8), nullable=True)
+    fx_reference = Column(String(200), nullable=True)
+    usage_status = Column(String(30), nullable=False)
+    recorded_at = Column(DateTime, nullable=False)
+    fallback_used = Column(Boolean, default=False)
+    fallback_level = Column(Integer, nullable=True)
+    # BaseModel carries trusted corporate_id and created_by; no prompt/output storage.
+
+def estimate_native_cost(input_tokens, output_tokens, catalog_entry):
+    if any(type(value) is not int or value < 0
+           for value in (input_tokens, output_tokens)):
+        return None
+    if not catalog_entry or not catalog_entry.get("currency"):
+        return None
+    try:
+        prices = [Decimal(str(catalog_entry[key]))
+                  for key in ("input_price", "output_price")]
+    except (KeyError, InvalidOperation):
+        return None
+    if any(not price.is_finite() or price < 0 for price in prices):
+        return None
+    return ((input_tokens * prices[0] + output_tokens * prices[1])
+            / Decimal(1_000_000)).quantize(Decimal("0.00000001"))
+
+def record_usage(db, *, corporate_id, user_id, service_name, provider_name,
+                 model_name, input_tokens, output_tokens, latency_ms,
+                 reservation, ledger, authorize_usage, fx=None,
+                 fallback_used=False, fallback_level=0):
+    authorize_usage(corporate_id, user_id, service_name)
+    provider = db.query(AIProvider).filter_by(
+        corporate_id=corporate_id, name=provider_name,
+        is_deleted=False).one_or_none()
+    if provider is None:
+        raise PermissionError("Provider is outside the tenant catalog")
+    entry = next((item for item in (provider.available_models or [])
+                  if item.get("name") == model_name), None)
+    native_cost = estimate_native_cost(input_tokens, output_tokens, entry)
+    currency = entry.get("currency") if entry else None
+    euro_cost, fx_reference = None, None
+    if native_cost is not None and currency == "EUR":
+        euro_cost = native_cost
+    elif native_cost is not None and fx is not None:
+        euro_cost, fx_reference = fx.to_eur(
+            native_cost, currency, datetime.now(timezone.utc))
+    status = ("estimated" if euro_cost is not None else
+              "cost_unknown" if native_cost is not None else "usage_or_price_unknown")
+    record = AIUsageRecord(
+        corporate_id=corporate_id, created_by=user_id,
+        service_name=service_name, provider_name=provider_name, model_name=model_name,
+        input_tokens=input_tokens, output_tokens=output_tokens, latency_ms=latency_ms,
+        estimated_cost_native=native_cost, native_currency=currency,
+        estimated_cost_eur=euro_cost, fx_reference=fx_reference,
+        usage_status=status, recorded_at=datetime.now(timezone.utc),
+        fallback_used=fallback_used, fallback_level=fallback_level)
+    db.add(record)
+    # Required ledger adapter verifies tenant/actor/reservation and settles once.
+    # Unknown charges retain the reservation or enter reconciliation; never count as zero.
+    ledger.settle_in_transaction(
+        db, corporate_id, user_id, reservation, record, euro_cost)
+    db.flush()
+    return record
+# Caller owns commit/rollback. Charges from failed attempts need separate ledger records.
+# Catalog estimation excludes cache categories, taxes and discounts unless modeled explicitly.

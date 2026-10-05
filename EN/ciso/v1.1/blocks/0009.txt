@@ -1,0 +1,24 @@
+async def seed_regulatory_corpus(context, manifest, catalog, ingestion):
+    # Required adapters verify trusted tenant/job scope, rights, editions and limits.
+    await ingestion.authorize_seed(context, manifest)
+    approved = await ingestion.validate_manifest(
+        context, manifest, max_files=20, max_total_bytes=8_000_000, max_chunks=2000)
+    if await ingestion.has_verified_receipt(context, approved.batch_id, approved.sha256):
+        return {"status": "already_verified", "batch_id": approved.batch_id}
+    # Versioned staging and stable keys prevent partial loads becoming active.
+    batch = await ingestion.begin_or_resume_staged_batch(context, approved)
+    try:
+        for item in approved.files:
+            entries = await ingestion.read_verified_bounded_item(context, item)
+            await catalog.stage_reviewed_entries(context, batch, item, entries)
+            # The embedding destination needs its own approved data/budget/usage policy.
+            await ingestion.stage_authorized_embeddings(context, batch, item, entries)
+        await ingestion.verify_complete_batch(context, batch, approved)
+        await ingestion.activate_reviewed_batch_and_record_receipt(context, batch)
+    except Exception:
+        await ingestion.mark_batch_incomplete(context, batch)
+        raise
+    return {"status": "verified_batch", "batch_id": approved.batch_id}
+# This is a bounded adapter contract, not supplied ISO text or a complete private seed.
+# Integration must test authorization, rights, provenance, retry/deduplication, failure
+# between MySQL/Qdrant and the exact activation/receipt boundary. Counts are manifest facts.

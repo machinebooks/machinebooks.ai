@@ -1,0 +1,69 @@
+# Ejemplo didáctico: nginx/security.conf
+
+# --- Headers de seguridad a nivel de proxy ---
+# Se refuerzan aquí además del middleware de FastAPI
+# para cubrir respuestas de error generadas por Nginx
+add_header X-Frame-Options "DENY" always;
+add_header X-Content-Type-Options "nosniff" always;
+add_header X-XSS-Protection "0";  # Desactivado: CSP es mejor protección
+add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+# --- Bloqueo de métodos HTTP innecesarios ---
+if ($request_method !~ ^(GET|POST|PUT|PATCH|DELETE|OPTIONS|HEAD)$) {
+    return 405;
+}
+
+# --- Límite de tamaño de cuerpo ---
+client_max_body_size 10m;
+
+# Excepción para endpoints de carga de documentos
+location ~ ^/api/(documents|imports)/upload {
+    client_max_body_size 50m;
+    proxy_pass http://backend;
+}
+
+# --- Bloqueo de user-agents de escáneres ---
+if ($http_user_agent ~* (nikto|sqlmap|nmap|dirbuster|havij|w3af)) {
+    return 403;
+}
+
+# --- Bloqueo de caracteres sospechosos en URL ---
+# Previene path traversal y null byte injection
+if ($request_uri ~* "(\.\./|\.\.\\|%00|%0d%0a)") {
+    return 400;
+}
+
+# --- Bloqueo de extensiones peligrosas ---
+location ~* \.(php|asp|aspx|jsp|cgi|sh|bash|exe|dll|bat)$ {
+    return 403;
+}
+
+# --- Rate limiting a nivel de Nginx (capa adicional) ---
+limit_req_zone $binary_remote_addr zone=api_general:10m rate=30r/s;
+limit_req_zone $binary_remote_addr zone=api_auth:10m rate=3r/s;
+
+location /api/auth/ {
+    limit_req zone=api_auth burst=5 nodelay;
+    proxy_pass http://backend;
+}
+
+location /api/ {
+    limit_req zone=api_general burst=50 nodelay;
+    proxy_pass http://backend;
+
+    # Propagar headers de trazabilidad
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Request-ID $request_id;
+}
+
+# --- TLS 1.3 obligatorio ---
+ssl_protocols TLSv1.3;
+ssl_prefer_server_ciphers off;  # En TLS 1.3, el cliente elige
+ssl_ciphers TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256;
+
+# --- OCSP Stapling ---
+ssl_stapling on;
+ssl_stapling_verify on;
+resolver 8.8.8.8 8.8.4.4 valid=300s;
+resolver_timeout 5s;

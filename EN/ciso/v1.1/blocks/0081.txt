@@ -1,0 +1,84 @@
+# Educational adapter boundary; supplied executors do not implement private product code.
+from enum import Enum
+from dataclasses import dataclass, field
+from typing import AsyncGenerator
+import asyncio
+import time
+import uuid
+
+class CopilotMode(str, Enum):
+    CHAT_RAG = "chat_rag"
+    AGENT_TOOLS = "agent_tools"
+    ORCHESTRATE = "orchestrate"
+
+@dataclass
+class CopilotRequest:
+    message: str
+    session_id: str
+    user_id: str
+    module_context: str
+    tenant_id: str
+    mode_override: CopilotMode | None = None
+
+@dataclass
+class OrchestratorStep:
+    step_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    agent_name: str = ""
+    action: str = ""
+    input_summary: str = ""
+    output_summary: str = ""
+    tokens_used: int | None = None
+    cost_eur: float | None = None
+    duration_ms: int = 0
+    status: str = "pending"
+
+class CopilotOrchestrator:
+    def __init__(self, intent_classifier, guardrails, policy, executors, audit):
+        self.intent_classifier, self.guardrails = intent_classifier, guardrails
+        self.policy, self.executors, self.audit = policy, executors, audit
+
+    async def process(self, request: CopilotRequest) -> AsyncGenerator[dict, None]:
+        if not isinstance(request.message, str) or not 1 <= len(request.message) <= 8000:
+            raise ValueError("Bounded input required")
+        # Required policy binds IDs to current server identity, tenant, session and active permissions.
+        scope = await self.policy.authorize_request(request)
+        execution_id, started, status = str(uuid.uuid4()), time.monotonic(), "failed"
+        mode = None
+        try:
+            guard = await self.guardrails.scan(request.message)
+            if not guard.passed:
+                status = "blocked"
+                yield {"type": "error", "code": "input_review_required"}
+                return
+            proposed = request.mode_override or self.intent_classifier.classify(
+                message=request.message, module_context=request.module_context)
+            mode = CopilotMode(proposed)
+            # Neither an LLM label nor a client override authorizes tools or writes.
+            await self.policy.authorize_mode(scope, mode)
+            yield {"type": "mode_selected", "mode": mode.value}
+            terminal, count = False, 0
+            async with asyncio.timeout(120):
+                async for event in self.executors[mode](request, execution_id, scope):
+                    count += 1
+                    if count > 256 or not isinstance(event, dict):
+                        raise ValueError("Invalid bounded executor stream")
+                    await self.policy.validate_event(scope, event, max_bytes=32768)
+                    if event.get("type") == "completed":
+                        terminal = True
+                        continue
+                    if terminal:
+                        raise ValueError("Event after terminal completion")
+                    yield event
+            status = "completed" if terminal else "partial"
+        except asyncio.CancelledError:
+            status = "cancelled"
+            raise
+        except Exception:
+            status = "failed"
+            yield {"type": "error", "code": "execution_failed"}
+        finally:
+            # Required adapter persists minimized metadata for every authorized terminal state.
+            await self.audit.record_terminal(scope, execution_id, mode, status,
+                                            int((time.monotonic() - started) * 1000))
+        yield {"type": "completed", "execution_id": execution_id, "status": status,
+               "duration_ms": int((time.monotonic() - started) * 1000)}

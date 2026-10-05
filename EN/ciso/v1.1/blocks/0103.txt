@@ -1,0 +1,46 @@
+import pyotp
+import qrcode
+import io
+import base64
+
+MFA_ISSUER = "GRC Platform"
+
+
+def generate_mfa_secret() -> str:
+    """Generates a 32-character TOTP secret (160 bits).
+    Stored encrypted in the DB, never in plain text."""
+    return pyotp.random_base32()
+
+
+def generate_mfa_qr(secret: str, username: str) -> str:
+    """Generates QR code for configuring the authenticator app.
+    The QR encodes an otpauth:// URI with issuer, account, and secret."""
+    totp = pyotp.TOTP(secret)
+    provisioning_uri = totp.provisioning_uri(
+        name=username,
+        issuer_name=MFA_ISSUER,
+    )
+
+    # Generate QR as base64 image to send to frontend
+    qr = qrcode.QRCode(version=1, box_size=10, border=5)
+    qr.add_data(provisioning_uri)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+
+    buffer = io.BytesIO()
+    img.save(buffer, format="PNG")
+    return base64.b64encode(buffer.getvalue()).decode("utf-8")
+
+
+def verify_totp(secret: str, code: str) -> bool:
+    """Verifies TOTP code with +-1 interval window (+-30s).
+    The window compensates for device clock desynchronization."""
+    totp = pyotp.TOTP(secret)
+    return totp.verify(code, valid_window=1)
+
+
+def user_requires_mfa(user) -> bool:
+    """Require MFA by role or existing enrollment; do not bypass unenrolled roles."""
+    privileged_roles = {"admin", "dpo", "ciso", "security_officer"}
+    user_roles = {r.name for r in user.roles}
+    return bool(user_roles & privileged_roles) or user.mfa_secret is not None

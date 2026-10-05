@@ -1,0 +1,229 @@
+# Abbreviated historical case: 12 declared services; 10 without optional profiles.
+# External private build/configuration assets are required, including supported _FILE readers.
+# Linux containers; use --env-file with protected file paths; never put passwords on argv.
+# Redis config must implement authentication and noeviction; test failure handling.
+# Historical image tags need an approved, tested update path before real deployment.
+services:
+  frontend:
+    build: ./frontend
+    networks:
+    - frontend_net
+  nginx:
+    image: nginx:1.25-alpine
+    ports:
+    - 443:443
+    depends_on:
+    - frontend
+    - fastapi
+    networks:
+    - frontend_net
+    - backend_net
+    volumes:
+    - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    - ./nginx/certs:/etc/nginx/certs:ro
+  fastapi:
+    build: ./backend
+    environment:
+      BACKEND_DATABASE_URL_FILE: /run/secrets/backend_database_url
+      REDIS_URL_FILE: /run/secrets/redis_url
+      RUNTIME_CONFIG_FILE: /run/secrets/runtime_config
+      AI_SECRET_CONFIG_FILE: /run/secrets/ai_secret_config
+      JWT_KEY_REGISTRY_FILE: /run/secrets/jwt_key_registry
+      QDRANT_URL: http://qdrant:6333
+      OLLAMA_BASE_URL: http://ollama:11434
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+    networks:
+    - backend_net
+    - ai_net
+    secrets:
+    - backend_database_url
+    - redis_url
+    - runtime_config
+    - ai_secret_config
+    - jwt_key_registry
+  celery-worker:
+    build: ./backend
+    command: celery -A app.celery_app worker -Q ai,email,reports,maintenance,notifications
+      --concurrency=2
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+    networks:
+    - backend_net
+    - ai_net
+    environment:
+      BACKEND_DATABASE_URL_FILE: /run/secrets/backend_database_url
+      REDIS_URL_FILE: /run/secrets/redis_url
+      RUNTIME_CONFIG_FILE: /run/secrets/runtime_config
+      AI_SECRET_CONFIG_FILE: /run/secrets/ai_secret_config
+      JWT_KEY_REGISTRY_FILE: /run/secrets/jwt_key_registry
+      QDRANT_URL: http://qdrant:6333
+      OLLAMA_BASE_URL: http://ollama:11434
+    secrets:
+    - backend_database_url
+    - redis_url
+    - runtime_config
+    - ai_secret_config
+    - jwt_key_registry
+  celery-beat:
+    build: ./backend
+    command: celery -A app.celery_app beat --schedule=/var/run/celerybeat-schedule
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+    networks:
+    - backend_net
+    - ai_net
+    environment:
+      BACKEND_DATABASE_URL_FILE: /run/secrets/backend_database_url
+      REDIS_URL_FILE: /run/secrets/redis_url
+      RUNTIME_CONFIG_FILE: /run/secrets/runtime_config
+      AI_SECRET_CONFIG_FILE: /run/secrets/ai_secret_config
+      JWT_KEY_REGISTRY_FILE: /run/secrets/jwt_key_registry
+      QDRANT_URL: http://qdrant:6333
+      OLLAMA_BASE_URL: http://ollama:11434
+    secrets:
+    - backend_database_url
+    - redis_url
+    - runtime_config
+    - ai_secret_config
+    - jwt_key_registry
+  mysql:
+    image: mysql:8.0
+    volumes:
+    - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+      MYSQL_DATABASE: grc_db
+      MYSQL_USER: grc_app
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_app_password
+    networks:
+    - backend_net
+    secrets:
+    - mysql_root_password
+    - mysql_app_password
+    - mysql_client_cnf
+    healthcheck:
+      test:
+      - CMD
+      - mysql
+      - --defaults-extra-file=/run/secrets/mysql_client_cnf
+      - --connect-timeout=3
+      - --batch
+      - --skip-column-names
+      - -e
+      - SELECT 1
+      interval: 15s
+      timeout: 5s
+      retries: 5
+  redis:
+    image: redis:7-alpine
+    command:
+    - redis-server
+    - /run/secrets/redis_conf
+    volumes:
+    - redis_data:/data
+    networks:
+    - backend_net
+    secrets:
+    - redis_conf
+    - redis_password
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - REDISCLI_AUTH=$$(cat /run/secrets/redis_password) redis-cli ping | grep -qx
+        PONG
+      interval: 15s
+      timeout: 5s
+      retries: 5
+  qdrant:
+    image: qdrant/qdrant:v1.7.4
+    volumes:
+    - qdrant_data:/qdrant/storage
+    networks:
+    - ai_net
+  ollama:
+    image: ollama/ollama:0.1.26
+    volumes:
+    - ollama_models:/root/.ollama
+    networks:
+    - ai_net
+    profiles:
+    - local-ai
+  prometheus:
+    image: prom/prometheus:v2.49.1
+    volumes:
+    - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+    - monitoring_net
+    - backend_net
+    secrets:
+    - metrics_bearer_token
+  grafana:
+    image: grafana/grafana:10.3.1
+    volumes:
+    - grafana_data:/var/lib/grafana
+    networks:
+    - monitoring_net
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/grafana_admin_password
+      GF_AUTH_ANONYMOUS_ENABLED: 'false'
+    secrets:
+    - grafana_admin_password
+  mailhog:
+    image: mailhog/mailhog
+    profiles:
+    - dev
+    networks:
+    - backend_net
+networks:
+  frontend_net: null
+  backend_net: null
+  ai_net: null
+  monitoring_net: null
+volumes:
+  mysql_data: null
+  redis_data: null
+  qdrant_data: null
+  grafana_data: null
+  ollama_models: null
+secrets:
+  ai_secret_config:
+    file: ${AI_SECRET_CONFIG_FILE:?Provide a protected secret path}
+  backend_database_url:
+    file: ${BACKEND_DATABASE_URL_FILE:?Provide a protected secret path}
+  grafana_admin_password:
+    file: ${GRAFANA_ADMIN_PASSWORD_FILE:?Provide a protected secret path}
+  jwt_key_registry:
+    file: ${JWT_KEY_REGISTRY_FILE:?Provide a protected secret path}
+  metrics_bearer_token:
+    file: ${METRICS_BEARER_TOKEN_FILE:?Provide a protected secret path}
+  mysql_app_password:
+    file: ${MYSQL_APP_PASSWORD_FILE:?Provide a protected secret path}
+  mysql_client_cnf:
+    file: ${MYSQL_CLIENT_CNF_FILE:?Provide a protected secret path}
+  mysql_root_password:
+    file: ${MYSQL_ROOT_PASSWORD_FILE:?Provide a protected secret path}
+  redis_conf:
+    file: ${REDIS_CONF_FILE:?Provide a protected secret path}
+  redis_password:
+    file: ${REDIS_PASSWORD_FILE:?Provide a protected secret path}
+  redis_url:
+    file: ${REDIS_URL_FILE:?Provide a protected secret path}
+  runtime_config:
+    file: ${RUNTIME_CONFIG_FILE:?Provide a protected secret path}

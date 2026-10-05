@@ -1,0 +1,50 @@
+import hashlib
+import hmac
+from fastapi import HTTPException
+
+ATTEMPT_SCRIPT = """
+local ip = tonumber(redis.call('GET', KEYS[1]) or '0')
+local account = tonumber(redis.call('GET', KEYS[2]) or '0')
+if ip >= tonumber(ARGV[1]) or account >= tonumber(ARGV[2]) then
+  return {0, math.max(redis.call('TTL', KEYS[1]), redis.call('TTL', KEYS[2]), 1)}
+end
+for i=1,2 do
+  local value = redis.call('INCR', KEYS[i])
+  if value == 1 then redis.call('EXPIRE', KEYS[i], ARGV[3]) end
+end
+return {1, 0}
+"""
+
+def limit_keys(realm, username, trusted_client_ip, hmac_key):
+    # Realm, canonical account identifier and IP are resolved/validated by server adapters.
+    if len(hmac_key) < 32:
+        raise ValueError("Dedicated rate-limit HMAC key is required")
+    def digest(kind, value):
+        return hmac.new(hmac_key, f"{realm}\0{kind}\0{value}".encode(),
+                        hashlib.sha256).hexdigest()
+    # Shared hash tag permits the two-key transaction on Redis Cluster.
+    slot = digest("realm", realm)[:24]
+    return (f"login:{{{slot}}}:ip:{digest('ip', trusted_client_ip)}",
+            f"login:{{{slot}}}:account:{digest('account', username)}")
+
+async def check_login_rate_limit(username, client_ip, *, realm, redis_client, hmac_key):
+    keys = limit_keys(realm, username, client_ip, hmac_key)
+    try:
+        allowed, retry_after = await redis_client.eval(
+            ATTEMPT_SCRIPT, 2, *keys, 20, 5, 15 * 60)
+    except Exception:
+        raise HTTPException(503, "Control de acceso temporalmente no disponible") from None
+    if not allowed:
+        raise HTTPException(429, "Demasiados intentos; vuelva a intentarlo después", headers={"Retry-After": str(retry_after)})
+    # The atomic reservation counts this attempt before credential verification.
+
+async def record_failed_attempt(username, client_ip, **context):
+    # Already counted by check_login_rate_limit; calling this twice must not increment.
+    return None
+
+async def clear_failed_attempts(username, client_ip, *, realm, redis_client, hmac_key):
+    _, account_key = limit_keys(realm, username, client_ip, hmac_key)
+    await redis_client.delete(account_key)  # Successful account login never resets IP history.
+# Invoke check before authentication on every attempt; trusted proxy/IP rules are required.
+# HMAC is pseudonymization, not anonymity. Auditing uses minimized protected identifiers.
+# Example thresholds need deployment tuning; temporary lockout can still be abused for DoS.

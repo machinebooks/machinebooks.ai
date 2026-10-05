@@ -1,0 +1,22 @@
+# Alternative Grafana service fragment within the coherent base topology.
+services:
+  grafana:
+    image: grafana/grafana:10.4.0  # Historical case tag.
+    volumes:
+      - ./config/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./config/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/grafana_password
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+    secrets: [grafana_password]
+    networks: [spd_backend]
+    restart: unless-stopped
+secrets:
+  grafana_password:
+    file: ${GRAFANA_PASSWORD_FILE:?Set the protected admin-password file}
+volumes:
+  grafana_data: {}
+# Provision an authorized Prometheus datasource; this fragment supplies no users/roles,
+# dashboard permission audit or confirmed imported Grafana instance. Validate the merge.

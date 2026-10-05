@@ -1,0 +1,19 @@
+class BudgetConfig(Base):
+    """Budget policy data; reservations and enforcement require trusted adapters."""
+    __tablename__ = "budget_configs"
+    id = Column(BigInteger, primary_key=True)
+    corporate_id = Column(BigInteger, ForeignKey("corporates.id"),
+                          nullable=False, unique=True, index=True)
+    monthly_budget_usd = Column(Numeric(18, 8), nullable=True)
+    daily_budget_usd = Column(Numeric(18, 8), nullable=True)
+    alert_threshold_pct = Column(Float, default=80.0)
+    service_limits = Column(JSON, default=dict)
+    per_user_monthly_limit = Column(Numeric(18, 8), nullable=True)
+    action_on_limit = Column(String(20), default="alert")
+    # alert requests review; throttle/block need an approved per-attempt policy.
+    # A cheaper model is not an equivalent, safer or legally conservative model.
+    is_active = Column(Boolean, default=True)
+    updated_at = Column(DateTime(timezone=True),
+                        default=lambda: datetime.now(timezone.utc),
+                        onupdate=lambda: datetime.now(timezone.utc))
+    # Service validates nonnegative finite budgets, 0-100 thresholds and action enum.

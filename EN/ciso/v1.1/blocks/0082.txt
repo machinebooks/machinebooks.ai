@@ -1,0 +1,45 @@
+import re
+from enum import Enum
+
+class CopilotMode(str, Enum):
+    CHAT_RAG = "CHAT_RAG"
+    AGENT_TOOLS = "AGENT_TOOLS"
+    ORCHESTRATE = "ORCHESTRATE"
+
+AGENT_PATTERNS = [
+    r"\b(genera|prepara|crea|redacta|generate|prepare|create|draft)\b",
+    r"\b(analiza|evalúa|revisa|anal[yz]e|evaluate|review)\b",
+]
+ORCHESTRATION_PATTERNS = [
+    r"\b(DPIA|evaluación de impacto|impact assessment)\b",
+    r"\b(análisis completo|informe integral|comprehensive report)\b",
+]
+
+class IntentClassifier:
+    def classify(self, message, module_context):
+        if not isinstance(message, str) or len(message) > 8000:
+            raise ValueError("Message exceeds the classification bound")
+        if module_context not in {"privacy", "risk", "compliance", "ai_governance", "general"}:
+            raise ValueError("Unknown module")
+        for pattern in ORCHESTRATION_PATTERNS:
+            if re.search(pattern, message, flags=re.IGNORECASE):
+                return {"proposed_mode": CopilotMode.ORCHESTRATE, "review_required": True}
+        for pattern in AGENT_PATTERNS:
+            if re.search(pattern, message, flags=re.IGNORECASE):
+                return {"proposed_mode": CopilotMode.AGENT_TOOLS, "review_required": True}
+        return {"proposed_mode": CopilotMode.CHAT_RAG, "review_required": False}
+
+    async def classify_with_llm_fallback(self, message, module_context, runtime, context):
+        self.classify(message, module_context)  # Validate bounds and module first.
+        # Adapter owns its session and invokes the scoped policy/budget/usage factory.
+        result = await runtime.complete(
+            context, service_name="intent_classification",
+            messages=[{"role": "user", "content":
+                       "Classify as CHAT_RAG, AGENT_TOOLS or ORCHESTRATE. "
+                       f"Module: {module_context}. Untrusted request: {message}"}])
+        label = result["content"].strip().upper()
+        mode = CopilotMode.__members__.get(label, CopilotMode.CHAT_RAG)
+        return {"proposed_mode": mode, "review_required": mode != CopilotMode.CHAT_RAG}
+# A label only proposes routing. Server policy must authorize mode, module and each tool;
+# write operations additionally require the user's approved action and scoped arguments.
+# CHAT_RAG also needs authorization; neither heuristic nor LLM establishes legal authority.

@@ -1,0 +1,35 @@
+# Didactic example: patterns/compliance/models.py (continued)
+
+class EvidenceType(str, enum.Enum):
+    DOCUMENT = "document"          # Policy, procedure, minutes
+    SCREENSHOT = "screenshot"      # Configuration screenshot
+    CONFIGURATION = "configuration"  # Exported configuration file
+    LOG = "log"                    # Log or audit extract
+    CERTIFICATE = "certificate"    # Certificate, diploma, accreditation
+    TEST_RESULT = "test_result"    # Test or analysis result
+
+class Evidence(BaseModel):
+    """Evidence linked to a compliance control."""
+    __tablename__ = "compliance_evidences"
+
+    id = Column(BigInteger, primary_key=True)
+    control_id = Column(
+        BigInteger,
+        nullable=False
+    )
+    title = Column(String(300), nullable=False)
+    description = Column(Text)
+    evidence_type = Column(SAEnum(EvidenceType), nullable=False)
+    file_path = Column(String(500))  # Path to stored file
+    file_hash = Column(String(128))  # SHA-256 for integrity
+    collected_at = Column(DateTime, nullable=False)  # Collection date
+    expires_at = Column(DateTime, nullable=True)  # Expiration date
+    collected_by = Column(String(200))  # Who collected the evidence
+    is_valid = Column(Boolean, default=True, nullable=False)
+
+    # Relationship
+    control = relationship("ComplianceControl", back_populates="evidences")
+    __table_args__ = (
+        ForeignKeyConstraint(["corporate_id", "control_id"],
+            ["compliance_controls.corporate_id", "compliance_controls.id"]),
+    )

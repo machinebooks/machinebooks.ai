@@ -1,0 +1,6 @@
+# In docker-compose.prod.yml, for each service
+logging:
+  driver: json-file
+  options:
+    max-size: "50m"     # Rotate when reaching 50 MB
+    max-file: "5"       # Keep maximum 5 files

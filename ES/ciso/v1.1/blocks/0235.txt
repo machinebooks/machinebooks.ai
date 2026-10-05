@@ -1,0 +1,24 @@
+from datetime import datetime, timezone
+from celery import shared_task
+from app.worker.executive_jobs import authorized_snapshot_job
+
+@shared_task(name="executive.capture_weekly_snapshot", queue="reports")
+def capture_dashboard_snapshot(job_id):
+    context = authorized_snapshot_job(job_id)
+    context.recheck_executive_read_permission()
+    now = datetime.now(timezone.utc)
+    period = now.strftime("%G-W%V")
+    with context.session_scope() as db:
+        # No global tenant enumeration; scope/actor are resolved from the approved job.
+        data = context.authorized_dashboard_snapshot(db, as_of=now)
+        receipt = context.snapshots.store_once(
+            db, corporate_id=context.corporate_id, actor_id=context.user_id,
+            period=period, definitions_version=data.definitions_version,
+            approved_aggregates=data.values, coverage=data.coverage,
+            captured_at=now, source_manifest=data.source_manifest)
+        db.commit()
+    return {"snapshot_id": receipt.id, "period": period, "captured_at": now.isoformat()}
+# Unique tenant/period/definition key makes redelivery idempotent; overwrite requires review.
+# Monday07:00UTC is case schedule, not established by this decorator.
+# Comparisons require compatible definitions, scopes/cohorts, coverage and currencies.
+# Stored/cached snapshots recheck current read authorization before every response.

@@ -1,0 +1,45 @@
+# Read-only Celery health screening: internal 365-day and 30-day review windows.
+# SessionLocal/DataProcessingActivity are application imports using the introductory model.
+# The trusted dispatcher must authorize each corporate_id; this task does not discover tenants.
+from celery import shared_task
+from datetime import datetime, timedelta, timezone
+from sqlalchemy import select, or_
+
+@shared_task(queue="maintenance")
+def check_processing_activities_health(corporate_id: int):
+    if type(corporate_id) is not int or corporate_id < 1:
+        raise ValueError("Invalid tenant")
+    # MySQL DATETIME stores normalized UTC without an offset in this example.
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    review_cutoff = now - timedelta(days=365)
+    draft_cutoff = now - timedelta(days=30)
+    with SessionLocal() as session:
+        activities = session.scalars(select(DataProcessingActivity).where(
+            DataProcessingActivity.corporate_id == corporate_id,
+            DataProcessingActivity.is_deleted.is_(False),
+        )).all()
+        alerts = []
+        for activity in activities:
+            if activity.status == "active":
+                if activity.last_review_date is None or activity.last_review_date < review_cutoff:
+                    alerts.append({"type": "stale_review", "severity": "medium",
+                                   "activity_id": activity.id})
+                if not activity.security_measures:
+                    alerts.append({"type": "missing_security_description", "severity": "high",
+                                   "activity_id": activity.id})
+                if activity.special_categories and activity.dpia_review_status == "pending_review":
+                    # A signal for contextual Art.35 review, not an automatic DPIA requirement.
+                    alerts.append({"type": "pending_dpia_screening", "severity": "medium",
+                                   "activity_id": activity.id})
+                if activity.international_transfers and not activity.transfer_safeguards:
+                    # Adequacy (Art.45) and safeguards (Art.46) are distinct Chapter V routes.
+                    alerts.append({"type": "missing_transfer_documentation", "severity": "high",
+                                   "activity_id": activity.id})
+            if activity.status == "draft":
+                last_change = activity.updated_at or activity.created_at
+                if last_change is not None and last_change < draft_cutoff:
+                    alerts.append({"type": "stale_draft", "severity": "low",
+                                   "activity_id": activity.id})
+    # Return signals only. Persistence, deduplication and authorized notifications are not implemented.
+    return {"corporate_id": corporate_id, "total_alerts": len(alerts),
+            "high": sum(a["severity"] == "high" for a in alerts), "alerts": alerts}

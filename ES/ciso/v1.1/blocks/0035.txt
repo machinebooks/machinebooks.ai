@@ -1,0 +1,112 @@
+# Servicio de cálculo de riesgo — lógica condicionada por methodology
+
+from math import isfinite
+from typing import Optional
+from dataclasses import dataclass
+
+
+@dataclass
+class RiskCalculationResult:
+    """Resultado del cálculo de riesgo, cualitativo o cuantitativo."""
+    inherent_risk_score: Optional[int] = None     # 1-25 (cualitativo)
+    inherent_risk_level: Optional[str] = None      # "muy_bajo"..."crítico"
+    residual_risk_score: Optional[int] = None      # 1-25 (cualitativo)
+    residual_risk_level: Optional[str] = None
+    fair_ale: Optional[float] = None               # EUR (FAIR)
+    residual_fair_ale: Optional[float] = None      # EUR (FAIR)
+
+
+# Escalas de nivel de riesgo — configurables por methodology
+RISK_LEVELS = {
+    "magerit_v3": {
+        (1, 4): "muy_bajo",    # Riesgo 1-4: asumible
+        (5, 8): "bajo",        # Riesgo 5-8: aceptable con vigilancia
+        (9, 12): "medio",      # Riesgo 9-12: requiere plan
+        (13, 19): "alto",      # Riesgo 13-19: requiere acción prioritaria
+        (20, 25): "crítico",   # Riesgo 20-25: acción inmediata
+    },
+    "nist_sp_800_30": {
+        (1, 4): "very_low",
+        (5, 8): "low",
+        (9, 12): "moderate",
+        (13, 19): "high",
+        (20, 25): "very_high",
+    },
+    # Cada metodología puede definir sus propios umbrales
+}
+
+
+def calculate_qualitative_risk(
+    probability: int,
+    impact: int,
+    methodology: str
+) -> RiskCalculationResult:
+    """Calcula riesgo inherente para metodologías cualitativas.
+
+    Fórmula base: riesgo = probabilidad × impacto.
+    Los umbrales de nivel dependen de la metodología.
+    """
+    if (type(probability) is not int or type(impact) is not int
+            or not 1 <= probability <= 5 or not 1 <= impact <= 5):
+        raise ValueError("Probabilidad e impacto deben estar entre 1 y 5")
+
+    score = probability * impact
+    if methodology not in RISK_LEVELS:
+        raise ValueError("A configured qualitative methodology is required")
+    levels = RISK_LEVELS[methodology]
+
+    level = "sin_clasificar"
+    for (low, high), label in levels.items():
+        if low <= score <= high:
+            level = label
+            break
+
+    return RiskCalculationResult(
+        inherent_risk_score=score,
+        inherent_risk_level=level
+    )
+
+
+def calculate_magerit_impact(scenario) -> int:
+    """Return a local 5x5 projection of assessed DICAT values; not full MAGERIT."""
+    dimensions = [
+        scenario.impact_disponibilidad,
+        scenario.impact_integridad,
+        scenario.impact_confidencialidad,
+        scenario.impact_autenticidad,
+        scenario.impact_trazabilidad,
+    ]
+    # Filtrar None (dimensiones no valoradas) y escalar de 0-4 a 1-5
+    valued = [d + 1 for d in dimensions if d is not None]
+    if not valued:
+        raise ValueError("DICAT dimensions require an explicit assessment")
+    if any(type(d) is not int or not 0 <= d <= 4 for d in dimensions if d is not None):
+        raise ValueError("This local DICAT adaptation uses integer scores from 0 to 4")
+    return max(valued)
+
+
+def calculate_fair_risk(
+    lef: float,
+    lm_primary: float,
+    lm_secondary: float
+) -> RiskCalculationResult:
+    """Return a deterministic LEF x LM estimate; no distribution or uncertainty bounds."""
+    if not all(isfinite(v) and v >= 0 for v in (lef, lm_primary, lm_secondary)):
+        raise ValueError("Frequency and loss magnitudes must be finite and non-negative")
+    total_lm = lm_primary + lm_secondary
+    ale = lef * total_lm
+
+    return RiskCalculationResult(fair_ale=ale)
+
+
+def calculate_residual_risk(
+    inherent_score: int,
+    control_effectiveness: float  # 0.0 a 1.0
+) -> int:
+    """Reduce an ordinal score by supplied aggregate effectiveness; not a control aggregation model."""
+    if (type(inherent_score) is not int or not 1 <= inherent_score <= 25
+            or not isfinite(control_effectiveness) or not 0 <= control_effectiveness <= 1):
+        raise ValueError("Score 1-25 and effectiveness 0-1 are required")
+    residual = inherent_score * (1 - min(control_effectiveness, 0.95))
+    # Mínimo 1: siempre queda riesgo residual
+    return max(1, round(residual))

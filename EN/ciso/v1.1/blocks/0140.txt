@@ -1,0 +1,69 @@
+from datetime import datetime, timezone
+from fastapi import APIRouter, Depends
+from sqlalchemy import select, func, case, and_
+from app.database import get_db
+from app.auth.dependencies import get_current_user
+from app.auth.permissions import authorize_dashboard
+from app.models.privacy import Treatment, DataBreach, BreachStatus
+from app.models.risk import Risk
+from app.models.compliance import ComplianceFramework, ComplianceControl, ComplianceStatus
+
+router = APIRouter(prefix="/dashboard", tags=["dashboard"])
+
+@router.get("/kpis")
+async def get_dashboard_kpis(db=Depends(get_db), user=Depends(get_current_user)):
+    # Requires permissions for all four domains across the returned tenant scope.
+    authorize_dashboard(user)
+    corporate_id = user.corporate_id
+    now = datetime.now(timezone.utc)
+    pending = await db.scalar(select(func.count(Treatment.id)).where(
+        Treatment.corporate_id == corporate_id, Treatment.is_deleted.is_(False),
+        Treatment.requires_dpia.is_(True),
+        Treatment.dpia_status.in_(["pending", "not_started"])))
+    risks = await db.scalar(select(func.count(Risk.id)).where(
+        Risk.corporate_id == corporate_id, Risk.is_deleted.is_(False),
+        Risk.inherent_level.in_(["high", "very_high"]), Risk.treatment_plan_id.is_(None)))
+    parents = select(ComplianceControl.parent_id).where(
+        ComplianceControl.corporate_id == corporate_id,
+        ComplianceControl.is_deleted.is_(False), ComplianceControl.parent_id.is_not(None))
+    leaf_scope = and_(
+        ComplianceControl.corporate_id == corporate_id,
+        ComplianceControl.is_deleted.is_(False), ComplianceControl.level > 0,
+        ComplianceControl.id.not_in(parents))
+    frameworks = (await db.execute(select(
+        ComplianceFramework.id, ComplianceFramework.name, ComplianceFramework.version,
+        func.count(ComplianceControl.id).label("total"),
+        func.sum(case((and_(
+            ComplianceControl.compliance_status.is_not(None),
+            ComplianceControl.compliance_status != ComplianceStatus.NOT_ASSESSED
+        ), 1), else_=0)).label("assessed"),
+    ).outerjoin(ComplianceControl, and_(
+        ComplianceControl.framework_id == ComplianceFramework.id, leaf_scope
+    )).where(
+        ComplianceFramework.corporate_id == corporate_id,
+        ComplianceFramework.is_deleted.is_(False),
+    ).group_by(ComplianceFramework.id, ComplianceFramework.name,
+               ComplianceFramework.version))).all()
+    active = [DataBreach.corporate_id == corporate_id,
+              DataBreach.is_deleted.is_(False), DataBreach.status != BreachStatus.CLOSED]
+    # MySQL DATETIME fields are stored as naive UTC by the declared connection contract.
+    overdue = await db.scalar(select(func.count(DataBreach.id)).where(
+        *active, DataBreach.authority_notification_required.is_(True),
+        DataBreach.notified_authority_at.is_(None),
+        DataBreach.notification_deadline < now.replace(tzinfo=None)))
+    undecided = await db.scalar(select(func.count(DataBreach.id)).where(
+        *active, DataBreach.authority_notification_required.is_(None)))
+    return {
+        "as_of": now.isoformat(), "pending_dpia": pending,
+        "unmitigated_high_risks": risks,
+        "frameworks": [
+            {"id": row.id, "name": row.name, "version": row.version,
+             "total_leaf_controls": row.total, "assessed": row.assessed,
+             "assessed_pct": round(row.assessed / row.total * 100, 1) if row.total else None}
+            for row in frameworks],
+        "breaches_pending_required_notification_over_72h": overdue,
+        "breaches_notification_decision_unknown": undecided,
+    }
+# Coverage/assessment is not conformity. DPIA and notification decisions require approved
+# risk review; Article 33 also requires action without undue delay and allows phased information.
+# No previous-period trend or color is computed here; do not infer them from missing data.

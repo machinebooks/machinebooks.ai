@@ -1,0 +1,128 @@
+from datetime import datetime, timedelta, timezone
+from enum import Enum
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import func
+from app.auth.dependencies import require_role
+from app.extensions import get_db
+from app.models.ai import AIProvider, AIServiceConfig, AIPrompt, AIUsageRecord
+from app.schemas.ai_admin import AIProviderUpdate, AIServiceConfigUpdate, AIPromptCreate
+from app.services.ai.admin_policy import authorize_ai_admin, validate_admin_change
+
+router = APIRouter(prefix="/api/v1/admin/ai", tags=["AI Admin"])
+
+def scope(actor, action):
+    authorize_ai_admin(actor.corporate_id, actor.id, action)
+    return actor.corporate_id
+
+@router.get("/providers")
+def list_providers(db=Depends(get_db), actor=Depends(require_role("admin"))):
+    rows = db.query(AIProvider).filter_by(
+        corporate_id=scope(actor, "read"), is_deleted=False).limit(101).all()
+    if len(rows) > 100:
+        raise HTTPException(413, "List limit exceeded")
+    return [{"id": row.id, "name": row.name, "active": row.is_active,
+             "row_version": row.row_version} for row in rows]
+
+@router.put("/providers/{provider_id}")
+def update_provider(provider_id: int, data: AIProviderUpdate,
+                    db=Depends(get_db), actor=Depends(require_role("admin"))):
+    corporate_id = scope(actor, "configure")
+    row = db.query(AIProvider).filter_by(
+        corporate_id=corporate_id, id=provider_id,
+        is_deleted=False).with_for_update().one_or_none()
+    if row is None:
+        raise HTTPException(404, "Provider not found")
+    changes = data.model_dump(exclude_unset=True)
+    expected_version = changes.pop("row_version", None)
+    if expected_version != row.row_version:
+        raise HTTPException(409, "Stale version")
+    # Adapter allowlists fields and validates endpoint/egress, secret refs, currency/prices.
+    validate_admin_change(corporate_id, actor.id, "provider", changes)
+    for field, value in changes.items():
+        setattr(row, field, value)
+    row.updated_by = actor.id
+    db.commit()
+    return {"id": row.id, "row_version": row.row_version}
+
+@router.put("/services/{service_name}")
+def update_service_config(service_name: str, data: AIServiceConfigUpdate,
+                          db=Depends(get_db), actor=Depends(require_role("admin"))):
+    corporate_id = scope(actor, "configure")
+    row = db.query(AIServiceConfig).filter_by(
+        corporate_id=corporate_id, service_name=service_name,
+        is_deleted=False).with_for_update().one_or_none()
+    if row is None:
+        raise HTTPException(404, "Service not found")
+    changes = data.model_dump(exclude_unset=True)
+    if changes.pop("row_version", None) != row.row_version:
+        raise HTTPException(409, "Stale version")
+    validate_admin_change(corporate_id, actor.id, "service", changes)
+    for field, value in changes.items():
+        setattr(row, field, value)
+    row.updated_by = actor.id
+    db.commit()
+    return {"service": row.service_name, "row_version": row.row_version}
+
+@router.post("/prompts")
+def create_prompt_version(data: AIPromptCreate, db=Depends(get_db),
+                          actor=Depends(require_role("admin"))):
+    corporate_id = scope(actor, "configure")
+    config = db.query(AIServiceConfig).filter_by(
+        corporate_id=corporate_id, service_name=data.service_name,
+        is_deleted=False).with_for_update().one_or_none()
+    if config is None:
+        raise HTTPException(404, "Service not found")
+    validate_admin_change(corporate_id, actor.id, "prompt", data.model_dump())
+    prompts = db.query(AIPrompt).filter_by(
+        corporate_id=corporate_id, service_name=data.service_name).all()
+    version = max((prompt.version for prompt in prompts), default=0) + 1
+    prompt = AIPrompt(
+        corporate_id=corporate_id, created_by=actor.id,
+        service_name=data.service_name, version=version,
+        prompt_text=data.prompt_text, notes=data.notes, is_active=False)
+    db.add(prompt)
+    db.flush()
+    if data.activate:
+        for previous in prompts:
+            previous.is_active = False
+            previous.updated_by = actor.id
+        prompt.is_active = True
+        config.active_prompt_id = prompt.id
+        config.updated_by = actor.id
+    db.commit()
+    return {"version": version, "active": prompt.is_active}
+
+class Period(str, Enum):
+    DAY = "day"
+    WEEK = "week"
+    MONTH = "month"
+
+@router.get("/usage/summary")
+def get_usage_summary(period: Period = Period.MONTH, db=Depends(get_db),
+                      actor=Depends(require_role("admin"))):
+    corporate_id = scope(actor, "read")
+    end = datetime.now(timezone.utc)
+    start = (end.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+             if period == Period.MONTH else
+             end - timedelta(days=1 if period == Period.DAY else 7))
+    rows = db.query(
+        AIUsageRecord.provider_name,
+        func.sum(AIUsageRecord.estimated_cost_eur).label("known_cost_eur"),
+        func.count(AIUsageRecord.estimated_cost_eur).label("known_cost_calls"),
+        func.count(AIUsageRecord.id).label("total_calls"),
+    ).filter(
+        AIUsageRecord.corporate_id == corporate_id,
+        AIUsageRecord.is_deleted.is_(False),
+        AIUsageRecord.recorded_at >= start, AIUsageRecord.recorded_at < end,
+    ).group_by(AIUsageRecord.provider_name).limit(101).all()
+    if len(rows) > 100:
+        raise HTTPException(413, "List limit exceeded")
+    return {"period_start": start.isoformat(), "period_end": end.isoformat(),
+            "by_provider": [
+                {"provider": row.provider_name,
+                 "known_cost_eur": row.known_cost_eur,
+                 "unknown_cost_calls": row.total_calls - row.known_cost_calls,
+                 "total_calls": row.total_calls} for row in rows]}
+# Dependencies must own rollback/close and map StaleDataError/uniqueness conflicts to 409.
+# DTO validation and database locking behavior require integration tests on the target DB.
+# Config changes affect subsequent authorized calls; in-flight requests are not rewritten.

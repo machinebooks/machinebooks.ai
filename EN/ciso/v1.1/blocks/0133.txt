@@ -1,0 +1,65 @@
+// Zod4; field lengths are internal UI policy, not legal minima.
+import { z } from 'zod'
+
+/** Partial fields; neither presence nor length validates DPIA sufficiency. */
+export const dpiaSchema = z.object({
+  // Identification of the evaluated processing activity
+  name: z.string()
+    .min(5, 'Name must be at least 5 characters')
+    .max(200, 'Maximum 200 characters'),
+  processing_id: z.number({
+    error: 'You must link the DPIA to an existing processing activity',
+  }).int().positive(),
+
+  // Systematic description (Art. 35.7.a GDPR)
+  description: z.string()
+    .min(50, 'Description must be sufficiently detailed (min. 50 characters)')
+    .max(5000),
+  purpose: z.string().min(10, 'Indicate the purpose of the processing'),
+  legal_basis: z.string().min(1, 'Legal basis is mandatory'),
+
+  // Necessity and proportionality assessment (Art. 35.7.b)
+  necessity_assessment: z.string()
+    .min(20, 'Assess the necessity of the processing'),
+  proportionality_assessment: z.string()
+    .min(20, 'Assess the proportionality of the processing'),
+
+  // Risks to rights and freedoms (Art. 35.7.c)
+  risk_description: z.string()
+    .min(20, 'Describe the identified risks'),
+  risk_likelihood: z.enum(['very_low', 'low', 'medium', 'high', 'very_high'], {
+    error: 'Select the risk likelihood',
+  }),
+  risk_severity: z.enum(['very_low', 'low', 'medium', 'high', 'very_high'], {
+    error: 'Select the impact severity',
+  }),
+
+  // Measures to address the risks (Art. 35.7.d)
+  mitigation_measures: z.string()
+    .min(20, 'Describe the planned mitigation measures'),
+
+  // Additional management fields
+  status: z.enum(['draft', 'in_progress', 'pending_review', 'approved', 'rejected'])
+    .default('draft'),
+  reviewer_notes: z.string().max(2000).optional(),
+  review_date: z.iso.datetime({ offset: true }).optional(),
+
+  // Conditional field: if special categories are involved, justification is required
+  involves_special_categories: z.boolean().nullable(),
+  special_categories_justification: z.string().optional(),
+}).refine(
+  (data) => {
+    // If special categories are involved, justification is mandatory
+    if (data.involves_special_categories && !data.special_categories_justification?.trim()) {
+      return false
+    }
+    return true
+  },
+  {
+    message: 'You must justify the processing of special categories of data',
+    path: ['special_categories_justification'],
+  }
+)
+
+/** TypeScript type inferred from the schema — single source of truth */
+export type DPIAFormData = z.infer<typeof dpiaSchema>

@@ -1,0 +1,31 @@
+# Ejemplo didáctico: app/main.py — registro de middleware
+
+from fastapi import FastAPI
+from starlette.middleware.gzip import GZipMiddleware
+from starlette.middleware.cors import CORSMiddleware
+
+from app.middleware.security_headers import SecurityHeadersMiddleware
+from app.middleware.audit import AuditMiddleware
+from app.middleware.tenant import TenantMiddleware
+from app.middleware.rate_limit import RateLimitMiddleware
+from app.middleware.request_id import RequestIDMiddleware
+
+app = FastAPI(title="GRC Platform", version="1.0.0")
+
+# Tenant resolves current identity; incoming: RequestID -> Headers -> Audit -> CORS -> Tenant -> Rate -> GZip.
+# CORS handles preflight before authenticated tenant processing.
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+app.add_middleware(RateLimitMiddleware)
+app.add_middleware(TenantMiddleware)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://grc.ejemplo.com"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allow_headers=["Authorization", "Content-Type", "X-CSRF-Token"],
+    allow_credentials=True,
+)
+app.add_middleware(AuditMiddleware)
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(RequestIDMiddleware)
+
+# This registration is illustrative; run current auth, early-response and preflight integration tests.

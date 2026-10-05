@@ -1,0 +1,50 @@
+class LLMQualityScore(Base):
+    """Authorized evaluation results; absent assessment remains unknown."""
+    __tablename__ = 'llm_quality_scores'
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    corporate_id = Column(BigInteger, ForeignKey('corporates.id'), nullable=False, index=True)
+    usage_log_id = Column(BigInteger, nullable=False)
+
+    service_type = Column(String(50), nullable=False, index=True)
+
+    # Hallucination: 0.0 = no hallucination, 1.0 = total hallucination
+    # Calculated with an evaluator model (claude-haiku-4-5)
+    hallucination_score = Column(Float, nullable=True)
+
+    # Groundedness: is the response grounded in the RAG context?
+    # 1.0 = fully grounded, 0.0 = no relation to sources
+    groundedness_score = Column(Float, nullable=True)
+
+    # Relevance: is the response pertinent to the question?
+    relevance_score = Column(Float, nullable=True)
+
+    # Internal coherence of the generated text
+    coherence_score = Column(Float, nullable=True)
+
+    # Detected bias
+    bias_detected = Column(Boolean, nullable=True)
+    bias_categories = Column(JSON, nullable=True)  # ['sector', 'size']
+    bias_score = Column(Float, nullable=True)
+
+    # Security
+    pii_detected = Column(Boolean, nullable=True)
+
+    # Human feedback (1-5, set by the CISO/DPO)
+    human_rating = Column(Integer, nullable=True)
+
+    # Which evaluation method was used
+    evaluation_method = Column(String(50), nullable=True)
+    # 'llm_judge', 'rule_based', 'human', 'hybrid'
+    evaluator_model = Column(String(100), nullable=True)
+    # 'claude-haiku-4-5' when the evaluator is another LLM
+
+    created_at = Column(DateTime(timezone=True),
+                        default=lambda: datetime.now(timezone.utc), index=True)
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ['corporate_id', 'usage_log_id'],
+            ['llm_usage_logs.corporate_id', 'llm_usage_logs.id'],
+            name='fk_quality_usage_tenant'),
+        Index('idx_quality_tenant_date', 'corporate_id', 'created_at'),
+    )

@@ -1,0 +1,67 @@
+import os
+from fastapi import FastAPI, Depends, Response
+from prometheus_fastapi_instrumentator import Instrumentator, metrics
+from prometheus_client import (
+    Counter, Histogram, REGISTRY, CollectorRegistry, generate_latest,
+    CONTENT_TYPE_LATEST, multiprocess,
+)
+from app.auth.metrics import require_metrics_scraper
+
+app = FastAPI(title="GRC Platform API")
+auth_failures = Counter("grc_auth_failures_total", "Observed HTTP 401 login responses")
+api_latency = Histogram(
+    "grc_api_latency_seconds", "Observed API response latency", ["handler"],
+    buckets=[0.1, 0.5, 1, 2, 5, 10, 30, 60])
+llm_requests_total = Counter(
+    "grc_llm_requests_total", "Observed LLM attempts",
+    ["provider", "model", "service_type", "outcome"])
+llm_latency_seconds = Histogram(
+    "grc_llm_latency_seconds", "Observed LLM attempt latency", ["provider", "model"],
+    buckets=[0.5, 1, 2, 5, 10, 30, 60])
+llm_tokens_total = Counter(
+    "grc_llm_tokens_total", "Known reported LLM tokens", ["provider", "model", "direction"])
+llm_usage_unknown = Counter(
+    "grc_llm_usage_unknown_total", "Attempts with unknown reported usage", ["provider", "model"])
+
+def observe_http(info):
+    if info.modified_handler:
+        api_latency.labels(info.modified_handler).observe(info.modified_duration)
+    if (info.modified_handler == "/api/v1/auth/login"
+            and getattr(info.response, "status_code", None) == 401):
+        auth_failures.inc()
+
+Instrumentator(
+    should_group_status_codes=True, should_ignore_untemplated=True,
+    excluded_handlers=["/health", "/metrics"],
+).add(metrics.default()).add(observe_http).instrument(app)
+
+@app.get("/metrics", dependencies=[Depends(require_metrics_scraper)], include_in_schema=False)
+def expose_metrics():
+    registry = REGISTRY
+    if os.environ.get("PROMETHEUS_MULTIPROC_DIR"):
+        registry = CollectorRegistry()
+        multiprocess.MultiProcessCollector(registry)
+    return Response(generate_latest(registry), media_type=CONTENT_TYPE_LATEST)
+
+def observe_llm_attempt(labels, result, outcome, approved_labels):
+    if labels not in approved_labels or outcome not in {"success", "failure", "unknown"}:
+        raise ValueError("Metric labels/outcome are outside the configured catalog")
+    provider, model, service = labels
+    llm_requests_total.labels(provider, model, service, outcome).inc()
+    latency = result.get("latency_ms")
+    if type(latency) is int and latency >= 0:
+        llm_latency_seconds.labels(provider, model).observe(latency / 1000)
+    known = True
+    for key, direction in (("input_tokens", "input"), ("output_tokens", "output")):
+        value = result.get(key)
+        if type(value) is int and value >= 0:
+            llm_tokens_total.labels(provider, model, direction).inc(value)
+        else:
+            known = False
+    if not known:
+        llm_usage_unknown.labels(provider, model).inc()
+# Metering adapters must invoke the observation callback; declaration alone records no attempts.
+# Multiworker deployment sets/wipes PROMETHEUS_MULTIPROC_DIR before import and marks dead
+# workers through the process manager. Test aggregation/restarts; do not sum a random worker.
+# These operational aggregates do not replace event-level logs required for applicable high-risk
+# systems under AI Act Article 12. Access/labels/retention and completeness need evidence.

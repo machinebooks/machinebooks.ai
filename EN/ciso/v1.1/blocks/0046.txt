@@ -1,0 +1,75 @@
+{
+  "code": "ENS",
+  "name": "Esquema Nacional de Seguridad",
+  "version": "RD 311/2022",
+  "category": "national",
+  "description": "Educational partial catalog; verify measures and applicability in the identified edition.",
+  "official_url": "https://www.boe.es/eli/es/rd/2022/05/03/311",
+  "total_controls": 4,
+  "controls": [
+    {
+      "code": "org",
+      "name": "Organizational framework",
+      "level": 0,
+      "children": [
+        {
+          "code": "org.1",
+          "name": "Security policy",
+          "level": 1,
+          "description": "Definition of the body's security policy",
+          "level_requirements": {
+            "BASICA": "pending_review",
+            "MEDIA": "pending_review",
+            "ALTA": "pending_review"
+          }
+        },
+        {
+          "code": "org.2",
+          "name": "Security regulations",
+          "level": 1,
+          "level_requirements": {
+            "BASICA": "pending_review",
+            "MEDIA": "pending_review",
+            "ALTA": "pending_review"
+          }
+        }
+      ]
+    },
+    {
+      "code": "mp",
+      "name": "Protection measures",
+      "level": 0,
+      "children": [
+        {
+          "code": "mp.com",
+          "name": "Communications protection",
+          "level": 0,
+          "children": [
+            {
+              "code": "mp.com.1",
+              "name": "Secure perimeter",
+              "level": 1,
+              "level_requirements": {
+                "BASICA": "pending_review",
+                "MEDIA": "pending_review",
+                "ALTA": "pending_review"
+              }
+            },
+            {
+              "code": "mp.com.2",
+              "name": "Confidentiality protection",
+              "level": 1,
+              "description": "Communications encryption",
+              "level_requirements": {
+                "BASICA": "pending_review",
+                "MEDIA": "pending_review",
+                "ALTA": "pending_review"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "catalog_complete": false
+}

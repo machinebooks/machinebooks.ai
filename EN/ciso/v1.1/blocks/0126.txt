@@ -1,0 +1,10 @@
+# Generate 32 bytes; do not print, log or put the key in this book/repository.
+# Provision the returned value through an approved secret-store operation.
+import secrets
+import base64
+
+def generate_encryption_key() -> str:
+    key = secrets.token_bytes(32)
+    encoded = base64.b64encode(key).decode("ascii")
+    assert len(base64.b64decode(encoded, validate=True)) == 32
+    return encoded

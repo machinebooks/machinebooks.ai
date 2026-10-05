@@ -1,0 +1,55 @@
+class AIMonitoringMetric(Base):
+    """Monitoring metric with thresholds and trend.
+
+    Calculated periodically (Celery task) from the
+    individual records of llm_usage_logs and llm_quality_scores.
+    Each row is a metric for a service in a period.
+    """
+    __tablename__ = 'ai_monitoring_metrics'
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+
+    corporate_id = Column(BigInteger, ForeignKey('corporates.id'), nullable=False, index=True)
+
+    # Which metric and for which service
+    metric_name = Column(String(100), nullable=False)
+    # 'accuracy', 'fairness_dpd', 'drift_psi', 'avg_latency_ms',
+    # 'error_rate', 'avg_cost_per_call', 'hallucination_rate',
+    # 'groundedness_avg', 'bias_score_avg', 'monthly_cost_usd'
+    service_type = Column(String(50), nullable=False)
+    # This example stores one row per tenant, service and period.
+
+    # Calculated value
+    value = Column(Float, nullable=False)
+    sample_size = Column(Integer, nullable=False)
+
+    # Period
+    period_type = Column(String(20), nullable=False)  # 'daily', 'weekly'
+    period_start = Column(DateTime(timezone=True), nullable=False)
+    period_end = Column(DateTime(timezone=True), nullable=False)
+
+    # Configurable thresholds (loaded from ai_monitoring_thresholds)
+    threshold_warning = Column(Float, nullable=True)
+    threshold_alert = Column(Float, nullable=True)
+    threshold_critical = Column(Float, nullable=True)
+
+    # Current status against thresholds
+    status = Column(String(20), nullable=False, default='normal')
+    # 'normal', 'warning', 'alert', 'critical'
+
+    # Trend relative to previous period
+    trend = Column(String(20), nullable=True)
+    # 'improving', 'stable', 'degrading'
+    trend_delta_pct = Column(Float, nullable=True)
+    # Raw change from the weighted baseline; sign is not universal improvement.
+
+    created_at = Column(DateTime(timezone=True),
+                        default=lambda: datetime.now(timezone.utc), index=True)
+
+    __table_args__ = (
+        UniqueConstraint('corporate_id', 'metric_name', 'service_type',
+                         'period_type', 'period_start',
+                         name='uq_monitor_tenant_metric_period'),
+        Index('idx_monitor_metric_period',
+              'corporate_id', 'metric_name', 'service_type', 'period_start'),
+    )

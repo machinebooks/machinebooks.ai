@@ -1,0 +1,54 @@
+from datetime import datetime, timedelta, timezone
+from uuid import uuid4, UUID
+import jwt
+from app.security.jwt_keys import key_registry
+from app.security.jwt_policy import JWT_ISSUER, JWT_AUDIENCE, authorize_token_issue
+
+def create_access_token_with_kid(user_id, corporate_id, roles, mfa_verified):
+    authorize_token_issue(user_id, corporate_id, roles, mfa_verified)
+    key_id, private_key = key_registry.current_signing_key()
+    now = datetime.now(timezone.utc)
+    payload = {
+        "sub": str(user_id), "corporate_id": corporate_id, "roles": roles,
+        "mfa_verified": bool(mfa_verified), "iat": now, "nbf": now,
+        "exp": now + timedelta(minutes=60), "jti": str(uuid4()),
+        "iss": JWT_ISSUER, "aud": JWT_AUDIENCE, "token_type": "access",
+    }
+    return jwt.encode(payload, private_key, algorithm="RS256", headers={"kid": key_id})
+
+def decode_token_with_kid(token):
+    if not isinstance(token, str) or len(token) > 8192:
+        raise jwt.InvalidTokenError("Invalid token size")
+    header = jwt.get_unverified_header(token)
+    kid = header.get("kid")
+    if (header.get("alg") != "RS256" or not isinstance(kid, str) or len(kid) > 100
+            or any(name in header for name in ("jku", "jwk", "x5u", "crit"))):
+        raise jwt.InvalidTokenError("Invalid token header")
+    # Fixed trusted registry, including retirement/compromise policy; no token-supplied URL.
+    public_key = key_registry.verification_key(kid)
+    claims = jwt.decode(
+        token, public_key, algorithms=["RS256"],
+        issuer=JWT_ISSUER, audience=JWT_AUDIENCE,
+        options={"require": ["sub", "corporate_id", "roles", "mfa_verified", "iat",
+                             "nbf", "exp", "jti", "iss", "aud", "token_type"]},
+        leeway=30,
+    )
+    if (claims["token_type"] != "access" or not isinstance(claims["sub"], str) or not claims["sub"].isdigit()
+            or int(claims["sub"]) <= 0
+            or type(claims["corporate_id"]) is not int or claims["corporate_id"] <= 0
+            or type(claims["mfa_verified"]) is not bool
+            or not isinstance(claims["roles"], list)
+            or any(not isinstance(role, str) for role in claims["roles"])
+            or any(type(claims[name]) is not int for name in ("exp", "iat", "nbf"))
+            or not 0 < claims["exp"] - claims["iat"] <= 3600
+            or claims["nbf"] < claims["iat"] or claims["nbf"] > claims["exp"]
+            or len(claims["roles"]) > 100):
+        raise jwt.InvalidTokenError("Invalid access claims")
+    try:
+        UUID(claims["jti"])
+    except (ValueError, TypeError):
+        raise jwt.InvalidTokenError("Invalid token identifier") from None
+    return claims
+# Authentication dependency additionally checks revocation, active user/tenant and current
+# permissions. A valid signature does not authorize a requested object or action.
+# Rotation overlap is a bounded deployment policy; compromised keys may be retired immediately.

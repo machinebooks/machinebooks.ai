@@ -1,0 +1,39 @@
+from sqlalchemy import Column, BigInteger, String, Integer, Boolean, DateTime, JSON
+from sqlalchemy.orm import DeclarativeBase, declared_attr
+from sqlalchemy.sql import func
+from uuid import uuid4
+
+
+class BaseModel(DeclarativeBase):
+    """Common fields; callers must implement and test their controls."""
+    __abstract__ = True
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    uuid = Column(String(36), unique=True, nullable=False,
+                  default=lambda: str(uuid4()))
+
+    # Non-null context does not enforce query isolation or authorization.
+    corporate_id = Column(Integer, nullable=False, index=True)
+
+    # Configure application and database timestamps in UTC.
+    # Nullable actors require explicit attribution at the operation boundary.
+    created_at = Column(DateTime, server_default=func.now())
+    created_by = Column(Integer, nullable=True)
+    updated_at = Column(DateTime, onupdate=func.now())
+    updated_by = Column(Integer, nullable=True)
+
+    # Marking records does not replace lawful retention and erasure rules.
+    is_deleted = Column(Boolean, default=False, index=True)
+    deleted_at = Column(DateTime, nullable=True)
+    deleted_by = Column(Integer, nullable=True)
+
+    # Distinct from framework editions and prompt versions.
+    # Writes must check and increment this counter atomically within the tenant.
+    row_version = Column(Integer, default=1, nullable=False)
+
+    @declared_attr.directive
+    def __mapper_args__(cls):
+        return {"version_id_col": cls.row_version}
+
+    # Define validation for any additional fields.
+    extra_data = Column(JSON, nullable=True)

@@ -1,0 +1,74 @@
+import { useId } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { dpiaSchema, type DPIAFormData } from './dpia.schema'
+
+export function DPIAForm({ onSubmit }: { onSubmit: (data: DPIAFormData) => void }) {
+  const prefix = useId()
+  const descriptionId = `${prefix}-description`
+  const specialId = `${prefix}-special`
+  const { register, handleSubmit, watch, formState: { errors } } = useForm<DPIAFormData>({
+    resolver: zodResolver(dpiaSchema),
+    defaultValues: { status: 'draft', involves_special_categories: null },
+  })
+
+  // Conditional field; remaining schema fields and their controls are omitted here.
+  const involvesSpecial = watch('involves_special_categories') === true
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      {/* Systematic description — Art. 35.7.a */}
+      <fieldset>
+        <legend className="text-lg font-semibold">
+          Descripción sistemática del tratamiento
+        </legend>
+        <label htmlFor={descriptionId}>Descripción del tratamiento</label>
+        <textarea
+          id={descriptionId}
+          required
+          {...register('description')}
+          aria-describedby={errors.description ? `${descriptionId}-error` : undefined}
+          aria-invalid={Boolean(errors.description)}
+          className="w-full min-h-[120px] border rounded-md p-3"
+          placeholder="Describa el tratamiento de forma detallada..."
+        />
+        {errors.description && (
+          <p id={`${descriptionId}-error`} role="alert" className="text-red-600 text-sm mt-1">
+            {errors.description.message}
+          </p>
+        )}
+      </fieldset>
+
+      {/* ... remaining fields use the same ARIA pattern ... */}
+
+      {/* Conditional field: special categories */}
+      {involvesSpecial && (
+        <fieldset>
+          <legend>Justificación de categorías especiales (Art. 9 RGPD)</legend>
+          <label htmlFor={specialId}>Justificación</label>
+          <textarea
+            id={specialId}
+            required
+            aria-invalid={Boolean(errors.special_categories_justification)}
+            aria-describedby={errors.special_categories_justification ? `${specialId}-error` : undefined}
+            {...register('special_categories_justification')}
+            aria-required="true"
+            className="w-full min-h-[80px] border rounded-md p-3"
+          />
+          {errors.special_categories_justification && (
+            <p id={`${specialId}-error`} role="alert" className="text-red-600 text-sm mt-1">
+              {errors.special_categories_justification.message}
+            </p>
+          )}
+        </fieldset>
+      )}
+
+      {Object.keys(errors).length > 0 && (
+        <p role="status">Revise los campos con errores antes de guardar.</p>
+      )}
+      <button type="submit" className="px-6 py-2 bg-blue-700 text-white rounded-md">
+        Guardar evaluación
+      </button>
+    </form>
+  )
+}

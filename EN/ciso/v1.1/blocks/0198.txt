@@ -1,0 +1,13 @@
+from celery.schedules import crontab
+from app.config import APPROVED_AI_METRIC_JOBS
+
+# Each entry is a persisted authorized tenant/job pair; the task revalidates it.
+beat_schedule = {
+    f"ai-metrics-{job_id}": {
+        "task": "ai.calculate_quality_metrics",
+        "schedule": crontab(hour=2, minute=0),
+        "args": (corporate_id, job_id, "daily"),
+    }
+    for corporate_id, job_id in APPROVED_AI_METRIC_JOBS
+}
+# 02:00 UTC is a case schedule, not a measured minimum-load duration.

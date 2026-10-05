@@ -1,0 +1,71 @@
+from enum import Enum as PyEnum
+# Module license model — technical and commercial gate
+# Each tenant can have multiple modules with different dates
+
+from sqlalchemy import (
+    Column, String, DateTime, JSON,
+    Enum as SQLEnum, BigInteger, ForeignKey, UniqueConstraint
+)
+from app.models.base import BaseModel  # multi-tenant, audit, soft delete
+
+
+class LicenseStatus(str, PyEnum):
+    """Possible license states."""
+    ACTIVE = "active"
+    EXPIRED = "expired"
+    SUSPENDED = "suspended"
+    TRIAL = "trial"
+
+
+class LicenseModule(BaseModel):
+    """Sector module license per tenant.
+
+    Inherits from BaseModel: corporate_id, created_at, updated_at,
+    created_by, is_deleted (soft delete).
+    """
+    __tablename__ = "license_modules"
+    # One current commercial gate per tenant/module; history needs a separate ledger.
+    __table_args__ = (UniqueConstraint("corporate_id", "module_name"),)
+
+    # Identification
+    module_name = Column(
+        String(50), nullable=False, index=True,
+        comment="Module name: nis2, dora, dsa, bcm..."
+    )
+    display_name = Column(
+        String(200), nullable=False,
+        comment="Human-readable name: 'NIS2 - Directive 2022/2555'"
+    )
+
+    # Temporality
+    starts_at = Column(
+        DateTime(timezone=True), nullable=False,
+        comment="License start date"
+    )
+    expires_at = Column(
+        DateTime(timezone=True), nullable=True,
+        comment="Expiration. NULL = no expiry"
+    )
+
+    # Status
+    status = Column(
+        SQLEnum(LicenseStatus), nullable=False,
+        default=LicenseStatus.ACTIVE,
+        comment="Current license status"
+    )
+
+    # Feature flags — granularity within the module
+    feature_flags = Column(
+        JSON, nullable=True, default=dict,
+        comment="Feature flags: {'tlpt_enabled': true, ...}"
+    )
+
+    # Metadata
+    max_users = Column(
+        BigInteger, nullable=True,
+        comment="User limit for this module. NULL = unlimited"
+    )
+    notes = Column(
+        String(1000), nullable=True,
+        comment="Administrative notes about the license"
+    )

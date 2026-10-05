@@ -1,0 +1,76 @@
+# Educational AI inventory; classification needs human assessment of scope and roles.
+# Check Regulation (EU) 2024/1689 as amended by Regulation (EU) 2026/1744.
+
+from enum import Enum
+from sqlalchemy import Column, String, Text, Enum as SQLEnum, Float, DateTime, ForeignKey, JSON, Boolean
+from sqlalchemy.orm import relationship
+from models.base import BaseModel  # BaseModel with audit trail, soft delete, tenant_id
+
+
+class AIRiskLevel(str, Enum):
+    # Internal system labels; GPAI model duties are tracked separately.
+    UNDETERMINED = "undetermined"
+    UNACCEPTABLE = "unacceptable"
+    HIGH = "high"
+    LIMITED = "limited"
+    MINIMAL = "minimal"
+
+
+class AISupervisionLevel(str, Enum):
+    # Operational patterns, not an exhaustive taxonomy stated in Article 14.
+    HUMAN_IN_THE_LOOP = "hitl"      # Human approval before each action
+    HUMAN_ON_THE_LOOP = "hotl"      # Supervision during operation
+    HUMAN_IN_COMMAND = "hic"        # Intervention and stop capability
+
+
+class AnnexIIICategory(str, Enum):
+    """High-risk categories from AI Act Annex III."""
+    BIOMETRIC = "biometric"                     # Cat 1: Biometric identification
+    CRITICAL_INFRASTRUCTURE = "critical_infra"  # Cat 2: Critical infrastructure
+    EDUCATION = "education"                     # Cat 3: Education and training
+    EMPLOYMENT = "employment"                   # Cat 4: Employment and worker management
+    ESSENTIAL_SERVICES = "essential_services"    # Cat 5: Essential services
+    LAW_ENFORCEMENT = "law_enforcement"          # Cat 6: Law enforcement
+    MIGRATION = "migration"                     # Cat 7: Migration and borders
+    JUSTICE = "justice"                          # Cat 8: Administration of justice
+
+
+class AIGovernanceRecord(BaseModel):
+    # Selected inventory fields, not all information required by the AI Act.
+    __tablename__ = "ai_governance_records"
+
+    name = Column(String(200), nullable=False)
+    description = Column(Text, nullable=False)
+    purpose = Column(Text, nullable=False)
+    provider = Column(String(200))
+    model_name = Column(String(200))             # e.g., claude-sonnet-4-6
+    model_version = Column(String(50))
+
+    # Risk classification
+    risk_level = Column(SQLEnum(AIRiskLevel), nullable=False, default=AIRiskLevel.UNDETERMINED)
+    risk_level_auto = Column(SQLEnum(AIRiskLevel))         # Auto-proposed classification
+    risk_justification = Column(Text)                      # Justification if differs from auto
+    annex_iii_category = Column(SQLEnum(AnnexIIICategory)) # Category if high risk
+
+    is_general_purpose_model = Column(Boolean, nullable=True)
+    gpai_systemic_review_status = Column(String(30), default="unassessed")
+
+    # Usage context
+    sector = Column(String(100))
+    affected_persons = Column(Text)
+    data_categories = Column(JSON)
+    deployment_type = Column(String(50))                   # cloud, on-premise, hybrid
+
+    # Human oversight
+    supervision_level = Column(SQLEnum(AISupervisionLevel), nullable=False)
+    supervisor_role = Column(String(100))
+
+    # Status
+    status = Column(String(50), default="draft")
+    discovery_source = Column(String(50))                  # auto, manual, import
+
+    # Relationships
+    conformity_assessments = relationship("ConformityAssessment", back_populates="ai_record")
+    monitoring_metrics = relationship("AIMonitoringMetric", back_populates="ai_record")
+    governance_controls = relationship("AIGovernanceControl", back_populates="ai_record")
+    governance_incidents = relationship("AIGovernanceIncident", back_populates="ai_record")

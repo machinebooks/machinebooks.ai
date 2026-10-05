@@ -1,0 +1,38 @@
+import { create } from 'zustand'
+import { licensingApi, type ModuleDefinition } from '@/api/licensing'
+interface ModulesState {
+  activeModules: string[]; catalog: ModuleDefinition[]
+  loaded: boolean; error: string | null
+  fetch: () => Promise<void>
+  hasModule: (key: string) => boolean
+  hasAnyModule: (...keys: string[]) => boolean
+  reset: () => void
+}
+// Browser example: reset on actor, tenant and permission-context changes.
+// Display guards never replace backend authorization.
+let generation = 0
+export const useModulesStore = create<ModulesState>()((set, get) => ({
+  activeModules: [], catalog: [], loaded: false, error: null,
+  fetch: async () => {
+    const requestGeneration = ++generation
+    set({ activeModules: [], catalog: [], loaded: false, error: null })
+    try {
+      const [activeModules, catalog] = await Promise.all([
+        licensingApi.getActiveModules(), licensingApi.getCatalog(),
+      ])
+      if (generation !== requestGeneration) return
+      set({ activeModules, catalog, loaded: true, error: null })
+    } catch {
+      if (generation !== requestGeneration) return
+      set({ activeModules: [], catalog: [], loaded: true,
+            error: 'No se pudieron cargar los módulos' })
+    }
+  },
+  hasModule: (key) => get().loaded && !get().error && get().activeModules.includes(key),
+  hasAnyModule: (...keys) => get().loaded && !get().error &&
+    keys.some((key) => get().activeModules.includes(key)),
+  reset: () => {
+    generation += 1
+    set({ activeModules: [], catalog: [], loaded: false, error: null })
+  },
+}))

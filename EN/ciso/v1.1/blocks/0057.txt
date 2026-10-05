@@ -1,0 +1,48 @@
+from datetime import datetime, timezone, timedelta
+from celery import shared_task
+from app.models.license import LicenseModule, LicenseStatus
+from app.services.license_jobs import authorized_license_job
+
+def utc(value):
+    # Database adapter declares naive values to be UTC; reject other storage semantics.
+    return value.replace(tzinfo=timezone.utc) if value.tzinfo is None else value.astimezone(timezone.utc)
+
+@shared_task(name="license.check_expirations")
+def check_license_expirations(job_id):
+    context = authorized_license_job(job_id)
+    now = datetime.now(timezone.utc)
+    expired_count = soon_count = 0
+    with context.session_scope() as db:
+        rows = db.query(LicenseModule).filter(
+            LicenseModule.corporate_id == context.corporate_id,
+            LicenseModule.status == LicenseStatus.ACTIVE,
+            LicenseModule.is_deleted.is_(False),
+            LicenseModule.expires_at <= now + timedelta(days=30),
+        ).limit(1001).all()
+        if len(rows) > 1000:
+            raise ValueError("License batch exceeds the configured limit")
+        for license in rows:
+            if license.starts_at is not None and utc(license.starts_at) > now:
+                continue
+            expires_at = utc(license.expires_at)
+            expired = expires_at <= now
+            if expired:
+                license.status = LicenseStatus.EXPIRED
+                license.updated_by = context.user_id
+                expired_count += 1
+            else:
+                soon_count += 1
+            level = ("warning" if expired else
+                     "critical" if expires_at <= now + timedelta(days=7) else "warning")
+            # Adapter writes a tenant-scoped, unique outbox item in this transaction.
+            context.outbox.enqueue_once(
+                db, corporate_id=context.corporate_id,
+                key=f"license:{license.id}:{now.date().isoformat()}:{expired}",
+                level=level, kind="license_expired" if expired else "license_expiring",
+                license_id=license.id, expires_at=expires_at.isoformat())
+        db.commit()
+    return {"expired_count": expired_count, "expiring_soon_count": soon_count,
+            "checked_at": now.isoformat()}
+# Optional modules only. Core availability is not gated by a commercial module.
+# Dispatch retries consume the outbox idempotently; schedule/time zone is configured externally.
+# Requests must check validity themselves, including the exact expiry boundary.

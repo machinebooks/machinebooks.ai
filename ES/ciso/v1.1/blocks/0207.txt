@@ -1,0 +1,71 @@
+from typing import Literal
+from fastapi import APIRouter, Depends, Query, HTTPException
+from pydantic import BaseModel, ConfigDict, Field
+from app.database import get_db
+from app.auth.dependencies import get_current_user
+from app.models.regulatory_watch import SourceType, CheckFrequency, UpdateStatus
+from app.services.regulatory_watch import RegulatoryWatchService
+from app.services.regulatory_watch_policy import authorize_watch, approve_source_url
+
+router = APIRouter(prefix="/api/v1/regulatory-watch", tags=["regulatory-watch"])
+
+class CreateSourceRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    name: str = Field(min_length=1, max_length=200)
+    source_type: SourceType = SourceType.OFFICIAL_JOURNAL
+    url: str = Field(min_length=1, max_length=1000)
+    country: str | None = Field(default=None, pattern="^[A-Z]{2}$")
+    check_frequency: CheckFrequency = CheckFrequency.DAILY
+    is_active: bool = False
+
+def service(db, user, action):
+    authorize_watch(user, action)
+    return RegulatoryWatchService(db, user.corporate_id)
+
+@router.get("/dashboard")
+async def get_dashboard(db=Depends(get_db), user=Depends(get_current_user)):
+    return {"data": await service(db, user, "read").get_dashboard()}
+
+@router.get("/updates")
+async def list_updates(
+    status: UpdateStatus | None = None,
+    sector: str | None = Query(None, max_length=100),
+    skip: int = Query(0, ge=0, le=10000), limit: int = Query(50, ge=1, le=100),
+    db=Depends(get_db), user=Depends(get_current_user),
+):
+    items, total = await service(db, user, "read").list_updates(
+        status=status, sector=sector, skip=skip, limit=limit)
+    return {"data": items, "total": total}
+
+@router.post("/sources", status_code=201)
+async def create_source(payload: CreateSourceRequest, db=Depends(get_db),
+                        user=Depends(get_current_user)):
+    svc = service(db, user, "configure")
+    values = payload.model_dump()
+    values["url"] = await approve_source_url(user, payload.url, activate=payload.is_active)
+    source = await svc.create_source(values, user.id)
+    await db.commit()
+    return {"data": source}
+
+@router.post("/updates/{update_id}/analyze-impact", status_code=202)
+async def analyze_impact(update_id: int, db=Depends(get_db), user=Depends(get_current_user)):
+    svc = service(db, user, "draft")
+    # Adapter verifies update scope and saves an authorized outbox job/actor in one transaction.
+    job = await svc.request_impact_draft(update_id, user.id)
+    if job is None:
+        raise HTTPException(404, "Actualización no encontrada")
+    await db.commit()
+    return {"job_id": job.id, "review_required": True}
+
+@router.post("/alerts/{alert_id}/acknowledge")
+async def acknowledge_alert(alert_id: int, db=Depends(get_db), user=Depends(get_current_user)):
+    result = await service(db, user, "acknowledge").acknowledge_alert(alert_id, user.id)
+    if result is None:
+        raise HTTPException(404, "Alerta no encontrada")
+    await db.commit()
+    return {"data": result}
+# Service filters every query/write by trusted tenant, soft-delete and object/action scope.
+# Source approval validates jurisdiction, HTTPS host/DNS/IP/redirect/egress and response bounds;
+# fetcher repeats destination checks per connection. A URL field/regex is not SSRF protection.
+# Acknowledging receipt is not accepting an LLM interpretation, legal deadline or compliance.
+# Dependency owns rollback/close; schemas/transaction/outbox and actual endpoints need tests.

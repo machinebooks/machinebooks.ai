@@ -1,0 +1,56 @@
+# Selected bilingual keyword signals; not an exhaustive legal classifier.
+from decimal import Decimal, InvalidOperation
+
+ANNEX_III_KEYWORDS = {
+    AnnexIIICategory.BIOMETRIC: ["biometric", "facial recognition", "biom\u00e9trico", "reconocimiento facial"],
+    AnnexIIICategory.CRITICAL_INFRASTRUCTURE: ["critical infrastructure", "power grid", "infraestructura cr\u00edtica", "red el\u00e9ctrica"],
+    AnnexIIICategory.EDUCATION: ["education", "student assessment", "educaci\u00f3n", "evaluaci\u00f3n de estudiantes"],
+    AnnexIIICategory.EMPLOYMENT: ["employment", "hiring", "empleo", "contrataci\u00f3n", "selecci\u00f3n de personal"],
+    AnnexIIICategory.ESSENTIAL_SERVICES: ["credit", "insurance", "social benefit", "cr\u00e9dito", "seguro", "prestaci\u00f3n social"],
+    AnnexIIICategory.LAW_ENFORCEMENT: ["law enforcement", "criminal profiling", "policial", "perfilado criminal"],
+    AnnexIIICategory.MIGRATION: ["migration", "border control", "migraci\u00f3n", "control fronterizo"],
+    AnnexIIICategory.JUSTICE: ["judicial", "election", "sentencia", "democratic processes", "procesos democr\u00e1ticos"],
+}
+
+UNACCEPTABLE_KEYWORDS = ["social scoring", "puntuaci\u00f3n social", "subliminal manipulation", "manipulaci\u00f3n subliminal", "workplace emotion inference", "inferencia emocional laboral"]
+
+def classify_ai_risk(purpose: str, sector: str, data_categories: list[str],
+                     affected_persons: str, is_gpai: bool = False,
+                     training_compute_operations: int | float | None = None) -> dict:
+    if not all(isinstance(value, str) for value in [purpose, sector, affected_persons]):
+        raise ValueError("Text inputs are required")
+    if type(is_gpai) is not bool or not isinstance(data_categories, list):
+        raise ValueError("Invalid model or data-category input")
+    if not all(isinstance(value, str) for value in data_categories):
+        raise ValueError("Data categories must be text values")
+    computation = None
+    if training_compute_operations is not None:
+        if type(training_compute_operations) not in (int, float):
+            raise ValueError("Training computation must be a nonnegative finite number")
+        try:
+            computation = Decimal(str(training_compute_operations))
+        except InvalidOperation as exc:
+            raise ValueError("Invalid training computation") from exc
+        if not computation.is_finite() or computation < 0:
+            raise ValueError("Invalid training computation")
+    combined = " ".join([purpose, sector, affected_persons]).casefold()
+    prohibited_signals = [word for word in UNACCEPTABLE_KEYWORDS if word in combined]
+    annex_signals = [category.value for category, words in ANNEX_III_KEYWORDS.items()
+                     if any(word in combined for word in words)]
+    # Article 51(2): cumulative floating-point operations used for training,
+    # strictly greater than 10**25; not operations per second.
+    # Equality/below/unknown does not exclude systemic risk under Article 51(1).
+    model_presumption = (computation > Decimal(10) ** 25
+                         if is_gpai and computation is not None else None)
+    return {
+        "risk_level": AIRiskLevel.UNDETERMINED,
+        "annex_iii_category": None,
+        "possible_prohibited_practice_signals": prohibited_signals,
+        "possible_annex_iii_categories": annex_signals,
+        "is_general_purpose_model": is_gpai,
+        "training_compute_presumption": model_presumption,
+        "requires_human_review": True,
+        "review_scope": "Check Articles 5, 6, 50-55, scope, roles, exceptions and application dates.",
+        # Data categories alone do not determine Article 50 transparency duties.
+        "data_categories_for_review": list(data_categories),
+    }

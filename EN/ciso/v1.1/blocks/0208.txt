@@ -1,0 +1,32 @@
+from datetime import datetime, timezone
+from celery import shared_task
+from app.worker.regulatory_jobs import authorized_source_check_job
+
+@shared_task(name="regulatory_watch.check_sources", queue="maintenance")
+def check_regulatory_sources(job_id):
+    context = authorized_source_check_job(job_id)
+    now = datetime.now(timezone.utc)
+    checked = failed = 0
+    with context.session_scope() as db:
+        sources = context.authorized_due_sources(db, now, limit=100)
+        for source in sources:
+            context.recheck_source_permission(source)
+            try:
+                # Fetcher allowlists HTTPS hosts and checks resolved addresses/redirects at
+                # connection time, verifies TLS, limits bytes/items and sets a timeout.
+                publications = context.fetcher.fetch_approved(source, timeout=15, max_items=100)
+                for publication in publications:
+                    context.validate_publication_metadata(source, publication)
+                    # Stable source/publication/revision key and composite tenant source FK.
+                    context.updates.insert_once(db, source, publication, detected_at=now)
+                context.sources.mark_checked(db, source.id, checked_at=now)
+                checked += 1
+            except context.transient_fetch_errors:
+                failed += 1
+                context.sources.record_failure_redacted(db, source.id, kind="transient_fetch")
+            db.commit()
+    return {"sources_checked": checked, "sources_failed": failed, "checked_at": now.isoformat()}
+# Required adapters own scoped transactions/rollback and source/edition attribution.
+# Permanent permission/schema/metadata/policy errors stop; raw exception/response is not logged.
+# Detection/publication/entry-into-force/application dates differ and require primary verification.
+# A fetch/hash or model classification alone does not establish authenticity or applicability.

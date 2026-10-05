@@ -1,0 +1,63 @@
+import urllib.parse
+from datetime import datetime, timezone
+from typing import Optional
+from cryptography.x509.verification import PolicyBuilder, Store, VerificationError
+from cryptography import x509
+from cryptography.x509.ocsp import OCSPRequestBuilder, load_der_ocsp_response
+import httpx
+
+# Trusted CAs loaded at startup
+TRUSTED_CA_CERTS = load_trusted_cas("/etc/ssl/trusted-cas/")
+
+
+def parse_x509_certificate(cert_pem_urlencoded: str) -> dict:
+    """Parses the certificate Nginx passes as a URL-encoded header."""
+    cert_pem = urllib.parse.unquote(cert_pem_urlencoded)
+    cert = x509.load_pem_x509_certificate(cert_pem.encode())
+    return {
+        "subject_cn": cert.subject.get_attributes_for_oid(x509.oid.NameOID.COMMON_NAME)[0].value,
+        "issuer_cn": cert.issuer.get_attributes_for_oid(x509.oid.NameOID.COMMON_NAME)[0].value,
+        "serial_number": cert.serial_number,
+        "not_before": cert.not_valid_before_utc,
+        "not_after": cert.not_valid_after_utc,
+        "cert_object": cert,
+    }
+
+
+def verify_certificate_chain(cert_info: dict) -> bool:
+    """Delegate client path validation to cryptography; revocation is separate."""
+    cert = cert_info["cert_object"]
+    try:
+        store = Store(list(TRUSTED_CA_CERTS.values()))
+        verifier = (PolicyBuilder().store(store)
+                    .time(datetime.now(timezone.utc)).build_client_verifier())
+        verifier.verify(cert, cert_info.get("intermediates", []))
+        return True
+    except (VerificationError, ValueError, TypeError):
+        return False
+
+
+async def is_certificate_revoked(cert_info: dict) -> bool:
+    """Verifies revocation against OCSP and CRL (fallback).
+    In defense environments, both mechanisms are mandatory."""
+    cert = cert_info["cert_object"]
+
+    try:
+        ocsp_url = extract_ocsp_url(cert)
+        if ocsp_url:
+            revoked = await check_ocsp(cert, ocsp_url)
+            if revoked is not None:
+                return revoked
+    except Exception as e:
+        logger.warning(f"OCSP unavailable: {e}")
+
+    try:
+        crl_url = extract_crl_url(cert)
+        if crl_url:
+            return await check_crl(cert, crl_url)
+    except Exception as e:
+        logger.warning(f"CRL unavailable: {e}")
+
+    # If neither OCSP nor CRL available, deny (fail-closed)
+    logger.error("Could not verify revocation — denying access")
+    return True

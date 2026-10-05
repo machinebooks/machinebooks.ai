@@ -1,0 +1,64 @@
+class Asset(BaseModel):
+    """Information asset — central entity in risk analysis.
+
+    Common to all methodologies. Type and valuation
+    are interpreted per the methodology of the analysis it belongs to.
+    """
+    __tablename__ = "risk_assets"
+
+    # --- Identification ---
+    name = Column(String(255), nullable=False)
+    code = Column(String(50), comment="Internal code: ACT-001")
+    description = Column(Text)
+    asset_type = Column(
+        SQLEnum(AssetType), nullable=False,
+        comment="Asset type — filtered by methodology"
+    )
+    owner = Column(String(255), comment="Asset owner")
+
+    # --- Classification ---
+    criticality = Column(
+        Integer, default=3,
+        comment="Criticality 1-5, used for prioritization"
+    )
+
+    # --- MAGERIT valuation (DICAT dimensions) ---
+    # Only populated when methodology = MAGERIT_V3
+    val_disponibilidad = Column(
+        Integer, comment="Availability 0-4 (MAGERIT)"
+    )
+    val_integridad = Column(
+        Integer, comment="Integrity 0-4 (MAGERIT)"
+    )
+    val_confidencialidad = Column(
+        Integer, comment="Confidentiality 0-4 (MAGERIT)"
+    )
+    val_autenticidad = Column(
+        Integer, comment="Authenticity 0-4 (MAGERIT)"
+    )
+    val_trazabilidad = Column(
+        Integer, comment="Traceability 0-4 (MAGERIT)"
+    )
+
+    # --- Generic valuation (ISO 27005, NIST, etc.) ---
+    value_qualitative = Column(
+        Integer, comment="Qualitative value 1-5 (generic methodologies)"
+    )
+    value_quantitative = Column(
+        Float, comment="Economic value in EUR (FAIR, quantitative)"
+    )
+
+    # --- Metadata ---
+    location = Column(String(255), comment="Physical or logical location")
+    classification = Column(
+        String(50), comment="Level: public, internal, confidential, secret"
+    )
+    dependencies = Column(
+        JSON, comment="IDs of assets it depends on"
+    )
+
+    # --- Relationships ---
+    analysis_id = Column(
+        BigInteger, ForeignKey("risk_analyses.id"), nullable=False
+    )
+    risk_scenarios = relationship("RiskScenario", back_populates="asset")

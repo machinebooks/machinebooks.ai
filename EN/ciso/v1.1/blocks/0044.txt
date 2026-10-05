@@ -1,0 +1,45 @@
+# Didactic example: patterns/compliance/models.py (continued)
+
+class MappingType(str, enum.Enum):
+    EQUIVALENT = "equivalent"    # Same requirement, different framework
+    RELATED = "related"          # Similar but not identical requirement
+    EXTENDS = "extends"          # One control extends another (27701 → 27001)
+
+class ControlMapping(BaseModel):
+    """Cross-framework mapping between controls of different frameworks."""
+    __tablename__ = "compliance_control_mappings"
+
+    id = Column(BigInteger, primary_key=True)
+    source_control_id = Column(
+        BigInteger,
+        nullable=False
+    )
+    target_control_id = Column(
+        BigInteger,
+        nullable=False
+    )
+    mapping_type = Column(SAEnum(MappingType), nullable=False)
+    notes = Column(Text)  # Mapping nuances
+
+    # Relationships
+    source_control = relationship(
+        "ComplianceControl",
+        foreign_keys="[ControlMapping.corporate_id, ControlMapping.source_control_id]",
+        viewonly=True
+    )
+    target_control = relationship(
+        "ComplianceControl",
+        foreign_keys="[ControlMapping.corporate_id, ControlMapping.target_control_id]",
+        viewonly=True
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "corporate_id", "source_control_id", "target_control_id",
+            name="uq_control_mapping"
+        ),
+        ForeignKeyConstraint(["corporate_id", "source_control_id"],
+            ["compliance_controls.corporate_id", "compliance_controls.id"]),
+        ForeignKeyConstraint(["corporate_id", "target_control_id"],
+            ["compliance_controls.corporate_id", "compliance_controls.id"]),
+    )

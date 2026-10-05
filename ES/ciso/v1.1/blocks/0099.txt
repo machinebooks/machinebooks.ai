@@ -1,0 +1,45 @@
+from fastapi import Request, HTTPException, Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from app.security.security_utils import decode_token
+from app.security.identity import identity_adapter
+
+bearer_scheme = HTTPBearer(auto_error=False)
+
+async def authenticate_request(
+    request: Request,
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
+) -> dict:
+    # Required adapter validates trusted proxy origin and overwriting of certificate headers.
+    if request.headers.get("X-Client-Cert"):
+        await identity_adapter.require_trusted_proxy(request)
+        if request.headers.get("X-Client-Verify") != "SUCCESS":
+            raise HTTPException(401, "Credencial no válida")
+        identity = await authenticate_pki(request.headers["X-Client-Cert"])
+    elif request.cookies.get("__Host-session"):
+        identity = await identity_adapter.authenticate_saml_session(
+            request.cookies["__Host-session"])
+        # State-changing cookie requests require session-bound CSRF and Origin verification.
+        await identity_adapter.require_cookie_csrf(request, identity)
+    elif credentials and credentials.scheme.lower() == "bearer":
+        identity = await authenticate_jwt(credentials.credentials)
+    else:
+        raise HTTPException(401, "No se encontró credencial válida",
+                            headers={"WWW-Authenticate": "Bearer"})
+    # Current account/tenant/MFA policy and per-action RBAC still apply to every method.
+    return await identity_adapter.authorize_current_identity(identity)
+
+async def authenticate_jwt(token: str) -> dict:
+    try:
+        claims = await decode_token(token)
+        identity = await identity_adapter.load_active_user(
+            int(claims["sub"]), claims["corporate_id"], claims["mfa_verified"])
+        # Roles/permissions come from current server policy, not stale token claims.
+        return {**identity, "auth_method": "jwt",
+                "verified_jti": claims["jti"], "verified_exp": claims["exp"]}
+    except Exception:
+        raise HTTPException(401, "Token no válido o servicio no disponible") from None
+
+async def authenticate_pki(cert_pem: str) -> dict:
+    # Required adapter bounds PEM, validates chain/expiry/revocation, and binds issuer+fingerprint.
+    # CN alone is not a unique user binding; a certificate alone does not establish MFA.
+    return await identity_adapter.authenticate_bound_certificate(cert_pem, max_bytes=16384)

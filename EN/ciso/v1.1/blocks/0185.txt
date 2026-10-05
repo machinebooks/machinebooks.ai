@@ -1,0 +1,32 @@
+from io import BytesIO
+import pytest
+from docx import Document
+from docx.oxml.ns import qn
+
+SECTIONS = [
+    "Systematic description of operations", "Assessment of necessity and proportionality", "Assessment of risks", "Measures envisaged",
+]
+
+@pytest.mark.asyncio
+@pytest.mark.e2e
+@pytest.mark.regulatory
+async def test_dpia_draft_sections_and_fixture_reference(client, auth_headers, dpia_fixture):
+    response = await client.post(
+        f"/api/v1/privacy/dpia/generate/{dpia_fixture.treatment_id}",
+        params={"format": "docx"}, headers=auth_headers)
+    assert response.status_code == 200
+    assert response.headers["content-type"].split(";")[0] == (
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+    assert 0 < len(response.content) <= 10_000_000
+    document = Document(BytesIO(response.content))
+    # Includes tables as well as ordinary paragraphs.
+    text = "\n".join(node.text or "" for node in document.element.iter(qn("w:t")))
+    for heading in SECTIONS:
+        assert heading.casefold() in text.casefold()
+    assert dpia_fixture.reference in text
+    for expected in dpia_fixture.expected_substantive_fragments:
+        assert expected in text
+# Controlled synthetic input/expected fragments must be defined by fixtures and reviewed.
+# Headings/content correspondence alone do not establish necessity/proportionality,
+# complete risk analysis, adequate measures, stakeholder consultation or GDPR compliance.
+# The controller approves the assessment with DPO advice where applicable.

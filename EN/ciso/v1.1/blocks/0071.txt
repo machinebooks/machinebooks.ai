@@ -1,0 +1,92 @@
+# Didactic example: RAG prompt construction for regulatory query
+import anthropic
+
+def build_rag_prompt(query: str, search_results: list[RAGSearchResult]) -> str:
+    """Builds the prompt that combines the user's question
+    with the regulatory chunks retrieved from Qdrant."""
+
+    # Assemble context with identified sources
+    context_blocks = []
+    for i, result in enumerate(search_results, 1):
+        source_info = f"[Source {i}: {result.regulation}"
+        if result.article:
+            source_info += f", {result.article}"
+        source_info += f" — {result.document_title}]"
+
+        context_blocks.append(f"{source_info}\n{result.text}")
+
+    context = "\n\n---\n\n".join(context_blocks)
+
+    return f"""You are an assistant specialized in regulation and compliance.
+Respond EXCLUSIVELY based on the regulatory context provided.
+
+RULES:
+- Always cite the specific source: regulation, article, and paragraph.
+- If the context does not contain sufficient information to answer, say so explicitly.
+- DO NOT invent articles, paragraphs, or recitals that do not appear in the context.
+- If there is ambiguity, flag it and explain the possible interpretations.
+- Respond in professional technical language.
+
+REGULATORY CONTEXT:
+{context}
+
+USER QUESTION:
+{query}"""
+
+
+async def query_normative_rag(
+    query: str,
+    search_service: RAGSearchService,
+    corporate_id: int,
+    top_k: int = 5,
+    collection_name: str = "normative_local",
+    regulation_filter: str | None = None,
+) -> dict:
+    """Complete flow: question → search → context → LLM response."""
+
+    # 1. Semantic search
+    search_results = search_service.search(
+        query=query,
+        collection_name=collection_name,
+        corporate_id=corporate_id,
+        top_k=top_k,
+        regulation_filter=regulation_filter,
+    )
+
+    if not search_results:
+        return {
+            "answer": "No relevant regulatory fragments were found "
+                      "for this query. Rephrase the question or broaden "
+                      "the search scope.",
+            "sources": [],
+            "model": None,
+            "tokens_used": 0,
+        }
+
+    # 2. Build prompt with context
+    prompt = build_rag_prompt(query, search_results)
+
+    # 3. Call Claude with the regulatory context
+    client = anthropic.AsyncAnthropic()
+    response = await client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=2048,
+        messages=[{"role": "user", "content": prompt}],
+    )
+
+    # 4. Return response with sources for traceability
+    return {
+        "answer": response.content[0].text,
+        "sources": [
+            {
+                "regulation": r.regulation,
+                "article": r.article,
+                "document": r.document_title,
+                "score": round(r.score, 3),
+                "source_url": r.source_url,
+            }
+            for r in search_results
+        ],
+        "model": "claude-sonnet-4-6",
+        "tokens_used": response.usage.input_tokens + response.usage.output_tokens,
+    }

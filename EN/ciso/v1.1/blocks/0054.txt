@@ -1,0 +1,176 @@
+from calendar import monthrange
+from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
+
+def add_calendar_months(instant, months, calendar_zone="Europe/Madrid"):
+    # Calendar arithmetic only: applicable end-of-day/holiday rules need policy.
+    if instant.tzinfo is None:
+        raise ValueError("A timestamp with an explicit time zone is required")
+    local = instant.astimezone(ZoneInfo(calendar_zone))
+    month_number = local.year * 12 + local.month - 1 + months
+    year, month = divmod(month_number, 12)
+    month += 1
+    day = min(local.day, monthrange(year, month)[1])
+    return local.replace(year=year, month=month, day=day).astimezone(timezone.utc)
+
+
+# NIS2 notification model — three phases with legal deadlines
+# Designed from Art. 23 of Directive 2022/2555
+
+from enum import Enum as PyEnum
+from sqlalchemy import (
+    Column, String, Text, DateTime, Boolean, JSON,
+    BigInteger, ForeignKey, Enum as SQLEnum
+)
+from app.models.base import BaseModel
+
+
+class NIS2IncidentSeverity(str, PyEnum):
+    """Internal triage labels; not statutory significance thresholds."""
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"
+
+
+class NIS2NotificationPhase(str, PyEnum):
+    """Art. 23 NIS2 notification phases."""
+    EARLY_WARNING = "early_warning"     # 24 hours
+    FORMAL_NOTIFICATION = "formal"      # 72h normally; 24h for covered trust-service incidents
+    FINAL_REPORT = "final_report"       # 1 month
+
+
+class NIS2Incident(BaseModel):
+    """Partial NIS2 registry; significance needs contextual legal assessment.
+
+    Article23.3 covers severe service disruption or financial loss for the
+    entity, or considerable material/non-material harm to others.
+    Determine scope, applicable national law and sector-specific criteria.
+    A low/medium/high/critical triage label does not make this determination.
+    """
+    __tablename__ = "nis2_incidents"
+
+    incident_code = Column(
+        String(50), unique=True, nullable=False,
+        comment="Unique code: NIS2-YYYYMMDD-NNNN"
+    )
+    title = Column(String(500), nullable=False)
+    description = Column(Text, nullable=False)
+
+    severity = Column(
+        SQLEnum(NIS2IncidentSeverity), nullable=False,
+        comment="Internal triage; significance assessed separately"
+    )
+    is_significant = Column(
+        Boolean, nullable=True,
+        comment="Significance pending assessment; null does not mean not significant"
+    )
+    is_malicious = Column(
+        Boolean, nullable=True,
+        comment="Art. 23.4.a: suspected unlawful or malicious act?"
+    )
+    is_cross_border = Column(
+        Boolean, default=False,
+        comment="Art. 23.4.a: cross-border impact?"
+    )
+
+    # Incident timing
+    detected_at = Column(DateTime(timezone=True), nullable=False)
+    awareness_at = Column(
+        DateTime(timezone=True), nullable=False,
+        comment="Moment the entity became aware. Deadlines count from here."
+    )
+    resolved_at = Column(DateTime(timezone=True), nullable=True)
+
+    # Notification deadlines (calculated from awareness_at)
+    early_warning_deadline = Column(
+        DateTime(timezone=True), nullable=False,
+        comment="Early warning deadline: awareness_at + 24h"
+    )
+    formal_notification_deadline = Column(
+        DateTime(timezone=True), nullable=False,
+        comment="Normally 72h; 24h for covered trust-service incidents"
+    )
+    final_report_deadline = Column(
+        DateTime(timezone=True), nullable=True,
+        comment="Final report deadline: one calendar month after notification"
+    )
+
+    # Impact
+    affected_services = Column(JSON, nullable=True)
+    affected_users_count = Column(BigInteger, nullable=True)
+    affected_countries = Column(JSON, nullable=True)
+
+    # Root cause and mitigation (for final report)
+    root_cause = Column(Text, nullable=True)
+    mitigation_measures = Column(JSON, nullable=True)
+    ioc_indicators = Column(JSON, nullable=True, comment="Indicators of Compromise (IoC)")
+
+    # Link to GDPR incidents (if personal data involved)
+    linked_breach_id = Column(
+        BigInteger, ForeignKey("data_breaches.id"), nullable=True,
+        comment="If the incident involves personal data, "
+                "link to GDPR Art. 33 breach"
+    )
+
+
+class NIS2Notification(BaseModel):
+    """Partial phase registry, not an automatic submission system.
+
+    Early warning and notification depend on awareness. Final reports
+    depend on notification/handling; progress/intermediate requests also
+    need separate workflow states. This model does not create three
+    definitive deadlines at incident registration.
+    """
+    __tablename__ = "nis2_notifications"
+
+    incident_id = Column(
+        BigInteger, ForeignKey("nis2_incidents.id"), nullable=False
+    )
+    phase = Column(
+        SQLEnum(NIS2NotificationPhase), nullable=False,
+        comment="Notification phase"
+    )
+    deadline = Column(
+        DateTime(timezone=True), nullable=False,
+        comment="Deadline for this phase"
+    )
+
+    # Status
+    status = Column(
+        String(20), nullable=False, default="pending",
+        comment="pending, completed, overdue"
+    )
+    completed_at = Column(
+        DateTime(timezone=True), nullable=True,
+        comment="Moment when the notification was completed"
+    )
+
+    # Notification content
+    content = Column(Text, nullable=True)
+    submitted_to = Column(
+        String(200), nullable=True,
+        comment="National CSIRT or competent authority"
+    )
+    submission_reference = Column(
+        String(100), nullable=True,
+        comment="Reference from the receiving authority"
+    )
+
+
+# Directive Article 23; jurisdiction and significance are evaluated separately.
+def nis2_deadlines(awareness_at, trust_service=False, notified_at=None,
+                   incident_handled_at=None, ongoing=False):
+    if awareness_at.tzinfo is None:
+        raise ValueError("Awareness timestamp must include a time zone")
+    if ongoing:
+        final = add_calendar_months(incident_handled_at, 1) if incident_handled_at else None
+    else:
+        final = add_calendar_months(notified_at, 1) if notified_at else None
+    return {
+        "early_warning": awareness_at + timedelta(hours=24),
+        "formal_notification": awareness_at + timedelta(hours=24 if trust_service else 72),
+        "progress_report": add_calendar_months(notified_at, 1) if ongoing and notified_at else None,
+        "final_report": final,
+        "intermediate_report": "on competent authority/CSIRT request",
+    }

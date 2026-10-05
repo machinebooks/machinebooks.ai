@@ -1,0 +1,3 @@
+# Expose ports only on localhost, not on all interfaces
+ports:
+  - "127.0.0.1:3307:3306"    # MySQL only accessible from the server itself

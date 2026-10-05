@@ -1,0 +1,24 @@
+# CLAUDE.md — educational GRC context, not proof of implementation
+
+## Regulatory input
+- GDPR (Regulation 2016/679), LOPDGDD, ENS (RD 311/2022)
+- NIS2, DORA and AI Act: assess role, scope, jurisdiction and current timetable
+- MAGERIT v3 is a risk methodology, not a law
+- ISO text requires the appropriate edition and usage rights
+
+## Mapping and validation
+1. Read the complete, current primary provision and retain its source.
+2. Map legal requirements, applicability conditions and separate operational fields.
+3. Use NOT NULL or activation validators only where the assessed condition requires data.
+4. Validate enumerations and cross-field rules; distinguish GDPR Articles 6 and 9.
+5. Generate drafts, then review expert interpretation and run meaningful tests.
+
+## Security contracts
+- Authenticate each protected boundary with its approved JWT, SAML, LDAP or PKI path.
+- Authorize action and object; scope every read, write, join, cache and job to trusted context.
+- Test tenant separation and atomic row-version conflicts.
+- Apply lawful retention, access restriction and actual erasure; soft delete is not erasure.
+- Record approved minimal audit events and validate coverage; do not log secrets or raw PII.
+- UUIDs reduce enumeration but never replace authorization.
+- Verify encryption, key handling and TLS per component.
+- Proprietary core and Desktop remain private permanently. Public examples are educational.

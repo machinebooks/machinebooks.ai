@@ -1,0 +1,91 @@
+from typing import Callable, Any
+from dataclasses import dataclass, field
+
+
+@dataclass
+class ToolDefinition:
+    """Definición formal de una herramienta para agentes."""
+    name: str
+    description: str
+    handler: Callable[..., Any]
+    parameters: dict            # JSON Schema de parámetros
+    allowed_agents: list[str]   # Agentes que pueden usarla
+    requires_auth: bool = True  # Si necesita contexto de usuario
+    audit_level: str = "full"   # full | summary | none
+
+
+class ToolRegistry:
+    """Catálogo centralizado de herramientas para agentes.
+
+    Controla qué herramienta puede usar cada agente,
+    valida parámetros antes de ejecución y registra
+    cada invocación para auditoría.
+    """
+
+    def __init__(self, validate_params, authorize_tool, record_audit):
+        if not all(callable(fn) for fn in
+                   (validate_params, authorize_tool, record_audit)):
+            raise TypeError("Validation, authorization and audit are required")
+        self._validate_params = validate_params
+        self._authorize_tool = authorize_tool
+        self._record_audit = record_audit
+        self._tools: dict[str, ToolDefinition] = {}
+
+    def register(self, tool: ToolDefinition) -> None:
+        """Registra una herramienta en el catálogo."""
+        if tool.audit_level not in {"full", "summary", "none"}:
+            raise ValueError("Invalid audit level")
+        if tool.name in self._tools:
+            raise ValueError("Duplicate tool name")
+        self._tools[tool.name] = tool
+
+    def invoke(self, tool_name: str, agent_name: str,
+               params: dict, user_context: dict) -> Any:
+        """Invoca una herramienta con validación y auditoría."""
+        tool = self._tools.get(tool_name)
+        if not tool:
+            raise ValueError(f"Herramienta '{tool_name}' no registrada")
+
+        # Verificar que el agente tiene permiso
+        if agent_name not in tool.allowed_agents:
+            raise PermissionError(
+                f"Agente '{agent_name}' no autorizado "
+                f"para herramienta '{tool_name}'"
+            )
+
+        if not isinstance(params, dict) or "user_context" in params:
+            raise ValueError("Invalid tool parameters")
+        if tool.requires_auth and not user_context:
+            raise PermissionError("Authenticated context is required")
+        if not self._authorize_tool(tool_name, agent_name, user_context):
+            raise PermissionError("Tool access denied")
+        self._validate_params(params, tool.parameters)
+        event = {"tool": tool_name, "agent": agent_name,
+                 "audit_level": tool.audit_level}
+        if tool.audit_level != "none":
+            self._record_audit({**event, "status": "started"}, user_context)
+        try:
+            result = tool.handler(**params, user_context=user_context)
+        except Exception as exc:
+            if tool.audit_level != "none":
+                self._record_audit({**event, "status": "failed",
+                                    "error_type": type(exc).__name__}, user_context)
+            raise
+        if tool.audit_level != "none":
+            self._record_audit({**event, "status": "completed"}, user_context)
+        return result
+
+    def get_tools_for_agent(self, agent_name: str) -> list[dict]:
+        """Devuelve las herramientas disponibles para un agente.
+
+        Messages API input_schema shape; an SDK adapter is required.
+        """
+        return [
+            {
+                "name": t.name,
+                "description": t.description,
+                "input_schema": t.parameters
+            }
+            for t in self._tools.values()
+            if agent_name in t.allowed_agents
+        ]

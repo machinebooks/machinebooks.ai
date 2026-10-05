@@ -1,0 +1,13 @@
+# tests/qa/test_regulatory_freshness.py (not conftest.py)
+import importlib
+
+EXPECTED_REVIEW = {
+    "tests.qa.qa_privacy": "GDPR-2016-679-reviewed-2026-10-03",
+    "tests.qa.qa_compliance": "ENS-RD311-2022-reviewed-2026-10-03",
+}
+
+def test_regulatory_freshness():
+    # Checks local review stamps, not discovery of new legislation.
+    for module_name, expected in EXPECTED_REVIEW.items():
+        module = importlib.import_module(module_name)
+        assert getattr(module, "REGULATORY_REVIEW_STAMP", None) == expected

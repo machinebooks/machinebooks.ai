@@ -1,0 +1,16 @@
+# Partial route: application supplies a scoped service and current authorization adapters.
+from fastapi import APIRouter, Depends, Request, Query
+from app.auth.permissions import require_permission
+from app.database import get_db
+from app.services.privacy import treatment_service
+
+privacy_router = APIRouter(tags=["privacy"])
+
+@privacy_router.get("/treatments", dependencies=[Depends(require_permission("privacy", "read"))])
+async def list_treatments(request: Request, skip: int = Query(0, ge=0, le=100000),
+                          limit: int = Query(50, ge=1, le=100), db=Depends(get_db)):
+    # Current server identity comes from TenantMiddleware, never a client tenant parameter.
+    return await treatment_service.list_by_tenant(
+        db, request.state.corporate_id, request.state.current_identity,
+        skip=skip, limit=limit)
+# Service must scope every row/relation, authorize object access and serialize an approved DTO.

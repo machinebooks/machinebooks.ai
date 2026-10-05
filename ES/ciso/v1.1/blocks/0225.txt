@@ -1,0 +1,14 @@
+from fastapi import APIRouter
+from api.deps import CurrentUser, DbSession
+from app.executive.policy import policy
+from app.services.executive_dashboard_service import ExecutiveDashboardService
+
+router = APIRouter()
+
+@router.get("/dashboard")
+async def get_executive_dashboard(user: CurrentUser, db: DbSession):
+    # CurrentUser is a validated server context, not claims decoded by the browser.
+    policy.require_executive_access(user, user["corporate_id"])
+    svc = ExecutiveDashboardService(db, user["corporate_id"], user, policy)
+    return {"data": await svc.get_dashboard()}
+# Policy maps the integration's actual roles and permissions; no extra role is assumed.

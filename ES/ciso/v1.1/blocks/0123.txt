@@ -1,0 +1,23 @@
+# Alternative educational schema, not the api_key_ref/Vault provider factory.
+# Required caller authorization governs every access to the plaintext property.
+from sqlalchemy import Column, String, BigInteger, Boolean
+from app.core.encryption import encrypt_field, decrypt_field
+from app.models.base import BaseModel
+
+class LLMProvider(BaseModel):
+    __tablename__ = "llm_providers"
+    id = Column(BigInteger, primary_key=True)
+    name = Column(String(100), nullable=False)
+    provider_type = Column(String(50), nullable=False)
+    _api_key_encrypted = Column("api_key", String(512), nullable=False)
+    model_name = Column(String(100), nullable=False)
+    is_active = Column(Boolean, default=True, nullable=False)
+
+    @property
+    def api_key(self) -> str:
+        return decrypt_field(self._api_key_encrypted)
+
+    @api_key.setter
+    def api_key(self, value: str) -> None:
+        # The helper permits at most 256 UTF-8 bytes; base64 fits this 512-character column.
+        self._api_key_encrypted = encrypt_field(value)

@@ -1,0 +1,138 @@
+# Historical Messages/OpenAI clients; public routing fragment with required policy adapters.
+# Azure API version 2024-06-01 belongs to the original case; the policy approves a version
+# actually supported by the target deployment. Method availability must be verified.
+import anthropic
+import openai
+import time
+from datetime import datetime, timezone
+from app.models.ai import AIProvider, AIServiceConfig, ProviderType
+
+TRANSIENT_PROVIDER_ERRORS = (
+    anthropic.APIConnectionError, anthropic.APITimeoutError, anthropic.RateLimitError,
+    openai.APIConnectionError, openai.APITimeoutError, openai.RateLimitError,
+)
+
+class LLMFactory:
+    def __init__(self, db_session, *, corporate_id, user_id, policy, budget,
+                 secrets, usage_writer):
+        if type(corporate_id) is not int or corporate_id <= 0:
+            raise ValueError("Trusted tenant context is required")
+        if type(user_id) is not int or user_id <= 0:
+            raise ValueError("Trusted actor context is required")
+        self.db, self.corporate_id, self.user_id = db_session, corporate_id, user_id
+        self.policy, self.budget = policy, budget
+        self.secrets, self.usage_writer = secrets, usage_writer
+
+    def get_service_config(self, service_name):
+        self.policy.authorize_service(self.corporate_id, self.user_id, service_name)
+        config = self.db.query(AIServiceConfig).filter_by(
+            corporate_id=self.corporate_id, service_name=service_name,
+            is_active=True, is_deleted=False,
+        ).one_or_none()
+        if config is None:
+            raise LookupError("Authorized AI service is not configured")
+        return config
+
+    def _create_client(self, provider):
+        # The destination adapter validates host/egress/TLS and secret reference.
+        endpoint = self.policy.approved_endpoint(self.corporate_id, provider)
+        key = self.secrets.resolve(self.corporate_id, provider.api_key_ref)
+        options = {"timeout": 30.0, "max_retries": 0}
+        if provider.provider_type == ProviderType.ANTHROPIC:
+            return anthropic.Anthropic(api_key=key, base_url=endpoint, **options)
+        if provider.provider_type == ProviderType.AZURE_OPENAI:
+            return openai.AzureOpenAI(
+                api_key=key, azure_endpoint=endpoint,
+                api_version=self.policy.approved_azure_api_version(self.corporate_id, provider), **options)
+        if provider.provider_type in (
+            ProviderType.OPENAI, ProviderType.OLLAMA, ProviderType.LM_STUDIO
+        ):
+            return openai.OpenAI(api_key=key, base_url=endpoint, **options)
+        raise ValueError("Unsupported provider type")
+
+    def _call_provider(self, provider, model, messages, config, system_prompt):
+        client = self._create_client(provider)
+        started = time.perf_counter()
+        try:
+            if provider.provider_type == ProviderType.ANTHROPIC:
+                response = client.messages.create(
+                    model=model, max_tokens=config.max_output_tokens,
+                    temperature=config.temperature, system=system_prompt,
+                    messages=messages,
+                )
+                content = "".join(block.text for block in response.content
+                                  if getattr(block, "type", None) == "text")
+                input_tokens = getattr(response.usage, "input_tokens", None)
+                output_tokens = getattr(response.usage, "output_tokens", None)
+            else:
+                full_messages = ([{"role": "system", "content": system_prompt}]
+                                 if system_prompt else []) + messages
+                response = client.chat.completions.create(
+                    model=model, max_tokens=config.max_output_tokens,
+                    temperature=config.temperature, messages=full_messages,
+                )
+                content = response.choices[0].message.content
+                input_tokens = getattr(response.usage, "prompt_tokens", None)
+                output_tokens = getattr(response.usage, "completion_tokens", None)
+            return {"content": content, "provider": provider.name, "model": model,
+                    "input_tokens": input_tokens, "output_tokens": output_tokens,
+                    "latency_ms": int((time.perf_counter() - started) * 1000)}
+        finally:
+            client.close()
+
+    def call(self, service_name, messages, system_prompt=None):
+        config = self.get_service_config(service_name)
+        # Bounded deep copy and screening; screening is not authorization.
+        prepared = self.policy.prepare_input(
+            self.corporate_id, self.user_id, service_name, messages)
+        if system_prompt is None:
+            prompt = config.active_prompt
+            if prompt is not None and prompt.corporate_id != self.corporate_id:
+                raise PermissionError("Prompt tenant mismatch")
+            system_prompt = prompt.prompt_text if prompt is not None else ""
+        destinations = [
+            (config.provider_id, config.model_name),
+            (config.fallback_provider_id, config.fallback_model_name),
+            (config.local_fallback_provider_id, config.local_fallback_model_name),
+        ]
+        for level, (provider_id, model) in enumerate(destinations):
+            if provider_id is None or not model:
+                continue
+            provider = self.db.query(AIProvider).filter_by(
+                corporate_id=self.corporate_id, id=provider_id,
+                is_active=True, is_deleted=False,
+            ).one_or_none()
+            if provider is None:
+                raise PermissionError("Provider is outside the active tenant catalog")
+            # Run before every attempt; denied destinations do not receive data.
+            self.policy.authorize_destination(
+                self.corporate_id, self.user_id, service_name,
+                provider, model, prepared, system_prompt)
+            reservation = self.budget.reserve_attempt(
+                self.corporate_id, self.user_id, provider, model, config)
+            try:
+                result = self._call_provider(provider, model, prepared, config, system_prompt)
+            except TRANSIENT_PROVIDER_ERRORS as error:
+                self.usage_writer.record_failure(
+                    self.corporate_id, self.user_id, service_name, provider, model,
+                    error_type=type(error).__name__, reservation=reservation)
+                # The ledger retains possible charge/unknown usage before fallback.
+                continue
+            except Exception:
+                self.budget.mark_attempt_unknown(reservation)
+                raise
+            result["fallback_used"], result["fallback_level"] = level > 0, level
+            # Output/policy/metering failures stop here; they do not trigger fallback.
+            try:
+                self.policy.validate_output(self.corporate_id, self.user_id, result)
+                self.usage_writer.record_success(
+                    self.corporate_id, self.user_id, service_name, provider, model,
+                    result=result, reservation=reservation)
+            except Exception:
+                self.budget.mark_attempt_unknown(reservation)
+                raise
+            result["degraded_mode"] = bool(provider.is_local)
+            return result
+        raise RuntimeError("Authorized providers are temporarily unavailable")
+# Integration must test policy, reservation settlement, usage and error handling.
+# This fragment is neither Agent SDK nor a tool loop, streaming or private-core release.

@@ -1,0 +1,82 @@
+# Didactic example: semantic search over the regulatory corpus
+from dataclasses import dataclass
+from math import isfinite
+from qdrant_client.models import Filter, FieldCondition, MatchValue
+
+@dataclass
+class RAGSearchResult:
+    """Search result with text, metadata, and score."""
+    text: str
+    score: float          # Cosine similarity, not a probability (-1 to 1)
+    regulation: str       # GDPR, ENS, AEPD, CCN-STIC...
+    article: str          # Art. 35, Annex II, DPIA Guide...
+    authority: str        # EU, AEPD, CCN
+    document_title: str   # Full title of the source document
+    source_url: str       # Public URL for verification
+
+
+class RAGSearchService:
+    """Semantic search service over the regulatory corpus."""
+
+    def __init__(self, qdrant_client, embedding_service):
+        self.client = qdrant_client
+        self.embedding = embedding_service
+
+    def search(
+        self,
+        query: str,
+        corporate_id: int,
+        collection_name: str = "normative_local",
+        top_k: int = 5,
+        score_threshold: float = 0.65,
+        regulation_filter: str | None = None,
+    ) -> list[RAGSearchResult]:
+        """Searches for relevant chunks for a regulatory query.
+
+        Args:
+            query: User question in natural language
+            top_k: Maximum number of chunks to return
+            score_threshold: Minimum similarity to include a result
+            regulation_filter: Filter by specific regulation (GDPR, ENS...)
+        """
+        # 1. Convert the question into a vector
+        if type(corporate_id) is not int or corporate_id <= 0:
+            raise ValueError("Invalid tenant identifier")
+        if type(top_k) is not int or not 1 <= top_k <= 20:
+            raise ValueError("Invalid result limit")
+        if (isinstance(score_threshold, bool)
+                or not isinstance(score_threshold, (int, float))
+                or not isfinite(score_threshold) or not -1 <= score_threshold <= 1):
+            raise ValueError("Invalid cosine threshold")
+        query_vector = self.embedding.encode(query)
+
+        # 2. Build optional filter by regulation
+        search_filter = Filter(must=[FieldCondition(
+            key="corporate_id", match=MatchValue(value=corporate_id))])
+        if regulation_filter:
+            search_filter.must.append(FieldCondition(
+                key="regulation", match=MatchValue(value=regulation_filter)))
+
+        # 3. Cosine similarity search in Qdrant
+        response = self.client.query_points(
+            collection_name=collection_name,
+            query=query_vector,
+            query_filter=search_filter,
+            limit=top_k,
+            score_threshold=score_threshold,
+        )
+
+        # 4. Map results with complete metadata
+        search_results = []
+        for hit in response.points:
+            search_results.append(RAGSearchResult(
+                text=hit.payload["text"],
+                score=hit.score,
+                regulation=hit.payload.get("regulation", "unknown"),
+                article=hit.payload.get("article", ""),
+                authority=hit.payload.get("authority", ""),
+                document_title=hit.payload.get("document_title", ""),
+                source_url=hit.payload.get("source_url", ""),
+            ))
+
+        return search_results

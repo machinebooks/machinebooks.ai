@@ -1,0 +1,85 @@
+import enum
+from sqlalchemy import (
+    Column, BigInteger, Integer, String, Float, Boolean, Text, JSON, DateTime,
+    Enum as SAEnum, UniqueConstraint, ForeignKeyConstraint,
+)
+from sqlalchemy.orm import relationship
+from app.models.base import BaseModel
+
+class ProviderType(str, enum.Enum):
+    ANTHROPIC = "anthropic"
+    OPENAI = "openai"
+    AZURE_OPENAI = "azure_openai"
+    OLLAMA = "ollama"
+    LM_STUDIO = "lm_studio"
+
+class AIProvider(BaseModel):
+    __tablename__ = "ai_providers"
+    name = Column(String(100), nullable=False)
+    display_name = Column(String(200))
+    provider_type = Column(SAEnum(ProviderType), nullable=False)
+    api_base_url = Column(String(500))
+    api_key_ref = Column(String(200))
+    is_active = Column(Boolean, default=True)
+    is_local = Column(Boolean, default=False)
+    available_models = Column(JSON)
+    # Entries require model, currency, price date and per-million input/output prices.
+    last_health_check = Column(DateTime, nullable=True)
+    last_latency_ms = Column(Integer, nullable=True)
+    monthly_budget = Column(Float, nullable=True)
+    monthly_spent = Column(Float, nullable=True)
+    budget_currency = Column(String(3), nullable=True)
+    __table_args__ = (
+        UniqueConstraint("corporate_id", "id"),
+        UniqueConstraint("corporate_id", "name"),
+    )
+
+class AIPrompt(BaseModel):
+    __tablename__ = "ai_prompts"
+    service_name = Column(String(100), nullable=False)
+    version = Column(Integer, nullable=False)
+    prompt_text = Column(Text, nullable=False)
+    is_active = Column(Boolean, default=False)
+    notes = Column(Text, nullable=True)
+    __table_args__ = (
+        UniqueConstraint("corporate_id", "id"),
+        UniqueConstraint("corporate_id", "service_name", "version"),
+    )
+    # Activation locks the tenant service row; this Boolean alone is not a constraint.
+
+class AIServiceConfig(BaseModel):
+    __tablename__ = "ai_service_configs"
+    service_name = Column(String(100), nullable=False)
+    display_name = Column(String(200))
+    description = Column(Text)
+    provider_id = Column(BigInteger, nullable=False)
+    model_name = Column(String(200), nullable=False)
+    temperature = Column(Float, default=0.3)
+    max_input_tokens = Column(Integer, default=4096)
+    max_output_tokens = Column(Integer, default=4096)
+    fallback_provider_id = Column(BigInteger, nullable=True)
+    fallback_model_name = Column(String(200))
+    local_fallback_provider_id = Column(BigInteger, nullable=True)
+    local_fallback_model_name = Column(String(200))
+    active_prompt_id = Column(BigInteger, nullable=True)
+    guardrails = Column(JSON, default=dict)
+    is_active = Column(Boolean, default=True)
+    provider = relationship(
+        "AIProvider", foreign_keys="[AIServiceConfig.corporate_id, AIServiceConfig.provider_id]",
+        viewonly=True)
+    active_prompt = relationship(
+        "AIPrompt", foreign_keys="[AIServiceConfig.corporate_id, AIServiceConfig.active_prompt_id]",
+        viewonly=True)
+    __table_args__ = (
+        UniqueConstraint("corporate_id", "service_name"),
+        ForeignKeyConstraint(
+            ["corporate_id", "provider_id"], ["ai_providers.corporate_id", "ai_providers.id"]),
+        ForeignKeyConstraint(
+            ["corporate_id", "fallback_provider_id"], ["ai_providers.corporate_id", "ai_providers.id"]),
+        ForeignKeyConstraint(
+            ["corporate_id", "local_fallback_provider_id"], ["ai_providers.corporate_id", "ai_providers.id"]),
+        ForeignKeyConstraint(
+            ["corporate_id", "active_prompt_id"], ["ai_prompts.corporate_id", "ai_prompts.id"]),
+    )
+# BaseModel.row_version governs ORM writes; domain version is the prompt edition.
+# Constraints do not authorize queries, validate prices/endpoints or reserve budgets.

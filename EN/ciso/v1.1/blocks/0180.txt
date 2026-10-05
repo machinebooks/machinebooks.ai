@@ -1,0 +1,45 @@
+from datetime import datetime, timezone
+from decimal import Decimal
+import structlog
+
+log = structlog.get_logger()
+
+class AIAuditLogger:
+    def log_ai_operation(self, *, policy, trusted_context, usage, operation,
+                         model, provider, latency_ms, guardrail_status,
+                         human_decision):
+        approved = policy.approved_ai_audit_metadata(
+            trusted_context, operation, model, provider,
+            guardrail_status, human_decision)
+        if set(approved) - {"operation", "model", "provider", "request_id",
+                            "guardrail_status", "human_decision"}:
+            raise ValueError("Audit metadata exceeds the approved allowlist")
+        if any(not isinstance(value, str) or len(value) > 200
+               for value in approved.values()):
+            raise ValueError("Audit field exceeds the contract")
+        if latency_ms is not None and (
+                isinstance(latency_ms, bool) or not isinstance(latency_ms, (int, float))
+                or not 0 <= latency_ms <= 3_600_000):
+            raise ValueError("Invalid latency")
+        tokens = {}
+        for key in ("input_tokens", "output_tokens"):
+            value = getattr(usage, key, None)
+            if value is not None and (type(value) is not int or not 0 <= value <= 10_000_000):
+                raise ValueError("Invalid usage metadata")
+            tokens[key] = value
+        cost = getattr(usage, "estimated_cost_eur", None)
+        if cost is not None:
+            cost = Decimal(str(cost))
+            if not cost.is_finite() or cost < 0:
+                raise ValueError("Invalid cost")
+        # Usage comes from the authorized persisted meter; unknown is never zero.
+        log.info("ai_operation_review_record",
+                 recorded_at=datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+                 **approved, **tokens, latency_ms=latency_ms,
+                 estimated_cost_eur=str(cost) if cost is not None else None,
+                 usage_status=getattr(usage, "usage_status", "unknown"),
+                 fx_reference=getattr(usage, "fx_reference", None))
+        # No prompt, output, IP or personal identity is stored in this fragment.
+        # Required policy checks actor, tenant, lawful purpose and field provenance.
+        # CEF delivery uses the separate policy/transport adapter, not a formatter method.
+        # Review decisions and guardrail labels do not authorize business actions.

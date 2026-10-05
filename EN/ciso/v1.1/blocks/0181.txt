@@ -1,0 +1,27 @@
+tests/
+├── unit/                          # Unit tests by technical layer
+│   ├── test_models.py
+│   ├── test_services.py
+│   └── test_utils.py
+├── integration/                   # Endpoint integration tests
+│   ├── test_auth_routes.py
+│   ├── test_privacy_routes.py
+│   ├── test_risk_routes.py
+│   └── test_compliance_routes.py
+├── qa/                            # QA per regulatory module
+│   ├── qa_privacy.py             # GDPR Art. 30, 33, 35, 15-22
+│   ├── qa_ai_act.py             # Regulation 2024/1689
+│   ├── qa_dora.py               # Regulation 2022/2554
+│   ├── qa_nis2.py               # Directive 2022/2555
+│   ├── qa_ens.py                # ENS RD 311/2022
+│   ├── qa_tprm.py               # Third-party risk management
+│   └── qa_compliance.py         # ISO 27001, ISO 27701
+├── e2e/                           # End-to-end for deliverables
+│   ├── test_generate_ropa.py    # Record of Processing Activities
+│   ├── test_generate_dpia.py    # Data Protection Impact Assessment
+│   ├── test_generate_soa.py     # Statement of Applicability
+│   └── test_generate_risk_report.py
+└── frontend/                      # Vitest + Playwright
+    ├── __tests__/                # React unit tests (Vitest)
+    ├── e2e/                      # Playwright E2E tests
+    └── accessibility/            # axe-core

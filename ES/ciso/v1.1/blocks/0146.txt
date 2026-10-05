@@ -1,0 +1,122 @@
+import { useRef, useState, useCallback, useEffect } from "react"
+
+interface ModuleContext { module: string; entity_type?: string; entity_id?: number }
+interface ChatMessage { role: "user" | "assistant"; content: string; sources?: string[] }
+
+export function CopilotChat({ context, scopeKey, sessionId, csrfToken }: {
+  context: ModuleContext; scopeKey: string; sessionId: string; csrfToken: string
+}) {
+  const [messages, setMessages] = useState<ChatMessage[]>([])
+  const [input, setInput] = useState("")
+  const [busy, setBusy] = useState(false)
+  const [status, setStatus] = useState<string | null>(null)
+  const abortRef = useRef<AbortController | null>(null)
+  useEffect(() => {
+    abortRef.current?.abort()
+    abortRef.current = null
+    setMessages([]); setInput(""); setBusy(false); setStatus(null)
+    return () => abortRef.current?.abort()
+  }, [scopeKey, sessionId, context.module])
+
+  const sendMessage = useCallback(async () => {
+    if (!input.trim() || busy || input.length > 8000) return
+    const controller = new AbortController()
+    abortRef.current = controller
+    const current = () => abortRef.current === controller && !controller.signal.aborted
+    setMessages(prev => [...prev.slice(-18), { role: "user", content: input },
+                          { role: "assistant", content: "" }])
+    setInput(""); setBusy(true); setStatus("Preparando borrador")
+    let reader: ReadableStreamDefaultReader<Uint8Array> | undefined
+    const timeout = window.setTimeout(() => controller.abort(), 120000)
+    try {
+      const response = await fetch("/api/v1/copilot/chat", {
+        method: "POST", credentials: "same-origin",
+        headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
+        body: JSON.stringify({ message: input, session_id: sessionId,
+                               module_context: context.module }),
+        signal: controller.signal,
+      })
+      if (!response.ok || !response.body) throw new Error("Stream unavailable")
+      reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let pending = "", count = 0, complete = false
+      while (current()) {
+        const { done, value } = await reader.read()
+        pending += done ? decoder.decode() : decoder.decode(value, { stream: true })
+        if (pending.length > 65536) throw new Error("Stream buffer limit")
+        let boundary: RegExpExecArray | null
+        while ((boundary = /\r?\n\r?\n/.exec(pending)) !== null) {
+          const event = pending.slice(0, boundary.index)
+          pending = pending.slice(boundary.index + boundary[0].length)
+          const lines = event.split(/\r?\n/)
+          const kind = lines.find(line => line.startsWith("event:"))?.slice(6).trim()
+          const data = lines.filter(line => line.startsWith("data:"))
+            .map(line => line.slice(5).replace(/^ /, "")).join("\n")
+          if (!data) continue
+          if (++count > 256 || data.length > 32768) throw new Error("Event limit")
+          const payload = JSON.parse(data)
+          if (!current()) return
+          if (kind === "error") throw new Error("Server stream error")
+          if (kind === "draft") {
+            if (typeof payload.content !== "string") throw new Error("Invalid draft")
+            setMessages(prev => prev.map((message, index) =>
+              index === prev.length - 1 ? { ...message, content: payload.content } : message))
+          } else if (kind === "sources") {
+            if (!Array.isArray(payload.items) || payload.items.length > 6)
+              throw new Error("Invalid sources")
+            const sources = payload.items.map((source: { source: string; edition: string }) => {
+              if (typeof source.source !== "string" || typeof source.edition !== "string")
+                throw new Error("Invalid source metadata")
+              return source.source.slice(0, 200) + " " + source.edition.slice(0, 100)
+            })
+            setMessages(prev => prev.map((message, index) =>
+              index === prev.length - 1 ? { ...message, sources } : message))
+          } else if (kind === "agent_progress") {
+            setStatus("Preparando borrador")
+          } else if (kind === "complete") {
+            complete = true
+          } else throw new Error("Unknown event type")
+        }
+        if (done) {
+          if (pending.trim() || !complete) throw new Error("Incomplete stream")
+          setStatus("Borrador pendiente de revisión")
+          break
+        }
+      }
+    } catch {
+      if (current()) setStatus("No se pudo completar el flujo")
+      else if (abortRef.current === controller) setStatus("Solicitud cancelada")
+    } finally {
+      window.clearTimeout(timeout)
+      await reader?.cancel().catch(() => undefined)
+      reader?.releaseLock()
+      if (abortRef.current === controller) {
+        abortRef.current = null; setBusy(false)
+      }
+    }
+  }, [input, busy, context.module, sessionId, csrfToken, scopeKey])
+
+  return (
+    <section aria-label="Copiloto GRC">
+      <h3>Copiloto GRC</h3>
+      <div aria-live="polite">
+        {messages.map((message, index) => <div key={index}>
+          <p>{message.content}</p>
+          {message.sources?.map(source => <span key={source}>{source}</span>)}
+        </div>)}
+      </div>
+      <p role="status">{status}</p>
+      <label htmlFor="copilot-input">Pregunta al copiloto</label>
+      <input id="copilot-input" maxLength={8000} value={input} disabled={busy}
+        onChange={event => setInput(event.target.value)}
+        onKeyDown={event => {
+          if (event.key === "Enter" && !event.nativeEvent.isComposing) void sendMessage()
+        }} />
+      {busy ? <button type="button" onClick={() => abortRef.current?.abort()}>Cancelar</button>
+            : <button type="button" onClick={() => void sendMessage()}>Enviar</button>}
+    </section>
+  )
+}
+// Scope keys come from authenticated context; server independently verifies session ownership.
+// Render model text as plain text. Browser cancellation is not proof of provider/job cancellation.
+// Runtime must emit sources/draft/complete and redacted error events; test chunk boundaries.

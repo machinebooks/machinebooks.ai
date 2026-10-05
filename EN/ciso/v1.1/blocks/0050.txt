@@ -1,0 +1,53 @@
+# Editorial proposals, not an official equivalence table.
+# Each reviewed entry names both editions and its evidence.
+from app.models.compliance import (
+    ComplianceFramework, ComplianceControl, ControlMapping, MappingType
+)
+from app.auth.permissions import authorize_mapping_write
+
+ENS_ISO27001_MAPPINGS = [
+    {"source": ("ENS", "RD 311/2022", "org.1"),
+     "target": ("ISO27001", "2022", "A.5.1"), "type": "related"},
+    {"source": ("ENS", "RD 311/2022", "mp.com.2"),
+     "target": ("ISO27001", "2022", "A.8.24"), "type": "related"},
+]
+# No ISO27701 identifier is inferred from a different edition.
+# Supply an authorized licensed text and reviewed rationale before adding it.
+
+def seed_mappings(db, corporate_id: int, user_id: int, reviewed_entries: list[dict]):
+    authorize_mapping_write(corporate_id, user_id)
+    if len(reviewed_entries) > 100:
+        raise ValueError("Too many mappings")
+    with db.begin():
+        for entry in reviewed_entries:
+            if not entry.get("human_approved") or not entry.get("rationale") or not entry.get("source_evidence"):
+                raise ValueError("A reviewed rationale and source evidence are required")
+            resolved = []
+            for key in ("source", "target"):
+                code, version, control_code = entry[key]
+                framework = db.query(ComplianceFramework).filter_by(
+                    corporate_id=corporate_id, code=code, version=version,
+                    is_deleted=False,
+                ).one_or_none()
+                if framework is None:
+                    raise LookupError("Reviewed framework edition not found")
+                control = db.query(ComplianceControl).filter_by(
+                    corporate_id=corporate_id, framework_id=framework.id,
+                    code=control_code, is_deleted=False,
+                ).one_or_none()
+                if control is None:
+                    raise LookupError("Reviewed control not found")
+                resolved.append(control)
+            source, target = resolved
+            existing = db.query(ControlMapping).filter_by(
+                corporate_id=corporate_id, source_control_id=source.id,
+                target_control_id=target.id,
+            ).one_or_none()
+            if existing is None:
+                db.add(ControlMapping(
+                    corporate_id=corporate_id, created_by=user_id,
+                    source_control_id=source.id, target_control_id=target.id,
+                    mapping_type=MappingType(entry["type"]),
+                    notes=entry["rationale"],
+                ))
+# A mapping must not copy compliance status or declare evidence sufficient.

@@ -1,0 +1,24 @@
+# tests/qa/qa_privacy.py: schema checks, not a legal compliance certificate.
+import pytest
+from pydantic import ValidationError
+from app.schemas.privacy import ProcessingActivityCreate, ProcessingActivityActivate
+REGULATORY_REVIEW_STAMP = "GDPR-2016-679-reviewed-2026-10-03"
+
+@pytest.mark.regulatory
+def test_article30_draft_and_activation():
+    base = {"name": "Gestión de nóminas", "controller_name": "Entidad ficticia",
+            "purposes": ["Gestión retributiva"], "legal_basis": "legal_obligation"}
+    ProcessingActivityCreate(**base)
+    with pytest.raises(ValidationError):
+        ProcessingActivityActivate(**base)
+    active = {**base, "controller_contact": "dpd@example.invalid",
+              "data_subject_categories": ["Empleados"],
+              "personal_data_categories": ["Identificativos"],
+              "security_measures": ["Acceso autorizado y cifrado"],
+              "retention_criteria": "Plazo justificado por política revisada"}
+    ProcessingActivityActivate(**active)
+    with pytest.raises(ValidationError):
+        ProcessingActivityCreate(**base, special_categories=True)
+    with pytest.raises(ValidationError):
+        ProcessingActivityCreate(**base, international_transfers=True)
+    # Presence/type tests must be supplemented by review of values and applicability.

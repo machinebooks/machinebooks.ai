@@ -1,0 +1,58 @@
+import enum
+from datetime import datetime, timezone
+from sqlalchemy import (
+    Column, BigInteger, Integer, String, Text, Numeric, DateTime, JSON,
+    Enum, UniqueConstraint, ForeignKeyConstraint,
+)
+from sqlalchemy.orm import relationship
+from app.models.base import BaseModel
+
+class TaskStatus(str, enum.Enum):
+    PENDING = "pending"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    FAILED = "failed"
+
+class AgentTask(BaseModel):
+    __tablename__ = "agent_tasks"
+    task_uuid = Column(String(36), nullable=False, unique=True)
+    agent_name = Column(String(100), nullable=False)
+    status = Column(Enum(TaskStatus), default=TaskStatus.PENDING, nullable=False)
+    requested_by = Column(BigInteger, nullable=False)
+    params = Column(JSON)        # Approved minimized parameters, not raw prompts.
+    output = Column(JSON)        # Authorized draft reference; retention rules apply.
+    error_message = Column(Text) # Redacted error category, not raw exceptions.
+    total_tokens = Column(Integer, nullable=True)
+    total_cost = Column(Numeric(18, 8), nullable=True)
+    cost_currency = Column(String(3), nullable=True)
+    unknown_usage_calls = Column(Integer, default=0, nullable=False)
+    duration_ms = Column(Integer)
+    started_at = Column(DateTime)
+    completed_at = Column(DateTime)
+    traces = relationship(
+        "AgentTrace", back_populates="task", order_by="AgentTrace.sequence",
+        viewonly=True)
+    __table_args__ = (UniqueConstraint("corporate_id", "id"),)
+
+class AgentTrace(BaseModel):
+    __tablename__ = "agent_traces"
+    task_id = Column(BigInteger, nullable=False)
+    sequence = Column(Integer, nullable=False)
+    phase = Column(String(50), nullable=False)
+    duration_ms = Column(Integer)
+    tokens_input = Column(Integer, nullable=True)
+    tokens_output = Column(Integer, nullable=True)
+    cost = Column(Numeric(18, 8), nullable=True)
+    cost_currency = Column(String(3), nullable=True)
+    model_used = Column(String(100))
+    phase_data = Column(JSON) # Allowlisted event facts; no hidden model reasoning.
+    timestamp = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    task = relationship("AgentTask", back_populates="traces", viewonly=True)
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["corporate_id", "task_id"], ["agent_tasks.corporate_id", "agent_tasks.id"]),
+        UniqueConstraint("corporate_id", "task_id", "sequence"),
+    )
+# Actor authorization, attribution, event persistence/sequence allocation and coverage
+# must be enforced/tested by the executor. Defining tables does not capture every call.
+# Sums may combine only known quantities in one declared currency; unknown remains visible.

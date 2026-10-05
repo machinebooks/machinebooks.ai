@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Local QA order; the historical GitHub Actions example stays inactive.
+set -euo pipefail
+pytest tests/unit/ -v --tb=short
+npx --no-install vitest run --reporter=verbose
+pytest tests/integration/ -v
+for module in privacy ai_act dora nis2 ens tprm compliance; do
+  pytest "tests/qa/qa_$module.py" -v -m regulatory
+done
+pytest tests/e2e/ -v -m e2e
+npx --no-install playwright test
+npx --no-install playwright test tests/accessibility/
+echo "Secuencia local superada; publicación y conformidad requieren sus decisiones y evidencias."
+# Requires a prepared disposable environment, locked dependencies and reviewed synthetic fixtures.
+# Commands shown in a book are not executed tests or remote CI. A nonzero exit blocks this sequence.
+# Passing these checks is technical local evidence; authorization/release/customer acceptance
+# and legal conformity remain separate. No deployment, purchase or external workflow is triggered.

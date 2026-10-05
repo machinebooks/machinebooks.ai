@@ -1,0 +1,106 @@
+from sqlalchemy import select
+from sqlalchemy.orm.exc import StaleDataError
+from datetime import datetime, timezone
+from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Type, TypeVar, Optional, List
+from app.models.base import BaseModel
+
+T = TypeVar("T", bound=BaseModel)
+
+
+class BaseRepository:
+    """Selected repository methods filter the supplied trusted tenant.
+
+    Queries outside this repository still require their own authorization
+    and tenant filters; these fields do not enforce global ORM isolation.
+    """
+
+    def __init__(self, model: Type[T], session: AsyncSession, corporate_id: int, policy):
+        if isinstance(corporate_id, bool) or not isinstance(corporate_id, int) or corporate_id <= 0:
+            raise ValueError("A trusted positive tenant identifier is required")
+        self.model = model
+        self.session = session
+        self.corporate_id = corporate_id
+        self.policy = policy  # Required current actor/RBAC and same-tenant relation validation.
+
+    def _base_query(self):
+        """Local query filters; unrelated ORM queries still need authorization."""
+        return (
+            select(self.model)
+            .where(self.model.corporate_id == self.corporate_id)
+            .where(self.model.is_deleted == False)
+        )
+
+    async def get_by_id(self, entity_id: int) -> Optional[T]:
+        """Read one record under current server policy."""
+        await self.policy.authorize("read", self.corporate_id)
+        query = self._base_query().where(self.model.id == entity_id)
+        result = await self.session.execute(query)
+        return result.scalar_one_or_none()
+
+    async def get_all(self, skip: int = 0, limit: int = 100) -> List[T]:
+        """Read a stable bounded page under current server policy."""
+        await self.policy.authorize("read", self.corporate_id)
+        if type(skip) is not int or not 0 <= skip <= 100000 or type(limit) is not int or not 1 <= limit <= 100:
+            raise ValueError("Invalid bounded page")
+        query = self._base_query().order_by(self.model.id).offset(skip).limit(limit)
+        result = await self.session.execute(query)
+        return result.scalars().all()
+
+    async def create(self, entity: T, user_id: int) -> T:
+        """Creation requires a trusted actor and validated same-tenant links."""
+        await self.policy.authorize("create", self.corporate_id, user_id)
+        await self.policy.validate_relations(entity, self.corporate_id)
+        entity.corporate_id = self.corporate_id
+        entity.created_by = user_id
+        self.session.add(entity)
+        await self.session.flush()
+        return entity
+
+    async def update(self, entity: T, user_id: int, expected_version: int) -> T:
+        """Update with atomic optimistic version checking.
+
+        Raise OptimisticLockError; the API transaction boundary must
+        roll back and map it to an appropriate response such as HTTP 409.
+        """
+        await self.policy.authorize("write", self.corporate_id, user_id)
+        await self.policy.validate_relations(entity, self.corporate_id)
+        if entity.corporate_id != self.corporate_id or entity.is_deleted:
+            raise PermissionError("Record outside the authorized tenant or deleted")
+        if (self.model.__mapper__.version_id_col is None
+                or self.model.__mapper__.version_id_col.key != "row_version"):
+            raise RuntimeError("Atomic ORM version checking is not configured")
+        if type(expected_version) is not int or expected_version <= 0:
+            raise ValueError("A positive integer row version is required")
+        if entity.row_version != expected_version:
+            raise OptimisticLockError(
+                f"Version conflict: expected {expected_version}, "
+                f"current {entity.row_version}."
+            )
+        entity.updated_by = user_id
+        entity.row_version += 1
+        try:
+            await self.session.flush()
+        except StaleDataError as exc:
+            raise OptimisticLockError("Concurrent record update; transaction must roll back") from exc
+        return entity
+
+    async def soft_delete(self, entity: T, user_id: int) -> T:
+        """Soft delete within the owning transaction."""
+        await self.policy.authorize("delete", self.corporate_id, user_id)
+        if entity.corporate_id != self.corporate_id or entity.is_deleted:
+            raise PermissionError("Record outside the authorized tenant or deleted")
+        if (self.model.__mapper__.version_id_col is None
+                or self.model.__mapper__.version_id_col.key != "row_version"):
+            raise RuntimeError("Atomic ORM version checking is not configured")
+        entity.row_version += 1
+        entity.is_deleted = True
+        entity.deleted_at = datetime.now(timezone.utc)
+        entity.deleted_by = user_id
+        await self.session.flush()
+        return entity
+
+
+class OptimisticLockError(Exception):
+    """Atomic version conflict; owning transaction must roll back."""
+    pass

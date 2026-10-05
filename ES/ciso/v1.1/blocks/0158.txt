@@ -1,0 +1,23 @@
+# .env.prod: interpolation paths and non-secret settings only.
+# Supply with docker compose --env-file .env.prod -f docker-compose.prod.yml ...
+# Each path refers to a protected file provisioned outside the repository.
+BACKEND_DATABASE_URL_FILE=/etc/grc/secrets/backend-database-url
+WORKER_DATABASE_URL_FILE=/etc/grc/secrets/worker-database-url
+REDIS_URL_FILE=/etc/grc/secrets/redis-url
+RUNTIME_CONFIG_FILE=/etc/grc/secrets/runtime-config
+AI_SECRET_CONFIG_FILE=/etc/grc/secrets/ai-secret-config
+JWT_KEY_REGISTRY_FILE=/etc/grc/secrets/jwt-key-registry
+MYSQL_ROOT_PASSWORD_FILE=/etc/grc/secrets/mysql-root-password
+MYSQL_PASSWORD_FILE=/etc/grc/secrets/mysql-password
+MYSQL_CLIENT_CNF_FILE=/etc/grc/secrets/mysql-client-cnf
+MYSQL_BACKUP_CNF_FILE=/etc/grc/secrets/mysql-backup-cnf
+REDIS_CONF_FILE=/etc/grc/secrets/redis-conf
+REDIS_PASSWORD_FILE=/etc/grc/secrets/redis-password
+GRAFANA_PASSWORD_FILE=/etc/grc/secrets/grafana-password
+GRC_DOMAIN=grc.example.local
+GUNICORN_WORKERS=4
+CELERY_CONCURRENCY=4
+# Runtime configuration declares RS256 signing/verification keys, issuer/audience and
+# 60-minute access tokens; no shared JWT_SECRET substitutes for a private RSA key.
+# Runtime/vault contracts supply approved providers and at-rest encryption key versions.
+# File names are examples; contents, privileges and readers require deployment verification.

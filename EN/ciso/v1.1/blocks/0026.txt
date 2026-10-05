@@ -1,0 +1,109 @@
+# Didactic internal questionnaire, not the complete contract text or automatic Art.28 certification.
+# Weights are internal. Normalize over applicable answered items; unknown/required gaps stay pending.
+# Contract subject, duration, nature, purpose, data/subjects and controller duties need separate review.
+PROCESSOR_EVALUATION_TEMPLATE = {'sections': [{'id': 'data_instructions',
+               'title': 'Processing per instructions (Art. 28.3.a)',
+               'questions': [{'id': 'q1',
+                              'text': 'Does the processor process data '
+                                      'exclusively per documented instructions '
+                                      'from the controller?',
+                              'type': 'yes_no_na',
+                              'weight': 10,
+                              'required': True},
+                             {'id': 'q2',
+                              'text': 'Is there a documented procedure for '
+                                      'communicating instructions to the '
+                                      'processor?',
+                              'type': 'yes_no_na',
+                              'weight': 5}]},
+              {'id': 'confidentiality',
+               'title': 'Personnel confidentiality (Art. 28.3.b)',
+               'questions': [{'id': 'q3',
+                              'text': "Is the processor's personnel with "
+                                      'access to data subject to a '
+                                      'confidentiality obligation?',
+                              'type': 'yes_no_na',
+                              'weight': 10,
+                              'required': True}]},
+              {'id': 'security_measures',
+               'title': 'Security measures (Art. 28.3.c, Art. 32)',
+               'questions': [{'id': 'q4',
+                              'text': 'Does the processor implement '
+                                      'appropriate technical and '
+                                      'organizational measures (Art. 32)?',
+                              'type': 'yes_no_na',
+                              'weight': 15,
+                              'required': True},
+                             {'id': 'q5',
+                              'text': 'Does the processor have data encryption '
+                                      'at rest and in transit?',
+                              'type': 'yes_no_na',
+                              'weight': 10}]},
+              {'id': 'sub_processors',
+               'title': 'Sub-processors (Art.28.3.d, 28.2 and 28.4)',
+               'questions': [{'id': 'q6',
+                              'text': 'Does the processor give prior notice of '
+                                      'any addition of sub-processors?',
+                              'type': 'yes_no_na',
+                              'weight': 10,
+                              'required': True}]},
+              {'id': 'breach_assistance',
+               'title': 'Breach assistance (Art. 28.3.f, Art. 33.2)',
+               'questions': [{'id': 'q7',
+                              'text': 'Does the processor notify the '
+                                      'controller without undue delay of any '
+                                      'data breach?',
+                              'type': 'yes_no_na',
+                              'weight': 15,
+                              'required': True},
+                             {'id': 'q8',
+                              'text': 'Does the processor have a documented '
+                                      'breach management procedure?',
+                              'type': 'yes_no_na',
+                              'weight': 10}]},
+              {'id': 'data_deletion',
+               'title': 'Data deletion/return (Art. 28.3.g)',
+               'questions': [{'id': 'q9',
+                              'text': 'Does the contract provide for deletion '
+                                      'or return of data upon termination of '
+                                      'the relationship?',
+                              'type': 'yes_no_na',
+                              'weight': 10,
+                              'required': True}]},
+              {'id': 'audit_rights',
+               'title': 'Audits and inspections (Art. 28.3.h)',
+               'questions': [{'id': 'q10',
+                              'text': 'Does the processor allow audits and '
+                                      'inspections by the controller or an '
+                                      'authorized auditor?',
+                              'type': 'yes_no_na',
+                              'weight': 10,
+                              'required': True},
+                             {'id': 'q13',
+                              'text': 'Does the processor provide compliance '
+                                      'information and immediately inform the '
+                                      'controller of instructions it considers '
+                                      'contrary to applicable law?',
+                              'type': 'yes_no_na',
+                              'weight': 10,
+                              'required': True}]},
+              {'id': 'rights_assistance',
+               'title': 'Assistance with rights (Art.28.3.e)',
+               'questions': [{'id': 'q11',
+                              'text': 'Does the processor assist with '
+                                      'appropriate measures in responding to '
+                                      'rights requests, considering the nature '
+                                      'of the processing?',
+                              'type': 'yes_no_na',
+                              'weight': 10,
+                              'required': True}]},
+              {'id': 'compliance_assistance',
+               'title': 'Art.32–36 assistance (Art.28.3.f)',
+               'questions': [{'id': 'q12',
+                              'text': 'Does the processor assist with '
+                                      'security, notifications, DPIA and prior '
+                                      'consultation considering the processing '
+                                      'nature and information available?',
+                              'type': 'yes_no_na',
+                              'weight': 10,
+                              'required': True}]}]}

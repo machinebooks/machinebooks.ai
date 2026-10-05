@@ -1,0 +1,80 @@
+# Educational seed: approved local manifest and clean transaction are required.
+import hashlib
+import json
+from pathlib import Path
+from sqlalchemy.orm import Session
+from app.models.compliance import (
+    ComplianceFramework, ComplianceControl, FrameworkCategory
+)
+from app.auth.permissions import authorize_seed
+
+SEED_DIR = Path(__file__).parent / "seed_data"
+
+def seed_framework(db: Session, filename: str, corporate_id: int,
+                   user_id: int, approved_manifest: dict) -> ComplianceFramework:
+    authorize_seed(corporate_id, user_id)
+    if filename not in approved_manifest:
+        raise ValueError("Seed file is not approved")
+    directory = SEED_DIR.resolve(strict=True)
+    path = (directory / filename).resolve(strict=True)
+    if not path.is_relative_to(directory) or path.stat().st_size > 500_000:
+        raise ValueError("Seed path or size is outside scope")
+    raw = path.read_bytes()
+    approval = approved_manifest[filename]
+    if hashlib.sha256(raw).hexdigest() != approval["sha256"]:
+        raise ValueError("Seed content changed")
+    data = json.loads(raw)
+    if (data["code"], data["version"]) != (approval["code"], approval["version"]):
+        raise ValueError("Seed edition differs from reviewed manifest")
+    if not isinstance(data.get("controls"), list):
+        raise ValueError("A reviewed control list is required")
+
+    seen = set()
+    def validate(items, depth=0):
+        if depth > 10:
+            raise ValueError("Hierarchy is too deep")
+        leaves = 0
+        for item in items:
+            if item["code"] in seen or len(seen) >= 1000:
+                raise ValueError("Duplicate code or excessive catalog")
+            seen.add(item["code"])
+            children = item.get("children", [])
+            leaves += validate(children, depth + 1) if children else int(item["level"] > 0)
+        return leaves
+    reviewed_count = validate(data["controls"])
+
+    with db.begin():
+        existing = db.query(ComplianceFramework).filter_by(
+            corporate_id=corporate_id, code=data["code"], version=data["version"]
+        ).one_or_none()
+        if existing is not None:
+            return existing
+        framework = ComplianceFramework(
+            corporate_id=corporate_id, created_by=user_id,
+            code=data["code"], name=data["name"], version=data["version"],
+            category=FrameworkCategory(data["category"]),
+            description=data.get("description"), official_url=data.get("official_url"),
+            total_controls=reviewed_count,
+        )
+        db.add(framework)
+        db.flush()
+        _create_controls_recursive(db, corporate_id, user_id, framework.id,
+                                   data["controls"], parent_id=None)
+    return framework
+
+def _create_controls_recursive(db, corporate_id, user_id, framework_id,
+                               controls, parent_id):
+    for item in controls:
+        control = ComplianceControl(
+            corporate_id=corporate_id, created_by=user_id,
+            framework_id=framework_id, parent_id=parent_id,
+            code=item["code"], name=item["name"], level=item["level"],
+            description=item.get("description"), guidance=item.get("guidance"),
+            level_requirements=item.get("level_requirements"),
+        )
+        db.add(control)
+        db.flush()
+        _create_controls_recursive(db, corporate_id, user_id, framework_id,
+                                   item.get("children", []), control.id)
+# Manifest approval includes source/edition, rights and scope.
+# Unique-key races must roll back and be retried by the authorized dispatcher.

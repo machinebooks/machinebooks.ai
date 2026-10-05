@@ -1,0 +1,23 @@
+from app.services.ai.llm_factory import LLMFactory
+
+def handle_ciso_question(question, current_user, runtime):
+    # Authenticated server context; runtime supplies tested adapters and session lifetime.
+    if not isinstance(question, str) or not question.strip() or len(question) > 8000:
+        raise ValueError("Pregunta vacía o fuera de límite")
+    with runtime.session_scope() as db:
+        factory = LLMFactory(
+            db, corporate_id=current_user.corporate_id, user_id=current_user.id,
+            policy=runtime.policy, budget=runtime.budget,
+            secrets=runtime.secrets, usage_writer=runtime.usage_writer)
+        result = factory.call("chat", [{"role": "user", "content": question}])
+        known_usage = all(type(result.get(key)) is int
+                          for key in ("input_tokens", "output_tokens"))
+        return {
+            "response": result["content"], "provider": result["provider"],
+            "model": result["model"], "local_mode": result["degraded_mode"],
+            "tokens_used": (result["input_tokens"] + result["output_tokens"]
+                            if known_usage else None),
+            "review_required": True,
+        }
+# Transport maps authorization/validation/provider errors to redacted status messages.
+# Local execution does not establish quality equivalence or free infrastructure costs.

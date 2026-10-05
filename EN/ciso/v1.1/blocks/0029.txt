@@ -1,0 +1,19 @@
+# Single-tenant schedule fragment, initialized from trusted server configuration.
+# AUTHORIZED_CORPORATE_ID must be authorized by the scheduler; never accept caller-selected tenants.
+# Other processor/TIA workers below are required contracts, not implemented in this snippet.
+if type(AUTHORIZED_CORPORATE_ID) is not int or AUTHORIZED_CORPORATE_ID < 1:
+    raise ValueError("Invalid scheduled tenant")
+CELERY_BEAT_SCHEDULE = {
+    "check-breach-deadlines": {
+        "task": "privacy.check_breach_deadlines", "schedule": 3600.0,
+        "args": (AUTHORIZED_CORPORATE_ID,), "options": {"queue": "notifications"},
+    },
+    "check-processor-reviews": {
+        "task": "privacy.check_processor_review_dates", "schedule": 86400.0,
+        "args": (AUTHORIZED_CORPORATE_ID,), "options": {"queue": "notifications"},
+    },
+    "check-tia-expiry": {
+        "task": "privacy.check_tia_expiry_dates", "schedule": 86400.0,
+        "args": (AUTHORIZED_CORPORATE_ID,), "options": {"queue": "notifications"},
+    },
+}

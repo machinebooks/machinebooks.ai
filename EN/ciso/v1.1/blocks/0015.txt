@@ -1,0 +1,81 @@
+# Original didactic municipal templates, not an official AEPD catalog.
+# Spanish jurisdiction; partial drafts require controller review and DPO advice where designated.
+# Uses the introductory DataProcessingActivity/LegalBasis model shown earlier.
+# Authorize corporate_id/created_by at the server before calling with a fresh Session.
+from sqlalchemy import select
+
+MUNICIPAL_DRAFT_TEMPLATES = [{'name': 'Municipal residents register',
+  'purposes': ['Municipal register management'],
+  'legal_basis': 'legal_obligation',
+  'legal_basis_detail': 'Art. 6.1.c GDPR — Law 7/1985 LBRL Art. 16',
+  'data_subject_categories': ['registered_citizens'],
+  'personal_data_categories': ['identifiers',
+                               'contact',
+                               'nationality',
+                               'education'],
+  'special_categories': False,
+  'retention_period': 'Determine under residents-register rules, purposes and '
+                      'the applicable archival appraisal schedule; do not '
+                      'assume universal permanent retention.'},
+ {'name': 'Municipal tax management',
+  'purposes': ['Management and collection of municipal taxes'],
+  'legal_basis': 'legal_obligation',
+  'legal_basis_detail': 'Art. 6.1.c GDPR — RDL 2/2004 TRLRHL',
+  'data_subject_categories': ['taxpayers'],
+  'personal_data_categories': ['identifiers', 'contact', 'financial'],
+  'special_categories': False,
+  'retention_period': 'Determine by document category and law; Art.66 LGT '
+                      'limitation does not imply automatic erasure after four '
+                      'years.'},
+ {'name': 'Video surveillance',
+  'purposes': ['Security of persons, property, and facilities'],
+  'legal_basis': 'public_interest',
+  'legal_basis_detail': 'GDPR Art.6.1.e and LOPDGDD Art.22 for premises '
+                        'security; assess special rules for police cameras.',
+  'data_subject_categories': ['persons_captured_by_cameras'],
+  'personal_data_categories': ['image'],
+  'special_categories': False,
+  'retention_period': 'Maximum one month from capture, subject to the '
+                      'exception and provision to authorities in LOPDGDD '
+                      'Art.22.3.'},
+ {'name': 'Incoming and outgoing document register',
+  'purposes': ['Incoming and outgoing document management'],
+  'legal_basis': 'legal_obligation',
+  'legal_basis_detail': 'GDPR Art.6.1.c — Spanish Law 39/2015 LPACAP Art.16',
+  'data_subject_categories': ['citizens', 'representatives'],
+  'personal_data_categories': ['identifiers', 'contact'],
+  'special_categories': False,
+  'retention_period': 'Under applicable archival rules'}]
+
+
+def seed_sector_catalog(session, corporate_id: int, sector: str,
+                        created_by: int, controller_name: str):
+    if type(corporate_id) is not int or corporate_id < 1:
+        raise ValueError("Invalid tenant")
+    if type(created_by) is not int or created_by < 1:
+        raise ValueError("Invalid actor")
+    if sector != "municipal":
+        raise ValueError("Only the illustrated municipal templates are supported")
+    if not isinstance(controller_name, str) or not controller_name.strip() or len(controller_name) > 255:
+        raise ValueError("Invalid controller name")
+    created = 0
+    with session.begin():
+        for number, template in enumerate(MUNICIPAL_DRAFT_TEMPLATES, start=1):
+            code = f"RAT-SEED-MUNICIPAL-{number:03d}"
+            existing = session.scalar(select(DataProcessingActivity).where(
+                DataProcessingActivity.corporate_id == corporate_id,
+                DataProcessingActivity.code == code,
+            ))
+            if existing is not None:
+                # Preserve human changes and archived entries; restoration is a separate decision.
+                continue
+            data = dict(template)
+            data["legal_basis"] = LegalBasis(data["legal_basis"])
+            session.add(DataProcessingActivity(
+                **data, corporate_id=corporate_id, created_by=created_by,
+                status="draft", code=code, controller_name=controller_name.strip(),
+            ))
+            created += 1
+    # (corporate_id, code) must be unique in the schema: a concurrent insert rolls back.
+    return {"sector": sector, "treatments_created": created,
+            "status": "draft_pending_controller_review"}

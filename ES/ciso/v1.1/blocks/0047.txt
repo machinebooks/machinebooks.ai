@@ -1,0 +1,92 @@
+# Sync SQLAlchemy fragment; use a sync FastAPI route with this session.
+from datetime import datetime, timedelta, timezone
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.auth.dependencies import get_current_user
+from app.auth.permissions import authorize_compliance_read
+from app.models.compliance import (
+    ComplianceFramework, ComplianceControl, ComplianceStatus, Evidence
+)
+
+router = APIRouter(prefix="/compliance", tags=["compliance"])
+
+def _utc(value):
+    # MySQL connection and stored timestamps are configured as UTC.
+    return value.replace(tzinfo=timezone.utc) if value.tzinfo is None else value.astimezone(timezone.utc)
+
+def build_gap_report(db, framework_id, corporate_id, max_age_days=365,
+                     ens_category=None, now=None):
+    if type(corporate_id) is not int or corporate_id <= 0:
+        raise ValueError("Trusted tenant context is required")
+    if type(max_age_days) is not int or not 1 <= max_age_days <= 3650:
+        raise ValueError("Invalid evidence age policy")
+    if ens_category not in (None, "BASICA", "MEDIA", "ALTA"):
+        raise ValueError("Invalid system category")
+    now = now or datetime.now(timezone.utc)
+    if now.tzinfo is None:
+        raise ValueError("An aware UTC assessment time is required")
+    framework = db.query(ComplianceFramework).filter_by(
+        id=framework_id, corporate_id=corporate_id, is_deleted=False
+    ).one_or_none()
+    if framework is None:
+        raise LookupError("Framework not found")
+    controls = db.query(ComplianceControl).filter_by(
+        corporate_id=corporate_id, framework_id=framework_id, is_deleted=False
+    ).order_by(ComplianceControl.id).limit(1001).all()
+    if len(controls) > 1000:
+        raise ValueError("Reviewed pagination required for complete control coverage")
+    parent_ids = {c.parent_id for c in controls if c.parent_id is not None}
+    leaves = [c for c in controls if c.level > 0 and c.id not in parent_ids]
+    cutoff = now - timedelta(days=max_age_days)
+    gaps, applicable = [], []
+    for control in leaves:
+        status = control.compliance_status
+        requirements = control.level_requirements or {}
+        if status == ComplianceStatus.NOT_APPLICABLE:
+            continue
+        if ens_category and requirements.get(ens_category) == "no aplica":
+            continue
+        applicable.append(control)
+        reasons = []
+        if ens_category and requirements.get(ens_category) not in ("aplica", "aplica+", "reforzado"):
+            reasons.append("applicability_pending_review")
+        if status in (ComplianceStatus.NOT_ASSESSED, ComplianceStatus.NON_COMPLIANT,
+                      ComplianceStatus.PARTIALLY_COMPLIANT):
+            reasons.append(status.value)
+        evidences = db.query(Evidence).filter_by(
+            corporate_id=corporate_id, control_id=control.id, is_deleted=False
+        ).order_by(Evidence.id).limit(1001).all()
+        if len(evidences) > 1000:
+            raise ValueError("Reviewed pagination required for complete evidence coverage")
+        valid = [e for e in evidences if e.is_valid
+                 and _utc(e.collected_at) >= cutoff
+                 and (e.expires_at is None or _utc(e.expires_at) > now)]
+        if not valid:
+            reasons.append("no_current_evidence" if evidences else "no_evidence")
+        if reasons:
+            gaps.append({"id": control.id, "code": control.code,
+                         "name": control.name, "reasons": reasons})
+    total = len(applicable)
+    return {
+        "framework_id": framework.id, "framework_version": framework.version,
+        "analysis_date": now.astimezone(timezone.utc).isoformat(),
+        "total_leaf_controls": len(leaves), "total_applicable": total,
+        "controls_with_detected_gaps": len(gaps),
+        "without_detected_gaps_pct": round((total - len(gaps)) / total * 100, 1) if total else None,
+        "gaps": gaps,
+        "scope": "Quantitative signals; no legal conformity or evidence-sufficiency conclusion",
+    }
+
+@router.get("/frameworks/{framework_id}/gap-analysis")
+def gap_analysis(framework_id: int,
+                 evidence_max_age_days: int = Query(365, ge=1, le=3650),
+                 ens_category: str | None = Query(None),
+                 db: Session = Depends(get_db),
+                 current_user=Depends(get_current_user)):
+    authorize_compliance_read(current_user)
+    try:
+        return build_gap_report(db, framework_id, current_user.corporate_id,
+                                evidence_max_age_days, ens_category)
+    except LookupError:
+        raise HTTPException(404, "Framework not found") from None

@@ -1,0 +1,69 @@
+import numpy as np
+
+def calculate_psi(baseline, current, n_bins=10):
+    baseline = np.asarray(baseline, dtype=float)
+    current = np.asarray(current, dtype=float)
+    if baseline.ndim != 1 or current.ndim != 1 or not len(baseline) or not len(current):
+        raise ValueError("Both samples must be nonempty one-dimensional arrays")
+    if (not np.isfinite(baseline).all() or not np.isfinite(current).all()
+            or type(n_bins) is not int or not 2 <= n_bins <= 100
+            or len(baseline) > 10000 or len(current) > 10000):
+        raise ValueError("Finite observations and at least two bins are required")
+    if np.all(baseline == baseline[0]):
+        # Preserve a separate bin for the constant baseline value.
+        center = baseline[0]
+        breaks = [-np.inf, center, np.nextafter(center, np.inf), np.inf]
+    else:
+        interior = np.unique(np.percentile(baseline, np.linspace(0, 100, n_bins + 1)[1:-1]))
+        breaks = np.concatenate(([-np.inf], interior, [np.inf]))
+    baseline_counts = np.histogram(baseline, bins=breaks)[0]
+    current_counts = np.histogram(current, bins=breaks)[0]
+    assert baseline_counts.sum() == len(baseline) and current_counts.sum() == len(current)
+    eps = 1e-4
+    baseline_pct = (baseline_counts + eps) / (len(baseline) + eps * len(baseline_counts))
+    current_pct = (current_counts + eps) / (len(current) + eps * len(current_counts))
+    return round(float(np.sum((current_pct - baseline_pct) *
+                             np.log(current_pct / baseline_pct))), 6)
+
+
+async def detect_drift_for_service(corporate_id, service_type, model_name,
+                                    period_days=30, *, db, actor, policy) -> dict:
+    from datetime import datetime, timedelta, timezone
+    from sqlalchemy import select
+    from app.models import LLMUsageLog
+    if (type(corporate_id) is not int or corporate_id <= 0
+            or type(period_days) is not int or not 1 <= period_days <= 90
+            or not isinstance(service_type, str) or not 1 <= len(service_type) <= 50
+            or not isinstance(model_name, str) or not 1 <= len(model_name) <= 100):
+        raise ValueError("Invalid drift scope")
+    scope = await policy.authorize_monitoring(actor, corporate_id, service_type, model_name)
+    # Required approved versioned snapshot: same model, service, cohort and metric definitions.
+    # No automatic first-month baseline and no automatic recalibration.
+    baseline = await policy.load_approved_baseline(db, scope)
+    if baseline is None:
+        return {"status": "no_approved_baseline"}
+    now = datetime.now(timezone.utc)
+    rows = (await db.execute(select(LLMUsageLog).where(
+        LLMUsageLog.corporate_id == corporate_id,
+        LLMUsageLog.service_type == service_type,
+        LLMUsageLog.model_name == model_name,
+        LLMUsageLog.created_at >= now - timedelta(days=period_days),
+        LLMUsageLog.created_at <= now, LLMUsageLog.success == True,
+    ).order_by(LLMUsageLog.id).limit(10001))).scalars().all()
+    if len(rows) > 10000:
+        return {"status": "partial_coverage", "limit": 10000, "psi_tokens": None}
+    tokens = [r.total_tokens for r in rows if r.total_tokens is not None]
+    latency = [r.latency_ms for r in rows if r.latency_ms is not None]
+    coverage = {"successful_rows": len(rows), "known_tokens": len(tokens),
+                "known_latency": len(latency), "period_days": period_days}
+    # Thirty observations are this scenario's minimum, not a universal statistical guarantee.
+    if len(tokens) < 30:
+        return {"status": "insufficient_known_data", "coverage": coverage}
+    psi_tokens = calculate_psi(baseline["token_distribution"], tokens)
+    psi_latency = (calculate_psi(baseline["latency_distribution"], latency)
+                   if baseline.get("latency_distribution") and len(latency) >= 30 else None)
+    band = "investigate" if psi_tokens > 0.25 else "monitor" if psi_tokens > 0.10 else "low_signal"
+    return {"status": "review_required", "psi_tokens": psi_tokens, "psi_latency": psi_latency,
+            "heuristic_band": band, "coverage": coverage,
+            "baseline_reference": baseline["reference"]}
+# These distribution metrics do not establish model quality, fairness or legal conformity.

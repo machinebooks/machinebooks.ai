@@ -1,0 +1,33 @@
+# Required current authorization/cohort revision must be checked before every cache lookup.
+import json
+import re
+from redis.asyncio import Redis
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.services.executive_dashboard import ExecutiveDashboardService
+
+CACHE_TTL = 300  # Scenario freshness policy; permission revocation is checked on every request.
+
+async def get_dashboard_cached(db: AsyncSession, corporate_id: int, redis: Redis,
+                                actor, policy) -> dict:
+    scope = await policy.authorize_dashboard(actor, corporate_id)
+    # Server policy returns a reviewed cohort with identical access and current policy revision.
+    if not isinstance(scope, str) or re.fullmatch(r"[A-Za-z0-9_-]{1,100}", scope) is None:
+        raise ValueError("Invalid server-derived dashboard scope")
+    key = f"exec_dashboard:{corporate_id}:{scope}"
+    cached = await redis.get(key)
+    if cached is not None:
+        if len(cached) > 1_000_000:
+            raise ValueError("Oversized dashboard cache entry")
+        envelope = json.loads(cached)
+        if (not isinstance(envelope, dict) or envelope.get("corporate_id") != corporate_id
+                or envelope.get("scope") != scope or not isinstance(envelope.get("data"), dict)):
+            raise ValueError("Invalid dashboard cache scope")
+        return envelope["data"]
+    data = await ExecutiveDashboardService(db, corporate_id, actor, policy).get_dashboard()
+    encoded = json.dumps({"corporate_id": corporate_id, "scope": scope, "data": data},
+                         allow_nan=False).encode("utf-8")
+    if len(encoded) > 1_000_000:
+        raise ValueError("Dashboard cache payload exceeds the bound")
+    await redis.setex(key, CACHE_TTL, encoded)
+    return data
+# Redis TLS/auth/timeouts, sensitive-data policy and invalidation need real integration tests.

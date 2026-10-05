@@ -1,0 +1,58 @@
+from datetime import datetime, timezone
+
+class CEFFormatter:
+    EVENT_MAP = {
+        "auth_success": ("100", "Authentication Success", 3),
+        "auth_failure": ("101", "Authentication Failure", 5),
+        "permission_denied": ("200", "Access Denied", 6),
+        "ai_request": ("400", "AI System Invocation", 3),
+        "ai_guardrail_block": ("401", "AI Screening Triggered", 7),
+        "backup_completed": ("600", "Backup Completed", 2),
+        "backup_failed": ("601", "Backup Failed", 9),
+    }
+
+    @staticmethod
+    def header_value(value):
+        text = str(value)
+        if "\r" in text or "\n" in text:
+            raise ValueError("CEF header cannot contain line breaks")
+        return text.replace("\\", "\\\\").replace("|", "\\|")
+
+    @staticmethod
+    def extension_value(value):
+        return str(value).replace("\\", "\\\\").replace("=", "\\=").replace("\r", "\\r").replace("\n", "\\n")
+
+    def format_cef(self, event, approved_fields, now=None):
+        if event not in self.EVENT_MAP:
+            raise ValueError("Event is outside the approved CEF catalog")
+        now = now or datetime.now(timezone.utc)
+        if now.tzinfo is None:
+            raise ValueError("CEF timestamp requires an explicit time zone")
+        event_id, event_name, severity = self.EVENT_MAP[event]
+        header = "|".join(self.header_value(value) for value in
+                         ("CEF:0", "GRC_Platform", "SecurityAudit", "1.0",
+                          event_id, event_name, severity))
+        keys = {"request_id": "cs1", "route": "requestURL", "method": "requestMethod"}
+        extensions = []
+        for source, target in keys.items():
+            value = approved_fields.get(source)
+            if value is not None:
+                if len(str(value)) > 200:
+                    raise ValueError("CEF field exceeds the bound")
+                extensions.append(target + "=" + self.extension_value(value))
+        if approved_fields.get("request_id") is not None:
+            extensions.append("cs1Label=RequestID")
+        extensions.append("rt=" + str(int(now.timestamp() * 1000)))
+        return header + "|" + " ".join(extensions)
+
+def send_to_siem(event, fields, *, policy, transport):
+    # Server policy minimizes/authorizes audit destination and approved record fields.
+    approved = policy.approved_audit_fields(event, fields)
+    payload = CEFFormatter().format_cef(event, approved)
+    # Required adapter frames a complete RFC5424 message for an authenticated RFC5425
+    # TLS destination, or a tested protected local collector, with durable retry/receipt.
+    return transport.send_approved_audit_event(event, payload)
+# No socket/connection or real event is emitted merely by importing this fragment.
+# CEF payload is not an RFC5424 envelope; RFC5424 defines format, not UDP reliability.
+# TLS delivery, outage/backpressure, ACLs, receipts and retained evidence need actual tests.
+# Escaping/SHA and aggregate dashboards do not establish forensic/judicial validity.

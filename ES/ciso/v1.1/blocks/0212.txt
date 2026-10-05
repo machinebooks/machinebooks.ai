@@ -1,0 +1,25 @@
+from datetime import datetime, timedelta, timezone
+from celery import shared_task
+from app.worker.regulatory_jobs import authorized_escalation_job
+
+@shared_task(name="regulatory_watch.escalate_unacknowledged", queue="notifications")
+def escalate_unacknowledged_critical_alerts(job_id):
+    context = authorized_escalation_job(job_id)
+    now = datetime.now(timezone.utc)
+    cutoff = now - timedelta(hours=48)
+    with context.session_scope() as db:
+        # Query requires this tenant, soft-delete false, HUMAN approved critical triage,
+        # created_at<=cutoff and no acknowledgement; max100 with a durable continuation.
+        alerts = context.authorized_unacknowledged_critical_alerts(db, cutoff, limit=100)
+        for alert in alerts:
+            context.recheck_escalation_permission(alert)
+            context.outbox.escalation_once(
+                db, corporate_id=context.corporate_id, alert_id=alert.id,
+                recipient_role="ciso", stage="unacknowledged_48h",
+                approved_minimized_message=context.approved_alert_summary(alert))
+        db.commit()
+    return {"alert_candidates": len(alerts), "checked_at": now.isoformat()}
+# A six-hour schedule normally detects the 48h threshold in the next 0-6h, plus queue/delivery
+# delay. This is an internal policy, not a legal deadline or proof of email delivery.
+# Outbox/authorized recipient/access/retention and continuation need actual tests.
+# AI-proposed severity or raw publication text does not trigger an authoritative escalation.

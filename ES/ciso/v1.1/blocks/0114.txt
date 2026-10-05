@@ -1,0 +1,59 @@
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, JSON, ForeignKey
+from datetime import datetime, timezone
+from app.models.base import BaseModel
+
+
+class LicenseModule(BaseModel):
+    """Licencia de módulo por tenant.
+
+    Controla qué módulos están disponibles para cada organización,
+    con expiración temporal y feature flags para activación gradual.
+    """
+    __tablename__ = "license_modules"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    corporate_id = Column(
+        Integer, ForeignKey("corporates.id"),
+        nullable=False, index=True
+    )
+    module_code = Column(
+        String(50), nullable=False,
+        comment="privacy, risk, compliance, ai_act, nis2, dora, ens, iso27001..."
+    )
+    is_active = Column(Boolean, default=True)
+    valid_from = Column(DateTime, nullable=False)
+    valid_until = Column(
+        DateTime, nullable=True,
+        comment="NULL = sin expiración"
+    )
+    max_users = Column(
+        Integer, nullable=True,
+        comment="NULL = sin límite de usuarios"
+    )
+    feature_flags = Column(
+        JSON, nullable=True, default=None,
+        comment="Funcionalidades específicas habilitadas dentro del módulo"
+    )
+    licensed_by = Column(String(255), nullable=True, comment="Referencia del contrato")
+
+    def is_valid(self) -> bool:
+        """Check configured UTC bounds; naive driver values mean UTC by contract."""
+        if not self.is_active or self.valid_from is None:
+            return False
+        now = datetime.now(timezone.utc)
+        valid_from = self.valid_from
+        if valid_from.tzinfo is None:
+            valid_from = valid_from.replace(tzinfo=timezone.utc)
+        else:
+            valid_from = valid_from.astimezone(timezone.utc)
+        if valid_from > now:
+            return False
+        if self.valid_until is not None:
+            valid_until = self.valid_until
+            if valid_until.tzinfo is None:
+                valid_until = valid_until.replace(tzinfo=timezone.utc)
+            else:
+                valid_until = valid_until.astimezone(timezone.utc)
+            if valid_until <= now:
+                return False
+        return True

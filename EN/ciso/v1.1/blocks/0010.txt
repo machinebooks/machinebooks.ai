@@ -1,0 +1,131 @@
+# Processing Activity Model — designed from Art. 30.1 GDPR
+# Partial fields and operational choices; not a complete legal validator
+
+from enum import Enum as PyEnum
+from sqlalchemy import (
+    Column, String, Text, Boolean, BigInteger,
+    ForeignKey, DateTime, JSON, UniqueConstraint, Enum as SQLEnum
+)
+from app.models.base import BaseModel  # multi-tenant, audit, soft delete
+
+
+class LegalBasis(str, PyEnum):
+    """Art. 6.1 GDPR — The six possible legal bases.
+
+    Closed set: there is no seventh option.
+    The LOPDGDD qualifies some but does not expand the set.
+    """
+    CONSENT = "consent"                    # Art. 6.1.a — Consent
+    CONTRACT = "contract"                  # Art. 6.1.b — Contractual performance
+    LEGAL_OBLIGATION = "legal_obligation"  # Art. 6.1.c — Legal obligation
+    VITAL_INTEREST = "vital_interest"      # Art. 6.1.d — Vital interests
+    PUBLIC_INTEREST = "public_interest"    # Art. 6.1.e — Public interest
+    LEGITIMATE_INTEREST = "legitimate_interest"  # Art. 6.1.f — Legitimate interest
+
+
+class TransferSafeguard(str, PyEnum):
+    """Chapter V routes; adequacy and derogations are not Article 46 safeguards."""
+    ADEQUACY_DECISION = "adequacy"     # Art. 45 — Adequacy decision
+    STANDARD_CLAUSES = "scc"           # Art. 46.2.c — Standard contractual clauses
+    BINDING_RULES = "bcr"              # Art. 47 — Binding corporate rules
+    CERTIFICATION = "certification"     # Art. 42 — Certification mechanism
+    DEROGATION_49 = "derogation_49"    # Art. 49 — Enumerated derogations
+
+
+class DataProcessingActivity(BaseModel):
+    """Record of Processing Activity (Art. 30.1 GDPR).
+
+    Partial draft with operational fields and conditional Article 30 information.
+    BaseModel fields do not implement authorization, tenant isolation or retention.
+    Validate complete activation data and references within the authorized tenant.
+    """
+    __tablename__ = "data_processing_activities"
+    __table_args__ = (UniqueConstraint("corporate_id", "code"),)
+
+    # --- Processing identification ---
+    name = Column(String(255), nullable=False, comment="Processing activity name")
+    description = Column(Text, comment="Processing description")
+    code = Column(String(50), comment="Internal code: ROPA-001")
+    status = Column(String(20), default="draft", nullable=False)  # draft, active, suspended, archived
+
+    # --- Art. 30.1.a — Controller and DPO ---
+    controller_name = Column(String(255), nullable=False,
+                             comment="Name of the data controller")
+    controller_contact = Column(String(255),
+                                comment="Controller email/phone")
+    joint_controller = Column(String(255), nullable=True,
+                              comment="Art. 26 GDPR — Joint controller, if applicable")
+    dpo_name = Column(String(255), comment="DPO name")
+    dpo_contact = Column(String(255), comment="DPO contact")
+
+    # Fields shared with the API schemas; require explicit review.
+    joint_controller_contacts = Column(JSON, nullable=True)
+    representative_contact = Column(String(255), nullable=True)
+    representative_applicable = Column(Boolean, default=False)
+    dpo_applicable = Column(Boolean, default=False)
+    article9_condition = Column(Text, nullable=True)
+
+    # --- Art. 30.1.b — Purposes and legal basis ---
+    purposes = Column(JSON, nullable=False,
+                      comment='Purposes: ["HR management", "payroll"]')
+    legal_basis = Column(SQLEnum(LegalBasis), nullable=False,
+                         comment="Legal basis per Art. 6.1 GDPR")
+    legal_basis_detail = Column(Text,
+                                comment="Specific justification for the basis")
+
+    # --- Art. 30.1.c — Categories of data subjects and data ---
+    data_subject_categories = Column(
+        JSON, comment='["employees", "clients", "suppliers"]')
+    personal_data_categories = Column(
+        JSON, comment='["identifiers", "contact", "financial"]')
+    special_categories = Column(
+        Boolean, default=None, nullable=True, comment="Art. 9 assessment; unknown until reviewed")
+    special_categories_detail = Column(
+        JSON, comment='["health", "biometric"] — Only if special_categories=True')
+
+    # --- Art. 30.1.d — Recipients ---
+    recipients = Column(
+        JSON, comment='Categories of data recipients')
+
+    # --- Art. 30.1.e — International transfers ---
+    international_transfers = Column(
+        Boolean, default=None, nullable=True, comment="Third-country transfer assessment; unknown until reviewed")
+    transfer_countries = Column(
+        JSON, comment='["US", "UK"] — Destination countries')
+    transfer_safeguards = Column(
+        SQLEnum(TransferSafeguard), nullable=True,
+        comment="Art. 46 — Type of safeguard")
+    transfer_safeguards_detail = Column(
+        Text, comment="Detail of the safeguards applied")
+
+    # --- Art. 30.1.f — Retention periods ---
+    retention_period = Column(
+        String(255), comment="Period: '5 years', '6 months after contract end'")
+    retention_criteria = Column(
+        Text, comment="Legal or business criterion for the period")
+
+    # --- Art. 30.1.g — Security measures (Art. 32 GDPR) ---
+    security_measures = Column(
+        JSON, comment='["encryption_at_rest", "access_control", "backup"]')
+
+    # --- Operational fields (not Art. 30, but necessary) ---
+    department_id = Column(BigInteger, ForeignKey("departments.id"),
+                           comment="Responsible department")
+    system_id = Column(BigInteger, ForeignKey("information_systems.id"),
+                       nullable=True, comment="Associated information system")
+    risk_level = Column(String(20),
+                        comment="low, medium, high, very_high")
+    dpia_required = Column(Boolean, default=None, nullable=True,
+                           comment="Art. 35 — Does it require a DPIA?")
+    dpia_id = Column(BigInteger, ForeignKey("dpias.id"), nullable=True,
+                     comment="Associated DPIA, if it exists")
+
+    # --- Lifecycle ---
+    last_review_date = Column(DateTime, comment="Last DPO review")
+    next_review_date = Column(DateTime, comment="Next scheduled review")
+    review_notes = Column(Text, comment="Notes from the last review")
+
+    # --- Relationships ---
+    # department = relationship("Department", back_populates="processing_activities")
+    # processors = relationship("DataProcessor", secondary="activity_processors")
+    # evidences = relationship("Evidence", back_populates="processing_activity")

@@ -1,0 +1,47 @@
+# Bounded SoA draft; authorized service checks scope before calling.
+from datetime import datetime, timezone
+import hashlib
+import json
+from app.auth.permissions import authorize_soa_read
+from app.models.compliance import ComplianceFramework, ComplianceControl, ComplianceStatus, Evidence
+
+def generate_soa(db, framework_id: int, corporate_id: int, user_id: int) -> dict:
+    authorize_soa_read(corporate_id, user_id)
+    framework = db.query(ComplianceFramework).filter_by(
+        corporate_id=corporate_id, id=framework_id, is_deleted=False
+    ).one_or_none()
+    if framework is None:
+        raise LookupError("Framework not found")
+    controls = db.query(ComplianceControl).filter_by(
+        corporate_id=corporate_id, framework_id=framework_id, is_deleted=False
+    ).order_by(ComplianceControl.code, ComplianceControl.id).limit(1001).all()
+    if len(controls) > 1000:
+        raise ValueError("Use a reviewed paginated export")
+    parents = {c.parent_id for c in controls if c.parent_id is not None}
+    entries = []
+    for c in controls:
+        if c.level <= 0 or c.id in parents:
+            continue
+        evidence = db.query(Evidence).filter_by(
+            corporate_id=corporate_id, control_id=c.id, is_deleted=False
+        ).order_by(Evidence.id).limit(1001).all()
+        if len(evidence) > 1000:
+            raise ValueError("Reviewed pagination required for complete evidence coverage")
+        applicable = c.compliance_status != ComplianceStatus.NOT_APPLICABLE
+        entries.append({
+            "code": c.code, "name": c.name, "applicable": applicable,
+            "justification": c.not_applicable_justification if not applicable else None,
+            "implementation_status": c.implementation_status.value,
+            "assessment_status": c.compliance_status.value,
+            "evidence_records": len(evidence),
+        })
+    soa = {
+        "framework": {"code": framework.code, "version": framework.version},
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "entries": entries, "requires_human_review": True,
+        "scope": "Catalog draft; ISO SoA also needs all necessary controls and justified inclusions/exclusions",
+    }
+    payload = json.dumps(soa, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode()
+    soa["integrity_hash"] = hashlib.sha256(payload).hexdigest()
+    # A hash is a checksum, not a signature or proof of accuracy/authenticity.
+    return soa

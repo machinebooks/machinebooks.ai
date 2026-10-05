@@ -1,0 +1,89 @@
+class RiskControl(BaseModel):
+    """Control applied to a risk scenario.
+
+    A control reduces probability, impact, or both.
+    Effectiveness is valued as a percentage (0.0 to 1.0).
+    """
+    __tablename__ = "risk_controls"
+
+    name = Column(String(255), nullable=False)
+    description = Column(Text)
+    control_type = Column(
+        String(30),
+        comment="preventive, detective, corrective, deterrent"
+    )
+
+    # --- Effectiveness ---
+    effectiveness = Column(
+        Float, default=0.5,
+        comment="Estimated effectiveness 0.0-1.0 (0%=useless, 1.0=perfect)"
+    )
+    implementation_status = Column(
+        String(30), default="planned",
+        comment="planned, in_progress, implemented, verified"
+    )
+
+    # --- Link to compliance frameworks ---
+    framework_control_id = Column(
+        BigInteger, ForeignKey("compliance_controls.id"),
+        nullable=True,
+        comment="Link to a framework control (ENS, ISO 27001)"
+    )
+
+    # --- Relationships ---
+    scenario_id = Column(
+        BigInteger, ForeignKey("risk_scenarios.id"), nullable=False
+    )
+    scenario = relationship("RiskScenario", back_populates="controls")
+
+
+class TreatmentPlan(BaseModel):
+    """Treatment plan for a risk scenario.
+
+    Documents the treatment decision, the responsible party,
+    timelines, and follow-up. This is the deliverable the
+    auditor reviews when asking: 'what do you do with this risk?'
+    """
+    __tablename__ = "risk_treatment_plans"
+
+    # --- Strategy ---
+    strategy = Column(
+        SQLEnum(TreatmentStrategy), nullable=False,
+        comment="mitigate, transfer, avoid, accept"
+    )
+    justification = Column(
+        Text, nullable=False,
+        comment="Justification for the chosen strategy"
+    )
+
+    # --- Responsibility ---
+    owner = Column(String(255), nullable=False, comment="Responsible party")
+    approver = Column(String(255), comment="Who approves the decision")
+    approved_date = Column(DateTime, comment="Formal approval date")
+
+    # --- Timelines ---
+    target_date = Column(DateTime, comment="Target implementation date")
+    review_date = Column(DateTime, comment="Next scheduled review")
+
+    # --- Follow-up ---
+    status = Column(
+        String(30), default="draft",
+        comment="draft, approved, in_progress, completed, overdue"
+    )
+    progress_notes = Column(Text, comment="Follow-up notes")
+
+    # --- Target risk ---
+    target_residual_risk = Column(
+        Integer,
+        comment="Target residual risk after completing the plan (1-25)"
+    )
+    target_residual_ale = Column(
+        Float, comment="Target residual ALE (FAIR)"
+    )
+
+    # --- Relationships ---
+    scenario_id = Column(
+        BigInteger, ForeignKey("risk_scenarios.id"),
+        nullable=False, unique=True
+    )
+    scenario = relationship("RiskScenario", back_populates="treatment_plan")

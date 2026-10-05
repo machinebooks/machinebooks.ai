@@ -1,0 +1,54 @@
+import structlog
+from datetime import datetime, timezone
+from uuid import UUID
+
+KNOWN_EVENTS = {
+    "auth_success", "auth_failure", "request_started", "request_completed",
+    "request_failed", "siem_send_failed", "configuration_changed",
+}
+
+def minimal_event_processor(route_catalog):
+    def process(logger, method_name, event_dict):
+        event = event_dict.get("event")
+        result = {
+            "event": event if event in KNOWN_EVENTS else "unclassified_event",
+            "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+            "service": "grc-backend", "severity": method_name.upper(),
+        }
+        request_id = event_dict.get("request_id")
+        try:
+            result["request_id"] = str(UUID(request_id))
+        except (ValueError, TypeError, AttributeError):
+            pass
+        if event_dict.get("method") in {"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"}:
+            result["method"] = event_dict["method"]
+        if event_dict.get("route") in route_catalog:
+            result["route"] = event_dict["route"]
+        code = event_dict.get("status_code")
+        if type(code) is int and 100 <= code <= 599:
+            result["status_code"] = code
+        if event_dict.get("error_kind") in {"validation", "authorization", "transient", "internal"}:
+            result["error_kind"] = event_dict["error_kind"]
+        if type(event_dict.get("mfa_used")) is bool:
+            result["mfa_used"] = event_dict["mfa_used"]
+        return result
+    return process
+
+def configure_structlog(route_catalog):
+    structlog.configure(
+        processors=[
+            structlog.contextvars.merge_contextvars,
+            structlog.stdlib.filter_by_level,
+            minimal_event_processor(frozenset(route_catalog)),
+            structlog.processors.JSONRenderer(sort_keys=True),
+        ],
+        wrapper_class=structlog.stdlib.BoundLogger,
+        logger_factory=structlog.stdlib.LoggerFactory(),
+        cache_logger_on_first_use=True,
+    )
+
+# Trusted route templates come from application registration, never a raw client URL.
+# Drop actor/IP/user agent/params/prompt/content/exception strings from operational logs.
+# A separate authorized audit store may retain necessary identifiers under its lawful
+# purpose, minimization/access/retention policy; its protection needs independent tests.
+# This structlog configuration does not sanitize every SDK/standard-library handler.

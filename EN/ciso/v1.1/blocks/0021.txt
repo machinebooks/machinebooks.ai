@@ -1,0 +1,52 @@
+{
+  "description": "The processing consists of the automated collection and analysis of employee performance data (productivity indicators, attendance, supervisor evaluations, objectives met) to generate predictive future performance scores. Data comes from three internal systems and is processed by a machine learning model that generates a score from 0 to 100...",
+  "necessity": "The stated purpose (talent management improvement) is legitimate. However, proportionality requires analysis: is a predictive model necessary for this purpose, or would descriptive metrics suffice? The minimization principle (Art. 5.1.c) requires that the data processed be adequate, relevant, and limited...",
+  "risks": {
+    "narrative": "This illustrative extract presents three candidate risks, pending completion and validation.",
+    "identified": [
+      {
+        "risk": "Employment decisions based on incorrect model predictions",
+        "likelihood": "medium",
+        "impact": "high",
+        "affected_right": "GDPR Art.22: decisions based solely on automated processing with legal or similarly significant effects; verify conditions and exceptions."
+      },
+      {
+        "risk": "Algorithmic bias discriminating by gender, age, or origin",
+        "likelihood": "medium",
+        "impact": "high",
+        "affected_right": "Article 14 of the Spanish Constitution — Equality and non-discrimination"
+      },
+      {
+        "risk": "Lack of transparency about model criteria",
+        "likelihood": "high",
+        "impact": "medium",
+        "affected_right": "Art. 13-14 GDPR — Right to information"
+      }
+    ]
+  },
+  "measures": {
+    "narrative": "Technical and organizational measures are proposed for each risk...",
+    "proposed": [
+      {
+        "measure": "Implement mandatory human oversight before any employment decision based on the predictive score",
+        "risk_addressed": "Employment decisions based on incorrect predictions",
+        "status": "planned"
+      },
+      {
+        "measure": "Model audit every six months to detect bias by protected variables",
+        "risk_addressed": "Discriminatory algorithmic bias",
+        "status": "planned"
+      }
+    ]
+  },
+  "gt29_criteria": [
+    "scoring",
+    "automated_decisions",
+    "vulnerable_data_subjects",
+    "innovative_technology"
+  ],
+  "residual_risk_level": "pending_review",
+  "requires_prior_consultation": null,
+  "confidence": "uncalibrated_judgment",
+  "requires_controller_review": true
+}

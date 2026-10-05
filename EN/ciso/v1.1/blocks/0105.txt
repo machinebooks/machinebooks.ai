@@ -1,0 +1,74 @@
+# Didactic contract: the application supplies auth, state and session adapters.
+import os
+from fastapi import Request, Depends, HTTPException
+from fastapi.responses import RedirectResponse
+
+SAML_SETTINGS = {
+    "strict": True,
+    "sp": {
+        "x509cert": os.environ["SAML_SP_CERT"],
+        "privateKey": os.environ["SAML_SP_PRIVATE_KEY"],
+        "entityId": os.environ["SAML_SP_ENTITY_ID"],
+        "assertionConsumerService": {
+            "url": os.environ["SAML_ACS_URL"],
+            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST",
+        },
+        "singleLogoutService": {
+            "url": os.environ["SAML_SLS_URL"],
+            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
+        },
+    },
+    "idp": {
+        "entityId": os.environ["SAML_IDP_ENTITY_ID"],
+        "singleSignOnService": {
+            "url": os.environ["SAML_IDP_SSO_URL"],
+            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
+        },
+        "x509cert": os.environ["SAML_IDP_CERT"],
+    },
+    "security": {
+        "authnRequestsSigned": True,
+        "wantAssertionsSigned": True,
+        "wantNameIdEncrypted": False,
+        "signatureAlgorithm": "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256",
+    },
+}
+
+@router.get("/saml/login")
+async def saml_login(request: Request):
+    adapters = request.app.state.saml_adapters
+    auth = await adapters.prepare_auth(request, SAML_SETTINGS)
+    redirect_url = auth.login()
+    # Opaque, random handle; server stores request ID with a 300-second TTL.
+    flow_id = await adapters.flows.create(auth.get_last_request_id(), ttl=300)
+    response = RedirectResponse(redirect_url, status_code=303)
+    response.set_cookie("__Host-saml-flow", flow_id, max_age=300,
+                        secure=True, httponly=True, samesite="none", path="/")
+    return response
+
+@router.post("/saml/acs")
+async def saml_acs(request: Request, db=Depends(get_db)):
+    adapters = request.app.state.saml_adapters
+    # Atomic take binds this browser to a single SP-initiated transaction.
+    pending = await adapters.flows.take(request.cookies.get("__Host-saml-flow"))
+    if not pending:
+        raise HTTPException(401, "SAML transaction missing or expired")
+    auth = await adapters.prepare_auth(request, SAML_SETTINGS)
+    auth.process_response(request_id=pending["request_id"])
+    if auth.get_errors() or not auth.is_authenticated():
+        raise HTTPException(401, "SAML authentication failed")
+    assertion_id = auth.get_last_assertion_id()
+    if not assertion_id or not await adapters.replay.claim(
+        SAML_SETTINGS["idp"]["entityId"], assertion_id,
+        expires_at=auth.get_last_assertion_not_on_or_after(),
+    ):
+        raise HTTPException(401, "SAML assertion missing or replayed")
+    user = await sync_saml_user(db, auth.get_nameid(), auth.get_attributes())
+    # Local MFA must still be completed if required by the user's policy.
+    session_id = await adapters.sessions.create(user, mfa_verified=False)
+    response = RedirectResponse("/dashboard", status_code=303)
+    response.delete_cookie("__Host-saml-flow", path="/", secure=True,
+                           httponly=True, samesite="none")
+    response.set_cookie("__Host-session", session_id, secure=True,
+                        httponly=True, samesite="lax", path="/")
+    return response

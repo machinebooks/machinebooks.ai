@@ -1,0 +1,6 @@
+{
+    "allowed_agents": ["privacy_agent", "dpia_generator", "report_writer"],
+    "max_tokens_per_day": 50000,
+    "allowed_models": ["claude-sonnet-4-6"],
+    "can_use_orchestrator": false
+}

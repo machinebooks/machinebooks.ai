@@ -1,0 +1,57 @@
+from typing import Literal
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, Field, ConfigDict, model_validator
+from app.database import get_db
+from app.auth.dependencies import get_current_user
+from app.services.report_jobs import get_report_jobs
+
+router = APIRouter(prefix="/api/v1/reports", tags=["reports"])
+
+class ReportRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    framework_ids: list[int] = Field(min_length=1, max_length=10)
+    format: Literal["pdf", "docx", "xlsx"] = "pdf"
+    include_ai_summary: bool = False
+
+    @model_validator(mode="after")
+    def validate_ids(self):
+        if (any(type(value) is not int or value <= 0 for value in self.framework_ids)
+                or len(set(self.framework_ids)) != len(self.framework_ids)):
+            raise ValueError("Unique positive framework IDs are required")
+        return self
+
+@router.post("/", status_code=202)
+async def create_report(payload: ReportRequest, db=Depends(get_db),
+                        user=Depends(get_current_user), jobs=Depends(get_report_jobs)):
+    # One transaction authorizes each framework/module/action, saves request/actor/tenant,
+    # creates stable job ID and outbox dispatch. Publisher retries without creating duplicates.
+    report = await jobs.authorize_and_create_in_transaction(db, user, payload)
+    return {"report_id": report.id, "task_id": report.job_id, "status": "pending",
+            "poll_url": f"/api/v1/reports/{report.id}/status"}
+
+@router.get("/{report_id}/status")
+async def get_report_status(report_id: int, user=Depends(get_current_user),
+                            jobs=Depends(get_report_jobs)):
+    # Rechecks read permission and tenant/actor object scope; missing/denied is 404.
+    report = await jobs.authorized_status(user, report_id)
+    if report is None:
+        raise HTTPException(404, "Report not found")
+    return {
+        "report_id": report.id, "task_id": report.job_id, "status": report.status,
+        "progress": report.progress, "phase": report.redacted_phase,
+        "file_url": (f"/api/v1/reports/{report.id}/download"
+                     if report.status == "completed" else None),
+        "error": report.redacted_error, "review_required": True,
+    }
+
+@router.get("/{report_id}/download")
+async def download_report(report_id: int, user=Depends(get_current_user),
+                          jobs=Depends(get_report_jobs)):
+    # Adapter validates current permissions, tenant, artifact manifest/path and size;
+    # serves attachment with no-store and no public persistent artifact URL.
+    response = await jobs.authorized_download_response(user, report_id)
+    if response is None:
+        raise HTTPException(404, "Report not found")
+    return response
+# Required job-store/transaction/outbox/DTO adapters must be implemented and tested.
+# Result backend and worker metadata do not establish identity, review or legal sufficiency.

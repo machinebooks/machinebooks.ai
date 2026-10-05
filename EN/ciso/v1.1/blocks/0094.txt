@@ -1,0 +1,52 @@
+# Internal thresholds; these values are not legal compliance limits.
+from math import isfinite
+
+def evaluate_metric(metric_type, current_value, thresholds, historical_values):
+    metric_name = getattr(metric_type, "value", metric_type)
+    inverse = metric_name in {
+        "error_rate", "drift_psi", "fairness_dpd", "bias_score", "latency_p99"
+    }
+    if not isfinite(current_value):
+        raise ValueError("Metric value must be finite")
+    ordered = [thresholds.get(level) for level in ("warning", "alert", "critical")]
+    present = [value for value in ordered if value is not None]
+    if any(not isfinite(value) for value in present):
+        raise ValueError("Thresholds must be finite")
+    if present != sorted(present, reverse=not inverse):
+        raise ValueError("Thresholds must follow metric direction")
+    level = "normal"
+    for candidate in ("critical", "alert", "warning"):
+        threshold = thresholds.get(candidate)
+        # Zero is a configured threshold, not an absent value.
+        if threshold is not None and (
+            current_value >= threshold if inverse else current_value <= threshold
+        ):
+            level = candidate
+            break
+    trend = "stable"
+    if len(historical_values) >= 10:
+        if any(not isfinite(value) for value in historical_values):
+            raise ValueError("Historical values must be finite")
+        previous = sum(historical_values[-10:-5]) / 5
+        recent = sum(historical_values[-5:]) / 5
+        delta = recent - previous
+        reference = (abs(recent) + abs(previous)) / 2
+        if abs(delta) > max(reference * 0.05, 1e-12):
+            improving = delta < 0 if inverse else delta > 0
+            trend = "improving" if improving else "degrading"
+    return {
+        "alert_level": level, "trend": trend,
+        "needs_action": level in ("alert", "critical") or (
+            level == "warning" and trend == "degrading"
+        ),
+        "is_urgent": level == "critical",
+    }
+
+DEFAULT_THRESHOLDS = {
+    "accuracy": {"warning": 0.80, "alert": 0.70, "critical": 0.60},
+    "fairness_dpd": {"warning": 0.10, "alert": 0.20, "critical": 0.30},
+    "drift_psi": {"warning": 0.10, "alert": 0.25, "critical": 0.50},
+    "latency_p99": {"warning": 10000, "alert": 30000, "critical": 60000},
+    "error_rate": {"warning": 0.05, "alert": 0.10, "critical": 0.20},
+    "bias_score": {"warning": 0.15, "alert": 0.25, "critical": 0.40},
+}

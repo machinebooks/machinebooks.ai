@@ -1,0 +1,88 @@
+# ARCO+ rights request resolution endpoint
+# Concentrates the most relevant regulatory validations
+
+from datetime import datetime, timezone
+from fastapi import APIRouter, Depends, HTTPException, status
+from app.core.auth import get_current_user, require_permission
+from app.models.privacy import SubjectRightsRequest, RequestStatus
+from app.schemas.privacy import RightsRequestResolve, RightsRequestResponse
+
+router = APIRouter(
+    prefix="/api/v1/rights-requests", tags=["privacy-rights"]
+)
+
+
+@router.post("/{request_id}/resolve",
+             response_model=RightsRequestResponse)
+async def resolve_rights_request(
+    request_id: int,
+    data: RightsRequestResolve,
+    current_user=Depends(get_current_user),
+    _=Depends(require_permission("privacy:rights_resolve"))
+):
+    """Resolves a rights request.
+
+    Validates that the legal deadline has not been exceeded.
+    If denied, requires justification (Art. 12.4 GDPR).
+    """
+    request = await get_request_or_404(request_id, current_user)
+
+    if request.status not in (
+        RequestStatus.IN_PROGRESS, RequestStatus.EXTENDED
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Cannot resolve a request in state "
+                   f"'{request.status.value}'. Must be 'in_progress' "
+                   f"or 'extended'."
+        )
+
+    # Verify legal deadline
+    deadline = request.deadline_date
+    # Integration contract: stored naive DATETIME values represent UTC.
+    if deadline.tzinfo is None:
+        deadline = deadline.replace(tzinfo=timezone.utc)
+    else:
+        deadline = deadline.astimezone(timezone.utc)
+    now = datetime.now(timezone.utc)
+    if now > deadline:
+        # Allow late resolution but log non-compliance
+        await audit_log(
+            action="rights_request.deadline_exceeded",
+            resource_id=request.id,
+            user_id=current_user.id,
+            details={
+                "deadline": deadline.isoformat(),
+                "resolved_at": now.isoformat(),
+                "days_overdue": (now - deadline).days,
+            }
+        )
+
+    # If denied, justification is mandatory (Art. 12.4)
+    if data.resolution == "denied" and not data.denial_reason:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Denial requires mandatory justification "
+                   "(Art. 12.4 GDPR). Please provide the reason."
+        )
+
+    request.status = RequestStatus.RESOLVED
+    request.resolution = data.resolution
+    request.resolution_summary = data.resolution_summary
+    request.denial_reason = data.denial_reason
+    request.resolved_date = now
+    request.updated_by = current_user.id
+
+    await db.session.commit()
+
+    await audit_log(
+        action="rights_request.resolved",
+        resource_id=request.id,
+        user_id=current_user.id,
+        details={
+            "resolution": data.resolution,
+            "within_deadline": now <= deadline,
+        }
+    )
+
+    return request

@@ -1,0 +1,42 @@
+# Educational field encryption; callers must enforce tenant/key access and per-key nonce limits.
+import base64
+import os
+from pathlib import Path
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
+MAX_PLAINTEXT_BYTES = 256
+MAX_ENCODED_CHARS = 380  # Base64 of nonce12 + plaintext256 + tag16.
+
+def get_encryption_key() -> bytes:
+    key_file = os.environ.get("ENCRYPTION_KEY_FILE")
+    key_b64 = (Path(key_file).read_text(encoding="ascii").strip()
+               if key_file else os.environ.get("ENCRYPTION_KEY"))
+    if not isinstance(key_b64, str) or len(key_b64) != 44:
+        raise RuntimeError("A configured base64 AES-256 key is required")
+    try:
+        key = base64.b64decode(key_b64, validate=True)
+    except (ValueError, base64.binascii.Error):
+        raise RuntimeError("Invalid encryption key encoding") from None
+    if len(key) != 32:
+        raise RuntimeError("AES-256 requires an exact 32-byte key")
+    return key
+
+def encrypt_field(plaintext: str) -> str:
+    if not isinstance(plaintext, str):
+        raise ValueError("Text input required")
+    encoded = plaintext.encode("utf-8")
+    if not 1 <= len(encoded) <= MAX_PLAINTEXT_BYTES:
+        raise ValueError("Secret exceeds the configured UTF-8 byte bound")
+    nonce = os.urandom(12)
+    ciphertext = AESGCM(get_encryption_key()).encrypt(nonce, encoded, None)
+    return base64.b64encode(nonce + ciphertext).decode("ascii")
+
+def decrypt_field(encrypted_b64: str) -> str:
+    if not isinstance(encrypted_b64, str) or not 40 <= len(encrypted_b64) <= MAX_ENCODED_CHARS:
+        raise ValueError("Invalid bounded ciphertext")
+    blob = base64.b64decode(encrypted_b64, validate=True)
+    if not 29 <= len(blob) <= MAX_PLAINTEXT_BYTES + 28:
+        raise ValueError("Invalid ciphertext length")
+    # InvalidTag detects authentication failure under the key/nonce assumptions.
+    # This does not enforce tenant binding, authorization, key rotation or recovery.
+    return AESGCM(get_encryption_key()).decrypt(blob[:12], blob[12:], None).decode("utf-8")

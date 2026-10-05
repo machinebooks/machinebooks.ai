@@ -1,0 +1,55 @@
+# Historical Anthropic Messages SDK illustration, not Agent SDK or a required provider.
+# The caller must authorize the destination, retention and minimized summary before calling.
+# Ejemplo didáctico: patrones/agentes/privacy_risk_agent.py
+# Agente que analiza un tratamiento y sugiere riesgos para DPIA
+
+import anthropic
+
+client = anthropic.Anthropic()
+
+def analyze_processing_risks(treatment: dict) -> dict:
+    """Analiza un tratamiento y sugiere riesgos para DPIA.
+
+    Recibe un resumen autorizado y minimizado, sin datos personales de casos.
+    Las estimaciones son propuestas sin calibración empírica.
+    El responsable decide, con asesoramiento del DPO cuando esté designado.
+    """
+
+    # Construir contexto con datos del tratamiento
+    context = f"""Analiza el siguiente tratamiento de datos personales
+y genera una lista de riesgos para los derechos y libertades
+de los interesados, según el Art. 35.7.c del RGPD.
+
+Tratamiento: {treatment['name']}
+Finalidades: {treatment['purposes']}
+Base jurídica: {treatment['legal_basis']}
+Categorías de datos: {treatment['personal_data_categories']}
+Datos sensibles (Art. 9): {treatment['special_categories']}
+Transferencias internacionales: {treatment['international_transfers']}
+Destinatarios: {treatment['recipients']}
+
+Para cada riesgo identificado, indica:
+1. Descripción del riesgo
+2. Derechos afectados (privacidad, no discriminación, etc.)
+3. Probabilidad estimada (baja, media, alta)
+4. Impacto estimado (bajo, medio, alto, muy alto)
+5. Medida de mitigación sugerida
+
+IMPORTANTE: Este análisis es una asistencia inicial.
+El responsable valida la evaluación y solicita el asesoramiento del DPO
+cuando esté designado. Indica datos que faltan; no inventes probabilidades."""
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=2048,
+        messages=[{"role": "user", "content": context}]
+    )
+
+    # El resultado se almacena como borrador pendiente de validación
+    return {
+        "status": "draft_pending_review",
+        "analysis": message.content[0].text,
+        "model_used": "claude-sonnet-4-6",
+        "requires_controller_review": True,
+        "requires_dpo_advice_where_designated": True
+    }

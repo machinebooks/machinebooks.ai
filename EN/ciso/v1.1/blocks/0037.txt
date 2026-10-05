@@ -1,0 +1,50 @@
+# Required RiskService contract: trusted actor/tenant, RBAC, same-tenant links and bounded reads.
+# The FAIR route name describes grouped deterministic estimates, not a simulated distribution.
+from fastapi import APIRouter, Depends, HTTPException, Query
+from app.auth.dependencies import get_current_user
+from app.services.risk_service import RiskService
+
+router = APIRouter(prefix="/api/v1/risk", tags=["Risk Management"])
+
+async def require_analysis(service, user, analysis_id):
+    if type(analysis_id) is not int or analysis_id <= 0:
+        raise HTTPException(422, "Invalid analysis identifier")
+    await service.authorize_read(user)
+    analysis = await service.get_analysis(
+        analysis_id, corporate_id=user.corporate_id)
+    if analysis is None or analysis.corporate_id != user.corporate_id:
+        raise HTTPException(404, "Analysis unavailable")
+    return analysis
+
+@router.get("/analyses/{analysis_id}/matrix")
+async def get_risk_matrix(
+    analysis_id: int,
+    methodology: str = Query(..., max_length=50),
+    asset_type: str | None = Query(None, max_length=50),
+    risk_level: str | None = Query(None, max_length=30),
+    current_user=Depends(get_current_user),
+    risk_service: RiskService = Depends(),
+):
+    analysis = await require_analysis(risk_service, current_user, analysis_id)
+    await risk_service.require_methodology(analysis, methodology)
+    if methodology == "fair":
+        result = await risk_service.get_fair_distribution(
+            analysis_id, corporate_id=current_user.corporate_id,
+            asset_type=asset_type, max_scenarios=1000)
+    else:
+        result = await risk_service.get_qualitative_matrix(
+            analysis_id, corporate_id=current_user.corporate_id,
+            methodology=methodology, asset_type=asset_type,
+            risk_level=risk_level, max_scenarios=1000)
+    # Service returns coverage/overflow and an explicit partial state where needed.
+    return result
+
+@router.get("/analyses/{analysis_id}/untreated")
+async def get_untreated_high_risks(
+    analysis_id: int, current_user=Depends(get_current_user),
+    risk_service: RiskService = Depends(),
+):
+    await require_analysis(risk_service, current_user, analysis_id)
+    # Absence of a plan is a review signal; accepted risk is evaluated separately.
+    return await risk_service.get_untreated_high_risks(
+        analysis_id, corporate_id=current_user.corporate_id, limit=100)

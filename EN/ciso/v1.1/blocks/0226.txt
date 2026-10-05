@@ -1,0 +1,31 @@
+// Unknown or invalid values retain a neutral state.
+function ScoreGauge({ score, label }: {
+  score: number | null; label: string
+}) {
+  const known = score !== null && Number.isFinite(score) && score >= 0 && score <= 100
+  const s = known ? score : 0
+  const color = !known ? 'text-gray-500'
+    : s >= 80 ? 'text-green-600'
+    : s >= 60 ? 'text-yellow-600' : 'text-red-600'
+  const display = known ? String(Math.round(s)) : 'Pending'
+  return (
+    <div className="text-center">
+      <div className="relative w-24 h-24 mx-auto">
+        <svg aria-hidden="true" className="w-24 h-24 -rotate-90" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="42" fill="none"
+            stroke="#e5e7eb" strokeWidth="8" />
+          <circle cx="50" cy="50" r="42" fill="none"
+            stroke="currentColor" className={color}
+            strokeWidth="8" strokeLinecap="round"
+            strokeDasharray={known ? `${s * 2.64} 264` : '0 264'} />
+        </svg>
+        <span className={`absolute inset-0 flex items-center
+          justify-center text-2xl font-bold ${color}`}>
+          {display}
+        </span>
+      </div>
+      <p className="text-xs text-gray-500 mt-2">{label}</p>
+    </div>
+  )
+}
+// Thresholds are internal case settings; color does not establish compliance.

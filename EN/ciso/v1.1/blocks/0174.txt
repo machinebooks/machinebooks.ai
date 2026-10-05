@@ -1,0 +1,46 @@
+from uuid import UUID, uuid4
+import structlog
+
+log = structlog.get_logger()
+
+class ObservabilityMiddleware:
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            return await self.app(scope, receive, send)
+        state = scope.setdefault("state", {})
+        try:
+            request_id = str(UUID(state.get("request_id")))
+        except (ValueError, TypeError, AttributeError):
+            request_id = str(uuid4())
+        state["request_id"] = request_id
+        tokens = structlog.contextvars.bind_contextvars(
+            request_id=request_id, method=scope["method"])
+        status_code = 500
+
+        async def send_with_id(message):
+            nonlocal status_code
+            if message["type"] == "http.response.start":
+                status_code = message["status"]
+                message = dict(message)
+                headers = [(key, value) for key, value in message.get("headers", [])
+                           if key.lower() != b"x-request-id"]
+                message["headers"] = headers + [(b"x-request-id", request_id.encode("ascii"))]
+            await send(message)
+
+        log.info("request_started")
+        try:
+            await self.app(scope, receive, send_with_id)
+        except Exception:
+            log.error("request_failed", error_kind="internal")
+            raise
+        finally:
+            route = getattr(scope.get("route"), "path", None)
+            log.info("request_completed", status_code=status_code, route=route)
+            structlog.contextvars.reset_contextvars(**tokens)
+# UUID comes from server state or is generated; client X-Request-ID is not trusted identity.
+# Route template is allowlisted by the minimal processor; no raw URL/body/user/IP is logged.
+# Authenticated audit attribution is a separate protected channel. ASGI context propagation
+# and streaming/cancellation/background-task behavior require end-to-end tests.

@@ -1,0 +1,77 @@
+# Educational extraction subset: paragraphs/tables only; no OCR, headers or embedded objects.
+# The caller must authorize rights/tenant and copy to an immutable owned staging path.
+import os
+import hashlib
+from pathlib import Path
+from zipfile import ZipFile
+from PyPDF2 import PdfReader
+from docx import Document as DocxReader
+
+CORPUS_BASE_DIR = Path(os.environ.get("CORPUS_BASE_DIR", "corpus")).resolve()
+MAX_FILE_BYTES = 20 * 1024 * 1024
+MAX_TEXT_CHARS = 1_000_000
+
+def _validate_file_path(file_path: str) -> Path:
+    resolved = Path(file_path).resolve(strict=True)
+    if not resolved.is_relative_to(CORPUS_BASE_DIR) or not resolved.is_file():
+        raise ValueError("File outside the permitted corpus")
+    if resolved.suffix.lower() not in {".pdf", ".docx"}:
+        raise ValueError("Unsupported corpus format")
+    if not 0 < resolved.stat().st_size <= MAX_FILE_BYTES:
+        raise ValueError("Corpus file size outside the configured bound")
+    return resolved
+
+def extract_text(file_path: str) -> str:
+    path = _validate_file_path(file_path)
+    parts, count = [], 0
+    def append(value):
+        nonlocal count
+        value = value.strip()
+        count += len(value) + 2
+        if count > MAX_TEXT_CHARS:
+            raise ValueError("Extracted text exceeds the configured bound")
+        if value:
+            parts.append(value)
+    if path.suffix.lower() == ".pdf":
+        reader = PdfReader(str(path))
+        if reader.is_encrypted or len(reader.pages) > 2000:
+            raise ValueError("Encrypted PDF or excessive page count")
+        for page in reader.pages:
+            append(page.extract_text() or "")
+    else:
+        with ZipFile(path) as archive:
+            entries = archive.infolist()
+            if len(entries) > 1000 or sum(e.file_size for e in entries) > 64 * 1024 * 1024:
+                raise ValueError("Expanded DOCX exceeds the configured bound")
+        doc = DocxReader(str(path))
+        for paragraph in doc.paragraphs:
+            append(paragraph.text)
+        for table in doc.tables:
+            for row in table.rows:
+                append("\t".join(cell.text for cell in row.cells))
+    if not parts:
+        raise ValueError("No extractable text; an approved OCR/review path is required")
+    return "\n\n".join(parts)
+
+def compute_file_hash(file_path: str) -> str:
+    sha256 = hashlib.sha256()
+    with _validate_file_path(file_path).open("rb") as stream:
+        for block in iter(lambda: stream.read(8192), b""):
+            sha256.update(block)
+    return sha256.hexdigest()
+
+def chunk_text(text: str, chunk_size: int = 512, overlap: int = 64) -> list[dict]:
+    # Word windows are not provider-specific token counts.
+    if (not isinstance(text, str) or len(text) > MAX_TEXT_CHARS
+            or type(chunk_size) is not int or not 1 <= chunk_size <= 4096
+            or type(overlap) is not int or not 0 <= overlap < chunk_size):
+        raise ValueError("Invalid bounded chunk parameters")
+    words = text.split()
+    chunks = []
+    for start in range(0, len(words), chunk_size - overlap):
+        end = min(start + chunk_size, len(words))
+        chunks.append({"index": len(chunks), "text": " ".join(words[start:end]),
+                       "start_word": start, "end_word": end, "word_count": end - start})
+        if len(chunks) > 10000:
+            raise ValueError("Too many chunks")
+    return chunks

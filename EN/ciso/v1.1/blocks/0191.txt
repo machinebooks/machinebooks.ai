@@ -1,0 +1,6 @@
+# pytest.ini: discover qa_*.py and the standalone freshness test.
+[pytest]
+testpaths = tests
+python_files = test_*.py qa_*.py
+markers =
+    regulatory: checks a documented regulatory requirement

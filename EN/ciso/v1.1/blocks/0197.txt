@@ -1,0 +1,168 @@
+from celery import shared_task
+from datetime import datetime, timedelta, timezone
+from math import isfinite
+import numpy as np
+
+@shared_task(queue='maintenance', name='ai.calculate_quality_metrics')
+def calculate_quality_metrics(corporate_id: int, job_id: str, period_type: str = 'daily'):
+    """Six aggregates for one internally authorized tenant and UTC period."""
+    from app.jobs import policy
+    policy.require_authorized_job(job_id, 'ai.calculate_quality_metrics', corporate_id)
+    # Required policy verifies persisted job ownership, purpose and current scope.
+    if type(corporate_id) is not int or corporate_id <= 0:
+        raise ValueError('Invalid tenant context')
+    from app.database import SessionLocal  # configured SQLAlchemy sessionmaker
+    from app.models import LLMUsageLog, LLMQualityScore
+
+    midnight = datetime.now(timezone.utc).replace(
+        hour=0, minute=0, second=0, microsecond=0)
+    if period_type == 'daily':
+        period_end = midnight
+        period_start = period_end - timedelta(days=1)
+    elif period_type == 'weekly':
+        period_end = midnight - timedelta(days=midnight.weekday())
+        period_start = period_end - timedelta(days=7)
+    else:
+        raise ValueError('Unsupported period')
+
+    with SessionLocal.begin() as session:
+        usage_logs = session.query(LLMUsageLog).filter(
+            LLMUsageLog.corporate_id == corporate_id,
+            LLMUsageLog.created_at >= period_start,
+            LLMUsageLog.created_at < period_end,
+        ).order_by(LLMUsageLog.id).limit(10001).all()
+        quality_scores = session.query(LLMQualityScore).filter(
+            LLMQualityScore.corporate_id == corporate_id,
+            LLMQualityScore.created_at >= period_start,
+            LLMQualityScore.created_at < period_end,
+        ).order_by(LLMQualityScore.id).limit(10001).all()
+        if len(usage_logs) > 10000 or len(quality_scores) > 10000:
+            return {'status': 'incomplete_requires_batched_aggregation'}
+        if not usage_logs:
+            return {'status': 'no_data', 'corporate_id': corporate_id,
+                    'period': period_type}
+
+        services = {log.service_type for log in usage_logs}
+        metrics_created = 0
+        for service in services:
+            svc_logs = [log for log in usage_logs if log.service_type == service]
+            svc_quality = [score for score in quality_scores
+                           if score.service_type == service]
+            known_results = [row for row in svc_logs if type(row.success) is bool]
+            if known_results:
+                error_rate = sum(not row.success for row in known_results) / len(known_results)
+                _store_metric(session, corporate_id, 'error_rate', service,
+                              error_rate, len(known_results), period_type,
+                              period_start, period_end)
+
+            latencies = [log.latency_ms for log in svc_logs
+                         if log.latency_ms is not None]
+            if latencies:
+                _store_metric(session, corporate_id, 'avg_latency_ms', service,
+                              float(np.mean(latencies)), len(latencies), period_type,
+                              period_start, period_end)
+            if all(row.cost_total is not None and row.cost_currency == 'USD'
+                   for row in svc_logs):
+                cost = float(sum(row.cost_total for row in svc_logs))
+                _store_metric(session, corporate_id, 'period_cost_usd', service,
+                              cost, len(svc_logs), period_type, period_start, period_end)
+            # Missing/foreign-currency costs are excluded as unknown, never zero.
+
+            for metric_name, attribute in (
+                ('hallucination_rate', 'hallucination_score'),
+                ('groundedness_avg', 'groundedness_score'),
+                ('bias_score_avg', 'bias_score'),
+            ):
+                values = [getattr(score, attribute) for score in svc_quality
+                          if getattr(score, attribute) is not None]
+                if values:
+                    _store_metric(session, corporate_id, metric_name, service,
+                                  float(np.mean(values)), len(values), period_type,
+                                  period_start, period_end)
+            metrics_created += 1
+        # Context commits on success and rolls back on exception.
+    return {'status': 'ok', 'corporate_id': corporate_id,
+            'services_processed': metrics_created,
+            'coverage': 'bounded_known_observations_only'}
+
+
+def _store_metric(session, corporate_id, metric_name, service_type,
+                  value, sample_size, period_type, period_start, period_end):
+    from app.models import AIMonitoringMetric, AIMonitoringThreshold
+    if not isfinite(value) or sample_size <= 0 or not service_type:
+        raise ValueError('Invalid metric data')
+    # AIMonitoringThreshold must carry corporate_id too.
+    threshold = session.query(AIMonitoringThreshold).filter_by(
+        corporate_id=corporate_id, metric_name=metric_name,
+        service_type=service_type,
+    ).first()
+    status = 'normal'
+    if threshold is not None:
+        for level, limit in (
+            ('critical', threshold.critical_value),
+            ('alert', threshold.alert_value),
+            ('warning', threshold.warning_value),
+        ):
+            if limit is not None and _exceeds(value, limit, threshold.direction):
+                status = level
+                break
+    trend, delta_pct = _calculate_trend(
+        session, corporate_id, metric_name, service_type,
+        period_type, period_start, value)
+
+    metric = session.query(AIMonitoringMetric).filter_by(
+        corporate_id=corporate_id, metric_name=metric_name,
+        service_type=service_type, period_type=period_type,
+        period_start=period_start,
+    ).with_for_update().first()
+    if metric is None:
+        metric = AIMonitoringMetric(
+            corporate_id=corporate_id, metric_name=metric_name,
+            service_type=service_type, period_type=period_type,
+            period_start=period_start, period_end=period_end)
+        session.add(metric)
+    metric.value = round(value, 6)
+    metric.sample_size = sample_size
+    metric.period_end = period_end
+    metric.threshold_warning = threshold.warning_value if threshold else None
+    metric.threshold_alert = threshold.alert_value if threshold else None
+    metric.threshold_critical = threshold.critical_value if threshold else None
+    metric.status, metric.trend, metric.trend_delta_pct = status, trend, delta_pct
+    # The unique key prevents duplicates; concurrent insert conflicts roll back.
+    # Production dispatch must serialize this key or retry conflicts transactionally.
+
+
+def _calculate_trend(session, corporate_id, metric_name, service_type,
+                     period_type, current_start, current_value):
+    """Illustrative weighted comparison; not a statistical significance test."""
+    from app.models import AIMonitoringMetric
+    previous = session.query(AIMonitoringMetric).filter(
+        AIMonitoringMetric.corporate_id == corporate_id,
+        AIMonitoringMetric.metric_name == metric_name,
+        AIMonitoringMetric.service_type == service_type,
+        AIMonitoringMetric.period_type == period_type,
+        AIMonitoringMetric.period_start < current_start,
+    ).order_by(AIMonitoringMetric.period_start.desc()).limit(3).all()
+    if not previous:
+        return None, None
+    weights = [0.5, 0.3, 0.2][:len(previous)]
+    baseline = sum(row.value * weight for row, weight in zip(previous, weights))
+    baseline /= sum(weights)
+    if not isfinite(baseline):
+        raise ValueError('Invalid trend baseline')
+    if baseline == current_value:
+        return 'stable', 0.0
+    delta_pct = ((current_value - baseline) / abs(baseline)) * 100 if baseline else None
+    if delta_pct is not None and abs(delta_pct) < 5:
+        return 'stable', round(delta_pct, 2)
+    lower_is_better = {'error_rate', 'hallucination_rate', 'avg_latency_ms',
+                       'period_cost_usd', 'bias_score_avg'}
+    improved = current_value < baseline if metric_name in lower_is_better else current_value > baseline
+    return ('improving' if improved else 'degrading'), (
+        round(delta_pct, 2) if delta_pct is not None else None)
+
+
+def _exceeds(value, threshold, direction):
+    if not isfinite(threshold) or direction not in {'upper', 'lower'}:
+        raise ValueError('Invalid threshold configuration')
+    return value > threshold if direction == 'upper' else value < threshold

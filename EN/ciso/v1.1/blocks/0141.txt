@@ -1,0 +1,51 @@
+// Supply an accessible text/table alternative beside this illustrative chart.
+// Didactic example: compliance radar with Recharts
+import {
+  RadarChart, PolarGrid, PolarAngleAxis,
+  PolarRadiusAxis, Radar, ResponsiveContainer, Tooltip,
+} from "recharts";
+
+interface FrameworkCompliance {
+  framework: string;    // "ENS", "ISO 27001", "NIS2"...
+  evidence_coverage: number | null;   // Internal percentage, not legal conformity; null = unknown
+  target: number;       // 0-100, target for the period
+}
+
+function ComplianceRadar({ data }: { data: FrameworkCompliance[] }) {
+  return (
+    <ResponsiveContainer width="100%" height={360}>
+      <RadarChart data={data} cx="50%" cy="50%" outerRadius="75%">
+        <PolarGrid strokeDasharray="3 3" />
+        <PolarAngleAxis
+          dataKey="framework"
+          tick={{ fontSize: 12, fill: "#64748b" }}
+        />
+        <PolarRadiusAxis angle={30} domain={[0, 100]} />
+
+        {/* Target: dashed line */}
+        <Radar
+          name="Target"
+          dataKey="target"
+          stroke="#94a3b8"
+          fill="none"
+          strokeDasharray="5 5"
+        />
+
+        {/* Current status: filled area */}
+        <Radar
+          name="Evidence coverage"
+          dataKey="evidence_coverage"
+          stroke="#3b82f6"
+          fill="#3b82f6"
+          fillOpacity={0.25}
+        />
+
+        <Tooltip
+          formatter={(value) => `${value}%`}
+          contentStyle={{ backgroundColor: "#1e293b", border: "none" }}
+          labelStyle={{ color: "#f8fafc" }}
+        />
+      </RadarChart>
+    </ResponsiveContainer>
+  );
+}

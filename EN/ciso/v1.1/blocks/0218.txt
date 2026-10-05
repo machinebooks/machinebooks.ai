@@ -1,0 +1,54 @@
+from datetime import datetime, timezone
+from sqlalchemy import select, func, case
+from app.models.policy_awareness import AwarenessCampaign, AwarenessCompletion, CampaignStatus
+
+async def authorized_campaign(self, campaign_id, user_id, action):
+    self.policy.authorize_campaign_action(self.corporate_id, user_id, campaign_id, action)
+    campaign = await self.db.scalar(select(AwarenessCampaign).where(
+        AwarenessCampaign.id == campaign_id,
+        AwarenessCampaign.corporate_id == self.corporate_id,
+        AwarenessCampaign.is_deleted.is_(False)).with_for_update())
+    if campaign is None:
+        raise LookupError("Campaign not found")
+    return campaign
+
+async def launch_campaign(self, campaign_id, user_id):
+    campaign = await authorized_campaign(self, campaign_id, user_id, "launch")
+    if campaign.status != CampaignStatus.PLANNED:
+        raise ValueError("Only planned campaigns can be launched")
+    # Server policy verifies the approved target snapshot, content and lawful scope.
+    self.policy.validate_campaign_launch(campaign)
+    campaign.status = CampaignStatus.ACTIVE
+    campaign.start_date = campaign.start_date or datetime.now(timezone.utc)
+    campaign.updated_by = user_id
+    await self.db.flush()
+    return {"id": campaign.id, "status": campaign.status.value}
+
+async def complete_campaign(self, campaign_id, user_id):
+    campaign = await authorized_campaign(self, campaign_id, user_id, "complete")
+    if campaign.status != CampaignStatus.ACTIVE:
+        raise ValueError("Only active campaigns can be completed")
+    row = (await self.db.execute(select(
+        func.count(func.distinct(AwarenessCompletion.user_id)).label("completed"),
+        func.avg(AwarenessCompletion.score).label("average_score"),
+        func.count(AwarenessCompletion.passed).label("graded"),
+        func.sum(case((AwarenessCompletion.passed.is_(True), 1), else_=0)).label("passed"),
+    ).where(
+        AwarenessCompletion.campaign_id == campaign.id,
+        AwarenessCompletion.corporate_id == self.corporate_id,
+        AwarenessCompletion.is_deleted.is_(False),
+        AwarenessCompletion.status == "completed",
+    ))).one()
+    campaign.completed_count = row.completed
+    campaign.average_score = round(float(row.average_score), 1) if row.average_score is not None else None
+    campaign.pass_rate = round((row.passed or 0) / row.graded * 100, 1) if row.graded else None
+    campaign.status = CampaignStatus.COMPLETED
+    campaign.end_date = datetime.now(timezone.utc)
+    campaign.updated_by = user_id
+    await self.db.flush()
+    return {"id": campaign.id, "status": campaign.status.value,
+            "completed_count": row.completed, "graded_count": row.graded,
+            "average_score": campaign.average_score, "pass_rate": campaign.pass_rate}
+# Continuation methods of the scoped service; caller owns transaction/rollback/close.
+# Count distinct approved learners; completed does not mean passed or organizational conformity.
+# Unknown/ungraded and zero target denominators are reported explicitly, not as successful 0%.

@@ -1,0 +1,121 @@
+# BCM Model — Business Continuity (ISO 22301)
+# BIA + Recovery plans linked to NIS2 Art. 21 and DORA Art. 11
+
+from enum import Enum as PyEnum
+from sqlalchemy import (
+    Column, String, Text, DateTime, Integer,
+    Float, JSON, BigInteger, ForeignKey, Enum as SQLEnum
+)
+from app.models.base import BaseModel
+
+
+class BCMCriticality(str, PyEnum):
+    """Business process criticality."""
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"
+
+
+class BusinessImpactAnalysis(BaseModel):
+    """Business Impact Analysis (BIA) per process.
+
+    The BIA is the core of ISO 22301: it determines for each process
+    how long it can be disrupted (MTPD), how quickly it must be
+    recovered (RTO), and how much data loss is tolerable (RPO).
+    """
+    __tablename__ = "bcm_bia"
+
+    process_name = Column(String(300), nullable=False)
+    process_description = Column(Text, nullable=True)
+    process_owner = Column(String(200), nullable=True)
+    department = Column(String(200), nullable=True)
+
+    criticality = Column(SQLEnum(BCMCriticality), nullable=False)
+
+    # Recovery parameters (BIA core)
+    mtpd_hours = Column(
+        Float, nullable=False,
+        comment="Maximum Tolerable Period of Disruption (hours). "
+                "Maximum time before unacceptable consequences."
+    )
+    rto_hours = Column(
+        Float, nullable=False,
+        comment="Recovery Time Objective (hours). "
+                "Target time to restore the process. "
+                "Must always be <= MTPD."
+    )
+    rpo_hours = Column(
+        Float, nullable=False,
+        comment="Recovery Point Objective (hours). "
+                "Maximum age of lost data tolerable."
+    )
+
+    # Impact by type
+    financial_impact = Column(Float, nullable=True,
+        comment="Estimated financial impact per hour of disruption (EUR)")
+    reputational_impact = Column(String(20), nullable=True)
+    regulatory_impact = Column(String(20), nullable=True)
+    operational_impact = Column(Text, nullable=True)
+
+    # Dependencies
+    depends_on_processes = Column(JSON, nullable=True)
+    depends_on_systems = Column(JSON, nullable=True)
+    depends_on_providers = Column(JSON, nullable=True)
+
+    minimum_staff = Column(Integer, nullable=True)
+    minimum_systems = Column(JSON, nullable=True)
+
+    linked_asset_ids = Column(JSON, nullable=True)
+    last_review_date = Column(DateTime(timezone=True), nullable=True)
+    next_review_date = Column(DateTime(timezone=True), nullable=True)
+
+
+class RecoveryPlan(BaseModel):
+    """Recovery plan linked to a BIA process.
+
+    Documents steps to restore the process within the RTO.
+    Does not execute recovery; records plan versions and test results.
+    """
+    __tablename__ = "bcm_recovery_plans"
+
+    bia_id = Column(
+        BigInteger, ForeignKey("bcm_bia.id"), nullable=False
+    )
+
+    plan_name = Column(String(300), nullable=False)
+    plan_version = Column(String(20), nullable=False, default="1.0")
+
+    # Plan contents
+    activation_criteria = Column(
+        Text, nullable=False,
+        comment="Criteria for activating this plan"
+    )
+    recovery_steps = Column(
+        JSON, nullable=False,
+        comment="Ordered recovery steps"
+    )
+    responsible_team = Column(
+        JSON, nullable=True,
+        comment="Team responsible for executing the plan"
+    )
+    communication_plan = Column(
+        Text, nullable=True,
+        comment="Communication protocol during the crisis"
+    )
+
+    # Plan testing
+    last_test_date = Column(DateTime(timezone=True), nullable=True)
+    last_test_result = Column(
+        String(20), nullable=True,
+        comment="passed, partial, failed"
+    )
+    next_test_date = Column(DateTime(timezone=True), nullable=True)
+
+    # State
+    status = Column(
+        String(20), nullable=False, default="draft",
+        comment="draft, approved, active, archived"
+    )
+    approved_by = Column(String(200), nullable=True)
+    approved_at = Column(DateTime(timezone=True), nullable=True)

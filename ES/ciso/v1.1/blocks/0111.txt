@@ -1,0 +1,18 @@
+# RBAC and optional-module licensing are separate dependencies.
+from fastapi import Depends, HTTPException, Request
+from app.database import get_db
+from app.auth.current_policy import permission_adapter
+
+
+def require_permission(module: str, action: str):
+    async def check_permission(request: Request, db=Depends(get_db)):
+        identity = getattr(request.state, "current_identity", None)
+        cid = getattr(request.state, "corporate_id", None)
+        if not isinstance(identity, dict) or type(cid) is not int or cid <= 0:
+            raise HTTPException(401, "No autenticado")
+        # Required adapter checks active actor/tenant, current policy revision and role bindings.
+        # Global role templates require explicit platform authority; they confer no global data access.
+        await permission_adapter.authorize_current_operation(identity, cid, module, action, db)
+    return check_permission
+# Cache TTL never substitutes for current revocation/revision checks.
+# This fragment implements the dependency boundary, not the private permission adapter.

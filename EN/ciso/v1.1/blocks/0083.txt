@@ -1,0 +1,49 @@
+import asyncio
+import json
+from fastapi import APIRouter, Depends, Request, HTTPException
+from sse_starlette.sse import EventSourceResponse
+from app.auth.dependencies import get_current_user
+from app.schemas.copilot import CopilotChatPayload
+from app.services.copilot.runtime import get_copilot_runtime
+
+router = APIRouter(prefix="/api/v1/copilot", tags=["copilot"])
+
+@router.post("/chat")
+async def copilot_chat(payload: CopilotChatPayload, request: Request,
+                       user=Depends(get_current_user), runtime=Depends(get_copilot_runtime)):
+    if not payload.message.strip() or len(payload.message) > 8000:
+        raise HTTPException(422, "Message exceeds the limit")
+    # Validates session ownership, module authorization and server-resolved tenant/actor.
+    context = await runtime.authorize_request(user, payload.session_id, payload.module_context)
+    allowed_events = {"agent_progress", "draft", "sources", "complete", "error"}
+
+    async def event_generator():
+        # Runtime owns session lifetime and cancellation; no request DB session escapes.
+        stream = runtime.process_read_or_approved_action(context, payload.message)
+        try:
+            async with asyncio.timeout(120):
+                count = 0
+                async for event in stream:
+                    if await request.is_disconnected():
+                        return
+                    await runtime.recheck_access(context)
+                    count += 1
+                    event_type = event.get("type")
+                    if count > 256 or event_type not in allowed_events:
+                        raise ValueError("Invalid or excessive stream events")
+                    safe = await runtime.minimize_event(context, event)
+                    data = json.dumps({key: value for key, value in safe.items()
+                                       if key != "type"}, ensure_ascii=False)
+                    if len(data.encode("utf-8")) > 32768:
+                        raise ValueError("Stream event exceeds the bound")
+                    yield {"event": event_type, "data": data}
+        except asyncio.CancelledError:
+            raise
+        except Exception:
+            yield {"event": "error", "data": json.dumps({"message": "The stream could not be completed"})}
+        finally:
+            await stream.aclose()
+    return EventSourceResponse(event_generator(), ping=15, send_timeout=30)
+# Required runtime enforces per-tool authorization, policy/usage, owned sessions and
+# approved writes. These adapters are contracts to implement/test, not a complete platform.
+# Cookie authentication additionally requires session CSRF and Origin validation.

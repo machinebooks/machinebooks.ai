@@ -1,0 +1,114 @@
+# Didactic example: privacy agent that interprets a description
+# and generates a processing activity draft per Art. 30.1 GDPR
+# Historical Anthropic Messages SDK illustration; provider is not mandatory.
+
+import anthropic
+import json
+
+PRIVACY_AGENT_SYSTEM = """You are an expert agent in personal data protection,
+specialized in the GDPR (EU Regulation 2016/679) and the LOPDGDD (OL 3/2018).
+
+Your task is to analyze a personal data processing description
+and generate a draft record of processing activity conforming
+to Art. 30.1 of the GDPR.
+
+For each processing activity, you must identify:
+1. Processing purposes (Art. 30.1.b)
+2. Most appropriate legal basis (Art. 6.1 GDPR) — use ONLY one of:
+   consent, contract, legal_obligation, vital_interest,
+   public_interest, legitimate_interest
+3. Categories of data subjects and personal data (Art. 30.1.c)
+4. Whether there are special categories under Art. 9 (health, biometric, etc.)
+5. Expected recipients (Art. 30.1.d)
+6. Whether there are international transfers (Art. 30.1.e)
+7. Recommended retention periods (Art. 30.1.f)
+8. Recommended security measures (Art. 30.1.g, Art. 32)
+9. Whether a DPIA is required (Art. 35)
+
+RULES:
+- ALWAYS respond in valid JSON with the requested structure.
+- If you do not have sufficient information for a field, indicate "requires_confirmation".
+- Propose a legal basis only with sufficient context; otherwise use null.
+  The controller must validate it; the DPO advises where designated.
+- Special categories do not always require DPIA: assess Art.35, scale, risk
+  and applicable lists. If information is missing, use "dpia_required": null.
+- Use null when special categories or transfers are unknown. Missing
+  information does not establish absence of processing.
+- Model judgments are not calibrated probabilities.
+- Erasure periods require identifying the law, purpose and context.
+"""
+
+GENERATION_PROMPT = """Analyze this processing activity description
+and generate a draft record per Art. 30.1 GDPR:
+
+PROCESSING DESCRIPTION:
+{description}
+
+ORGANIZATION CONTEXT:
+- Sector: {sector}
+- Size: {size}
+
+Generate the structured JSON draft."""
+
+
+async def generate_processing_activity_draft(
+    description: str,
+    sector: str = "general",
+    size: str = "medium",
+    *,
+    client: anthropic.AsyncAnthropic,
+    model: str
+) -> dict:
+    """Generates a processing activity draft from a free description.
+
+    The agent interprets the description and maps each element
+    to Art. 30.1 fields. The controller must validate the result, with advice from the DPO where designated.
+    """
+    # The server supplies an approved client/model and owns the client lifecycle.
+    # Authorize the destination and minimize this summary before this boundary.
+    if not all(isinstance(value, str) and value.strip() for value in
+               (description, sector, size, model)) or len(description) > 10000:
+        raise ValueError("Invalid or excessive draft input")
+
+    message = await client.messages.create(
+        model=model,
+        max_tokens=2048,
+        system=PRIVACY_AGENT_SYSTEM,
+        messages=[{
+            "role": "user",
+            "content": GENERATION_PROMPT.format(
+                description=description,
+                sector=sector,
+                size=size
+            )
+        }]
+    )
+
+    # Parse agent JSON response
+    response_text = message.content[0].text
+    draft = json.loads(response_text)
+    if not isinstance(draft, dict):
+        raise ValueError("Draft must be an object")
+    allowed_bases = {"consent", "contract", "legal_obligation", "vital_interest",
+                     "public_interest", "legitimate_interest"}
+    basis = draft.get("legal_basis")
+    if basis is not None and (not isinstance(basis, str) or basis not in allowed_bases):
+        raise ValueError("Unrecognized legal basis")
+    for field in ("dpia_required", "special_categories", "international_transfers"):
+        value = draft.get(field)
+        if value is not None and type(value) is not bool:
+            raise ValueError("Draft flag must be boolean or unknown")
+    # A complete output schema and human approval remain application obligations.
+
+    # Mark fields for controller review and DPO advice where designated
+    draft["_metadata"] = {
+        "generated_by": "privacy_agent",
+        "model": model,
+        "tokens_used": message.usage.input_tokens + message.usage.output_tokens,
+        "requires_controller_review": True,
+        "requires_dpo_advice_where_designated": True,
+        "confidence": draft.get("legal_basis_confidence"),
+        "confidence_scope": "Uncalibrated model judgment; pending human review"
+    }
+
+    return draft

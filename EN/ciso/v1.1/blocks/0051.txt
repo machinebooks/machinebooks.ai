@@ -1,0 +1,25 @@
+# Historical Agents SDK fragment; model is an explicit, tested adapter.
+from agents import Agent, Runner
+
+async def analyze_compliance_status(query, trusted_context, model_adapter):
+    if not isinstance(query, str) or not query.strip() or len(query) > 8000:
+        raise ValueError("Query is empty or exceeds the limit")
+    trusted_context.authorize_compliance()
+    # Adapter implements the installed SDK Model interface and routes every request
+    # through the authorized policy/budget/usage factory, including tool continuations.
+    trusted_context.assert_model_adapter(model_adapter)
+    agent = Agent(
+        name="ComplianceAgent", model=model_adapter,
+        instructions=(
+            "Use authorized tools and cite their scope and edition. "
+            "Do not invent evidence or declare conformity. "
+            "Expose unknown data and actions pending human review."),
+        tools=trusted_context.read_only_compliance_tools(),
+    )
+    result = await Runner.run(
+        agent, input=query, context=trusted_context, max_turns=4)
+    trusted_context.validate_draft(result.final_output)
+    return {"draft": result.final_output, "review_required": True}
+# Tool context owns per-call session lifetimes, tenant filters and bounded queries.
+# No database state or mapping is updated from an LLM label; tools only read/draft.
+# Anthropic Messages alone is not an Agents SDK Model implementation.

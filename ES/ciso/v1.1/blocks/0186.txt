@@ -1,0 +1,31 @@
+import pytest
+
+# Synthetic pattern candidates; no real person/account, validity or exhaustive recall asserted.
+POSITIVE_CANDIDATES = [
+    ("12345678Z", "dni"),
+    ("ES00 0000 0000 00 0000000000", "iban"),
+    ("4111 1111 1111 1111", "card"),
+    ("fixture@example.test", "email"),
+]
+NEGATIVE_CASES = ["Artículo 12345678", "Referencia ES12-ABCD", "Servicio de emergencia 911"]
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("text,kind", POSITIVE_CANDIDATES)
+async def test_pattern_candidates(client, auth_headers, text, kind):
+    response = await client.post(
+        "/api/v1/ai/pii/detect", json={"text": text}, headers=auth_headers)
+    assert response.status_code == 200
+    detections = response.json()["detections"]
+    assert isinstance(detections, list)
+    assert kind in {item["type"] for item in detections}
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("text", NEGATIVE_CASES)
+async def test_benign_negative_candidates(client, auth_headers, text):
+    response = await client.post(
+        "/api/v1/ai/pii/detect", json={"text": text}, headers=auth_headers)
+    assert response.status_code == 200
+    assert response.json()["detections"] == []
+# Fixture/API contract distinguishes pattern detection from checksum/account validation.
+# These few cases do not measure recall across languages, formats or adversarial variants,
+# and do not prove anonymization, complete masking or safe disclosure to a provider.

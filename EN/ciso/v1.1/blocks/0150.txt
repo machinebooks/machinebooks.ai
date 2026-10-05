@@ -1,0 +1,279 @@
+# Historical Compose topology: 11 declared services, 10 without local-ai.
+# Linux containers; illustrative private build/config assets are external requirements.
+# Application/custom debug images must implement _FILE loading; naming alone does not.
+# Provide protected paths through Compose --env-file; service env_file does not interpolate YAML.
+# Redis config must use noeviction for broker/session state; monitor memory and failures.
+# Image tags preserve the historical case, not an audited current production recommendation.
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    networks:
+    - spd_frontend
+    restart: unless-stopped
+  nginx:
+    image: nginx:1.25-alpine
+    ports:
+    - 443:443
+    volumes:
+    - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+    - /etc/pki/tls/certs/grc.crt:/etc/nginx/certs/server.crt:ro
+    - /etc/pki/tls/private/grc.key:/etc/nginx/certs/server.key:ro
+    - /var/log/nginx:/var/log/nginx
+    depends_on:
+      fastapi:
+        condition: service_healthy
+    networks:
+    - spd_frontend
+    - spd_backend
+    restart: unless-stopped
+  fastapi:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    command: gunicorn main:app --bind 0.0.0.0:8000 --workers ${GUNICORN_WORKERS:-4} --worker-class
+      uvicorn.workers.UvicornWorker --timeout 120 --graceful-timeout 30 --access-logfile -
+      --error-logfile -
+    volumes:
+    - uploads_data:/app/uploads
+    - reports_data:/app/reports
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+    - spd_backend
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 512M
+    environment:
+      DATABASE_URL_FILE: /run/secrets/backend_database_url
+      REDIS_URL_FILE: /run/secrets/redis_url
+      RUNTIME_CONFIG_FILE: /run/secrets/runtime_config
+      ENVIRONMENT: production
+      LOG_LEVEL: WARNING
+      AI_SECRET_CONFIG_FILE: /run/secrets/ai_secret_config
+      JWT_KEY_REGISTRY_FILE: /run/secrets/jwt_key_registry
+      QDRANT_URL: http://qdrant:6333
+      OLLAMA_BASE_URL: http://ollama:11434
+    secrets:
+    - backend_database_url
+    - redis_url
+    - runtime_config
+    - ai_secret_config
+    - jwt_key_registry
+    healthcheck:
+      test:
+      - CMD
+      - python
+      - -c
+      - import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+  celery-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    command: celery -A app.celery_app worker --loglevel=warning -Q ai,email,reports,maintenance,notifications
+      --concurrency=${CELERY_CONCURRENCY:-4} --max-tasks-per-child=100
+    volumes:
+    - uploads_data:/app/uploads
+    - reports_data:/app/reports
+    depends_on:
+      redis:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    networks:
+    - spd_backend
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 1G
+    environment:
+      DATABASE_URL_FILE: /run/secrets/worker_database_url
+      REDIS_URL_FILE: /run/secrets/redis_url
+      RUNTIME_CONFIG_FILE: /run/secrets/runtime_config
+      ENVIRONMENT: production
+      LOG_LEVEL: WARNING
+      AI_SECRET_CONFIG_FILE: /run/secrets/ai_secret_config
+      JWT_KEY_REGISTRY_FILE: /run/secrets/jwt_key_registry
+      QDRANT_URL: http://qdrant:6333
+      OLLAMA_BASE_URL: http://ollama:11434
+    secrets:
+    - worker_database_url
+    - redis_url
+    - runtime_config
+    - ai_secret_config
+    - jwt_key_registry
+  celery-beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    command: celery -A app.celery_app beat --loglevel=warning --schedule=/var/run/celerybeat-schedule
+      --pidfile=/var/run/celerybeat.pid
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+    - spd_backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL_FILE: /run/secrets/worker_database_url
+      REDIS_URL_FILE: /run/secrets/redis_url
+      RUNTIME_CONFIG_FILE: /run/secrets/runtime_config
+      ENVIRONMENT: production
+      LOG_LEVEL: WARNING
+    secrets:
+    - worker_database_url
+    - redis_url
+    - runtime_config
+  mysql:
+    image: mysql:8.0
+    volumes:
+    - /srv/grc/mysql_data:/var/lib/mysql
+    networks:
+    - spd_backend
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+    healthcheck:
+      test:
+      - CMD
+      - mysql
+      - --defaults-extra-file=/run/secrets/mysql_client_cnf
+      - --batch
+      - --skip-column-names
+      - --execute=SELECT 1
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+      MYSQL_DATABASE: grc_db
+      MYSQL_USER: grc
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_password
+    secrets:
+    - mysql_root_password
+    - mysql_password
+    - mysql_client_cnf
+    - mysql_backup_cnf
+  redis:
+    image: redis:7-alpine
+    command:
+    - redis-server
+    - /run/secrets/redis_conf
+    volumes:
+    - /srv/grc/redis_data:/data
+    networks:
+    - spd_backend
+    restart: unless-stopped
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - REDISCLI_AUTH="$$(cat /run/secrets/redis_password)" redis-cli --no-auth-warning ping
+        | grep -qx PONG
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    secrets:
+    - redis_conf
+    - redis_password
+  qdrant:
+    image: qdrant/qdrant:v1.7.4
+    volumes:
+    - /srv/grc/qdrant_data:/qdrant/storage
+    networks:
+    - spd_backend
+    restart: unless-stopped
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+    - /srv/grc/ollama_models:/root/.ollama
+    networks:
+    - spd_backend
+    profiles:
+    - local-ai
+    restart: unless-stopped
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    volumes:
+    - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    - /srv/grc/prometheus_data:/prometheus
+    networks:
+    - spd_backend
+    restart: unless-stopped
+  grafana:
+    image: grafana/grafana:10.2.0
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/grafana_password
+      GF_AUTH_ANONYMOUS_ENABLED: 'false'
+      GF_SERVER_ROOT_URL: https://${GRC_DOMAIN:?Set the approved domain}/grafana
+    volumes:
+    - /srv/grc/grafana_data:/var/lib/grafana
+    - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+    - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    networks:
+    - spd_backend
+    restart: unless-stopped
+    secrets:
+    - grafana_password
+networks:
+  spd_frontend:
+    driver: bridge
+  spd_backend:
+    driver: bridge
+volumes:
+  uploads_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /srv/grc/uploads
+  reports_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /srv/grc/reports
+secrets:
+  backend_database_url:
+    file: ${BACKEND_DATABASE_URL_FILE:?Set the protected secret file path}
+  redis_url:
+    file: ${REDIS_URL_FILE:?Set the protected secret file path}
+  runtime_config:
+    file: ${RUNTIME_CONFIG_FILE:?Set the protected secret file path}
+  ai_secret_config:
+    file: ${AI_SECRET_CONFIG_FILE:?Set the protected secret file path}
+  jwt_key_registry:
+    file: ${JWT_KEY_REGISTRY_FILE:?Set the protected secret file path}
+  worker_database_url:
+    file: ${WORKER_DATABASE_URL_FILE:?Set the protected secret file path}
+  mysql_root_password:
+    file: ${MYSQL_ROOT_PASSWORD_FILE:?Set the protected secret file path}
+  mysql_password:
+    file: ${MYSQL_PASSWORD_FILE:?Set the protected secret file path}
+  mysql_client_cnf:
+    file: ${MYSQL_CLIENT_CNF_FILE:?Set the protected secret file path}
+  mysql_backup_cnf:
+    file: ${MYSQL_BACKUP_CNF_FILE:?Set the protected backup client file path}
+  redis_conf:
+    file: ${REDIS_CONF_FILE:?Set the protected secret file path}
+  redis_password:
+    file: ${REDIS_PASSWORD_FILE:?Set the protected secret file path}
+  grafana_password:
+    file: ${GRAFANA_PASSWORD_FILE:?Set the protected secret file path}

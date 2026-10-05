@@ -1,0 +1,51 @@
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.resources import Resource
+
+def configure_tracing(runtime):
+    runtime.validate_trace_destination("otel-collector:4317")
+    provider = TracerProvider(resource=Resource.create({
+        "service.name": "grc-backend", "service.version": "1.0.0",
+        "deployment.environment": "production",
+    }))
+    exporter = OTLPSpanExporter(
+        endpoint="otel-collector:4317", insecure=False,
+        credentials=runtime.approved_otlp_mtls_credentials(), timeout=5)
+    # Required processor/exporter wrapper removes forbidden attributes/events BEFORE export,
+    # including IDs, raw URLs/query strings, DB statements, prompts/content and exception text.
+    safe_processor = runtime.minimizing_span_processor(BatchSpanProcessor(exporter))
+    provider.add_span_processor(safe_processor)
+    trace.set_tracer_provider(provider)
+    return trace.get_tracer("grc-backend")
+
+async def analyze_risk_with_agent(asset_id, context, runtime):
+    await runtime.authorize_asset_read(context, asset_id)
+    tracer = trace.get_tracer("grc-backend")
+    with tracer.start_as_current_span("risk_draft",
+                                      record_exception=False,
+                                      set_status_on_exception=False) as span:
+        try:
+            with tracer.start_as_current_span("rag_query", record_exception=False,
+                                              set_status_on_exception=False) as rag_span:
+                docs = await runtime.authorized_risk_sources(context, asset_id, top_k=6)
+                rag_span.set_attribute("grc.rag.docs_retrieved", len(docs))
+            with tracer.start_as_current_span("llm_call", record_exception=False,
+                                              set_status_on_exception=False) as llm_span:
+                result = await runtime.complete_risk_draft(context, asset_id, docs)
+                for source, target in (("input_tokens", "grc.llm.tokens_input"),
+                                       ("output_tokens", "grc.llm.tokens_output"),
+                                       ("latency_ms", "grc.llm.latency_ms")):
+                    value = result.get(source)
+                    if type(value) is int and value >= 0:
+                        llm_span.set_attribute(target, value)
+            span.set_attribute("grc.draft_generated", True)
+            return {"draft": result["content"], "review_required": True}
+        except Exception:
+            span.set_attribute("grc.operation_failed", True)
+            raise
+# Historical automatic FastAPI/SQLAlchemy/HTTPX instrumentation requires equivalent
+# minimization, sampling and coverage tests before activation; none is enabled here.
+# A trace is observable execution metadata, not the model's hidden reasoning or an audit verdict.
+# Authenticated TLS, collector pipeline, shutdown/flush and outage behavior need real tests.

@@ -32,13 +32,13 @@ El estado de publicación varía por título e idioma. Las entradas en edición 
 
 ## Review status — 5 October 2026
 
-Educational blocks from the v1.1 revisions of User, FinOps, AI Safety, and PQC are separated into `ES/<book>/v1.1/` and `EN/<book>/v1.1/`, with source manifests and SHA-256 hashes. Earlier material is preserved. The other titles remain under review; this code synchronization does not itself announce eBook publication or establish execution of every snippet.
+Educational blocks from the v1.1 revisions of User, FinOps, AI Safety, PQC, and CISO are separated into `ES/<book>/v1.1/` and `EN/<book>/v1.1/`, with source manifests and SHA-256 hashes. Earlier material is preserved. The other titles remain under review; this code synchronization does not itself announce eBook publication or establish execution of every snippet.
 
-Los bloques didácticos de la revisión v1.1 de Usuario, FinOps, AI Safety y PQC están separados en `ES/<libro>/v1.1/` y `EN/<libro>/v1.1/`, con manifiestos de origen y SHA-256. El material anterior se conserva. Los demás títulos siguen en revisión; esta sincronización del código no anuncia por sí misma la publicación de los eBooks ni acredita ejecución de cada fragmento.
+Los bloques didácticos de la revisión v1.1 de Usuario, FinOps, AI Safety, PQC y CISO están separados en `ES/<libro>/v1.1/` y `EN/<libro>/v1.1/`, con manifiestos de origen y SHA-256. El material anterior se conserva. Los demás títulos siguen en revisión; esta sincronización del código no anuncia por sí misma la publicación de los eBooks ni acredita ejecución de cada fragmento.
 
-FinOps and PQC v1.1 manifests identify the current Word and EPUB sources checked on 5 October 2026. FinOps v1.1 updates in Spanish and English have been submitted to KDP and await Amazon review. PQC Kindle checks are still in progress.
+FinOps and PQC v1.1 manifests identify the current Word and EPUB sources checked on 5 October 2026. FinOps v1.1 updates in Spanish and English have been submitted to KDP and await Amazon review. PQC and CISO v1.1 updates in both languages are prepared in KDP and await final submission confirmation.
 
-Los manifiestos v1.1 de FinOps y PQC identifican los Word y EPUB actuales comprobados el 5 de octubre de 2026. Las actualizaciones v1.1 de FinOps en español e inglés se han enviado a KDP y esperan la revisión de Amazon. Las comprobaciones Kindle de PQC siguen en curso.
+Los manifiestos v1.1 de FinOps y PQC identifican los Word y EPUB actuales comprobados el 5 de octubre de 2026. Las actualizaciones v1.1 de FinOps en español e inglés se han enviado a KDP y esperan la revisión de Amazon. Las actualizaciones v1.1 de PQC y CISO en ambos idiomas están preparadas en KDP y pendientes de la confirmación del envío final.
 
 ## How to use
 

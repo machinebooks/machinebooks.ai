@@ -1,0 +1,7 @@
+# Educational context prompt; it records a request, not implementation evidence.
+# "Design mTLS authentication with Nginx and FastAPI. Define the X.509 chain,
+# validated revocation, timeout, authorized destination and fail-closed behavior.
+# Trust certificate headers only from the authenticated configured proxy.
+# Explain unimplemented contracts and propose tests with synthetic data."
+# OCSP/CRL freshness, signatures, issuer binding, caches and outage behavior
+# require actual verification; requesting a five-second timeout proves no test.

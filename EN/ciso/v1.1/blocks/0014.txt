@@ -1,0 +1,38 @@
+{
+  "name": "Payroll management",
+  "purposes": [
+    "Payroll calculation and payment",
+    "Tax and labor obligation compliance"
+  ],
+  "legal_basis": "legal_obligation",
+  "legal_basis_confidence": "requires_confirmation",
+  "legal_basis_detail": "Art. 6.1.c GDPR — Spanish employer obligations (ET, LGSS, LIRPF), subject to review",
+  "data_subject_categories": [
+    "employees"
+  ],
+  "personal_data_categories": [
+    "identifiers",
+    "contact",
+    "financial",
+    "professional",
+    "social_security",
+    "bank_details"
+  ],
+  "special_categories": null,
+  "recipients": [
+    "External accounting firm (data processor)",
+    "AEAT (Spanish tax authority, legal obligation)",
+    "TGSS (Spanish social security treasury, legal obligation)"
+  ],
+  "international_transfers": null,
+  "retention_period": "Pending determination by document category and applicable law; Art.66 of Spain’s LGT does not set a universal minimum payroll retention period.",
+  "retention_criteria": "Review purposes, labor/tax duties, limitation and interruptions, archiving and restriction where applicable.",
+  "security_measures": [
+    "encryption_at_rest",
+    "rbac_access_control",
+    "backups",
+    "access_logging"
+  ],
+  "dpia_required": null,
+  "risk_level": "pending_review"
+}

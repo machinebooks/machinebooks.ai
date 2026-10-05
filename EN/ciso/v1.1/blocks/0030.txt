@@ -1,0 +1,53 @@
+# Didactic endpoint; domain mapping and authorizations require integration tests.
+from datetime import datetime, timezone
+from uuid import uuid4
+from pydantic import BaseModel, model_validator
+from fastapi import APIRouter, Depends, HTTPException
+from app.database import get_db
+from app.core.auth import get_current_user, require_permission
+from app.models.privacy import DataBreach, BreachStatus, BreachSeverity, BreachType
+
+router = APIRouter(prefix="/api/v1/breaches", tags=["privacy-breaches"])
+
+class BreachCreate(BaseModel):
+    title: str
+    description: str
+    breach_type: BreachType
+    severity: BreachSeverity
+    awareness_at: datetime
+    detected_at: datetime | None = None
+    authority_notification_required: bool | None = None
+    notification_decision_reason: str | None = None
+
+    @model_validator(mode="after")
+    def validate_instants(self):
+        if self.awareness_at.tzinfo is None or (
+            self.detected_at is not None and self.detected_at.tzinfo is None
+        ):
+            raise ValueError("Breach instants require an explicit time zone")
+        if self.authority_notification_required is False and not self.notification_decision_reason:
+            raise ValueError("Document why risk is unlikely under Article 33")
+        return self
+
+@router.post("/", status_code=201)
+async def register_breach(data: BreachCreate, db=Depends(get_db),
+                          user=Depends(get_current_user),
+                          permission=Depends(require_permission("privacy:breach:write"))):
+    breach = DataBreach(
+        code="BREACH-" + uuid4().hex,
+        title=data.title, description=data.description,
+        breach_type=data.breach_type, severity=data.severity,
+        status=BreachStatus.DETECTED,
+        detected_at=(data.detected_at or data.awareness_at).astimezone(timezone.utc),
+        awareness_at=data.awareness_at.astimezone(timezone.utc),
+        authority_notification_required=data.authority_notification_required,
+        notification_decision_reason=data.notification_decision_reason,
+        reported_by=user.id, created_by=user.id, corporate_id=user.corporate_id,
+    )
+    db.add(breach)
+    await db.commit()
+    await db.refresh(breach)
+    return {"id": breach.id, "code": breach.code,
+            "awareness_at": breach.awareness_at.isoformat(),
+            "notification_deadline": breach.notification_deadline.isoformat(),
+            "authority_notification_required": breach.authority_notification_required}

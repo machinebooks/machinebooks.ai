@@ -1,0 +1,84 @@
+# REST endpoint for processing activity management
+# FastAPI with Pydantic validation by state
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from app.core.auth import get_current_user, require_permission
+from app.models.privacy import DataProcessingActivity
+from app.schemas.privacy import (
+    ProcessingActivityCreate,
+    ProcessingActivityActivate,
+    ProcessingActivityResponse
+)
+
+router = APIRouter(prefix="/api/v1/processing-activities", tags=["privacy"])
+
+
+@router.post("/", response_model=ProcessingActivityResponse,
+             status_code=status.HTTP_201_CREATED)
+async def create_processing_activity(
+    data: ProcessingActivityCreate,
+    current_user=Depends(get_current_user),
+    _=Depends(require_permission("privacy:write"))
+):
+    """Creates a processing activity in draft state.
+
+    Requires 'privacy:write' permission.
+    The corporate_id is injected from the user's token.
+    """
+    activity = DataProcessingActivity(
+        **data.model_dump(),
+        corporate_id=current_user.corporate_id,
+        created_by=current_user.id,
+        status="draft"
+    )
+    db.session.add(activity)
+    await db.session.commit()
+    return activity
+
+
+@router.post("/{activity_id}/activate",
+             response_model=ProcessingActivityResponse)
+async def activate_processing_activity(
+    activity_id: int,
+    data: ProcessingActivityActivate,
+    current_user=Depends(get_current_user),
+    _=Depends(require_permission("privacy:activate"))
+):
+    """Activates a processing activity — full Art. 30 validation.
+
+    Only the DPO or a role with 'privacy:activate' can activate.
+    Pydantic validates that all Art. 30 mandatory fields
+    are present before persisting the change.
+    """
+    activity = await get_activity_or_404(activity_id, current_user)
+
+    if activity.status == "active":
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="The processing activity is already active"
+        )
+
+    # Validation is done by ProcessingActivityActivate
+    # If a mandatory field is missing, Pydantic raises 422
+    for field, value in data.model_dump(exclude_unset=True).items():
+        setattr(activity, field, value)
+
+    activity.status = "active"
+    activity.updated_by = current_user.id
+
+    # If there are special categories, mark as high risk
+    if activity.special_categories:
+        activity.risk_level = "high"
+        # Precautionary risk signal; a documented assessment decides DPIA duties.
+
+    await db.session.commit()
+
+    # Auditing: record activation in audit_trail
+    await audit_log(
+        action="processing_activity.activated",
+        resource_id=activity.id,
+        user_id=current_user.id,
+        details={"legal_basis": activity.legal_basis.value}
+    )
+
+    return activity

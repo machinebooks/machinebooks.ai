@@ -1,0 +1,59 @@
+from io import BytesIO
+from datetime import datetime, timezone
+from html import escape
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Table, Paragraph, Spacer
+
+async def export_executive_pdf(dashboard_data, organization_name, period, *,
+                               trusted_context, policy):
+    policy.require_executive_export(trusted_context, dashboard_data)
+    if not isinstance(organization_name, str) or len(organization_name) > 200:
+        raise ValueError("Invalid organization label")
+    if not isinstance(period, str) or len(period) > 100:
+        raise ValueError("Invalid period label")
+    # Required policy validates snapshot provenance, scope, finite numbers and DTO.
+    styles = getSampleStyleSheet()
+    buffer = BytesIO()
+    elements = [
+        Paragraph(escape("Informe Ejecutivo GRC — " + organization_name), styles["Title"]),
+        Paragraph(escape("Periodo: " + period), styles["Normal"]),
+        Paragraph(escape("Generado UTC: " + datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")),
+                  styles["Normal"]),
+        Spacer(1, 12),
+    ]
+    score = dashboard_data.get("overall_grc_score")
+    if score is None:
+        state, display = "pendiente", "N/A"
+    else:
+        if isinstance(score, bool) or not isinstance(score, (int, float)) or not 0 <= score <= 100:
+            raise ValueError("Invalid score")
+        state = "verde" if score >= 80 else "ámbar" if score >= 60 else "rojo"
+        display = str(score)
+    elements.append(Paragraph(
+        escape(f"Score GRC Global: {display} ({state})"), styles["Heading2"]))
+    rows = [["Indicador", "Valor"]]
+    selected = (
+        ("Suma p95 ALE de escenarios (EUR)", "cyber_risk", "sum_scenario_ale_p95_eur"),
+        ("NIS2: resultado interno evaluado (%)", "nis2", "compliance_score"),
+        ("Proveedores sin evaluar", "tprm", "unassessed_suppliers"),
+        ("Tasa media de clics (%)", "policy_awareness", "avg_phishing_click_rate"),
+    )
+    for label, section, key in selected:
+        value = dashboard_data.get(section, {}).get(key)
+        text = "N/A" if value is None else str(value)
+        if len(text) > 100:
+            raise ValueError("KPI text exceeds the bound")
+        rows.append([Paragraph(escape(label), styles["Normal"]),
+                     Paragraph(escape(text), styles["Normal"])])
+    elements.append(Table(rows, colWidths=[330, 120], repeatRows=1))
+    elements.append(Spacer(1, 12))
+    elements.append(Paragraph(
+        "Extracto parcial del snapshot autorizado. No incluye todo el dashboard, "
+        "no mide VaR de cartera y no acredita cumplimiento jurídico. "
+        "Periodo, cobertura, definiciones y datos pendientes requieren revisión.",
+        styles["Normal"]))
+    SimpleDocTemplate(buffer, pagesize=A4).build(elements)
+    return buffer.getvalue()
+# All dynamic text is escaped; no external image/resource is referenced.
+# Actual API authorization, distribution, persistence and print readability need tests.

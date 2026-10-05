@@ -1,0 +1,82 @@
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios'
+import { useAuthStore } from '@/stores/authStore'
+type ScopedConfig = InternalAxiosRequestConfig & { _retry?: boolean; _epoch?: number }
+const apiClient = axios.create({ baseURL: '', timeout: 30_000 })
+const refreshClient = axios.create({ baseURL: '', timeout: 10_000 })
+let authEpoch = 0
+let refresh: { epoch: number; token: string; promise: Promise<string> } | null = null
+
+// Call on login/logout, actor, tenant or authorization-context changes.
+// Also reset module stores and cancel/remove protected Query caches there.
+export function rotateApiSession() {
+  authEpoch += 1
+  refresh = null
+}
+apiClient.interceptors.request.use((config: ScopedConfig) => {
+  if (config._epoch !== undefined && config._epoch !== authEpoch) {
+    throw new Error('La sesión ha cambiado')
+  }
+  config._epoch = authEpoch
+  const token = useAuthStore.getState().accessToken
+  if (token) config.headers.set('Authorization', 'Bearer ' + token)
+  else config.headers.delete('Authorization')
+  // Retain the retry key. Server-side scoped enforcement is still required.
+  if (['post', 'put', 'patch'].includes(config.method ?? '') &&
+      !config.headers.has('Idempotency-Key')) {
+    config.headers.set('Idempotency-Key', crypto.randomUUID())
+  }
+  return config
+})
+apiClient.interceptors.response.use(
+  (response) => {
+    if ((response.config as ScopedConfig)._epoch !== authEpoch) {
+      throw new Error('La sesión ha cambiado')
+    }
+    return response
+  },
+  async (error: AxiosError) => {
+    const original = error.config as ScopedConfig | undefined
+    if (!original || original._epoch !== authEpoch ||
+        error.response?.status !== 401 || original._retry) {
+      return Promise.reject(error)
+    }
+    original._retry = true
+    const epoch = authEpoch
+    const token = useAuthStore.getState().refreshToken
+    if (!token) {
+      rotateApiSession()
+      useAuthStore.getState().logout()
+      return Promise.reject(error)
+    }
+    if (!refresh || refresh.epoch !== epoch || refresh.token !== token) {
+      // Separate client: refresh401 cannot recursively await its own promise.
+      const promise: Promise<string> = refreshClient
+        .post('/api/v1/auth/refresh', { refresh_token: token })
+        .then((res) => {
+          if (authEpoch !== epoch || useAuthStore.getState().refreshToken !== token) {
+            throw new Error('La sesión ha cambiado')
+          }
+          const { access_token, refresh_token } = res.data
+          if (typeof access_token !== 'string' || typeof refresh_token !== 'string') {
+            throw new Error('Respuesta de autenticación inválida')
+          }
+          useAuthStore.getState().setTokens(access_token, refresh_token)
+          return access_token
+        }).catch((cause) => {
+          if (authEpoch === epoch && useAuthStore.getState().refreshToken === token) {
+            rotateApiSession()
+            useAuthStore.getState().logout()
+          }
+          throw cause
+        }).finally(() => {
+          if (refresh?.promise === promise) refresh = null
+        })
+      refresh = { epoch, token, promise }
+    }
+    const access = await refresh.promise
+    if (authEpoch !== epoch) throw new Error('La sesión ha cambiado')
+    original.headers.set('Authorization', 'Bearer ' + access)
+    return apiClient(original)
+  },
+)
+export default apiClient

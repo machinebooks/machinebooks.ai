@@ -1,0 +1,39 @@
+from datetime import datetime, timezone
+from celery import shared_task
+from celery.schedules import crontab
+from app.worker.schedule_registry import authorized_due_jobs, enqueue_outbox_once
+
+# Cadences are case policy in UTC; legal due dates are calculated per record, not by Beat.
+SCHEDULES = {
+    "backup": crontab(hour=2, minute=0),
+    "temp_cleanup_review": crontab(hour=3, minute=0),
+    "log_retention_review": crontab(hour=3, minute=30),
+    "service_health": 900.0,
+    "breach_deadlines": 300.0,
+    "rights_deadlines": 300.0,
+    "pending_dpias": crontab(hour=8, minute=10),
+    "stale_controls": crontab(hour=8, minute=15),
+    "upcoming_audits": crontab(hour=8, minute=20),
+    "optional_license_sync": crontab(minute=0),
+    "compliance_metrics": crontab(hour=6, minute=0),
+}
+app.conf.beat_schedule = {
+    name: {"task": "app.tasks.maintenance.dispatch_due_jobs", "schedule": cadence,
+           "kwargs": {"schedule_key": name}, "options": {"queue": "maintenance"}}
+    for name, cadence in SCHEDULES.items()
+}
+
+@shared_task(name="app.tasks.maintenance.dispatch_due_jobs", queue="maintenance")
+def dispatch_due_jobs(schedule_key):
+    if schedule_key not in SCHEDULES:
+        raise ValueError("Unknown authorized schedule")
+    now = datetime.now(timezone.utc)
+    # Registry verifies scope/service actor and returns bounded, approved due job IDs.
+    jobs = authorized_due_jobs(schedule_key, now, limit=100)
+    for job in jobs:
+        enqueue_outbox_once(job)  # Transactional deduplication; worker revalidates its context.
+    return {"jobs_requested": len(jobs), "checked_at": now.isoformat()}
+# Outbox publishing retries atomically; no task is authorized solely by its name or JSON payload.
+# Record creation/changes must also schedule urgent deadlines without waiting for this poll.
+# Polling/alert thresholds do not authorize legal submission or automatic retention deletion.
+# A single active Beat owner or tested leader election is required to avoid duplicate schedules.

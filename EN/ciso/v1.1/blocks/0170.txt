@@ -1,0 +1,22 @@
+# Alternative service replacement under services in the complete base Compose model.
+services:
+  prometheus:
+    image: prom/prometheus:v2.51.0  # Historical case tag, not a current release recommendation.
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./config/alert_rules.yml:/etc/prometheus/alert_rules.yml:ro
+      - prometheus_data:/prometheus
+    secrets: [metrics_token]
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=30d"
+    networks: [spd_backend]
+    restart: unless-stopped
+secrets:
+  metrics_token:
+    file: ${METRICS_TOKEN_FILE:?Set the protected scrape-token file}
+volumes:
+  prometheus_data: {}
+# spd_backend, fastapi and the reviewed Celery exporter belong to the complete merged topology.
+# Excerpt does not supply the exporter or establish network/role isolation; validate all targets.
+# 30 days is operational case retention to approve, not a universal legal period.

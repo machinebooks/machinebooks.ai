@@ -1,0 +1,52 @@
+# Educational governance fields; legal applicability and reporting need human review.
+from enum import Enum
+from sqlalchemy import Column, String, Text, Integer, DateTime, ForeignKey, Enum as SQLEnum
+from sqlalchemy.orm import relationship
+from models.base import BaseModel
+
+class IncidentSeverity(str, Enum):
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"
+
+class AIGovernanceControl(BaseModel):
+    __tablename__ = "ai_governance_controls"
+    ai_record_id = Column(ForeignKey("ai_governance_records.id"), nullable=False)
+    control_name = Column(String(200), nullable=False)
+    control_description = Column(Text, nullable=False)
+    control_type = Column(String(50))
+    ai_act_article = Column(String(20))
+    iso42001_control = Column(String(20))
+    # A recorded mapping is a review proposal; it does not prove equivalence.
+    implementation_status = Column(String(50))
+    evidence_reference = Column(Text)
+    last_verified = Column(DateTime)
+    next_review = Column(DateTime)
+    ai_record = relationship("AIGovernanceRecord", back_populates="governance_controls")
+
+class AIGovernanceIncident(BaseModel):
+    # Article 55(1)(c) concerns providers of GPAI models with systemic risk:
+    # track/document/report serious incidents and possible corrective measures
+    # without undue delay to the AI Office and, as appropriate, national authorities.
+    # It does not apply automatically to every user of a GPAI-based system.
+    __tablename__ = "ai_governance_incidents"
+    ai_record_id = Column(ForeignKey("ai_governance_records.id"), nullable=False)
+    title = Column(String(300), nullable=False)
+    description = Column(Text, nullable=False)
+    severity = Column(SQLEnum(IncidentSeverity), nullable=False)
+    incident_type = Column(String(100))
+    affected_persons_count = Column(Integer)
+    reported_by = Column(ForeignKey("users.id"))
+    reported_date = Column(DateTime, nullable=False)
+    investigation_status = Column(String(50))
+    root_cause = Column(Text)
+    corrective_actions = Column(Text)
+    resolution_date = Column(DateTime)
+    requires_notification = Column(String(10), default="pending")
+    notification_authority = Column(String(200))
+    notification_date = Column(DateTime)
+    notification_reference = Column(String(200))
+    ai_record = relationship("AIGovernanceRecord", back_populates="governance_incidents")
+# Application must validate nonnegative integer counts, UTC boundaries, roles,
+# tenant authorization and same-tenant relational integrity; not implemented here.

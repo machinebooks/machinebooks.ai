@@ -1,0 +1,100 @@
+class RiskScenario(BaseModel):
+    """Educational fields for an internal ordinal matrix and deterministic loss estimate.
+
+    These fields do not implement every named methodology or a FAIR distribution.
+    """
+    __tablename__ = "risk_scenarios"
+
+    # --- Identification ---
+    name = Column(String(255), nullable=False)
+    code = Column(String(50), comment="ESC-001")
+    description = Column(Text)
+
+    # --- Relationships with asset and threat ---
+    asset_id = Column(
+        BigInteger, ForeignKey("risk_assets.id"), nullable=False
+    )
+    threat_id = Column(
+        BigInteger, ForeignKey("risk_threats.id"), nullable=False
+    )
+    vulnerability_description = Column(
+        Text, comment="Vulnerability exploited in this scenario"
+    )
+
+    # --- Internal ordinal scenario ---
+    probability = Column(
+        Integer, comment="Probability 1-5"
+    )
+    impact = Column(
+        Integer, comment="Impact 1-5 (max value of affected dimensions)"
+    )
+    inherent_risk = Column(
+        Integer, comment="Inherent risk = probability x impact (1-25)"
+    )
+
+    # --- MAGERIT impact by dimension (DICAT) ---
+    impact_disponibilidad = Column(Integer, comment="Impact on D (0-4)")
+    impact_integridad = Column(Integer, comment="Impact on I (0-4)")
+    impact_confidencialidad = Column(Integer, comment="Impact on C (0-4)")
+    impact_autenticidad = Column(Integer, comment="Impact on A (0-4)")
+    impact_trazabilidad = Column(Integer, comment="Impact on T (0-4)")
+
+    # --- FAIR quantitative assessment ---
+    fair_lef = Column(
+        Float, comment="Loss Event Frequency — events/year"
+    )
+    fair_lm_primary = Column(
+        Float, comment="Primary Loss Magnitude — EUR"
+    )
+    fair_lm_secondary = Column(
+        Float, comment="Secondary Loss Magnitude — EUR"
+    )
+    fair_ale = Column(
+        Float, comment="Annual Loss Expectancy = LEF x (LM_p + LM_s)"
+    )
+
+    # --- Residual risk (after controls) ---
+    residual_probability = Column(Integer, comment="Residual probability 1-5")
+    residual_impact = Column(Integer, comment="Residual impact 1-5")
+    residual_risk = Column(
+        Integer,
+        comment="Residual risk = residual_probability x residual_impact"
+    )
+    residual_fair_ale = Column(
+        Float, comment="Residual ALE after controls — EUR (FAIR)"
+    )
+
+    # --- Treatment ---
+    treatment_strategy = Column(
+        SQLEnum(TreatmentStrategy),
+        comment="Strategy: mitigate, transfer, avoid, accept"
+    )
+    treatment_justification = Column(
+        Text, comment="Justification for the chosen strategy"
+    )
+    risk_owner = Column(
+        String(255), comment="Person responsible for the treatment decision"
+    )
+
+    # --- Status ---
+    status = Column(
+        String(30), default="identified",
+        comment="identified, analyzed, treated, accepted, monitoring"
+    )
+    review_date = Column(
+        DateTime, comment="Next review date"
+    )
+
+    # --- Relationships ---
+    analysis_id = Column(
+        BigInteger, ForeignKey("risk_analyses.id"), nullable=False
+    )
+    asset = relationship("Asset", back_populates="risk_scenarios")
+    threat = relationship("Threat")
+    controls = relationship(
+        "RiskControl", back_populates="scenario",
+        cascade="all, delete-orphan"
+    )
+    treatment_plan = relationship(
+        "TreatmentPlan", back_populates="scenario", uselist=False
+    )

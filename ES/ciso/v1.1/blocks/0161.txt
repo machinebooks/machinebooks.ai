@@ -1,0 +1,49 @@
+from pathlib import Path
+from urllib.parse import urlsplit
+import os
+from celery import Celery
+from kombu import Queue, Exchange
+from app.worker.security import validate_worker_settings
+
+def protected_value(variable):
+    # Deployment restricts the path/owner/permissions; no secret is logged.
+    path = Path(os.environ[variable]).resolve(strict=True)
+    value = path.read_text(encoding="utf-8").strip()
+    if not value or len(value) > 4096:
+        raise ValueError("Invalid protected worker setting")
+    return value
+
+broker = protected_value("REDIS_URL_FILE")
+database = protected_value("DATABASE_URL_FILE")
+validate_worker_settings(broker, database)
+if urlsplit(broker).scheme not in {"redis", "rediss"}:
+    raise ValueError("Expected an approved Redis broker")
+if not database.startswith("mysql+pymysql://"):
+    raise ValueError("Expected the synchronous MySQL worker URL")
+
+app = Celery("grc_platform")
+app.conf.update(
+    broker_url=broker, result_backend="db+" + database,
+    result_extended=False, result_expires=86400,
+    task_serializer="json", result_serializer="json", accept_content=["json"],
+    task_queues=tuple(Queue(name, Exchange(name), routing_key=name)
+                      for name in ("ai", "email", "reports", "maintenance", "notifications")),
+    task_routes={
+        "app.tasks.ai.*": {"queue": "ai"},
+        "app.tasks.email.*": {"queue": "email"},
+        "app.tasks.reports.*": {"queue": "reports"},
+        "app.tasks.maintenance.*": {"queue": "maintenance"},
+        "app.tasks.notifications.*": {"queue": "notifications"},
+        "backup_database": {"queue": "maintenance"},
+        "ai.health_check_providers": {"queue": "maintenance"},
+        "license.check_expirations": {"queue": "maintenance"},
+    },
+    task_soft_time_limit=120, task_time_limit=180,
+    worker_prefetch_multiplier=1, task_track_started=True,
+    timezone="UTC", enable_utc=True,
+)
+# Redis does not enforce RabbitMQ x-max-length queue arguments. Admission/backpressure and
+# per-tenant/actor job validation must be implemented outside these queue declarations.
+# JSON avoids pickle execution; it does not authenticate producers or authorize jobs.
+# With concurrency C and multiplier 1, prefetch is C messages, not one per whole worker.
+# Broker/result access, TLS/ACLs and minimization/retention need deployment verification.

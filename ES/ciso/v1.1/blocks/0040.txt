@@ -1,0 +1,25 @@
+# Messages API tool-proposal contract; this is not Claude Agent SDK execution.
+TOOLS = [{
+    "name": "calculate_risk_matrix",
+    "description": "Proponer una consulta de escenarios del análisis autorizado.",
+    "input_schema": {
+        "type": "object", "additionalProperties": False,
+        "properties": {
+            "analysis_id": {"type": "integer", "minimum": 1, "maximum": 9223372036854775807},
+            "methodology": {"type": "string", "enum": ["magerit_v3", "fair"]},
+            "risk_level": {"type": "string", "enum": ["high", "critical"]},
+        },
+        "required": ["analysis_id", "methodology"],
+    },
+}]
+
+async def request_risk_tool_proposal(query, *, trusted_context, runtime, policy):
+    if not isinstance(query, str) or not 1 <= len(query) <= 8000:
+        raise ValueError("Invalid query")
+    policy.require_risk_read(trusted_context)
+    # Adapter must authorize provider/model, reserve budget and meter each attempt.
+    result = await runtime.messages_tool_proposal(
+        context=trusted_context, tools=TOOLS, message=query, max_tokens=2048)
+    # The provider may propose tool_use; this function executes no tool.
+    # Caller validates arguments, current scope and returned data before review.
+    return {"status": "pending_tool_review", "proposal": result}

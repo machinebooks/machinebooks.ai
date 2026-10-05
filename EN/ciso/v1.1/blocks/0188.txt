@@ -1,0 +1,21 @@
+// Requires an authenticated Playwright project and page-specific readiness fixtures.
+// Automated rules are a subset; keyboard, assistive-technology and manual review remain necessary.
+import { test, expect } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
+
+const criticalPages = [
+  { url: "/dashboard", name: "Main dashboard" },
+  { url: "/privacy/tratamientos", name: "Processing register" },
+  { url: "/risk/analisis", name: "Risk analysis" },
+  { url: "/compliance/controles", name: "Compliance controls" },
+];
+for (const target of criticalPages) {
+  test(`Automated accessibility rules: ${target.name}`, async ({ page }) => {
+    await page.goto(target.url, { waitUntil: "domcontentloaded" });
+    // Required application fixture must mark the authorized current content, including data readiness.
+    await expect(page.locator('[data-qa-ready="true"]')).toBeVisible({ timeout: 15000 });
+    const results = await new AxeBuilder({ page })
+      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
+    expect(results.violations).toHaveLength(0);
+  });
+}

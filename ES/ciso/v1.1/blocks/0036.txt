@@ -1,0 +1,90 @@
+# Herramienta del agente de riesgo — calculate_risk_matrix
+# Plain Python function; tool registration requires an authorized adapter.
+
+from typing import Any
+
+
+def calculate_risk_matrix_tool(
+    analysis_id: int,
+    methodology: str,
+    filters: dict | None = None
+) -> dict[str, Any]:
+    """Calcula la matriz de riesgo completa para un análisis dado.
+
+    Herramienta del RiskAgent: consulta activos y escenarios,
+    calcula riesgos inherentes y residuales, y devuelve un
+    resumen priorizado que el agente puede interpretar.
+
+    Args:
+        analysis_id: ID del análisis de riesgos
+        methodology: Metodología activa (condiciona el cálculo)
+        filters: Filtros opcionales (asset_type, risk_level, status)
+
+    Returns:
+        Diccionario con matriz, estadísticas y escenarios priorizados
+    """
+    # Query adapter must enforce trusted tenant scope.
+    if methodology not in RISK_LEVELS:
+        raise ValueError("This fragment supports configured qualitative matrices only")
+    scenarios = get_scenarios_for_analysis(analysis_id, filters)
+
+    # Construir matriz 5×5
+    matrix = [[0] * 5 for _ in range(5)]  # matrix[prob][impact] = count
+    critical_scenarios = []
+    untreated_high = []
+    incomplete_scenarios = []
+
+    for scenario in scenarios:
+        p = scenario.probability
+        i = scenario.impact
+        if p is None or i is None:
+            incomplete_scenarios.append(scenario.id)
+            continue
+        if (type(p) is not int or type(i) is not int
+                or not 1 <= p <= 5 or not 1 <= i <= 5):
+            raise ValueError("Probability and impact require integer scores from 1 to 5")
+        matrix[p - 1][i - 1] += 1
+
+        result = calculate_qualitative_risk(p, i, methodology)
+
+        if result.inherent_risk_level in ("alto", "crítico", "high", "very_high"):
+            critical_scenarios.append({
+                "id": scenario.id,
+                "name": scenario.name,
+                "asset": scenario.asset.name,
+                "risk_score": result.inherent_risk_score,
+                "risk_level": result.inherent_risk_level,
+                "has_treatment": scenario.treatment_strategy is not None,
+            })
+
+        # Escenarios altos sin plan de tratamiento
+        if (result.inherent_risk_level in ("alto", "crítico", "high", "very_high")
+                and scenario.treatment_strategy is None):
+            untreated_high.append({
+                "id": scenario.id,
+                "name": scenario.name,
+                "asset": scenario.asset.name,
+                "risk_score": result.inherent_risk_score,
+            })
+
+    # Estadísticas agregadas
+    total = len(scenarios)
+    by_level = {}
+    for s in scenarios:
+        if s.probability and s.impact:
+            r = calculate_qualitative_risk(s.probability, s.impact, methodology)
+            by_level[r.inherent_risk_level] = by_level.get(
+                r.inherent_risk_level, 0
+            ) + 1
+
+    return {
+        "matrix": matrix,
+        "total_scenarios": total,
+        "incomplete_scenarios": incomplete_scenarios,
+        "by_risk_level": by_level,
+        "critical_scenarios": sorted(
+            critical_scenarios, key=lambda x: x["risk_score"], reverse=True
+        ),
+        "untreated_high_risks": untreated_high,
+        "methodology": methodology,
+    }

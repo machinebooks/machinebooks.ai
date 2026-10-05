@@ -1,0 +1,43 @@
+# Didactic example: regulatory RAG as an agent tool
+from anthropic import Anthropic
+
+# RAG tool definition for Claude agents
+rag_tool = {
+    "name": "search_regulation",
+    "description": (
+        "Searches the indexed regulatory corpus (GDPR, LOPDGDD, ENS, "
+        "AEPD guidelines, CCN-STIC, NIS2, DORA, AI Act). "
+        "Use this tool ALWAYS when you need to cite an article, "
+        "verify a requirement, or substantiate a regulatory recommendation."
+    ),
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "query": {
+                "type": "string",
+                "description": "Regulatory question in natural language",
+            },
+            "regulation": {
+                "type": "string",
+                "enum": ["GDPR", "LOPDGDD", "ENS", "NIS2", "DORA", "AI_ACT"],
+                "description": "Optional filter by specific regulation",
+            },
+        },
+        "required": ["query"],
+    },
+}
+
+# The agent uses the tool as part of its analysis workflow
+client = Anthropic()
+response = client.messages.create(
+    model="claude-sonnet-4-6",
+    max_tokens=4096,
+    system="You are a privacy agent. Use search_regulation to "
+           "substantiate your analyses with verifiable regulatory citations.",
+    tools=[rag_tool],
+    messages=[{
+        "role": "user",
+        "content": "Analyze whether the processing of biometric data "
+                   "for access control requires a DPIA."
+    }],
+)

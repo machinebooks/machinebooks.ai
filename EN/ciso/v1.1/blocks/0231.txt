@@ -1,0 +1,7 @@
+const varColor = d.cyber_risk.sum_scenario_ale_p95_eur == null
+  ? 'text-gray-500'
+  : d.cyber_risk.sum_scenario_ale_p95_eur > 5e6
+  ? 'text-red-600'      // > 5 million: red
+  : d.cyber_risk.sum_scenario_ale_p95_eur > 1e6
+    ? 'text-orange-600'  // 1-5 million: orange
+    : 'text-green-600'   // < 1 million: green
