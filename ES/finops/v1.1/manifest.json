@@ -1,17 +1,23 @@
 {
   "editorial_version": "1.1",
-  "source_word_sha256": "f25ba34d0577456a6857c1176b6a6a35a9dbc3acf2254851a9eeda4e409f6935",
+  "source_word_sha256": "05ac57fb46403effaa2369ed0ac1432862331ed27693c3d827108add17b922f1",
   "source_file": "El-FinOps-Engineer-y-la-Maquina.docx",
   "language": "es",
   "scope": "educational SourceCode blocks; private desktop and core excluded",
   "extraction": "literal w:t, line breaks w:br/w:cr and tabs w:tab in document order; UTF-8 without added headers",
   "block_count": 273,
   "execution_status": "not established by extraction",
+  "manuscript_final_four_sha256": {
+    "El-FinOps-Engineer-y-la-Maquina.docx": "05ac57fb46403effaa2369ed0ac1432862331ed27693c3d827108add17b922f1",
+    "El-FinOps-Engineer-y-la-Maquina.epub": "e3eddbd540815cb2a1ba7998e0ef0cde68a4f7575d0c436dacdf92e4494bbcbd",
+    "The-FinOps-Engineer-and-the-Machine.docx": "e302177508095317f5bddf92539cb242b47d8d0f5f6e7009562f45ae6290636a",
+    "The-FinOps-Engineer-and-the-Machine.epub": "680f999c2e91f949161e2b4897758a7150363c9091b7e4f1efc8133892f24fb2"
+  },
   "blocks": [
     {
       "id": 1,
       "file": "blocks/0001.txt",
-      "word_paragraph_index_zero_based": 663,
+      "word_paragraph_index_zero_based": 669,
       "heading_context": [
         "Capítulo 1 — La factura que nadie esperaba",
         "3. Implementación",
@@ -23,7 +29,7 @@
     {
       "id": 2,
       "file": "blocks/0002.txt",
-      "word_paragraph_index_zero_based": 668,
+      "word_paragraph_index_zero_based": 674,
       "heading_context": [
         "Capítulo 1 — La factura que nadie esperaba",
         "3. Implementación",
@@ -35,7 +41,7 @@
     {
       "id": 3,
       "file": "blocks/0003.txt",
-      "word_paragraph_index_zero_based": 674,
+      "word_paragraph_index_zero_based": 680,
       "heading_context": [
         "Capítulo 1 — La factura que nadie esperaba",
         "3. Implementación",
@@ -47,7 +53,7 @@
     {
       "id": 4,
       "file": "blocks/0004.txt",
-      "word_paragraph_index_zero_based": 697,
+      "word_paragraph_index_zero_based": 703,
       "heading_context": [
         "Capítulo 1 — La factura que nadie esperaba",
         "3. Implementación",
@@ -59,7 +65,7 @@
     {
       "id": 5,
       "file": "blocks/0005.txt",
-      "word_paragraph_index_zero_based": 702,
+      "word_paragraph_index_zero_based": 708,
       "heading_context": [
         "Capítulo 1 — La factura que nadie esperaba",
         "3. Implementación",
@@ -71,7 +77,7 @@
     {
       "id": 6,
       "file": "blocks/0006.txt",
-      "word_paragraph_index_zero_based": 708,
+      "word_paragraph_index_zero_based": 714,
       "heading_context": [
         "Capítulo 1 — La factura que nadie esperaba",
         "3. Implementación",
@@ -83,7 +89,7 @@
     {
       "id": 7,
       "file": "blocks/0007.txt",
-      "word_paragraph_index_zero_based": 711,
+      "word_paragraph_index_zero_based": 717,
       "heading_context": [
         "Capítulo 1 — La factura que nadie esperaba",
         "3. Implementación",
@@ -95,7 +101,7 @@
     {
       "id": 8,
       "file": "blocks/0008.txt",
-      "word_paragraph_index_zero_based": 837,
+      "word_paragraph_index_zero_based": 843,
       "heading_context": [
         "Capítulo 2 — Anatomía del coste: tokens, instancias y todo lo demás",
         "3. Implementación",
@@ -107,7 +113,7 @@
     {
       "id": 9,
       "file": "blocks/0009.txt",
-      "word_paragraph_index_zero_based": 842,
+      "word_paragraph_index_zero_based": 848,
       "heading_context": [
         "Capítulo 2 — Anatomía del coste: tokens, instancias y todo lo demás",
         "3. Implementación",
@@ -119,7 +125,7 @@
     {
       "id": 10,
       "file": "blocks/0010.txt",
-      "word_paragraph_index_zero_based": 847,
+      "word_paragraph_index_zero_based": 853,
       "heading_context": [
         "Capítulo 2 — Anatomía del coste: tokens, instancias y todo lo demás",
         "3. Implementación",
@@ -131,7 +137,7 @@
     {
       "id": 11,
       "file": "blocks/0011.txt",
-      "word_paragraph_index_zero_based": 851,
+      "word_paragraph_index_zero_based": 857,
       "heading_context": [
         "Capítulo 2 — Anatomía del coste: tokens, instancias y todo lo demás",
         "3. Implementación",
@@ -143,7 +149,7 @@
     {
       "id": 12,
       "file": "blocks/0012.txt",
-      "word_paragraph_index_zero_based": 1220,
+      "word_paragraph_index_zero_based": 1226,
       "heading_context": [
         "Capítulo 3 — El mapa de costes de una plataforma con IA",
         "3. Implementación",
@@ -155,7 +161,7 @@
     {
       "id": 13,
       "file": "blocks/0013.txt",
-      "word_paragraph_index_zero_based": 1223,
+      "word_paragraph_index_zero_based": 1229,
       "heading_context": [
         "Capítulo 3 — El mapa de costes de una plataforma con IA",
         "3. Implementación",
@@ -167,7 +173,7 @@
     {
       "id": 14,
       "file": "blocks/0014.txt",
-      "word_paragraph_index_zero_based": 1225,
+      "word_paragraph_index_zero_based": 1231,
       "heading_context": [
         "Capítulo 3 — El mapa de costes de una plataforma con IA",
         "3. Implementación",
@@ -179,7 +185,7 @@
     {
       "id": 15,
       "file": "blocks/0015.txt",
-      "word_paragraph_index_zero_based": 1229,
+      "word_paragraph_index_zero_based": 1235,
       "heading_context": [
         "Capítulo 3 — El mapa de costes de una plataforma con IA",
         "3. Implementación",
@@ -191,7 +197,7 @@
     {
       "id": 16,
       "file": "blocks/0016.txt",
-      "word_paragraph_index_zero_based": 1231,
+      "word_paragraph_index_zero_based": 1237,
       "heading_context": [
         "Capítulo 3 — El mapa de costes de una plataforma con IA",
         "3. Implementación",
@@ -203,7 +209,7 @@
     {
       "id": 17,
       "file": "blocks/0017.txt",
-      "word_paragraph_index_zero_based": 1234,
+      "word_paragraph_index_zero_based": 1240,
       "heading_context": [
         "Capítulo 3 — El mapa de costes de una plataforma con IA",
         "3. Implementación",
@@ -215,7 +221,7 @@
     {
       "id": 18,
       "file": "blocks/0018.txt",
-      "word_paragraph_index_zero_based": 1239,
+      "word_paragraph_index_zero_based": 1245,
       "heading_context": [
         "Capítulo 3 — El mapa de costes de una plataforma con IA",
         "3. Implementación",
@@ -227,7 +233,7 @@
     {
       "id": 19,
       "file": "blocks/0019.txt",
-      "word_paragraph_index_zero_based": 1317,
+      "word_paragraph_index_zero_based": 1323,
       "heading_context": [
         "Capítulo 4 — Cada llamada LLM, un registro",
         "1. Concepto",
@@ -239,7 +245,7 @@
     {
       "id": 20,
       "file": "blocks/0020.txt",
-      "word_paragraph_index_zero_based": 1323,
+      "word_paragraph_index_zero_based": 1329,
       "heading_context": [
         "Capítulo 4 — Cada llamada LLM, un registro",
         "1. Concepto",
@@ -251,7 +257,7 @@
     {
       "id": 21,
       "file": "blocks/0021.txt",
-      "word_paragraph_index_zero_based": 1325,
+      "word_paragraph_index_zero_based": 1331,
       "heading_context": [
         "Capítulo 4 — Cada llamada LLM, un registro",
         "1. Concepto",
@@ -263,7 +269,7 @@
     {
       "id": 22,
       "file": "blocks/0022.txt",
-      "word_paragraph_index_zero_based": 1333,
+      "word_paragraph_index_zero_based": 1339,
       "heading_context": [
         "Capítulo 4 — Cada llamada LLM, un registro",
         "2. La decisión",
@@ -275,7 +281,7 @@
     {
       "id": 23,
       "file": "blocks/0023.txt",
-      "word_paragraph_index_zero_based": 1344,
+      "word_paragraph_index_zero_based": 1350,
       "heading_context": [
         "Capítulo 4 — Cada llamada LLM, un registro",
         "2. La decisión",
@@ -287,7 +293,7 @@
     {
       "id": 24,
       "file": "blocks/0024.txt",
-      "word_paragraph_index_zero_based": 1408,
+      "word_paragraph_index_zero_based": 1414,
       "heading_context": [
         "Capítulo 4 — Cada llamada LLM, un registro",
         "3. Implementación",
@@ -299,7 +305,7 @@
     {
       "id": 25,
       "file": "blocks/0025.txt",
-      "word_paragraph_index_zero_based": 1412,
+      "word_paragraph_index_zero_based": 1418,
       "heading_context": [
         "Capítulo 4 — Cada llamada LLM, un registro",
         "3. Implementación",
@@ -311,7 +317,7 @@
     {
       "id": 26,
       "file": "blocks/0026.txt",
-      "word_paragraph_index_zero_based": 1417,
+      "word_paragraph_index_zero_based": 1423,
       "heading_context": [
         "Capítulo 4 — Cada llamada LLM, un registro",
         "3. Implementación",
@@ -323,7 +329,7 @@
     {
       "id": 27,
       "file": "blocks/0027.txt",
-      "word_paragraph_index_zero_based": 1420,
+      "word_paragraph_index_zero_based": 1426,
       "heading_context": [
         "Capítulo 4 — Cada llamada LLM, un registro",
         "3. Implementación",
@@ -335,7 +341,7 @@
     {
       "id": 28,
       "file": "blocks/0028.txt",
-      "word_paragraph_index_zero_based": 1424,
+      "word_paragraph_index_zero_based": 1430,
       "heading_context": [
         "Capítulo 4 — Cada llamada LLM, un registro",
         "3. Implementación",
@@ -347,7 +353,7 @@
     {
       "id": 29,
       "file": "blocks/0029.txt",
-      "word_paragraph_index_zero_based": 1428,
+      "word_paragraph_index_zero_based": 1434,
       "heading_context": [
         "Capítulo 4 — Cada llamada LLM, un registro",
         "3. Implementación",
@@ -359,7 +365,7 @@
     {
       "id": 30,
       "file": "blocks/0030.txt",
-      "word_paragraph_index_zero_based": 1432,
+      "word_paragraph_index_zero_based": 1438,
       "heading_context": [
         "Capítulo 4 — Cada llamada LLM, un registro",
         "3. Implementación",
@@ -371,7 +377,7 @@
     {
       "id": 31,
       "file": "blocks/0031.txt",
-      "word_paragraph_index_zero_based": 1531,
+      "word_paragraph_index_zero_based": 1537,
       "heading_context": [
         "Capítulo 5 — Cada recurso cloud, un tag",
         "1. Concepto",
@@ -383,7 +389,7 @@
     {
       "id": 32,
       "file": "blocks/0032.txt",
-      "word_paragraph_index_zero_based": 1604,
+      "word_paragraph_index_zero_based": 1610,
       "heading_context": [
         "Capítulo 5 — Cada recurso cloud, un tag",
         "2. La decisión",
@@ -395,7 +401,7 @@
     {
       "id": 33,
       "file": "blocks/0033.txt",
-      "word_paragraph_index_zero_based": 1610,
+      "word_paragraph_index_zero_based": 1616,
       "heading_context": [
         "Capítulo 5 — Cada recurso cloud, un tag",
         "2. La decisión",
@@ -407,7 +413,7 @@
     {
       "id": 34,
       "file": "blocks/0034.txt",
-      "word_paragraph_index_zero_based": 1616,
+      "word_paragraph_index_zero_based": 1622,
       "heading_context": [
         "Capítulo 5 — Cada recurso cloud, un tag",
         "3. Implementación",
@@ -419,7 +425,7 @@
     {
       "id": 35,
       "file": "blocks/0035.txt",
-      "word_paragraph_index_zero_based": 1619,
+      "word_paragraph_index_zero_based": 1625,
       "heading_context": [
         "Capítulo 5 — Cada recurso cloud, un tag",
         "3. Implementación",
@@ -431,7 +437,7 @@
     {
       "id": 36,
       "file": "blocks/0036.txt",
-      "word_paragraph_index_zero_based": 1621,
+      "word_paragraph_index_zero_based": 1627,
       "heading_context": [
         "Capítulo 5 — Cada recurso cloud, un tag",
         "3. Implementación",
@@ -443,7 +449,7 @@
     {
       "id": 37,
       "file": "blocks/0037.txt",
-      "word_paragraph_index_zero_based": 1624,
+      "word_paragraph_index_zero_based": 1630,
       "heading_context": [
         "Capítulo 5 — Cada recurso cloud, un tag",
         "3. Implementación",
@@ -455,7 +461,7 @@
     {
       "id": 38,
       "file": "blocks/0038.txt",
-      "word_paragraph_index_zero_based": 1628,
+      "word_paragraph_index_zero_based": 1634,
       "heading_context": [
         "Capítulo 5 — Cada recurso cloud, un tag",
         "3. Implementación",
@@ -467,7 +473,7 @@
     {
       "id": 39,
       "file": "blocks/0039.txt",
-      "word_paragraph_index_zero_based": 1633,
+      "word_paragraph_index_zero_based": 1639,
       "heading_context": [
         "Capítulo 5 — Cada recurso cloud, un tag",
         "3. Implementación",
@@ -479,7 +485,7 @@
     {
       "id": 40,
       "file": "blocks/0040.txt",
-      "word_paragraph_index_zero_based": 1640,
+      "word_paragraph_index_zero_based": 1646,
       "heading_context": [
         "Capítulo 5 — Cada recurso cloud, un tag",
         "3. Implementación",
@@ -491,7 +497,7 @@
     {
       "id": 41,
       "file": "blocks/0041.txt",
-      "word_paragraph_index_zero_based": 1645,
+      "word_paragraph_index_zero_based": 1651,
       "heading_context": [
         "Capítulo 5 — Cada recurso cloud, un tag",
         "3. Implementación",
@@ -503,7 +509,7 @@
     {
       "id": 42,
       "file": "blocks/0042.txt",
-      "word_paragraph_index_zero_based": 1649,
+      "word_paragraph_index_zero_based": 1655,
       "heading_context": [
         "Capítulo 5 — Cada recurso cloud, un tag",
         "3. Implementación",
@@ -515,7 +521,7 @@
     {
       "id": 43,
       "file": "blocks/0043.txt",
-      "word_paragraph_index_zero_based": 1660,
+      "word_paragraph_index_zero_based": 1666,
       "heading_context": [
         "Capítulo 5 — Cada recurso cloud, un tag",
         "3. Implementación",
@@ -527,7 +533,7 @@
     {
       "id": 44,
       "file": "blocks/0044.txt",
-      "word_paragraph_index_zero_based": 1724,
+      "word_paragraph_index_zero_based": 1730,
       "heading_context": [
         "Capítulo 6 — Atribución: quién consume qué",
         "1. Concepto",
@@ -539,7 +545,7 @@
     {
       "id": 45,
       "file": "blocks/0045.txt",
-      "word_paragraph_index_zero_based": 1752,
+      "word_paragraph_index_zero_based": 1758,
       "heading_context": [
         "Capítulo 6 — Atribución: quién consume qué",
         "2. La decisión",
@@ -551,7 +557,7 @@
     {
       "id": 46,
       "file": "blocks/0046.txt",
-      "word_paragraph_index_zero_based": 1759,
+      "word_paragraph_index_zero_based": 1765,
       "heading_context": [
         "Capítulo 6 — Atribución: quién consume qué",
         "2. La decisión",
@@ -563,7 +569,7 @@
     {
       "id": 47,
       "file": "blocks/0047.txt",
-      "word_paragraph_index_zero_based": 1761,
+      "word_paragraph_index_zero_based": 1767,
       "heading_context": [
         "Capítulo 6 — Atribución: quién consume qué",
         "2. La decisión",
@@ -575,7 +581,7 @@
     {
       "id": 48,
       "file": "blocks/0048.txt",
-      "word_paragraph_index_zero_based": 1764,
+      "word_paragraph_index_zero_based": 1770,
       "heading_context": [
         "Capítulo 6 — Atribución: quién consume qué",
         "2. La decisión",
@@ -587,7 +593,7 @@
     {
       "id": 49,
       "file": "blocks/0049.txt",
-      "word_paragraph_index_zero_based": 1769,
+      "word_paragraph_index_zero_based": 1775,
       "heading_context": [
         "Capítulo 6 — Atribución: quién consume qué",
         "3. Implementación",
@@ -599,7 +605,7 @@
     {
       "id": 50,
       "file": "blocks/0050.txt",
-      "word_paragraph_index_zero_based": 1773,
+      "word_paragraph_index_zero_based": 1779,
       "heading_context": [
         "Capítulo 6 — Atribución: quién consume qué",
         "3. Implementación",
@@ -611,7 +617,7 @@
     {
       "id": 51,
       "file": "blocks/0051.txt",
-      "word_paragraph_index_zero_based": 1777,
+      "word_paragraph_index_zero_based": 1783,
       "heading_context": [
         "Capítulo 6 — Atribución: quién consume qué",
         "3. Implementación",
@@ -623,7 +629,7 @@
     {
       "id": 52,
       "file": "blocks/0052.txt",
-      "word_paragraph_index_zero_based": 1781,
+      "word_paragraph_index_zero_based": 1787,
       "heading_context": [
         "Capítulo 6 — Atribución: quién consume qué",
         "3. Implementación",
@@ -635,7 +641,7 @@
     {
       "id": 53,
       "file": "blocks/0053.txt",
-      "word_paragraph_index_zero_based": 1791,
+      "word_paragraph_index_zero_based": 1797,
       "heading_context": [
         "Capítulo 6 — Atribución: quién consume qué",
         "3. Implementación",
@@ -647,7 +653,7 @@
     {
       "id": 54,
       "file": "blocks/0054.txt",
-      "word_paragraph_index_zero_based": 1913,
+      "word_paragraph_index_zero_based": 1919,
       "heading_context": [
         "Capítulo 7 — Dashboards: del token al CFO",
         "3. Implementación",
@@ -659,7 +665,7 @@
     {
       "id": 55,
       "file": "blocks/0055.txt",
-      "word_paragraph_index_zero_based": 1916,
+      "word_paragraph_index_zero_based": 1922,
       "heading_context": [
         "Capítulo 7 — Dashboards: del token al CFO",
         "3. Implementación",
@@ -671,7 +677,7 @@
     {
       "id": 56,
       "file": "blocks/0056.txt",
-      "word_paragraph_index_zero_based": 1920,
+      "word_paragraph_index_zero_based": 1926,
       "heading_context": [
         "Capítulo 7 — Dashboards: del token al CFO",
         "3. Implementación",
@@ -683,7 +689,7 @@
     {
       "id": 57,
       "file": "blocks/0057.txt",
-      "word_paragraph_index_zero_based": 1923,
+      "word_paragraph_index_zero_based": 1929,
       "heading_context": [
         "Capítulo 7 — Dashboards: del token al CFO",
         "3. Implementación",
@@ -695,7 +701,7 @@
     {
       "id": 58,
       "file": "blocks/0058.txt",
-      "word_paragraph_index_zero_based": 1928,
+      "word_paragraph_index_zero_based": 1934,
       "heading_context": [
         "Capítulo 7 — Dashboards: del token al CFO",
         "3. Implementación",
@@ -707,7 +713,7 @@
     {
       "id": 59,
       "file": "blocks/0059.txt",
-      "word_paragraph_index_zero_based": 1943,
+      "word_paragraph_index_zero_based": 1949,
       "heading_context": [
         "Capítulo 7 — Dashboards: del token al CFO",
         "3. Implementación",
@@ -719,7 +725,7 @@
     {
       "id": 60,
       "file": "blocks/0060.txt",
-      "word_paragraph_index_zero_based": 1947,
+      "word_paragraph_index_zero_based": 1953,
       "heading_context": [
         "Capítulo 7 — Dashboards: del token al CFO",
         "3. Implementación",
@@ -731,7 +737,7 @@
     {
       "id": 61,
       "file": "blocks/0061.txt",
-      "word_paragraph_index_zero_based": 1977,
+      "word_paragraph_index_zero_based": 1983,
       "heading_context": [
         "Capítulo 7 — Dashboards: del token al CFO",
         "3. Implementación",
@@ -743,7 +749,7 @@
     {
       "id": 62,
       "file": "blocks/0062.txt",
-      "word_paragraph_index_zero_based": 2157,
+      "word_paragraph_index_zero_based": 2163,
       "heading_context": [
         "Capítulo 8 — Routing inteligente de modelos",
         "3. Implementación",
@@ -755,7 +761,7 @@
     {
       "id": 63,
       "file": "blocks/0063.txt",
-      "word_paragraph_index_zero_based": 2162,
+      "word_paragraph_index_zero_based": 2168,
       "heading_context": [
         "Capítulo 8 — Routing inteligente de modelos",
         "3. Implementación",
@@ -767,7 +773,7 @@
     {
       "id": 64,
       "file": "blocks/0064.txt",
-      "word_paragraph_index_zero_based": 2167,
+      "word_paragraph_index_zero_based": 2173,
       "heading_context": [
         "Capítulo 8 — Routing inteligente de modelos",
         "3. Implementación",
@@ -779,7 +785,7 @@
     {
       "id": 65,
       "file": "blocks/0065.txt",
-      "word_paragraph_index_zero_based": 2171,
+      "word_paragraph_index_zero_based": 2177,
       "heading_context": [
         "Capítulo 8 — Routing inteligente de modelos",
         "3. Implementación",
@@ -791,7 +797,7 @@
     {
       "id": 66,
       "file": "blocks/0066.txt",
-      "word_paragraph_index_zero_based": 2175,
+      "word_paragraph_index_zero_based": 2181,
       "heading_context": [
         "Capítulo 8 — Routing inteligente de modelos",
         "3. Implementación",
@@ -803,7 +809,7 @@
     {
       "id": 67,
       "file": "blocks/0067.txt",
-      "word_paragraph_index_zero_based": 2190,
+      "word_paragraph_index_zero_based": 2196,
       "heading_context": [
         "Capítulo 8 — Routing inteligente de modelos",
         "3. Implementación",
@@ -815,7 +821,7 @@
     {
       "id": 68,
       "file": "blocks/0068.txt",
-      "word_paragraph_index_zero_based": 2194,
+      "word_paragraph_index_zero_based": 2200,
       "heading_context": [
         "Capítulo 8 — Routing inteligente de modelos",
         "3. Implementación",
@@ -827,7 +833,7 @@
     {
       "id": 69,
       "file": "blocks/0069.txt",
-      "word_paragraph_index_zero_based": 2200,
+      "word_paragraph_index_zero_based": 2206,
       "heading_context": [
         "Capítulo 8 — Routing inteligente de modelos",
         "3. Implementación",
@@ -839,7 +845,7 @@
     {
       "id": 70,
       "file": "blocks/0070.txt",
-      "word_paragraph_index_zero_based": 2333,
+      "word_paragraph_index_zero_based": 2339,
       "heading_context": [
         "Capítulo 9 — Caché, prompt engineering y batch",
         "1. Concepto",
@@ -851,7 +857,7 @@
     {
       "id": 71,
       "file": "blocks/0071.txt",
-      "word_paragraph_index_zero_based": 2420,
+      "word_paragraph_index_zero_based": 2426,
       "heading_context": [
         "Capítulo 9 — Caché, prompt engineering y batch",
         "3. Implementación",
@@ -863,7 +869,7 @@
     {
       "id": 72,
       "file": "blocks/0072.txt",
-      "word_paragraph_index_zero_based": 2424,
+      "word_paragraph_index_zero_based": 2430,
       "heading_context": [
         "Capítulo 9 — Caché, prompt engineering y batch",
         "3. Implementación",
@@ -875,7 +881,7 @@
     {
       "id": 73,
       "file": "blocks/0073.txt",
-      "word_paragraph_index_zero_based": 2428,
+      "word_paragraph_index_zero_based": 2434,
       "heading_context": [
         "Capítulo 9 — Caché, prompt engineering y batch",
         "3. Implementación",
@@ -887,7 +893,7 @@
     {
       "id": 74,
       "file": "blocks/0074.txt",
-      "word_paragraph_index_zero_based": 2432,
+      "word_paragraph_index_zero_based": 2438,
       "heading_context": [
         "Capítulo 9 — Caché, prompt engineering y batch",
         "3. Implementación",
@@ -899,7 +905,7 @@
     {
       "id": 75,
       "file": "blocks/0075.txt",
-      "word_paragraph_index_zero_based": 2437,
+      "word_paragraph_index_zero_based": 2443,
       "heading_context": [
         "Capítulo 9 — Caché, prompt engineering y batch",
         "3. Implementación",
@@ -911,7 +917,7 @@
     {
       "id": 76,
       "file": "blocks/0076.txt",
-      "word_paragraph_index_zero_based": 2480,
+      "word_paragraph_index_zero_based": 2486,
       "heading_context": [
         "Capítulo 9 — Caché, prompt engineering y batch",
         "3. Implementación",
@@ -923,7 +929,7 @@
     {
       "id": 77,
       "file": "blocks/0077.txt",
-      "word_paragraph_index_zero_based": 2484,
+      "word_paragraph_index_zero_based": 2490,
       "heading_context": [
         "Capítulo 9 — Caché, prompt engineering y batch",
         "3. Implementación",
@@ -935,7 +941,7 @@
     {
       "id": 78,
       "file": "blocks/0078.txt",
-      "word_paragraph_index_zero_based": 2657,
+      "word_paragraph_index_zero_based": 2663,
       "heading_context": [
         "Capítulo 10 — Self-hosted vs API: cuándo cada uno",
         "2. La decisión",
@@ -947,7 +953,7 @@
     {
       "id": 79,
       "file": "blocks/0079.txt",
-      "word_paragraph_index_zero_based": 2790,
+      "word_paragraph_index_zero_based": 2796,
       "heading_context": [
         "Capítulo 10 — Self-hosted vs API: cuándo cada uno",
         "3. Implementación",
@@ -959,7 +965,7 @@
     {
       "id": 80,
       "file": "blocks/0080.txt",
-      "word_paragraph_index_zero_based": 2794,
+      "word_paragraph_index_zero_based": 2800,
       "heading_context": [
         "Capítulo 10 — Self-hosted vs API: cuándo cada uno",
         "3. Implementación",
@@ -971,7 +977,7 @@
     {
       "id": 81,
       "file": "blocks/0081.txt",
-      "word_paragraph_index_zero_based": 2798,
+      "word_paragraph_index_zero_based": 2804,
       "heading_context": [
         "Capítulo 10 — Self-hosted vs API: cuándo cada uno",
         "3. Implementación",
@@ -983,7 +989,7 @@
     {
       "id": 82,
       "file": "blocks/0082.txt",
-      "word_paragraph_index_zero_based": 2800,
+      "word_paragraph_index_zero_based": 2806,
       "heading_context": [
         "Capítulo 10 — Self-hosted vs API: cuándo cada uno",
         "3. Implementación",
@@ -995,7 +1001,7 @@
     {
       "id": 83,
       "file": "blocks/0083.txt",
-      "word_paragraph_index_zero_based": 2808,
+      "word_paragraph_index_zero_based": 2814,
       "heading_context": [
         "Capítulo 10 — Self-hosted vs API: cuándo cada uno",
         "3. Implementación",
@@ -1007,7 +1013,7 @@
     {
       "id": 84,
       "file": "blocks/0084.txt",
-      "word_paragraph_index_zero_based": 2814,
+      "word_paragraph_index_zero_based": 2820,
       "heading_context": [
         "Capítulo 10 — Self-hosted vs API: cuándo cada uno",
         "3. Implementación",
@@ -1019,7 +1025,7 @@
     {
       "id": 85,
       "file": "blocks/0085.txt",
-      "word_paragraph_index_zero_based": 2889,
+      "word_paragraph_index_zero_based": 2895,
       "heading_context": [
         "Capítulo 11 — Presupuestos y circuit breakers",
         "3. Implementación",
@@ -1031,7 +1037,7 @@
     {
       "id": 86,
       "file": "blocks/0086.txt",
-      "word_paragraph_index_zero_based": 2893,
+      "word_paragraph_index_zero_based": 2899,
       "heading_context": [
         "Capítulo 11 — Presupuestos y circuit breakers",
         "3. Implementación",
@@ -1043,7 +1049,7 @@
     {
       "id": 87,
       "file": "blocks/0087.txt",
-      "word_paragraph_index_zero_based": 2898,
+      "word_paragraph_index_zero_based": 2904,
       "heading_context": [
         "Capítulo 11 — Presupuestos y circuit breakers",
         "3. Implementación",
@@ -1055,7 +1061,7 @@
     {
       "id": 88,
       "file": "blocks/0088.txt",
-      "word_paragraph_index_zero_based": 2902,
+      "word_paragraph_index_zero_based": 2908,
       "heading_context": [
         "Capítulo 11 — Presupuestos y circuit breakers",
         "3. Implementación",
@@ -1067,7 +1073,7 @@
     {
       "id": 89,
       "file": "blocks/0089.txt",
-      "word_paragraph_index_zero_based": 2907,
+      "word_paragraph_index_zero_based": 2913,
       "heading_context": [
         "Capítulo 11 — Presupuestos y circuit breakers",
         "3. Implementación",
@@ -1079,7 +1085,7 @@
     {
       "id": 90,
       "file": "blocks/0090.txt",
-      "word_paragraph_index_zero_based": 2910,
+      "word_paragraph_index_zero_based": 2916,
       "heading_context": [
         "Capítulo 11 — Presupuestos y circuit breakers",
         "3. Implementación",
@@ -1091,7 +1097,7 @@
     {
       "id": 91,
       "file": "blocks/0091.txt",
-      "word_paragraph_index_zero_based": 2914,
+      "word_paragraph_index_zero_based": 2920,
       "heading_context": [
         "Capítulo 11 — Presupuestos y circuit breakers",
         "3. Implementación",
@@ -1103,7 +1109,7 @@
     {
       "id": 92,
       "file": "blocks/0092.txt",
-      "word_paragraph_index_zero_based": 2926,
+      "word_paragraph_index_zero_based": 2932,
       "heading_context": [
         "Capítulo 11 — Presupuestos y circuit breakers",
         "3. Implementación",
@@ -1115,7 +1121,7 @@
     {
       "id": 93,
       "file": "blocks/0093.txt",
-      "word_paragraph_index_zero_based": 3156,
+      "word_paragraph_index_zero_based": 3162,
       "heading_context": [
         "Capítulo 12 — El agente de coste cloud: arquitectura",
         "3. Implementación",
@@ -1127,7 +1133,7 @@
     {
       "id": 94,
       "file": "blocks/0094.txt",
-      "word_paragraph_index_zero_based": 3159,
+      "word_paragraph_index_zero_based": 3165,
       "heading_context": [
         "Capítulo 12 — El agente de coste cloud: arquitectura",
         "3. Implementación",
@@ -1139,7 +1145,7 @@
     {
       "id": 95,
       "file": "blocks/0095.txt",
-      "word_paragraph_index_zero_based": 3163,
+      "word_paragraph_index_zero_based": 3169,
       "heading_context": [
         "Capítulo 12 — El agente de coste cloud: arquitectura",
         "3. Implementación",
@@ -1151,7 +1157,7 @@
     {
       "id": 96,
       "file": "blocks/0096.txt",
-      "word_paragraph_index_zero_based": 3168,
+      "word_paragraph_index_zero_based": 3174,
       "heading_context": [
         "Capítulo 12 — El agente de coste cloud: arquitectura",
         "3. Implementación",
@@ -1163,7 +1169,7 @@
     {
       "id": 97,
       "file": "blocks/0097.txt",
-      "word_paragraph_index_zero_based": 3188,
+      "word_paragraph_index_zero_based": 3194,
       "heading_context": [
         "Capítulo 12 — El agente de coste cloud: arquitectura",
         "3. Implementación",
@@ -1175,7 +1181,7 @@
     {
       "id": 98,
       "file": "blocks/0098.txt",
-      "word_paragraph_index_zero_based": 3191,
+      "word_paragraph_index_zero_based": 3197,
       "heading_context": [
         "Capítulo 12 — El agente de coste cloud: arquitectura",
         "3. Implementación",
@@ -1187,7 +1193,7 @@
     {
       "id": 99,
       "file": "blocks/0099.txt",
-      "word_paragraph_index_zero_based": 3397,
+      "word_paragraph_index_zero_based": 3403,
       "heading_context": [
         "Capítulo 13 — Detección de anomalías con IA",
         "3. Implementación",
@@ -1199,7 +1205,7 @@
     {
       "id": 100,
       "file": "blocks/0100.txt",
-      "word_paragraph_index_zero_based": 3400,
+      "word_paragraph_index_zero_based": 3406,
       "heading_context": [
         "Capítulo 13 — Detección de anomalías con IA",
         "3. Implementación",
@@ -1211,7 +1217,7 @@
     {
       "id": 101,
       "file": "blocks/0101.txt",
-      "word_paragraph_index_zero_based": 3402,
+      "word_paragraph_index_zero_based": 3408,
       "heading_context": [
         "Capítulo 13 — Detección de anomalías con IA",
         "3. Implementación",
@@ -1223,7 +1229,7 @@
     {
       "id": 102,
       "file": "blocks/0102.txt",
-      "word_paragraph_index_zero_based": 3404,
+      "word_paragraph_index_zero_based": 3410,
       "heading_context": [
         "Capítulo 13 — Detección de anomalías con IA",
         "3. Implementación",
@@ -1235,7 +1241,7 @@
     {
       "id": 103,
       "file": "blocks/0103.txt",
-      "word_paragraph_index_zero_based": 3408,
+      "word_paragraph_index_zero_based": 3414,
       "heading_context": [
         "Capítulo 13 — Detección de anomalías con IA",
         "3. Implementación",
@@ -1247,7 +1253,7 @@
     {
       "id": 104,
       "file": "blocks/0104.txt",
-      "word_paragraph_index_zero_based": 3410,
+      "word_paragraph_index_zero_based": 3416,
       "heading_context": [
         "Capítulo 13 — Detección de anomalías con IA",
         "3. Implementación",
@@ -1259,7 +1265,7 @@
     {
       "id": 105,
       "file": "blocks/0105.txt",
-      "word_paragraph_index_zero_based": 3564,
+      "word_paragraph_index_zero_based": 3570,
       "heading_context": [
         "Capítulo 14 — Rightsizing y recomendaciones con IA",
         "3. Implementación",
@@ -1271,7 +1277,7 @@
     {
       "id": 106,
       "file": "blocks/0106.txt",
-      "word_paragraph_index_zero_based": 3566,
+      "word_paragraph_index_zero_based": 3572,
       "heading_context": [
         "Capítulo 14 — Rightsizing y recomendaciones con IA",
         "3. Implementación",
@@ -1283,7 +1289,7 @@
     {
       "id": 107,
       "file": "blocks/0107.txt",
-      "word_paragraph_index_zero_based": 3568,
+      "word_paragraph_index_zero_based": 3574,
       "heading_context": [
         "Capítulo 14 — Rightsizing y recomendaciones con IA",
         "3. Implementación",
@@ -1295,7 +1301,7 @@
     {
       "id": 108,
       "file": "blocks/0108.txt",
-      "word_paragraph_index_zero_based": 3570,
+      "word_paragraph_index_zero_based": 3576,
       "heading_context": [
         "Capítulo 14 — Rightsizing y recomendaciones con IA",
         "3. Implementación",
@@ -1307,7 +1313,7 @@
     {
       "id": 109,
       "file": "blocks/0109.txt",
-      "word_paragraph_index_zero_based": 3742,
+      "word_paragraph_index_zero_based": 3748,
       "heading_context": [
         "Capítulo 15 — Recursos huérfanos y waste automático",
         "3. Implementación",
@@ -1319,7 +1325,7 @@
     {
       "id": 110,
       "file": "blocks/0110.txt",
-      "word_paragraph_index_zero_based": 3745,
+      "word_paragraph_index_zero_based": 3751,
       "heading_context": [
         "Capítulo 15 — Recursos huérfanos y waste automático",
         "3. Implementación",
@@ -1331,7 +1337,7 @@
     {
       "id": 111,
       "file": "blocks/0111.txt",
-      "word_paragraph_index_zero_based": 3749,
+      "word_paragraph_index_zero_based": 3755,
       "heading_context": [
         "Capítulo 15 — Recursos huérfanos y waste automático",
         "3. Implementación",
@@ -1343,7 +1349,7 @@
     {
       "id": 112,
       "file": "blocks/0112.txt",
-      "word_paragraph_index_zero_based": 3753,
+      "word_paragraph_index_zero_based": 3759,
       "heading_context": [
         "Capítulo 15 — Recursos huérfanos y waste automático",
         "3. Implementación",
@@ -1355,7 +1361,7 @@
     {
       "id": 113,
       "file": "blocks/0113.txt",
-      "word_paragraph_index_zero_based": 3755,
+      "word_paragraph_index_zero_based": 3761,
       "heading_context": [
         "Capítulo 15 — Recursos huérfanos y waste automático",
         "3. Implementación",
@@ -1367,7 +1373,7 @@
     {
       "id": 114,
       "file": "blocks/0114.txt",
-      "word_paragraph_index_zero_based": 3758,
+      "word_paragraph_index_zero_based": 3764,
       "heading_context": [
         "Capítulo 15 — Recursos huérfanos y waste automático",
         "3. Implementación",
@@ -1379,7 +1385,7 @@
     {
       "id": 115,
       "file": "blocks/0115.txt",
-      "word_paragraph_index_zero_based": 3763,
+      "word_paragraph_index_zero_based": 3769,
       "heading_context": [
         "Capítulo 15 — Recursos huérfanos y waste automático",
         "3. Implementación",
@@ -1391,7 +1397,7 @@
     {
       "id": 116,
       "file": "blocks/0116.txt",
-      "word_paragraph_index_zero_based": 3918,
+      "word_paragraph_index_zero_based": 3924,
       "heading_context": [
         "Capítulo 16 — Forecasting: predecir la factura del mes que viene",
         "3. Implementación",
@@ -1403,7 +1409,7 @@
     {
       "id": 117,
       "file": "blocks/0117.txt",
-      "word_paragraph_index_zero_based": 3921,
+      "word_paragraph_index_zero_based": 3927,
       "heading_context": [
         "Capítulo 16 — Forecasting: predecir la factura del mes que viene",
         "3. Implementación",
@@ -1415,7 +1421,7 @@
     {
       "id": 118,
       "file": "blocks/0118.txt",
-      "word_paragraph_index_zero_based": 3925,
+      "word_paragraph_index_zero_based": 3931,
       "heading_context": [
         "Capítulo 16 — Forecasting: predecir la factura del mes que viene",
         "3. Implementación",
@@ -1427,7 +1433,7 @@
     {
       "id": 119,
       "file": "blocks/0119.txt",
-      "word_paragraph_index_zero_based": 3928,
+      "word_paragraph_index_zero_based": 3934,
       "heading_context": [
         "Capítulo 16 — Forecasting: predecir la factura del mes que viene",
         "3. Implementación",
@@ -1439,7 +1445,7 @@
     {
       "id": 120,
       "file": "blocks/0120.txt",
-      "word_paragraph_index_zero_based": 3933,
+      "word_paragraph_index_zero_based": 3939,
       "heading_context": [
         "Capítulo 16 — Forecasting: predecir la factura del mes que viene",
         "3. Implementación",
@@ -1451,7 +1457,7 @@
     {
       "id": 121,
       "file": "blocks/0121.txt",
-      "word_paragraph_index_zero_based": 3937,
+      "word_paragraph_index_zero_based": 3943,
       "heading_context": [
         "Capítulo 16 — Forecasting: predecir la factura del mes que viene",
         "3. Implementación",
@@ -1463,7 +1469,7 @@
     {
       "id": 122,
       "file": "blocks/0122.txt",
-      "word_paragraph_index_zero_based": 3940,
+      "word_paragraph_index_zero_based": 3946,
       "heading_context": [
         "Capítulo 16 — Forecasting: predecir la factura del mes que viene",
         "3. Implementación",
@@ -1475,7 +1481,7 @@
     {
       "id": 123,
       "file": "blocks/0123.txt",
-      "word_paragraph_index_zero_based": 3946,
+      "word_paragraph_index_zero_based": 3952,
       "heading_context": [
         "Capítulo 16 — Forecasting: predecir la factura del mes que viene",
         "3. Implementación",
@@ -1487,7 +1493,7 @@
     {
       "id": 124,
       "file": "blocks/0124.txt",
-      "word_paragraph_index_zero_based": 3950,
+      "word_paragraph_index_zero_based": 3956,
       "heading_context": [
         "Capítulo 16 — Forecasting: predecir la factura del mes que viene",
         "3. Implementación",
@@ -1499,7 +1505,7 @@
     {
       "id": 125,
       "file": "blocks/0125.txt",
-      "word_paragraph_index_zero_based": 4073,
+      "word_paragraph_index_zero_based": 4079,
       "heading_context": [
         "Capítulo 17 — Medir el ROI: el framework HumanBaseline",
         "1. Concepto",
@@ -1511,7 +1517,7 @@
     {
       "id": 126,
       "file": "blocks/0126.txt",
-      "word_paragraph_index_zero_based": 4144,
+      "word_paragraph_index_zero_based": 4150,
       "heading_context": [
         "Capítulo 17 — Medir el ROI: el framework HumanBaseline",
         "3. Implementación",
@@ -1523,7 +1529,7 @@
     {
       "id": 127,
       "file": "blocks/0127.txt",
-      "word_paragraph_index_zero_based": 4146,
+      "word_paragraph_index_zero_based": 4152,
       "heading_context": [
         "Capítulo 17 — Medir el ROI: el framework HumanBaseline",
         "3. Implementación",
@@ -1535,7 +1541,7 @@
     {
       "id": 128,
       "file": "blocks/0128.txt",
-      "word_paragraph_index_zero_based": 4150,
+      "word_paragraph_index_zero_based": 4156,
       "heading_context": [
         "Capítulo 17 — Medir el ROI: el framework HumanBaseline",
         "3. Implementación",
@@ -1547,7 +1553,7 @@
     {
       "id": 129,
       "file": "blocks/0129.txt",
-      "word_paragraph_index_zero_based": 4154,
+      "word_paragraph_index_zero_based": 4160,
       "heading_context": [
         "Capítulo 17 — Medir el ROI: el framework HumanBaseline",
         "3. Implementación",
@@ -1559,7 +1565,7 @@
     {
       "id": 130,
       "file": "blocks/0130.txt",
-      "word_paragraph_index_zero_based": 4158,
+      "word_paragraph_index_zero_based": 4164,
       "heading_context": [
         "Capítulo 17 — Medir el ROI: el framework HumanBaseline",
         "3. Implementación",
@@ -1571,7 +1577,7 @@
     {
       "id": 131,
       "file": "blocks/0131.txt",
-      "word_paragraph_index_zero_based": 4162,
+      "word_paragraph_index_zero_based": 4168,
       "heading_context": [
         "Capítulo 17 — Medir el ROI: el framework HumanBaseline",
         "3. Implementación",
@@ -1583,7 +1589,7 @@
     {
       "id": 132,
       "file": "blocks/0132.txt",
-      "word_paragraph_index_zero_based": 4166,
+      "word_paragraph_index_zero_based": 4172,
       "heading_context": [
         "Capítulo 17 — Medir el ROI: el framework HumanBaseline",
         "3. Implementación",
@@ -1595,7 +1601,7 @@
     {
       "id": 133,
       "file": "blocks/0133.txt",
-      "word_paragraph_index_zero_based": 4197,
+      "word_paragraph_index_zero_based": 4203,
       "heading_context": [
         "Capítulo 17 — Medir el ROI: el framework HumanBaseline",
         "3. Implementación",
@@ -1607,7 +1613,7 @@
     {
       "id": 134,
       "file": "blocks/0134.txt",
-      "word_paragraph_index_zero_based": 4212,
+      "word_paragraph_index_zero_based": 4218,
       "heading_context": [
         "Capítulo 17 — Medir el ROI: el framework HumanBaseline",
         "3. Implementación",
@@ -1619,7 +1625,7 @@
     {
       "id": 135,
       "file": "blocks/0135.txt",
-      "word_paragraph_index_zero_based": 4227,
+      "word_paragraph_index_zero_based": 4233,
       "heading_context": [
         "Capítulo 17 — Medir el ROI: el framework HumanBaseline",
         "3. Implementación",
@@ -1631,7 +1637,7 @@
     {
       "id": 136,
       "file": "blocks/0136.txt",
-      "word_paragraph_index_zero_based": 4231,
+      "word_paragraph_index_zero_based": 4237,
       "heading_context": [
         "Capítulo 17 — Medir el ROI: el framework HumanBaseline",
         "3. Implementación",
@@ -1643,7 +1649,7 @@
     {
       "id": 137,
       "file": "blocks/0137.txt",
-      "word_paragraph_index_zero_based": 4353,
+      "word_paragraph_index_zero_based": 4359,
       "heading_context": [
         "Capítulo 18 — El business case para el CFO",
         "2. La decisión",
@@ -1655,7 +1661,7 @@
     {
       "id": 138,
       "file": "blocks/0138.txt",
-      "word_paragraph_index_zero_based": 4386,
+      "word_paragraph_index_zero_based": 4392,
       "heading_context": [
         "Capítulo 18 — El business case para el CFO",
         "3. Implementación",
@@ -1667,7 +1673,7 @@
     {
       "id": 139,
       "file": "blocks/0139.txt",
-      "word_paragraph_index_zero_based": 4388,
+      "word_paragraph_index_zero_based": 4394,
       "heading_context": [
         "Capítulo 18 — El business case para el CFO",
         "3. Implementación",
@@ -1679,7 +1685,7 @@
     {
       "id": 140,
       "file": "blocks/0140.txt",
-      "word_paragraph_index_zero_based": 4390,
+      "word_paragraph_index_zero_based": 4396,
       "heading_context": [
         "Capítulo 18 — El business case para el CFO",
         "3. Implementación",
@@ -1691,7 +1697,7 @@
     {
       "id": 141,
       "file": "blocks/0141.txt",
-      "word_paragraph_index_zero_based": 4393,
+      "word_paragraph_index_zero_based": 4399,
       "heading_context": [
         "Capítulo 18 — El business case para el CFO",
         "3. Implementación",
@@ -1703,7 +1709,7 @@
     {
       "id": 142,
       "file": "blocks/0142.txt",
-      "word_paragraph_index_zero_based": 4396,
+      "word_paragraph_index_zero_based": 4402,
       "heading_context": [
         "Capítulo 18 — El business case para el CFO",
         "3. Implementación",
@@ -1715,7 +1721,7 @@
     {
       "id": 143,
       "file": "blocks/0143.txt",
-      "word_paragraph_index_zero_based": 4435,
+      "word_paragraph_index_zero_based": 4441,
       "heading_context": [
         "Capítulo 18 — El business case para el CFO",
         "3. Implementación",
@@ -1727,7 +1733,7 @@
     {
       "id": 144,
       "file": "blocks/0144.txt",
-      "word_paragraph_index_zero_based": 4460,
+      "word_paragraph_index_zero_based": 4466,
       "heading_context": [
         "Capítulo 18 — El business case para el CFO",
         "3. Implementación",
@@ -1739,7 +1745,7 @@
     {
       "id": 145,
       "file": "blocks/0145.txt",
-      "word_paragraph_index_zero_based": 4463,
+      "word_paragraph_index_zero_based": 4469,
       "heading_context": [
         "Capítulo 18 — El business case para el CFO",
         "3. Implementación",
@@ -1751,7 +1757,7 @@
     {
       "id": 146,
       "file": "blocks/0146.txt",
-      "word_paragraph_index_zero_based": 4467,
+      "word_paragraph_index_zero_based": 4473,
       "heading_context": [
         "Capítulo 18 — El business case para el CFO",
         "3. Implementación",
@@ -1763,7 +1769,7 @@
     {
       "id": 147,
       "file": "blocks/0147.txt",
-      "word_paragraph_index_zero_based": 4490,
+      "word_paragraph_index_zero_based": 4496,
       "heading_context": [
         "Capítulo 18 — El business case para el CFO",
         "3. Implementación",
@@ -1775,7 +1781,7 @@
     {
       "id": 148,
       "file": "blocks/0148.txt",
-      "word_paragraph_index_zero_based": 4508,
+      "word_paragraph_index_zero_based": 4514,
       "heading_context": [
         "Capítulo 18 — El business case para el CFO",
         "3. Implementación",
@@ -1787,7 +1793,7 @@
     {
       "id": 149,
       "file": "blocks/0149.txt",
-      "word_paragraph_index_zero_based": 4622,
+      "word_paragraph_index_zero_based": 4628,
       "heading_context": [
         "Capítulo 19 — Unit economics de plataformas con IA",
         "3. Implementación",
@@ -1799,7 +1805,7 @@
     {
       "id": 150,
       "file": "blocks/0150.txt",
-      "word_paragraph_index_zero_based": 4625,
+      "word_paragraph_index_zero_based": 4631,
       "heading_context": [
         "Capítulo 19 — Unit economics de plataformas con IA",
         "3. Implementación",
@@ -1811,7 +1817,7 @@
     {
       "id": 151,
       "file": "blocks/0151.txt",
-      "word_paragraph_index_zero_based": 4629,
+      "word_paragraph_index_zero_based": 4635,
       "heading_context": [
         "Capítulo 19 — Unit economics de plataformas con IA",
         "3. Implementación",
@@ -1823,7 +1829,7 @@
     {
       "id": 152,
       "file": "blocks/0152.txt",
-      "word_paragraph_index_zero_based": 4631,
+      "word_paragraph_index_zero_based": 4637,
       "heading_context": [
         "Capítulo 19 — Unit economics de plataformas con IA",
         "3. Implementación",
@@ -1835,7 +1841,7 @@
     {
       "id": 153,
       "file": "blocks/0153.txt",
-      "word_paragraph_index_zero_based": 4635,
+      "word_paragraph_index_zero_based": 4641,
       "heading_context": [
         "Capítulo 19 — Unit economics de plataformas con IA",
         "3. Implementación",
@@ -1847,7 +1853,7 @@
     {
       "id": 154,
       "file": "blocks/0154.txt",
-      "word_paragraph_index_zero_based": 4639,
+      "word_paragraph_index_zero_based": 4645,
       "heading_context": [
         "Capítulo 19 — Unit economics de plataformas con IA",
         "3. Implementación",
@@ -1859,7 +1865,7 @@
     {
       "id": 155,
       "file": "blocks/0155.txt",
-      "word_paragraph_index_zero_based": 4674,
+      "word_paragraph_index_zero_based": 4680,
       "heading_context": [
         "Capítulo 19 — Unit economics de plataformas con IA",
         "3. Implementación",
@@ -1871,7 +1877,7 @@
     {
       "id": 156,
       "file": "blocks/0156.txt",
-      "word_paragraph_index_zero_based": 4686,
+      "word_paragraph_index_zero_based": 4692,
       "heading_context": [
         "Capítulo 19 — Unit economics de plataformas con IA",
         "3. Implementación",
@@ -1883,7 +1889,7 @@
     {
       "id": 157,
       "file": "blocks/0157.txt",
-      "word_paragraph_index_zero_based": 4722,
+      "word_paragraph_index_zero_based": 4728,
       "heading_context": [
         "Capítulo 19 — Unit economics de plataformas con IA",
         "3. Implementación",
@@ -1895,7 +1901,7 @@
     {
       "id": 158,
       "file": "blocks/0158.txt",
-      "word_paragraph_index_zero_based": 4728,
+      "word_paragraph_index_zero_based": 4734,
       "heading_context": [
         "Capítulo 19 — Unit economics de plataformas con IA",
         "3. Implementación",
@@ -1907,7 +1913,7 @@
     {
       "id": 159,
       "file": "blocks/0159.txt",
-      "word_paragraph_index_zero_based": 4731,
+      "word_paragraph_index_zero_based": 4737,
       "heading_context": [
         "Capítulo 19 — Unit economics de plataformas con IA",
         "3. Implementación",
@@ -1919,7 +1925,7 @@
     {
       "id": 160,
       "file": "blocks/0160.txt",
-      "word_paragraph_index_zero_based": 4740,
+      "word_paragraph_index_zero_based": 4746,
       "heading_context": [
         "Capítulo 19 — Unit economics de plataformas con IA",
         "3. Implementación",
@@ -1931,7 +1937,7 @@
     {
       "id": 161,
       "file": "blocks/0161.txt",
-      "word_paragraph_index_zero_based": 4770,
+      "word_paragraph_index_zero_based": 4776,
       "heading_context": [
         "Capítulo 19 — Unit economics de plataformas con IA",
         "3. Implementación",
@@ -1943,7 +1949,7 @@
     {
       "id": 162,
       "file": "blocks/0162.txt",
-      "word_paragraph_index_zero_based": 4823,
+      "word_paragraph_index_zero_based": 4829,
       "heading_context": [
         "Capítulo 20 — Policy-as-code para FinOps",
         "1. Concepto",
@@ -1955,7 +1961,7 @@
     {
       "id": 163,
       "file": "blocks/0163.txt",
-      "word_paragraph_index_zero_based": 4828,
+      "word_paragraph_index_zero_based": 4834,
       "heading_context": [
         "Capítulo 20 — Policy-as-code para FinOps",
         "1. Concepto",
@@ -1967,7 +1973,7 @@
     {
       "id": 164,
       "file": "blocks/0164.txt",
-      "word_paragraph_index_zero_based": 4844,
+      "word_paragraph_index_zero_based": 4850,
       "heading_context": [
         "Capítulo 20 — Policy-as-code para FinOps",
         "2. La decisión",
@@ -1979,7 +1985,7 @@
     {
       "id": 165,
       "file": "blocks/0165.txt",
-      "word_paragraph_index_zero_based": 4852,
+      "word_paragraph_index_zero_based": 4858,
       "heading_context": [
         "Capítulo 20 — Policy-as-code para FinOps",
         "3. Implementación",
@@ -1991,7 +1997,7 @@
     {
       "id": 166,
       "file": "blocks/0166.txt",
-      "word_paragraph_index_zero_based": 4854,
+      "word_paragraph_index_zero_based": 4860,
       "heading_context": [
         "Capítulo 20 — Policy-as-code para FinOps",
         "3. Implementación",
@@ -2003,7 +2009,7 @@
     {
       "id": 167,
       "file": "blocks/0167.txt",
-      "word_paragraph_index_zero_based": 4855,
+      "word_paragraph_index_zero_based": 4861,
       "heading_context": [
         "Capítulo 20 — Policy-as-code para FinOps",
         "3. Implementación",
@@ -2015,7 +2021,7 @@
     {
       "id": 168,
       "file": "blocks/0168.txt",
-      "word_paragraph_index_zero_based": 4858,
+      "word_paragraph_index_zero_based": 4864,
       "heading_context": [
         "Capítulo 20 — Policy-as-code para FinOps",
         "3. Implementación",
@@ -2027,7 +2033,7 @@
     {
       "id": 169,
       "file": "blocks/0169.txt",
-      "word_paragraph_index_zero_based": 4860,
+      "word_paragraph_index_zero_based": 4866,
       "heading_context": [
         "Capítulo 20 — Policy-as-code para FinOps",
         "3. Implementación",
@@ -2039,7 +2045,7 @@
     {
       "id": 170,
       "file": "blocks/0170.txt",
-      "word_paragraph_index_zero_based": 4864,
+      "word_paragraph_index_zero_based": 4870,
       "heading_context": [
         "Capítulo 20 — Policy-as-code para FinOps",
         "3. Implementación",
@@ -2051,7 +2057,7 @@
     {
       "id": 171,
       "file": "blocks/0171.txt",
-      "word_paragraph_index_zero_based": 4868,
+      "word_paragraph_index_zero_based": 4874,
       "heading_context": [
         "Capítulo 20 — Policy-as-code para FinOps",
         "3. Implementación",
@@ -2063,7 +2069,7 @@
     {
       "id": 172,
       "file": "blocks/0172.txt",
-      "word_paragraph_index_zero_based": 4890,
+      "word_paragraph_index_zero_based": 4896,
       "heading_context": [
         "Capítulo 20 — Policy-as-code para FinOps",
         "3. Implementación",
@@ -2075,7 +2081,7 @@
     {
       "id": 173,
       "file": "blocks/0173.txt",
-      "word_paragraph_index_zero_based": 4896,
+      "word_paragraph_index_zero_based": 4902,
       "heading_context": [
         "Capítulo 20 — Policy-as-code para FinOps",
         "3. Implementación",
@@ -2087,7 +2093,7 @@
     {
       "id": 174,
       "file": "blocks/0174.txt",
-      "word_paragraph_index_zero_based": 4898,
+      "word_paragraph_index_zero_based": 4904,
       "heading_context": [
         "Capítulo 20 — Policy-as-code para FinOps",
         "3. Implementación",
@@ -2099,7 +2105,7 @@
     {
       "id": 175,
       "file": "blocks/0175.txt",
-      "word_paragraph_index_zero_based": 4907,
+      "word_paragraph_index_zero_based": 4913,
       "heading_context": [
         "Capítulo 20 — Policy-as-code para FinOps",
         "3. Implementación",
@@ -2111,7 +2117,7 @@
     {
       "id": 176,
       "file": "blocks/0176.txt",
-      "word_paragraph_index_zero_based": 4914,
+      "word_paragraph_index_zero_based": 4920,
       "heading_context": [
         "Capítulo 20 — Policy-as-code para FinOps",
         "3. Implementación",
@@ -2123,7 +2129,7 @@
     {
       "id": 177,
       "file": "blocks/0177.txt",
-      "word_paragraph_index_zero_based": 4918,
+      "word_paragraph_index_zero_based": 4924,
       "heading_context": [
         "Capítulo 20 — Policy-as-code para FinOps",
         "3. Implementación",
@@ -2135,7 +2141,7 @@
     {
       "id": 178,
       "file": "blocks/0178.txt",
-      "word_paragraph_index_zero_based": 4922,
+      "word_paragraph_index_zero_based": 4928,
       "heading_context": [
         "Capítulo 20 — Policy-as-code para FinOps",
         "3. Implementación",
@@ -2147,7 +2153,7 @@
     {
       "id": 179,
       "file": "blocks/0179.txt",
-      "word_paragraph_index_zero_based": 4931,
+      "word_paragraph_index_zero_based": 4937,
       "heading_context": [
         "Capítulo 20 — Policy-as-code para FinOps",
         "3. Implementación",
@@ -2159,7 +2165,7 @@
     {
       "id": 180,
       "file": "blocks/0180.txt",
-      "word_paragraph_index_zero_based": 4935,
+      "word_paragraph_index_zero_based": 4941,
       "heading_context": [
         "Capítulo 20 — Policy-as-code para FinOps",
         "3. Implementación",
@@ -2171,7 +2177,7 @@
     {
       "id": 181,
       "file": "blocks/0181.txt",
-      "word_paragraph_index_zero_based": 4937,
+      "word_paragraph_index_zero_based": 4943,
       "heading_context": [
         "Capítulo 20 — Policy-as-code para FinOps",
         "3. Implementación",
@@ -2183,7 +2189,7 @@
     {
       "id": 182,
       "file": "blocks/0182.txt",
-      "word_paragraph_index_zero_based": 4942,
+      "word_paragraph_index_zero_based": 4948,
       "heading_context": [
         "Capítulo 20 — Policy-as-code para FinOps",
         "3. Implementación",
@@ -2195,7 +2201,7 @@
     {
       "id": 183,
       "file": "blocks/0183.txt",
-      "word_paragraph_index_zero_based": 4951,
+      "word_paragraph_index_zero_based": 4957,
       "heading_context": [
         "Capítulo 20 — Policy-as-code para FinOps",
         "3. Implementación",
@@ -2207,7 +2213,7 @@
     {
       "id": 184,
       "file": "blocks/0184.txt",
-      "word_paragraph_index_zero_based": 4976,
+      "word_paragraph_index_zero_based": 4982,
       "heading_context": [
         "Capítulo 20 — Policy-as-code para FinOps",
         "3. Implementación",
@@ -2219,7 +2225,7 @@
     {
       "id": 185,
       "file": "blocks/0185.txt",
-      "word_paragraph_index_zero_based": 5103,
+      "word_paragraph_index_zero_based": 5109,
       "heading_context": [
         "Capítulo 21 — AI Act, auditoría y trazabilidad financiera",
         "3. Implementación",
@@ -2231,7 +2237,7 @@
     {
       "id": 186,
       "file": "blocks/0186.txt",
-      "word_paragraph_index_zero_based": 5106,
+      "word_paragraph_index_zero_based": 5112,
       "heading_context": [
         "Capítulo 21 — AI Act, auditoría y trazabilidad financiera",
         "3. Implementación",
@@ -2243,7 +2249,7 @@
     {
       "id": 187,
       "file": "blocks/0187.txt",
-      "word_paragraph_index_zero_based": 5109,
+      "word_paragraph_index_zero_based": 5115,
       "heading_context": [
         "Capítulo 21 — AI Act, auditoría y trazabilidad financiera",
         "3. Implementación",
@@ -2255,7 +2261,7 @@
     {
       "id": 188,
       "file": "blocks/0188.txt",
-      "word_paragraph_index_zero_based": 5112,
+      "word_paragraph_index_zero_based": 5118,
       "heading_context": [
         "Capítulo 21 — AI Act, auditoría y trazabilidad financiera",
         "3. Implementación",
@@ -2267,7 +2273,7 @@
     {
       "id": 189,
       "file": "blocks/0189.txt",
-      "word_paragraph_index_zero_based": 5115,
+      "word_paragraph_index_zero_based": 5121,
       "heading_context": [
         "Capítulo 21 — AI Act, auditoría y trazabilidad financiera",
         "3. Implementación",
@@ -2279,7 +2285,7 @@
     {
       "id": 190,
       "file": "blocks/0190.txt",
-      "word_paragraph_index_zero_based": 5118,
+      "word_paragraph_index_zero_based": 5124,
       "heading_context": [
         "Capítulo 21 — AI Act, auditoría y trazabilidad financiera",
         "3. Implementación",
@@ -2291,7 +2297,7 @@
     {
       "id": 191,
       "file": "blocks/0191.txt",
-      "word_paragraph_index_zero_based": 5121,
+      "word_paragraph_index_zero_based": 5127,
       "heading_context": [
         "Capítulo 21 — AI Act, auditoría y trazabilidad financiera",
         "3. Implementación",
@@ -2303,7 +2309,7 @@
     {
       "id": 192,
       "file": "blocks/0192.txt",
-      "word_paragraph_index_zero_based": 5135,
+      "word_paragraph_index_zero_based": 5141,
       "heading_context": [
         "Capítulo 21 — AI Act, auditoría y trazabilidad financiera",
         "3. Implementación",
@@ -2315,7 +2321,7 @@
     {
       "id": 193,
       "file": "blocks/0193.txt",
-      "word_paragraph_index_zero_based": 5144,
+      "word_paragraph_index_zero_based": 5150,
       "heading_context": [
         "Capítulo 21 — AI Act, auditoría y trazabilidad financiera",
         "3. Implementación",
@@ -2327,7 +2333,7 @@
     {
       "id": 194,
       "file": "blocks/0194.txt",
-      "word_paragraph_index_zero_based": 5151,
+      "word_paragraph_index_zero_based": 5157,
       "heading_context": [
         "Capítulo 21 — AI Act, auditoría y trazabilidad financiera",
         "3. Implementación",
@@ -2339,7 +2345,7 @@
     {
       "id": 195,
       "file": "blocks/0195.txt",
-      "word_paragraph_index_zero_based": 5163,
+      "word_paragraph_index_zero_based": 5169,
       "heading_context": [
         "Capítulo 21 — AI Act, auditoría y trazabilidad financiera",
         "3. Implementación",
@@ -2351,7 +2357,7 @@
     {
       "id": 196,
       "file": "blocks/0196.txt",
-      "word_paragraph_index_zero_based": 5171,
+      "word_paragraph_index_zero_based": 5177,
       "heading_context": [
         "Capítulo 21 — AI Act, auditoría y trazabilidad financiera",
         "3. Implementación",
@@ -2363,7 +2369,7 @@
     {
       "id": 197,
       "file": "blocks/0197.txt",
-      "word_paragraph_index_zero_based": 5331,
+      "word_paragraph_index_zero_based": 5337,
       "heading_context": [
         "Capítulo 22 — Multi-proveedor: negociación y vendor lock-in",
         "3. Implementación",
@@ -2375,7 +2381,7 @@
     {
       "id": 198,
       "file": "blocks/0198.txt",
-      "word_paragraph_index_zero_based": 5335,
+      "word_paragraph_index_zero_based": 5341,
       "heading_context": [
         "Capítulo 22 — Multi-proveedor: negociación y vendor lock-in",
         "3. Implementación",
@@ -2387,7 +2393,7 @@
     {
       "id": 199,
       "file": "blocks/0199.txt",
-      "word_paragraph_index_zero_based": 5337,
+      "word_paragraph_index_zero_based": 5343,
       "heading_context": [
         "Capítulo 22 — Multi-proveedor: negociación y vendor lock-in",
         "3. Implementación",
@@ -2399,7 +2405,7 @@
     {
       "id": 200,
       "file": "blocks/0200.txt",
-      "word_paragraph_index_zero_based": 5341,
+      "word_paragraph_index_zero_based": 5347,
       "heading_context": [
         "Capítulo 22 — Multi-proveedor: negociación y vendor lock-in",
         "3. Implementación",
@@ -2411,7 +2417,7 @@
     {
       "id": 201,
       "file": "blocks/0201.txt",
-      "word_paragraph_index_zero_based": 5345,
+      "word_paragraph_index_zero_based": 5351,
       "heading_context": [
         "Capítulo 22 — Multi-proveedor: negociación y vendor lock-in",
         "3. Implementación",
@@ -2423,7 +2429,7 @@
     {
       "id": 202,
       "file": "blocks/0202.txt",
-      "word_paragraph_index_zero_based": 5388,
+      "word_paragraph_index_zero_based": 5394,
       "heading_context": [
         "Capítulo 22 — Multi-proveedor: negociación y vendor lock-in",
         "3. Implementación",
@@ -2435,7 +2441,7 @@
     {
       "id": 203,
       "file": "blocks/0203.txt",
-      "word_paragraph_index_zero_based": 5399,
+      "word_paragraph_index_zero_based": 5405,
       "heading_context": [
         "Capítulo 22 — Multi-proveedor: negociación y vendor lock-in",
         "3. Implementación",
@@ -2447,7 +2453,7 @@
     {
       "id": 204,
       "file": "blocks/0204.txt",
-      "word_paragraph_index_zero_based": 5430,
+      "word_paragraph_index_zero_based": 5436,
       "heading_context": [
         "Capítulo 22 — Multi-proveedor: negociación y vendor lock-in",
         "3. Implementación",
@@ -2459,7 +2465,7 @@
     {
       "id": 205,
       "file": "blocks/0205.txt",
-      "word_paragraph_index_zero_based": 5480,
+      "word_paragraph_index_zero_based": 5486,
       "heading_context": [
         "Capítulo 22 — Multi-proveedor: negociación y vendor lock-in",
         "3. Implementación",
@@ -2471,7 +2477,7 @@
     {
       "id": 206,
       "file": "blocks/0206.txt",
-      "word_paragraph_index_zero_based": 5514,
+      "word_paragraph_index_zero_based": 5520,
       "heading_context": [
         "Capítulo 23 — El coste del equipo: PerfilCoste y dedicación",
         "1. Concepto",
@@ -2483,7 +2489,7 @@
     {
       "id": 207,
       "file": "blocks/0207.txt",
-      "word_paragraph_index_zero_based": 5516,
+      "word_paragraph_index_zero_based": 5522,
       "heading_context": [
         "Capítulo 23 — El coste del equipo: PerfilCoste y dedicación",
         "1. Concepto",
@@ -2495,7 +2501,7 @@
     {
       "id": 208,
       "file": "blocks/0208.txt",
-      "word_paragraph_index_zero_based": 5589,
+      "word_paragraph_index_zero_based": 5595,
       "heading_context": [
         "Capítulo 23 — El coste del equipo: PerfilCoste y dedicación",
         "2. La decisión",
@@ -2507,7 +2513,7 @@
     {
       "id": 209,
       "file": "blocks/0209.txt",
-      "word_paragraph_index_zero_based": 5629,
+      "word_paragraph_index_zero_based": 5635,
       "heading_context": [
         "Capítulo 23 — El coste del equipo: PerfilCoste y dedicación",
         "3. Implementación",
@@ -2519,7 +2525,7 @@
     {
       "id": 210,
       "file": "blocks/0210.txt",
-      "word_paragraph_index_zero_based": 5633,
+      "word_paragraph_index_zero_based": 5639,
       "heading_context": [
         "Capítulo 23 — El coste del equipo: PerfilCoste y dedicación",
         "3. Implementación",
@@ -2531,7 +2537,7 @@
     {
       "id": 211,
       "file": "blocks/0211.txt",
-      "word_paragraph_index_zero_based": 5636,
+      "word_paragraph_index_zero_based": 5642,
       "heading_context": [
         "Capítulo 23 — El coste del equipo: PerfilCoste y dedicación",
         "3. Implementación",
@@ -2543,7 +2549,7 @@
     {
       "id": 212,
       "file": "blocks/0212.txt",
-      "word_paragraph_index_zero_based": 5639,
+      "word_paragraph_index_zero_based": 5645,
       "heading_context": [
         "Capítulo 23 — El coste del equipo: PerfilCoste y dedicación",
         "3. Implementación",
@@ -2555,7 +2561,7 @@
     {
       "id": 213,
       "file": "blocks/0213.txt",
-      "word_paragraph_index_zero_based": 5642,
+      "word_paragraph_index_zero_based": 5648,
       "heading_context": [
         "Capítulo 23 — El coste del equipo: PerfilCoste y dedicación",
         "3. Implementación",
@@ -2567,7 +2573,7 @@
     {
       "id": 214,
       "file": "blocks/0214.txt",
-      "word_paragraph_index_zero_based": 5646,
+      "word_paragraph_index_zero_based": 5652,
       "heading_context": [
         "Capítulo 23 — El coste del equipo: PerfilCoste y dedicación",
         "3. Implementación",
@@ -2579,7 +2585,7 @@
     {
       "id": 215,
       "file": "blocks/0215.txt",
-      "word_paragraph_index_zero_based": 5673,
+      "word_paragraph_index_zero_based": 5679,
       "heading_context": [
         "Capítulo 23 — El coste del equipo: PerfilCoste y dedicación",
         "3. Implementación",
@@ -2591,7 +2597,7 @@
     {
       "id": 216,
       "file": "blocks/0216.txt",
-      "word_paragraph_index_zero_based": 5690,
+      "word_paragraph_index_zero_based": 5696,
       "heading_context": [
         "Capítulo 23 — El coste del equipo: PerfilCoste y dedicación",
         "3. Implementación",
@@ -2603,7 +2609,7 @@
     {
       "id": 217,
       "file": "blocks/0217.txt",
-      "word_paragraph_index_zero_based": 5694,
+      "word_paragraph_index_zero_based": 5700,
       "heading_context": [
         "Capítulo 23 — El coste del equipo: PerfilCoste y dedicación",
         "3. Implementación",
@@ -2615,7 +2621,7 @@
     {
       "id": 218,
       "file": "blocks/0218.txt",
-      "word_paragraph_index_zero_based": 5788,
+      "word_paragraph_index_zero_based": 5794,
       "heading_context": [
         "Capítulo 24 — FinOps como cultura, no como herramienta",
         "3. Implementación",
@@ -2627,7 +2633,7 @@
     {
       "id": 219,
       "file": "blocks/0219.txt",
-      "word_paragraph_index_zero_based": 5792,
+      "word_paragraph_index_zero_based": 5798,
       "heading_context": [
         "Capítulo 24 — FinOps como cultura, no como herramienta",
         "3. Implementación",
@@ -2639,7 +2645,7 @@
     {
       "id": 220,
       "file": "blocks/0220.txt",
-      "word_paragraph_index_zero_based": 5796,
+      "word_paragraph_index_zero_based": 5802,
       "heading_context": [
         "Capítulo 24 — FinOps como cultura, no como herramienta",
         "3. Implementación",
@@ -2651,7 +2657,7 @@
     {
       "id": 221,
       "file": "blocks/0221.txt",
-      "word_paragraph_index_zero_based": 5800,
+      "word_paragraph_index_zero_based": 5806,
       "heading_context": [
         "Capítulo 24 — FinOps como cultura, no como herramienta",
         "3. Implementación",
@@ -2663,7 +2669,7 @@
     {
       "id": 222,
       "file": "blocks/0222.txt",
-      "word_paragraph_index_zero_based": 5895,
+      "word_paragraph_index_zero_based": 5901,
       "heading_context": [
         "Capítulo 25 — Caso 1: de €480/mes a €145/mes en tokens",
         "1. Concepto",
@@ -2675,7 +2681,7 @@
     {
       "id": 223,
       "file": "blocks/0223.txt",
-      "word_paragraph_index_zero_based": 5985,
+      "word_paragraph_index_zero_based": 5991,
       "heading_context": [
         "Capítulo 25 — Caso 1: de €480/mes a €145/mes en tokens",
         "3. Implementación",
@@ -2687,7 +2693,7 @@
     {
       "id": 224,
       "file": "blocks/0224.txt",
-      "word_paragraph_index_zero_based": 5987,
+      "word_paragraph_index_zero_based": 5993,
       "heading_context": [
         "Capítulo 25 — Caso 1: de €480/mes a €145/mes en tokens",
         "3. Implementación",
@@ -2699,7 +2705,7 @@
     {
       "id": 225,
       "file": "blocks/0225.txt",
-      "word_paragraph_index_zero_based": 6027,
+      "word_paragraph_index_zero_based": 6033,
       "heading_context": [
         "Capítulo 25 — Caso 1: de €480/mes a €145/mes en tokens",
         "3. Implementación",
@@ -2711,7 +2717,7 @@
     {
       "id": 226,
       "file": "blocks/0226.txt",
-      "word_paragraph_index_zero_based": 6033,
+      "word_paragraph_index_zero_based": 6039,
       "heading_context": [
         "Capítulo 25 — Caso 1: de €480/mes a €145/mes en tokens",
         "3. Implementación",
@@ -2723,7 +2729,7 @@
     {
       "id": 227,
       "file": "blocks/0227.txt",
-      "word_paragraph_index_zero_based": 6040,
+      "word_paragraph_index_zero_based": 6046,
       "heading_context": [
         "Capítulo 25 — Caso 1: de €480/mes a €145/mes en tokens",
         "3. Implementación",
@@ -2735,7 +2741,7 @@
     {
       "id": 228,
       "file": "blocks/0228.txt",
-      "word_paragraph_index_zero_based": 6046,
+      "word_paragraph_index_zero_based": 6052,
       "heading_context": [
         "Capítulo 25 — Caso 1: de €480/mes a €145/mes en tokens",
         "3. Implementación",
@@ -2747,7 +2753,7 @@
     {
       "id": 229,
       "file": "blocks/0229.txt",
-      "word_paragraph_index_zero_based": 6289,
+      "word_paragraph_index_zero_based": 6295,
       "heading_context": [
         "Capítulo 26 — Caso 2: agente de IA que ahorra $47K/año en cloud",
         "3. Implementación",
@@ -2759,7 +2765,7 @@
     {
       "id": 230,
       "file": "blocks/0230.txt",
-      "word_paragraph_index_zero_based": 6292,
+      "word_paragraph_index_zero_based": 6298,
       "heading_context": [
         "Capítulo 26 — Caso 2: agente de IA que ahorra $47K/año en cloud",
         "3. Implementación",
@@ -2771,7 +2777,7 @@
     {
       "id": 231,
       "file": "blocks/0231.txt",
-      "word_paragraph_index_zero_based": 6296,
+      "word_paragraph_index_zero_based": 6302,
       "heading_context": [
         "Capítulo 26 — Caso 2: agente de IA que ahorra $47K/año en cloud",
         "3. Implementación",
@@ -2783,7 +2789,7 @@
     {
       "id": 232,
       "file": "blocks/0232.txt",
-      "word_paragraph_index_zero_based": 6300,
+      "word_paragraph_index_zero_based": 6306,
       "heading_context": [
         "Capítulo 26 — Caso 2: agente de IA que ahorra $47K/año en cloud",
         "3. Implementación",
@@ -2795,7 +2801,7 @@
     {
       "id": 233,
       "file": "blocks/0233.txt",
-      "word_paragraph_index_zero_based": 6303,
+      "word_paragraph_index_zero_based": 6309,
       "heading_context": [
         "Capítulo 26 — Caso 2: agente de IA que ahorra $47K/año en cloud",
         "3. Implementación",
@@ -2807,7 +2813,7 @@
     {
       "id": 234,
       "file": "blocks/0234.txt",
-      "word_paragraph_index_zero_based": 6307,
+      "word_paragraph_index_zero_based": 6313,
       "heading_context": [
         "Capítulo 26 — Caso 2: agente de IA que ahorra $47K/año en cloud",
         "3. Implementación",
@@ -2819,7 +2825,7 @@
     {
       "id": 235,
       "file": "blocks/0235.txt",
-      "word_paragraph_index_zero_based": 6474,
+      "word_paragraph_index_zero_based": 6480,
       "heading_context": [
         "Capítulo 27 — Caso 3: pricing de un SaaS con IA integrada",
         "1. Concepto",
@@ -2831,7 +2837,7 @@
     {
       "id": 236,
       "file": "blocks/0236.txt",
-      "word_paragraph_index_zero_based": 6476,
+      "word_paragraph_index_zero_based": 6482,
       "heading_context": [
         "Capítulo 27 — Caso 3: pricing de un SaaS con IA integrada",
         "1. Concepto",
@@ -2843,7 +2849,7 @@
     {
       "id": 237,
       "file": "blocks/0237.txt",
-      "word_paragraph_index_zero_based": 6478,
+      "word_paragraph_index_zero_based": 6484,
       "heading_context": [
         "Capítulo 27 — Caso 3: pricing de un SaaS con IA integrada",
         "1. Concepto",
@@ -2855,7 +2861,7 @@
     {
       "id": 238,
       "file": "blocks/0238.txt",
-      "word_paragraph_index_zero_based": 6531,
+      "word_paragraph_index_zero_based": 6537,
       "heading_context": [
         "Capítulo 27 — Caso 3: pricing de un SaaS con IA integrada",
         "3. Implementación",
@@ -2867,7 +2873,7 @@
     {
       "id": 239,
       "file": "blocks/0239.txt",
-      "word_paragraph_index_zero_based": 6535,
+      "word_paragraph_index_zero_based": 6541,
       "heading_context": [
         "Capítulo 27 — Caso 3: pricing de un SaaS con IA integrada",
         "3. Implementación",
@@ -2879,7 +2885,7 @@
     {
       "id": 240,
       "file": "blocks/0240.txt",
-      "word_paragraph_index_zero_based": 6539,
+      "word_paragraph_index_zero_based": 6545,
       "heading_context": [
         "Capítulo 27 — Caso 3: pricing de un SaaS con IA integrada",
         "3. Implementación",
@@ -2891,7 +2897,7 @@
     {
       "id": 241,
       "file": "blocks/0241.txt",
-      "word_paragraph_index_zero_based": 6543,
+      "word_paragraph_index_zero_based": 6549,
       "heading_context": [
         "Capítulo 27 — Caso 3: pricing de un SaaS con IA integrada",
         "3. Implementación",
@@ -2903,7 +2909,7 @@
     {
       "id": 242,
       "file": "blocks/0242.txt",
-      "word_paragraph_index_zero_based": 6746,
+      "word_paragraph_index_zero_based": 6752,
       "heading_context": [
         "Capítulo 28 — FinOps para agentes autónomos",
         "3. Implementación",
@@ -2915,7 +2921,7 @@
     {
       "id": 243,
       "file": "blocks/0243.txt",
-      "word_paragraph_index_zero_based": 6749,
+      "word_paragraph_index_zero_based": 6755,
       "heading_context": [
         "Capítulo 28 — FinOps para agentes autónomos",
         "3. Implementación",
@@ -2927,7 +2933,7 @@
     {
       "id": 244,
       "file": "blocks/0244.txt",
-      "word_paragraph_index_zero_based": 6753,
+      "word_paragraph_index_zero_based": 6759,
       "heading_context": [
         "Capítulo 28 — FinOps para agentes autónomos",
         "3. Implementación",
@@ -2939,7 +2945,7 @@
     {
       "id": 245,
       "file": "blocks/0245.txt",
-      "word_paragraph_index_zero_based": 6757,
+      "word_paragraph_index_zero_based": 6763,
       "heading_context": [
         "Capítulo 28 — FinOps para agentes autónomos",
         "3. Implementación",
@@ -2951,7 +2957,7 @@
     {
       "id": 246,
       "file": "blocks/0246.txt",
-      "word_paragraph_index_zero_based": 6761,
+      "word_paragraph_index_zero_based": 6767,
       "heading_context": [
         "Capítulo 28 — FinOps para agentes autónomos",
         "3. Implementación",
@@ -2963,7 +2969,7 @@
     {
       "id": 247,
       "file": "blocks/0247.txt",
-      "word_paragraph_index_zero_based": 6765,
+      "word_paragraph_index_zero_based": 6771,
       "heading_context": [
         "Capítulo 28 — FinOps para agentes autónomos",
         "3. Implementación",
@@ -2975,7 +2981,7 @@
     {
       "id": 248,
       "file": "blocks/0248.txt",
-      "word_paragraph_index_zero_based": 6948,
+      "word_paragraph_index_zero_based": 6954,
       "heading_context": [
         "Capítulo 29 — La convergencia: FinOps + AIOps + GreenOps",
         "3. Implementación",
@@ -2987,7 +2993,7 @@
     {
       "id": 249,
       "file": "blocks/0249.txt",
-      "word_paragraph_index_zero_based": 6952,
+      "word_paragraph_index_zero_based": 6958,
       "heading_context": [
         "Capítulo 29 — La convergencia: FinOps + AIOps + GreenOps",
         "3. Implementación",
@@ -2999,7 +3005,7 @@
     {
       "id": 250,
       "file": "blocks/0250.txt",
-      "word_paragraph_index_zero_based": 6956,
+      "word_paragraph_index_zero_based": 6962,
       "heading_context": [
         "Capítulo 29 — La convergencia: FinOps + AIOps + GreenOps",
         "3. Implementación",
@@ -3011,7 +3017,7 @@
     {
       "id": 251,
       "file": "blocks/0251.txt",
-      "word_paragraph_index_zero_based": 6960,
+      "word_paragraph_index_zero_based": 6966,
       "heading_context": [
         "Capítulo 29 — La convergencia: FinOps + AIOps + GreenOps",
         "3. Implementación",
@@ -3023,7 +3029,7 @@
     {
       "id": 252,
       "file": "blocks/0252.txt",
-      "word_paragraph_index_zero_based": 6964,
+      "word_paragraph_index_zero_based": 6970,
       "heading_context": [
         "Capítulo 29 — La convergencia: FinOps + AIOps + GreenOps",
         "3. Implementación",
@@ -3035,7 +3041,7 @@
     {
       "id": 253,
       "file": "blocks/0253.txt",
-      "word_paragraph_index_zero_based": 7344,
+      "word_paragraph_index_zero_based": 7350,
       "heading_context": [
         "Apéndice B — APIs de coste cloud: referencia rápida",
         "1. AWS Cost Explorer API",
@@ -3047,7 +3053,7 @@
     {
       "id": 254,
       "file": "blocks/0254.txt",
-      "word_paragraph_index_zero_based": 7347,
+      "word_paragraph_index_zero_based": 7353,
       "heading_context": [
         "Apéndice B — APIs de coste cloud: referencia rápida",
         "1. AWS Cost Explorer API",
@@ -3059,7 +3065,7 @@
     {
       "id": 255,
       "file": "blocks/0255.txt",
-      "word_paragraph_index_zero_based": 7349,
+      "word_paragraph_index_zero_based": 7355,
       "heading_context": [
         "Apéndice B — APIs de coste cloud: referencia rápida",
         "1. AWS Cost Explorer API",
@@ -3071,7 +3077,7 @@
     {
       "id": 256,
       "file": "blocks/0256.txt",
-      "word_paragraph_index_zero_based": 7351,
+      "word_paragraph_index_zero_based": 7357,
       "heading_context": [
         "Apéndice B — APIs de coste cloud: referencia rápida",
         "1. AWS Cost Explorer API",
@@ -3083,7 +3089,7 @@
     {
       "id": 257,
       "file": "blocks/0257.txt",
-      "word_paragraph_index_zero_based": 7353,
+      "word_paragraph_index_zero_based": 7359,
       "heading_context": [
         "Apéndice B — APIs de coste cloud: referencia rápida",
         "1. AWS Cost Explorer API",
@@ -3095,7 +3101,7 @@
     {
       "id": 258,
       "file": "blocks/0258.txt",
-      "word_paragraph_index_zero_based": 7376,
+      "word_paragraph_index_zero_based": 7382,
       "heading_context": [
         "Apéndice B — APIs de coste cloud: referencia rápida",
         "2. AWS Cost and Usage Report (CUR)",
@@ -3107,7 +3113,7 @@
     {
       "id": 259,
       "file": "blocks/0259.txt",
-      "word_paragraph_index_zero_based": 7379,
+      "word_paragraph_index_zero_based": 7385,
       "heading_context": [
         "Apéndice B — APIs de coste cloud: referencia rápida",
         "2. AWS Cost and Usage Report (CUR)",
@@ -3119,7 +3125,7 @@
     {
       "id": 260,
       "file": "blocks/0260.txt",
-      "word_paragraph_index_zero_based": 7388,
+      "word_paragraph_index_zero_based": 7394,
       "heading_context": [
         "Apéndice B — APIs de coste cloud: referencia rápida",
         "3. AWS Savings Plans y Reserved Instances",
@@ -3131,7 +3137,7 @@
     {
       "id": 261,
       "file": "blocks/0261.txt",
-      "word_paragraph_index_zero_based": 7390,
+      "word_paragraph_index_zero_based": 7396,
       "heading_context": [
         "Apéndice B — APIs de coste cloud: referencia rápida",
         "3. AWS Savings Plans y Reserved Instances",
@@ -3143,7 +3149,7 @@
     {
       "id": 262,
       "file": "blocks/0262.txt",
-      "word_paragraph_index_zero_based": 7396,
+      "word_paragraph_index_zero_based": 7402,
       "heading_context": [
         "Apéndice B — APIs de coste cloud: referencia rápida",
         "4. Azure Cost Management API",
@@ -3155,7 +3161,7 @@
     {
       "id": 263,
       "file": "blocks/0263.txt",
-      "word_paragraph_index_zero_based": 7401,
+      "word_paragraph_index_zero_based": 7407,
       "heading_context": [
         "Apéndice B — APIs de coste cloud: referencia rápida",
         "4. Azure Cost Management API",
@@ -3167,7 +3173,7 @@
     {
       "id": 264,
       "file": "blocks/0264.txt",
-      "word_paragraph_index_zero_based": 7403,
+      "word_paragraph_index_zero_based": 7409,
       "heading_context": [
         "Apéndice B — APIs de coste cloud: referencia rápida",
         "4. Azure Cost Management API",
@@ -3179,7 +3185,7 @@
     {
       "id": 265,
       "file": "blocks/0265.txt",
-      "word_paragraph_index_zero_based": 7405,
+      "word_paragraph_index_zero_based": 7411,
       "heading_context": [
         "Apéndice B — APIs de coste cloud: referencia rápida",
         "4. Azure Cost Management API",
@@ -3191,7 +3197,7 @@
     {
       "id": 266,
       "file": "blocks/0266.txt",
-      "word_paragraph_index_zero_based": 7427,
+      "word_paragraph_index_zero_based": 7433,
       "heading_context": [
         "Apéndice B — APIs de coste cloud: referencia rápida",
         "5. GCP Cloud Billing API",
@@ -3203,7 +3209,7 @@
     {
       "id": 267,
       "file": "blocks/0267.txt",
-      "word_paragraph_index_zero_based": 7433,
+      "word_paragraph_index_zero_based": 7439,
       "heading_context": [
         "Apéndice B — APIs de coste cloud: referencia rápida",
         "5. GCP Cloud Billing API",
@@ -3215,7 +3221,7 @@
     {
       "id": 268,
       "file": "blocks/0268.txt",
-      "word_paragraph_index_zero_based": 7435,
+      "word_paragraph_index_zero_based": 7441,
       "heading_context": [
         "Apéndice B — APIs de coste cloud: referencia rápida",
         "5. GCP Cloud Billing API",
@@ -3227,7 +3233,7 @@
     {
       "id": 269,
       "file": "blocks/0269.txt",
-      "word_paragraph_index_zero_based": 7438,
+      "word_paragraph_index_zero_based": 7444,
       "heading_context": [
         "Apéndice B — APIs de coste cloud: referencia rápida",
         "5. GCP Cloud Billing API",
@@ -3239,7 +3245,7 @@
     {
       "id": 270,
       "file": "blocks/0270.txt",
-      "word_paragraph_index_zero_based": 7513,
+      "word_paragraph_index_zero_based": 7519,
       "heading_context": [
         "Apéndice B — APIs de coste cloud: referencia rápida",
         "7. Herramientas complementarias",
@@ -3251,7 +3257,7 @@
     {
       "id": 271,
       "file": "blocks/0271.txt",
-      "word_paragraph_index_zero_based": 7517,
+      "word_paragraph_index_zero_based": 7523,
       "heading_context": [
         "Apéndice B — APIs de coste cloud: referencia rápida",
         "7. Herramientas complementarias",
@@ -3263,7 +3269,7 @@
     {
       "id": 272,
       "file": "blocks/0272.txt",
-      "word_paragraph_index_zero_based": 7521,
+      "word_paragraph_index_zero_based": 7527,
       "heading_context": [
         "Apéndice B — APIs de coste cloud: referencia rápida",
         "7. Herramientas complementarias",
@@ -3275,7 +3281,7 @@
     {
       "id": 273,
       "file": "blocks/0273.txt",
-      "word_paragraph_index_zero_based": 7530,
+      "word_paragraph_index_zero_based": 7536,
       "heading_context": [
         "Apéndice B — APIs de coste cloud: referencia rápida",
         "8. Integración de herramientas de coste con un asistente"
