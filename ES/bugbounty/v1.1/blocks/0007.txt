@@ -1,7 +1,7 @@
 ~/bugbounty/discord-2026-q2/
-├── SYLVAR.md               # contexto del caso para el agente
+├── CASE.md                 # contexto del caso para el agente
 ├── CLAUDE.md               # contexto adicional si se usa Claude Code en paralelo
-├── .sylvarsec/
+├── .research-notebook/
 │   ├── workspace.yaml      # tags, perfiles de skills habilitadas
 │   ├── chats/              # historial de conversaciones del caso
 │   └── findings/           # hallazgos estructurados

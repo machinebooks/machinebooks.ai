@@ -10,7 +10,7 @@ sequenceDiagram
     U->>API: authenticated request slug=cloud-sysops
     API->>PB: run("cloud-sysops")
     PB->>GW: fetch /api/v1/packs/cloud-sysops/bootstrap
-    GW-->>PB: throw (local SylvarSec stub)
+    GW-->>PB: throw (local AgentApp stub)
     PB->>FS: readLocalPackBundle("cloud-sysops")
     FS-->>PB: { tools, prompt, mcps, rag, skills }
     PB->>Reg: listTools()

@@ -7,7 +7,7 @@ vm.add({
 
 // 7. Añadir la memoria del agente en modo rwd (persistente sin tocar host)
 vm.add({
-  hostPath: path.join(os.homedir(), '.sylvarsec', 'memories'),
+  hostPath: path.join(os.homedir(), '.agent-app', 'memories'),
   mountName: 'memories',
   mode: 'rwd',
 });

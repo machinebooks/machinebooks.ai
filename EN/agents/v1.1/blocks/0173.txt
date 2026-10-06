@@ -8,7 +8,7 @@ flowchart TB
     Exec[ToolExecutor]:::loop
     Audit[AuditService]:::audit
     Sync[AuditSyncService]:::audit
-    Disk[(~/.sylvarsec)]:::store
+    Disk[(~/.agent-app)]:::store
 
     UI -- Authorization Bearer + Origin --> MW
     MW -. reads token .-> Disk

@@ -13,7 +13,7 @@ flowchart TB
         SNAP["agent-snapshots/&lt;agentId&gt;.json"]
     end
     subgraph Persist["Capa 5 — Memoria persistente"]
-        MEM["~/.sylvarsec/memory.json + MEMORY.md"]
+        MEM["~/.agent-app/memory.json + MEMORY.md"]
     end
 
     MEM -- "se inyecta como contexto" --> SYS

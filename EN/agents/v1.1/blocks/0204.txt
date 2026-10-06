@@ -2,7 +2,7 @@ flowchart LR
     subgraph Host
         H1[D:\projects\app]
         H2[D:\datasets\eval]
-        H3[~/.sylvarsec/memories]
+        H3[~/.agent-app/memories]
     end
     subgraph VM["VM: /sessions/sess-a3f2"]
         V1["/sessions/sess-a3f2/mnt/<br/>app-7c4e9d2a"]

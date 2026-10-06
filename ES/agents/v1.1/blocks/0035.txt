@@ -31,7 +31,7 @@ error --> [*]
 
 note right of snapshotted
   Snapshot persistido en
-  ~/.sylvarsec/agent-snapshots/{id}.json
+  ~/.agent-app/agent-snapshots/{id}.json
   PreservedContext en memoria (LRU 50).
 end note
 

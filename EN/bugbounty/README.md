@@ -85,4 +85,4 @@ A file being present does not establish execution, complete coverage, or synchro
 
 See [LICENSE](../../LICENSE) and [LICENSING.md](../../LICENSING.md) for the boundaries of companion code, editorial text, and production tooling.
 
-The SylvarSecDesktop application case is private; this folder does not offer its source, a public download, or a current or future Community edition. Published didactic fragments and tests remain authorized under their existing MIT terms and do not constitute the product core.
+The reference application is private; this folder does not offer its source, a public download, or a current or future Community edition. Published didactic fragments and tests remain authorized under their existing MIT terms and do not constitute the product core.

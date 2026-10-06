@@ -1,5 +1,5 @@
 flowchart TB
-    subgraph Repo["SylvarSec repo"]
+    subgraph Repo["AgentApp repo"]
       P1[packs/cloud-sysops]:::pack
       P2[packs/dfir]:::pack
       P3[packs/pentest-redteam]:::pack

@@ -39,7 +39,7 @@ OUTPUT_DIR = Path("d:/09.GITHUB/formaciones/piloto")
 
 PILOTO_NOTES = [
     # SLIDE 1 - PORTADA (intro extendida del curso)
-    """Bienvenidos al primer modulo del curso El FinOps Engineer y la Maquina. Mi nombre es C.P. Sylvar y durante las proximas cuatro horas vamos a explorar un problema que afecta a todas las organizaciones que han desplegado inteligencia artificial en produccion: el coste.
+    """Bienvenidos al primer modulo del curso El FinOps Engineer y la Maquina. Mi nombre es Carlos Pérez González y durante las proximas cuatro horas vamos a explorar un problema que afecta a todas las organizaciones que han desplegado inteligencia artificial en produccion: el coste.
 
 No hablo de un coste teorico. Hablo de facturas reales. De ese correo que llega un martes a las nueve de la manana con asunto escueto: factura API Anthropic, marzo. Y la cifra triplica la prevision trimestral. En menos de una hora, tres preguntas aterrizan en el canal de Slack del equipo de ingenieria. Primera: que equipo o servicio consumio cada bloque de tokens. Segunda: por que este mes cuesta el doble que el anterior, si no hemos lanzado funcionalidad nueva. Tercera: estamos pagando por modelos o pipelines que ya no usa nadie.
 
@@ -233,7 +233,7 @@ def build_video(slides_dir: Path, audio_dir: Path, output_path: Path):
 
 def main():
     print(f"\n{'='*60}")
-    print(f"  PILOTO SYLVARSEC - 5 SLIDES NARRACION PROFESIONAL")
+    print(f"  PILOTO MachineBooks - 5 SLIDES NARRACION PROFESIONAL")
     print(f"{'='*60}")
 
     # Verificar slides

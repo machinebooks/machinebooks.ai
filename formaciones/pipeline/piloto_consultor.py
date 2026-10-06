@@ -30,7 +30,7 @@ NOTES = [
     # SLIDE 1 — PORTADA
     (
         "Bienvenidos al módulo uno del curso El Consultor y la Máquina: "
-        "La crisis silenciosa de la consultoría. Mi nombre es C. P. Sylvar "
+        "La crisis silenciosa de la consultoría. Mi nombre es Carlos Pérez González "
         "y durante las próximas horas vamos a hablar de algo que la mayoría "
         "de las consultoras saben pero pocas reconocen en voz alta: el modelo "
         "tradicional de consultoría está roto.\n\n"
@@ -279,7 +279,7 @@ def main():
     total_words = sum(len(n.split()) for n in NOTES)
 
     print(f"\n{'='*60}")
-    print(f"  PILOTO CONSULTOR - 5 slides, tema SylvarSec")
+    print(f"  PILOTO CONSULTOR - 5 slides, tema MachineBooks")
     print(f"{'='*60}")
     print(f"  Palabras: {total_words:,} | Caracteres: {total_chars:,}")
     print(f"  Coste estimado: ${total_chars * 0.30 / 1000:.2f}")

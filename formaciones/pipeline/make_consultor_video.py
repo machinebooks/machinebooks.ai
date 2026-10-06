@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Genera slides SylvarSec con Pillow y ensambla video con audio existente."""
+"""Genera slides MachineBooks con Pillow y ensambla video con audio existente."""
 
 import subprocess
 import sys
@@ -17,7 +17,7 @@ SLIDES_DIR = OUTPUT_DIR / "slides"
 SEGMENTS_DIR = OUTPUT_DIR / "segments"
 VIDEO_PATH = OUTPUT_DIR / "piloto-consultor-m01.mp4"
 
-# Colores SylvarSec
+# Colores MachineBooks
 BG = (10, 15, 26)        # #0A0F1A
 GREEN = (0, 255, 136)    # #00FF88
 WHITE = (255, 255, 255)
@@ -26,19 +26,19 @@ DARK_GRAY = (60, 70, 85)
 
 SLIDES_CONTENT = [
     {
-        "terminal": "~/sylvarsec $ ./training --course consultor --module 1",
+        "terminal": "~/training $ ./training --course consultor --module 1",
         "title": "La Crisis Silenciosa\nde la Consultoría",
         "subtitle": "El Consultor y la Máquina — Módulo 1 de 10",
-        "footer": "C.P. Sylvar | sylvarsec.com",
+        "footer": "Carlos Pérez González | machinebooks.ai",
     },
     {
-        "terminal": "~/sylvarsec $ cat factura.log",
+        "terminal": "~/training $ cat factura.log",
         "title": "€14.000",
         "subtitle": "120 horas de trabajo\npara acabar segundos por precio",
         "footer": "3 consultores · 14 días · 287 páginas de pliego",
     },
     {
-        "terminal": "~/sylvarsec $ analyze --sector consultoria",
+        "terminal": "~/training $ analyze --sector consultoria",
         "title": "La Crisis en Números",
         "subtitle": "Márgenes: 35% → 15%\nÉxito en propuestas: 15-30%\n"
                     "Coste por propuesta: +80 horas\nRotación seniors: 18-22%\n"
@@ -46,14 +46,14 @@ SLIDES_CONTENT = [
         "footer": "Fuente: Flexera, McKinsey, datos del sector",
     },
     {
-        "terminal": "~/sylvarsec $ diff junior.time llm.time",
+        "terminal": "~/training $ diff junior.time llm.time",
         "title": "La Commoditización",
         "subtitle": "Lo que un junior tardaba 3 días\nun LLM lo responde en 4 minutos\n\n"
                     "El cliente pregunta:\n¿Por qué pago €150/hora por esto?",
         "footer": "No es un problema de talento. Es un problema de modelo.",
     },
     {
-        "terminal": "~/sylvarsec $ cat resultados.json",
+        "terminal": "~/training $ cat resultados.json",
         "title": "El Impacto Real",
         "subtitle": "Propuestas: 120h → 20h  (-83%)\n"
                     "Informes: 3 días → 4 horas\n"
@@ -127,8 +127,8 @@ def create_slide(content: dict, output_path: Path):
     draw.line([(80, 1000), (1840, 1000)], fill=DARK_GRAY, width=1)
     draw.text((80, 1020), content["footer"], fill=DARK_GRAY, font=font_footer)
 
-    # Marca SylvarSec
-    draw.text((1500, 1020), "SylvarSec", fill=GREEN, font=font_footer)
+    # Marca MachineBooks
+    draw.text((1500, 1020), "MachineBooks", fill=GREEN, font=font_footer)
 
     # Línea inferior decorativa
     draw.rectangle([0, 1076, 1920, 1080], fill=GREEN)
@@ -154,7 +154,7 @@ def main():
     print(f"{'='*60}")
 
     # 1. Crear slides
-    print(f"\n[1/3] CREAR SLIDES SYLVARSEC")
+    print(f"\n[1/3] CREAR SLIDES MachineBooks")
     for i, content in enumerate(SLIDES_CONTENT, 1):
         slide_path = SLIDES_DIR / f"slide_{i:02d}.png"
         create_slide(content, slide_path)

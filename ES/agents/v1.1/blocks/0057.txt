@@ -1,5 +1,5 @@
 flowchart LR
-    subgraph LM["LM Studio (default SylvarSec)"]
+    subgraph LM["LM Studio (default AgentApp)"]
         LM1["localhost:1234/v1"]
         LM2["Auth según configuración<br/>(token real si está activa)"]
         LM3["Motor según plataforma y versión"]

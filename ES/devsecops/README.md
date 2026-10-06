@@ -40,4 +40,4 @@ La presencia de un fichero no acredita ejecución, cobertura completa ni sincron
 
 Consulta [LICENSE](../../LICENSE) y [LICENSING.md](../../LICENSING.md) para la delimitación de los ejemplos complementarios, el texto editorial y las herramientas de producción.
 
-El caso de la aplicación SylvarSecDesktop es privado; esta carpeta no ofrece su fuente, descarga pública ni una edición Community actual o futura. Los fragmentos y pruebas didácticos publicados mantienen su autorización y licencia MIT y no constituyen el core del producto.
+La aplicación de referencia es privada; esta carpeta no ofrece su fuente, descarga pública ni una edición Community actual o futura. Los fragmentos y pruebas didácticos publicados mantienen su autorización y licencia MIT y no constituyen el core del producto.

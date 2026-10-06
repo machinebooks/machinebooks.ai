@@ -39,7 +39,7 @@ NOTES = [
         "En las próximas cuatro horas, vamos a entender por qué el coste "
         "de la inteligencia artificial en producción es el problema que nadie "
         "presupuestó, y qué podemos hacer al respecto. Mi nombre es "
-        "C. P. Sylvar, llevo más de veinte años en ciberseguridad y "
+        "Carlos Pérez González, llevo más de veinte años en ciberseguridad y "
         "arquitectura de inteligencia artificial.\n\n"
 
         "No hablo de un coste teórico. Hablo de facturas reales. De ese "

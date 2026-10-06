@@ -2,7 +2,7 @@
 import { glob } from "glob";
 
 export async function loadUserPlugins() {
-  const dir = path.join(os.homedir(), ".sylvarsec", "skills");
+  const dir = path.join(os.homedir(), ".research-notebook", "skills");
   const files = await glob("**/*.{js,mjs}", { cwd: dir });
 
   const plugins = [];

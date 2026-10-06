@@ -2,7 +2,7 @@
 import { Client as McpClient } from "@modelcontextprotocol/sdk";
 
 export async function loadMcpServer(config) {
-  const client = new McpClient({ name: "sylvarsec", version: "1.0.0" });
+  const client = new McpClient({ name: "research-notebook", version: "1.0.0" });
   await client.connect(config.transport);   // stdio | sse | ws
 
   const { tools } = await client.listTools();

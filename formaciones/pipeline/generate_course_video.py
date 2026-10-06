@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Pipeline SylvarSec: Speaker Notes → ElevenLabs TTS → ffmpeg → Video curso completo.
+Pipeline MachineBooks: Speaker Notes → ElevenLabs TTS → ffmpeg → Video curso completo.
 
 Uso:
     python generate_course_video.py --course finops --module 1
@@ -44,7 +44,7 @@ FINOPS_M01_NOTES = [
     {
         "slide": 1,
         "titulo": "Portada",
-        "notes": "Bienvenidos al módulo uno: La factura que nadie esperaba. En las próximas cuatro horas, vamos a entender por qué el coste de la inteligencia artificial en producción es el problema que nadie presupuestó, y qué podemos hacer al respecto. Mi nombre es C.P. Sylvar, llevo más de veinte años en ciberseguridad y arquitectura de IA."
+        "notes": "Bienvenidos al módulo uno: La factura que nadie esperaba. En las próximas cuatro horas, vamos a entender por qué el coste de la inteligencia artificial en producción es el problema que nadie presupuestó, y qué podemos hacer al respecto. Mi nombre es Carlos Pérez González, llevo más de veinte años en ciberseguridad y arquitectura de IA."
     },
     {
         "slide": 2,
@@ -235,7 +235,7 @@ def create_placeholder_slides(num_slides: int, output_dir: Path):
         if path.exists():
             continue
 
-        # Slide negro con número en verde SylvarSec
+        # Slide negro con número en verde MachineBooks
         img = Image.new("RGB", (1920, 1080), color=(10, 15, 26))
         draw = ImageDraw.Draw(img)
 
@@ -318,7 +318,7 @@ def assemble_video(slides_dir: Path, audio_dir: Path, output_path: Path):
 # ─── Main ─────────────────────────────────────────────────────────────────────
 
 def main():
-    parser = argparse.ArgumentParser(description="Pipeline SylvarSec: Notes → Audio → Video")
+    parser = argparse.ArgumentParser(description="Pipeline MachineBooks: Notes → Audio → Video")
     parser.add_argument("--course", default="finops", help="ID del curso (finops, ciso, devsecops...)")
     parser.add_argument("--module", type=int, default=1, help="Número de módulo")
     parser.add_argument("--voice", default=VOICE_ID, help="Voice ID de ElevenLabs")
@@ -336,7 +336,7 @@ def main():
     video_path = module_dir / f"{course_id}-modulo-{module_num:02d}.mp4"
 
     print(f"\n{'='*60}")
-    print(f"  PIPELINE SYLVARSEC")
+    print(f"  PIPELINE MachineBooks")
     print(f"  Curso: {course_id} | Módulo: {module_num}")
     print(f"{'='*60}")
 

@@ -16,7 +16,7 @@ flowchart TB
         SS[SkillSearchTool]
         IDX[skills_local RAG index]
         SD[resources/skills SKILL.md]
-        US[~/.sylvarsec/cyber-skills]
+        US[~/.agent-app/cyber-skills]
     end
 
     subgraph layer3[Versioned prompts]

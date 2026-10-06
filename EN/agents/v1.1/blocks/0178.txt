@@ -5,9 +5,9 @@ sequenceDiagram
     participant FS as Filesystem
     participant TW as TrustedWorkspaces
     AL->>HL: loadHooks(workspaceRoot)
-    HL->>FS: read ~/.sylvarsec/settings.json
+    HL->>FS: read ~/.agent-app/settings.json
     FS-->>HL: user hooks
-    HL->>FS: read <workspace>/.sylvar/settings.json
+    HL->>FS: read <workspace>/.agent-app/settings.json
     FS-->>HL: project hooks (candidates)
     HL->>TW: isWorkspaceTrusted(workspaceRoot)?
     alt Workspace trusted

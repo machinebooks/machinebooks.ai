@@ -1,11 +1,11 @@
 // fixture is an isolated backend with its own token and temporary home.
 test('admits its own token and rejects a different token', async ({ request }) => {
   const admitted = await request.get(`${fixture.api}/api/workspaces`, {
-    headers: { 'X-SylvarSec-Token': fixture.token },
+    headers: { 'X-Agent-Token': fixture.token },
   });
   expect(admitted.status()).toBe(200);
   const denied = await request.get(`${fixture.api}/api/workspaces`, {
-    headers: { 'X-SylvarSec-Token': 'invalid-fixture-token' },
+    headers: { 'X-Agent-Token': 'invalid-fixture-token' },
   });
   expect(denied.status()).toBe(401);
 });

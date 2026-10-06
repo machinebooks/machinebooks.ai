@@ -13,7 +13,7 @@ flowchart TB
         SNAP["agent-snapshots/&lt;agentId&gt;.json"]
     end
     subgraph Persist["Layer 5 — Persistent memory"]
-        MEM["~/.sylvarsec/memory.json + MEMORY.md"]
+        MEM["~/.agent-app/memory.json + MEMORY.md"]
     end
 
     MEM -- "injected as context" --> SYS

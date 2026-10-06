@@ -1,6 +1,6 @@
 {
   "editorial_version": "1.1",
-  "source_word_sha256": "24c59d7733f238cda94fabb9132b8da6f615f41175687f203da81ed955b60e1c",
+  "source_word_sha256": "3c433c1a9d8fc499685137254993026f573c36448300fb7c2d476d2e1d625395",
   "source_file": "Anatomy-of-an-Agent.docx",
   "language": "en",
   "scope": "educational SourceCode blocks; private desktop and core excluded",
@@ -8,16 +8,16 @@
   "block_count": 275,
   "execution_status": "not established by extraction",
   "manuscript_final_four_sha256": {
-    "Anatomia-de-un-Agente-de-IA.docx": "ac9430fd30bd4d1254735804e39b8c29bd09b6e6b4444bdf6f46902050b6ea95",
-    "Anatomia-de-un-Agente-de-IA.epub": "516e2ab21fb033fa69f38ca092745a7cfb6a0b3246e9afe1c838e96a2fa73f71",
-    "Anatomy-of-an-Agent.docx": "24c59d7733f238cda94fabb9132b8da6f615f41175687f203da81ed955b60e1c",
-    "Anatomy-of-an-Agent.epub": "911168e7f6470e7861c8919fce0d8756d3449e119219135cacdd4645187e7997"
+    "Anatomia-de-un-Agente-de-IA.docx": "7714566d9c4c2eb7522abdf90a33696ae40d63faaff1a1cacbb21c68d3ddd2cf",
+    "Anatomia-de-un-Agente-de-IA.epub": "5eaa44b8490748965ca0036e297ae7e21b6d174f1af44f3eedb063f74293354c",
+    "Anatomy-of-an-Agent.docx": "3c433c1a9d8fc499685137254993026f573c36448300fb7c2d476d2e1d625395",
+    "Anatomy-of-an-Agent.epub": "3704959858eb3f3ca70aa980de189112f8da11f5551ae93fecb309a25abdcbae"
   },
   "blocks": [
     {
       "id": 1,
       "file": "blocks/0001.txt",
-      "word_paragraph_index_zero_based": 128,
+      "word_paragraph_index_zero_based": 519,
       "heading_context": [],
       "sha256": "1835c1da8b2d4d87e2a664c21eef025679020e0ac707a24ae043454aa7e3c821",
       "bytes": 583
@@ -25,7 +25,7 @@
     {
       "id": 2,
       "file": "blocks/0002.txt",
-      "word_paragraph_index_zero_based": 132,
+      "word_paragraph_index_zero_based": 523,
       "heading_context": [],
       "sha256": "56688586d33c253fc1e7c9a1e9ab6efb4850f36a34ffe6e94ccf6afad51d0056",
       "bytes": 539
@@ -33,7 +33,7 @@
     {
       "id": 3,
       "file": "blocks/0003.txt",
-      "word_paragraph_index_zero_based": 136,
+      "word_paragraph_index_zero_based": 527,
       "heading_context": [],
       "sha256": "119fec6e3758345d5da31f1e2c9f25acf96752c171fc737d8b7a57bb960de50b",
       "bytes": 1049
@@ -41,7 +41,7 @@
     {
       "id": 4,
       "file": "blocks/0004.txt",
-      "word_paragraph_index_zero_based": 172,
+      "word_paragraph_index_zero_based": 563,
       "heading_context": [],
       "sha256": "b2652a40c3986a4728693081df263132f3f2990468b95b840eeab03501a5358e",
       "bytes": 1919
@@ -49,7 +49,7 @@
     {
       "id": 5,
       "file": "blocks/0005.txt",
-      "word_paragraph_index_zero_based": 209,
+      "word_paragraph_index_zero_based": 600,
       "heading_context": [],
       "sha256": "6cb0cba3f1692db64be3ccdd80129566d39f8146efb4caffcc0e38896100b254",
       "bytes": 1049
@@ -57,7 +57,7 @@
     {
       "id": 6,
       "file": "blocks/0006.txt",
-      "word_paragraph_index_zero_based": 213,
+      "word_paragraph_index_zero_based": 604,
       "heading_context": [],
       "sha256": "ad0c322b986045ee23b53ad58c3abe882f99c70ade7edae153787590b30f2a68",
       "bytes": 1172
@@ -65,7 +65,7 @@
     {
       "id": 7,
       "file": "blocks/0007.txt",
-      "word_paragraph_index_zero_based": 217,
+      "word_paragraph_index_zero_based": 608,
       "heading_context": [],
       "sha256": "f93ae4c8e8744d777f3c8c08ef68c4adc8876533f8f91ec9db1230f099bc39ad",
       "bytes": 1585
@@ -73,7 +73,7 @@
     {
       "id": 8,
       "file": "blocks/0008.txt",
-      "word_paragraph_index_zero_based": 256,
+      "word_paragraph_index_zero_based": 647,
       "heading_context": [],
       "sha256": "89ad7d0710de90529aed3a85970ad94baece404792a1cceaa0ca814dd4ef710e",
       "bytes": 2923
@@ -81,7 +81,7 @@
     {
       "id": 9,
       "file": "blocks/0009.txt",
-      "word_paragraph_index_zero_based": 294,
+      "word_paragraph_index_zero_based": 715,
       "heading_context": [],
       "sha256": "1630e8984d9bc0a13ee7f62114ddcfcc136aea7a37363b57a2ed8ac3bad29203",
       "bytes": 1050
@@ -89,7 +89,7 @@
     {
       "id": 10,
       "file": "blocks/0010.txt",
-      "word_paragraph_index_zero_based": 298,
+      "word_paragraph_index_zero_based": 719,
       "heading_context": [],
       "sha256": "640372880e9b6aa21c173049b936d39326796d0d152445611fc6bd3278fdbbcf",
       "bytes": 1391
@@ -97,7 +97,7 @@
     {
       "id": 11,
       "file": "blocks/0011.txt",
-      "word_paragraph_index_zero_based": 302,
+      "word_paragraph_index_zero_based": 723,
       "heading_context": [],
       "sha256": "87c718735b7844996ac917c6ad6b60fbfd52b4ee73fd6a277a9758e2b8ff6fea",
       "bytes": 885
@@ -105,7 +105,7 @@
     {
       "id": 12,
       "file": "blocks/0012.txt",
-      "word_paragraph_index_zero_based": 312,
+      "word_paragraph_index_zero_based": 733,
       "heading_context": [],
       "sha256": "47c3d381a090586506317814297e702dea6fc75602291a984cedfd189233f00d",
       "bytes": 468
@@ -113,7 +113,7 @@
     {
       "id": 13,
       "file": "blocks/0013.txt",
-      "word_paragraph_index_zero_based": 340,
+      "word_paragraph_index_zero_based": 761,
       "heading_context": [],
       "sha256": "b9db2a435c9a3fbeba590b20e8a9ccd8088b9c2ed1b62b89ca0857bb0fd42173",
       "bytes": 2924
@@ -121,7 +121,7 @@
     {
       "id": 14,
       "file": "blocks/0014.txt",
-      "word_paragraph_index_zero_based": 377,
+      "word_paragraph_index_zero_based": 798,
       "heading_context": [],
       "sha256": "f8e0ee95d7e987c51d428a26821691b9e697f602e8f9ab464ee5eff2e3aea504",
       "bytes": 1082
@@ -129,7 +129,7 @@
     {
       "id": 15,
       "file": "blocks/0015.txt",
-      "word_paragraph_index_zero_based": 381,
+      "word_paragraph_index_zero_based": 802,
       "heading_context": [],
       "sha256": "7a7c7c0a1c8a06ed6847db17acb2febb255c4f365ab061e5ea124a4574a96a01",
       "bytes": 1167
@@ -137,7 +137,7 @@
     {
       "id": 16,
       "file": "blocks/0016.txt",
-      "word_paragraph_index_zero_based": 385,
+      "word_paragraph_index_zero_based": 806,
       "heading_context": [],
       "sha256": "47ddab057f1355d5439bf117057e6e19592d0b9c8ab6e88f2999e849568a8396",
       "bytes": 1050
@@ -145,7 +145,7 @@
     {
       "id": 17,
       "file": "blocks/0017.txt",
-      "word_paragraph_index_zero_based": 440,
+      "word_paragraph_index_zero_based": 861,
       "heading_context": [],
       "sha256": "42c621ffc900efb2ff2468c2d67ee6827bf52c1a4ea91314831c9a6c9975eff3",
       "bytes": 1046
@@ -153,7 +153,7 @@
     {
       "id": 18,
       "file": "blocks/0018.txt",
-      "word_paragraph_index_zero_based": 444,
+      "word_paragraph_index_zero_based": 865,
       "heading_context": [],
       "sha256": "148b75deabaea6a746b269fb576302a481b5f00beb0257c8bc8d0b903dfbdfb6",
       "bytes": 193
@@ -161,7 +161,7 @@
     {
       "id": 19,
       "file": "blocks/0019.txt",
-      "word_paragraph_index_zero_based": 478,
+      "word_paragraph_index_zero_based": 899,
       "heading_context": [],
       "sha256": "25543564edb18fe0311513e14e6e301a3ca56f101da96fdd81c1d53507fe223e",
       "bytes": 936
@@ -169,7 +169,7 @@
     {
       "id": 20,
       "file": "blocks/0020.txt",
-      "word_paragraph_index_zero_based": 482,
+      "word_paragraph_index_zero_based": 903,
       "heading_context": [],
       "sha256": "bdc1d3e9fc93172a5f418f6fc28944033bdde53b10857ed8299faa0272e29abb",
       "bytes": 1364
@@ -177,7 +177,7 @@
     {
       "id": 21,
       "file": "blocks/0021.txt",
-      "word_paragraph_index_zero_based": 486,
+      "word_paragraph_index_zero_based": 907,
       "heading_context": [],
       "sha256": "7e4c75cbc40de6602a649d4eac0f0dc5b20abbde0314d7e9bd8af7f37a7e42bc",
       "bytes": 1370
@@ -185,7 +185,7 @@
     {
       "id": 22,
       "file": "blocks/0022.txt",
-      "word_paragraph_index_zero_based": 490,
+      "word_paragraph_index_zero_based": 911,
       "heading_context": [],
       "sha256": "754645d4722e7a02c12289dbe2ba895cf94adaf6aa28e64bfcff7c8761150287",
       "bytes": 1309
@@ -193,7 +193,7 @@
     {
       "id": 23,
       "file": "blocks/0023.txt",
-      "word_paragraph_index_zero_based": 519,
+      "word_paragraph_index_zero_based": 940,
       "heading_context": [],
       "sha256": "f039c628c3b034b8b6c1a480dda21df9de26b30fdb9aca7a354034353c8765dc",
       "bytes": 398
@@ -201,7 +201,7 @@
     {
       "id": 24,
       "file": "blocks/0024.txt",
-      "word_paragraph_index_zero_based": 522,
+      "word_paragraph_index_zero_based": 943,
       "heading_context": [],
       "sha256": "b406ba722ef36e76f70cd761a6810213ea97880fb053e53e1e9d7e62936457b5",
       "bytes": 2247
@@ -209,7 +209,7 @@
     {
       "id": 25,
       "file": "blocks/0025.txt",
-      "word_paragraph_index_zero_based": 525,
+      "word_paragraph_index_zero_based": 946,
       "heading_context": [],
       "sha256": "0d28fba18e3488dff21fcce37ac79bfe6f33b9a68cc27dc79f1b6c81b83cce38",
       "bytes": 1607
@@ -217,7 +217,7 @@
     {
       "id": 26,
       "file": "blocks/0026.txt",
-      "word_paragraph_index_zero_based": 528,
+      "word_paragraph_index_zero_based": 949,
       "heading_context": [],
       "sha256": "c73be249329c35e28713dd09b5d57667daa2b4aa82ddf9bacf7a5384c7f08622",
       "bytes": 698
@@ -225,7 +225,7 @@
     {
       "id": 27,
       "file": "blocks/0027.txt",
-      "word_paragraph_index_zero_based": 568,
+      "word_paragraph_index_zero_based": 989,
       "heading_context": [],
       "sha256": "e588e6e936272d1245ad850cb9523f246066cf24a1d258f936e95e4089b9c72b",
       "bytes": 1537
@@ -233,7 +233,7 @@
     {
       "id": 28,
       "file": "blocks/0028.txt",
-      "word_paragraph_index_zero_based": 572,
+      "word_paragraph_index_zero_based": 993,
       "heading_context": [],
       "sha256": "84543ffc232081574d9b9091cf828f2a62663a857d8c9f17070b66fc3502e485",
       "bytes": 659
@@ -241,7 +241,7 @@
     {
       "id": 29,
       "file": "blocks/0029.txt",
-      "word_paragraph_index_zero_based": 576,
+      "word_paragraph_index_zero_based": 997,
       "heading_context": [],
       "sha256": "97348fc743eef393b558576e0cac9a692cb2ab740ac40df0fd19514450e5f5d6",
       "bytes": 1663
@@ -249,7 +249,7 @@
     {
       "id": 30,
       "file": "blocks/0030.txt",
-      "word_paragraph_index_zero_based": 628,
+      "word_paragraph_index_zero_based": 1105,
       "heading_context": [],
       "sha256": "b4d999d34226ad5305b0d4aca483f190612af2970c0fc38a4f6a64eed96ef8ff",
       "bytes": 2550
@@ -257,7 +257,7 @@
     {
       "id": 31,
       "file": "blocks/0031.txt",
-      "word_paragraph_index_zero_based": 631,
+      "word_paragraph_index_zero_based": 1108,
       "heading_context": [],
       "sha256": "2a525c255b27025f644258840f711db58b4ed970d7fef5b47a24ef232bf53a5f",
       "bytes": 1229
@@ -265,7 +265,7 @@
     {
       "id": 32,
       "file": "blocks/0032.txt",
-      "word_paragraph_index_zero_based": 634,
+      "word_paragraph_index_zero_based": 1111,
       "heading_context": [],
       "sha256": "e5b595f6411283fc82ac1653257f5b19ba5afc0264b0d11ac76473c8c309e209",
       "bytes": 1152
@@ -273,7 +273,7 @@
     {
       "id": 33,
       "file": "blocks/0033.txt",
-      "word_paragraph_index_zero_based": 668,
+      "word_paragraph_index_zero_based": 1145,
       "heading_context": [],
       "sha256": "cdd5e8f5dc1291f6b55fcdfe88cd9403bc8344bfd47446c93d0fa2e4911a260e",
       "bytes": 778
@@ -281,7 +281,7 @@
     {
       "id": 34,
       "file": "blocks/0034.txt",
-      "word_paragraph_index_zero_based": 672,
+      "word_paragraph_index_zero_based": 1149,
       "heading_context": [],
       "sha256": "60adea6397297a3dcb4497e1349559527051b19f66d8d275d1426bf644a6625b",
       "bytes": 706
@@ -289,15 +289,15 @@
     {
       "id": 35,
       "file": "blocks/0035.txt",
-      "word_paragraph_index_zero_based": 676,
+      "word_paragraph_index_zero_based": 1153,
       "heading_context": [],
-      "sha256": "1d7ffa28e0732f99fb044c915cfa08fef5e3d8693e95906bdcc246ddd9579b47",
+      "sha256": "2c574b3a99ac068666a65e1d7eba442dce76e8ec8cf05d2b63944bb4a8eb5be8",
       "bytes": 1167
     },
     {
       "id": 36,
       "file": "blocks/0036.txt",
-      "word_paragraph_index_zero_based": 680,
+      "word_paragraph_index_zero_based": 1157,
       "heading_context": [],
       "sha256": "c650bcf06c8c3af36114e4f0bb906d8cd1ef3020e4c699d1f023f48591fe9f31",
       "bytes": 806
@@ -305,7 +305,7 @@
     {
       "id": 37,
       "file": "blocks/0037.txt",
-      "word_paragraph_index_zero_based": 724,
+      "word_paragraph_index_zero_based": 1201,
       "heading_context": [],
       "sha256": "8005b4b2f8419b04f5ac666b356fcd5c181a5c8971d6666d47af756d3dfd196e",
       "bytes": 1520
@@ -313,7 +313,7 @@
     {
       "id": 38,
       "file": "blocks/0038.txt",
-      "word_paragraph_index_zero_based": 727,
+      "word_paragraph_index_zero_based": 1204,
       "heading_context": [],
       "sha256": "21a9bb84da2cea3221b18a4627ed92809c37981188afbd48ba170ea8525cf361",
       "bytes": 718
@@ -321,7 +321,7 @@
     {
       "id": 39,
       "file": "blocks/0039.txt",
-      "word_paragraph_index_zero_based": 761,
+      "word_paragraph_index_zero_based": 1238,
       "heading_context": [],
       "sha256": "9bf75fcf48cb27c3f592b2cefbd3968a016b84446086a36ad2378cfcc6796e9f",
       "bytes": 1257
@@ -329,7 +329,7 @@
     {
       "id": 40,
       "file": "blocks/0040.txt",
-      "word_paragraph_index_zero_based": 765,
+      "word_paragraph_index_zero_based": 1242,
       "heading_context": [],
       "sha256": "3de514ba95808cf7ed935e5d5d9d5df20b0ef3a3e241990e93a66d22e0108fae",
       "bytes": 1225
@@ -337,7 +337,7 @@
     {
       "id": 41,
       "file": "blocks/0041.txt",
-      "word_paragraph_index_zero_based": 769,
+      "word_paragraph_index_zero_based": 1246,
       "heading_context": [],
       "sha256": "40920347307391008d35ae070c708a82b3eac35aa250503507b55615383f2c2c",
       "bytes": 932
@@ -345,7 +345,7 @@
     {
       "id": 42,
       "file": "blocks/0042.txt",
-      "word_paragraph_index_zero_based": 780,
+      "word_paragraph_index_zero_based": 1257,
       "heading_context": [],
       "sha256": "852be5e64bffd401a7430167dd91d189d756316f6c79eaf445d13990cd3dba61",
       "bytes": 440
@@ -353,7 +353,7 @@
     {
       "id": 43,
       "file": "blocks/0043.txt",
-      "word_paragraph_index_zero_based": 791,
+      "word_paragraph_index_zero_based": 1268,
       "heading_context": [],
       "sha256": "57ffa9c36e0634f13a55233857ef45215df349629155908972f26eba77490f9b",
       "bytes": 532
@@ -361,7 +361,7 @@
     {
       "id": 44,
       "file": "blocks/0044.txt",
-      "word_paragraph_index_zero_based": 820,
+      "word_paragraph_index_zero_based": 1321,
       "heading_context": [],
       "sha256": "2dd4d25026e74f6d0bd1c35a8c793ca73589e55054e5dbcbbec4ec80955a836d",
       "bytes": 495
@@ -369,7 +369,7 @@
     {
       "id": 45,
       "file": "blocks/0045.txt",
-      "word_paragraph_index_zero_based": 845,
+      "word_paragraph_index_zero_based": 1346,
       "heading_context": [],
       "sha256": "d3a1c938fead7da95ae798bee2dd15eaf603b6428e12945e73069c527eb86952",
       "bytes": 1862
@@ -377,7 +377,7 @@
     {
       "id": 46,
       "file": "blocks/0046.txt",
-      "word_paragraph_index_zero_based": 848,
+      "word_paragraph_index_zero_based": 1349,
       "heading_context": [],
       "sha256": "d5170c68f06b622c3eada8a5519134efd5bce1f712325b2dee0727b01593347a",
       "bytes": 3375
@@ -385,7 +385,7 @@
     {
       "id": 47,
       "file": "blocks/0047.txt",
-      "word_paragraph_index_zero_based": 882,
+      "word_paragraph_index_zero_based": 1383,
       "heading_context": [],
       "sha256": "1778a3e544becb4e6472182cf91bf3ff6fc3b3c13597fe4dde28969d5fd5a856",
       "bytes": 1316
@@ -393,7 +393,7 @@
     {
       "id": 48,
       "file": "blocks/0048.txt",
-      "word_paragraph_index_zero_based": 886,
+      "word_paragraph_index_zero_based": 1387,
       "heading_context": [],
       "sha256": "3f863fc11bf41cce1bb4b41b779bd6937c41edcf3ab49028587381f1e482531b",
       "bytes": 1114
@@ -401,7 +401,7 @@
     {
       "id": 49,
       "file": "blocks/0049.txt",
-      "word_paragraph_index_zero_based": 890,
+      "word_paragraph_index_zero_based": 1391,
       "heading_context": [],
       "sha256": "b45af4f507395ba8177e7c2f81d2d1259dabac5fa269a687704f81d1a1bb51b4",
       "bytes": 1352
@@ -409,7 +409,7 @@
     {
       "id": 50,
       "file": "blocks/0050.txt",
-      "word_paragraph_index_zero_based": 907,
+      "word_paragraph_index_zero_based": 1408,
       "heading_context": [],
       "sha256": "042e540b363a602c43cda2cf98fb16f35816a555ecc3f7b861c8f31c56ca47ae",
       "bytes": 289
@@ -417,7 +417,7 @@
     {
       "id": 51,
       "file": "blocks/0051.txt",
-      "word_paragraph_index_zero_based": 918,
+      "word_paragraph_index_zero_based": 1489,
       "heading_context": [],
       "sha256": "d2f0fed5edc77db441c11bfcdc5196c9c3770e6da5d6b05f36336931d1b158d8",
       "bytes": 397
@@ -425,7 +425,7 @@
     {
       "id": 52,
       "file": "blocks/0052.txt",
-      "word_paragraph_index_zero_based": 922,
+      "word_paragraph_index_zero_based": 1493,
       "heading_context": [],
       "sha256": "7e2626a78239368ee7f430c58bcc2f7c03296d408febcaa5b42bc6daf2a13f20",
       "bytes": 182
@@ -433,7 +433,7 @@
     {
       "id": 53,
       "file": "blocks/0053.txt",
-      "word_paragraph_index_zero_based": 924,
+      "word_paragraph_index_zero_based": 1495,
       "heading_context": [],
       "sha256": "789cce02982222059aeb589ad53fbf027e433e178b3b7ceb38d90da4d892cbcd",
       "bytes": 303
@@ -441,7 +441,7 @@
     {
       "id": 54,
       "file": "blocks/0054.txt",
-      "word_paragraph_index_zero_based": 930,
+      "word_paragraph_index_zero_based": 1501,
       "heading_context": [],
       "sha256": "e6797a64cd8f12d412c11e7a107336ade525a655c5f4a002733ee238b6cabee0",
       "bytes": 168
@@ -449,7 +449,7 @@
     {
       "id": 55,
       "file": "blocks/0055.txt",
-      "word_paragraph_index_zero_based": 940,
+      "word_paragraph_index_zero_based": 1511,
       "heading_context": [],
       "sha256": "f3bbe53cbb4bdce4bdd8dfe17a25443594bfd081925b8e24a95a048432c1cf74",
       "bytes": 327
@@ -457,7 +457,7 @@
     {
       "id": 56,
       "file": "blocks/0056.txt",
-      "word_paragraph_index_zero_based": 976,
+      "word_paragraph_index_zero_based": 1547,
       "heading_context": [],
       "sha256": "9ea16d9561014fef10fae117bf8b1b18ab34fe6d6c81a837a1d7b9087827fccf",
       "bytes": 1307
@@ -465,15 +465,15 @@
     {
       "id": 57,
       "file": "blocks/0057.txt",
-      "word_paragraph_index_zero_based": 1008,
+      "word_paragraph_index_zero_based": 1579,
       "heading_context": [],
-      "sha256": "b79b54a9e42615c88ac0cbffaf70089c541a90f90df102216fa224f6ce3d9518",
-      "bytes": 1213
+      "sha256": "6cc06f233afccb5a471571eda7911c5764973ae3eb0bce8712fd8ed95c335779",
+      "bytes": 1212
     },
     {
       "id": 58,
       "file": "blocks/0058.txt",
-      "word_paragraph_index_zero_based": 1011,
+      "word_paragraph_index_zero_based": 1582,
       "heading_context": [],
       "sha256": "4ff4ea0b31a825b24635e88bea2f0109318feab0666f70888f6ba8bf4e0446a9",
       "bytes": 1018
@@ -481,7 +481,7 @@
     {
       "id": 59,
       "file": "blocks/0059.txt",
-      "word_paragraph_index_zero_based": 1014,
+      "word_paragraph_index_zero_based": 1585,
       "heading_context": [],
       "sha256": "76702f2a9c7e67d8d5023af0fc1534b4e765683a3f18f651f5c151029e194c57",
       "bytes": 602
@@ -489,7 +489,7 @@
     {
       "id": 60,
       "file": "blocks/0060.txt",
-      "word_paragraph_index_zero_based": 1035,
+      "word_paragraph_index_zero_based": 1606,
       "heading_context": [],
       "sha256": "18a5d5c196d3b24cad21b51596bdba4fe7931e492d4db50f0ccafa5e0a861562",
       "bytes": 446
@@ -497,7 +497,7 @@
     {
       "id": 61,
       "file": "blocks/0061.txt",
-      "word_paragraph_index_zero_based": 1046,
+      "word_paragraph_index_zero_based": 1617,
       "heading_context": [],
       "sha256": "dd2002a357ff0f1c1fc9ab73f5903cce7903ae66adf0f03446bfdd3a2f416bb8",
       "bytes": 153
@@ -505,7 +505,7 @@
     {
       "id": 62,
       "file": "blocks/0062.txt",
-      "word_paragraph_index_zero_based": 1054,
+      "word_paragraph_index_zero_based": 1625,
       "heading_context": [],
       "sha256": "3bfb9c6e167b1ea1deaf385fb39d86c1086d9781d42d08807da7c48f87903a47",
       "bytes": 152
@@ -513,7 +513,7 @@
     {
       "id": 63,
       "file": "blocks/0063.txt",
-      "word_paragraph_index_zero_based": 1065,
+      "word_paragraph_index_zero_based": 1636,
       "heading_context": [],
       "sha256": "bedc8a81f5d7ae36c610c6ebbd680b705bbbe07342d623d9dbaa63e43383b0d7",
       "bytes": 241
@@ -521,7 +521,7 @@
     {
       "id": 64,
       "file": "blocks/0064.txt",
-      "word_paragraph_index_zero_based": 1086,
+      "word_paragraph_index_zero_based": 1657,
       "heading_context": [],
       "sha256": "1a14422c0b3d555fdedf21cd86c4739dde606bb9005bcc8884c352749ce61dbb",
       "bytes": 788
@@ -529,7 +529,7 @@
     {
       "id": 65,
       "file": "blocks/0065.txt",
-      "word_paragraph_index_zero_based": 1121,
+      "word_paragraph_index_zero_based": 1692,
       "heading_context": [],
       "sha256": "2cf1f8420f8ae8fb02a44db6cb5786ffd478fb6a0a33885546963f64e2fc300a",
       "bytes": 532
@@ -537,7 +537,7 @@
     {
       "id": 66,
       "file": "blocks/0066.txt",
-      "word_paragraph_index_zero_based": 1124,
+      "word_paragraph_index_zero_based": 1695,
       "heading_context": [],
       "sha256": "598c32a6945095c3dccb6e3855267361d44a889d4bfbeed32335b9d407e0e863",
       "bytes": 671
@@ -545,7 +545,7 @@
     {
       "id": 67,
       "file": "blocks/0067.txt",
-      "word_paragraph_index_zero_based": 1127,
+      "word_paragraph_index_zero_based": 1698,
       "heading_context": [],
       "sha256": "174cf0d82ccbb242f07569ece06df5aee332a78eee256f96fdb40a6ad263953a",
       "bytes": 799
@@ -553,7 +553,7 @@
     {
       "id": 68,
       "file": "blocks/0068.txt",
-      "word_paragraph_index_zero_based": 1130,
+      "word_paragraph_index_zero_based": 1701,
       "heading_context": [],
       "sha256": "c41c5ba4d4b14be7d33ef47c9bb678c6c270b17f31d1bf08dc4dd53db6a21218",
       "bytes": 727
@@ -561,7 +561,7 @@
     {
       "id": 69,
       "file": "blocks/0069.txt",
-      "word_paragraph_index_zero_based": 1146,
+      "word_paragraph_index_zero_based": 1717,
       "heading_context": [],
       "sha256": "6e21736c000d95491cc94b297aad5b874cf4bcba45f897bab09baf98b05824f6",
       "bytes": 313
@@ -569,7 +569,7 @@
     {
       "id": 70,
       "file": "blocks/0070.txt",
-      "word_paragraph_index_zero_based": 1150,
+      "word_paragraph_index_zero_based": 1721,
       "heading_context": [],
       "sha256": "ce436253898e40790413643682255081e18f19b442c722f131569abb024a9ca3",
       "bytes": 478
@@ -577,7 +577,7 @@
     {
       "id": 71,
       "file": "blocks/0071.txt",
-      "word_paragraph_index_zero_based": 1159,
+      "word_paragraph_index_zero_based": 1730,
       "heading_context": [],
       "sha256": "aabcb67f4f4d43b67f883e58334d9c3ceec3616dd414b3a90e1fd76da3ce48e2",
       "bytes": 179
@@ -585,7 +585,7 @@
     {
       "id": 72,
       "file": "blocks/0072.txt",
-      "word_paragraph_index_zero_based": 1184,
+      "word_paragraph_index_zero_based": 1771,
       "heading_context": [],
       "sha256": "a7e7ac8d8bf5da7ab8f42da9026340480ee24b551156e5095a065fcf500f4ef2",
       "bytes": 2057
@@ -593,7 +593,7 @@
     {
       "id": 73,
       "file": "blocks/0073.txt",
-      "word_paragraph_index_zero_based": 1216,
+      "word_paragraph_index_zero_based": 1803,
       "heading_context": [],
       "sha256": "d53c89424870fb53ddc3c47043e0ecb159ce73a228400d5b451f43b4048024ef",
       "bytes": 784
@@ -601,7 +601,7 @@
     {
       "id": 74,
       "file": "blocks/0074.txt",
-      "word_paragraph_index_zero_based": 1219,
+      "word_paragraph_index_zero_based": 1806,
       "heading_context": [],
       "sha256": "42a3e82b2fc7296d31bf2e7f2ab0c132e08e4decd2426c22f1b7c14da0c9cd5d",
       "bytes": 870
@@ -609,7 +609,7 @@
     {
       "id": 75,
       "file": "blocks/0075.txt",
-      "word_paragraph_index_zero_based": 1222,
+      "word_paragraph_index_zero_based": 1809,
       "heading_context": [],
       "sha256": "d247b2915563d40dfde37260bb9cd6ff7757b0eb54b0c1355364dc90b731afe0",
       "bytes": 938
@@ -617,7 +617,7 @@
     {
       "id": 76,
       "file": "blocks/0076.txt",
-      "word_paragraph_index_zero_based": 1225,
+      "word_paragraph_index_zero_based": 1812,
       "heading_context": [],
       "sha256": "a31f0851792cc784967d7a706a4a6f2941294ca5c6d3815880db91004cff276f",
       "bytes": 488
@@ -625,7 +625,7 @@
     {
       "id": 77,
       "file": "blocks/0077.txt",
-      "word_paragraph_index_zero_based": 1233,
+      "word_paragraph_index_zero_based": 1820,
       "heading_context": [],
       "sha256": "1c330fbe1a4a73decbffa98a5bca1f8190064c5964c6899c647b255c899ae04b",
       "bytes": 378
@@ -633,7 +633,7 @@
     {
       "id": 78,
       "file": "blocks/0078.txt",
-      "word_paragraph_index_zero_based": 1238,
+      "word_paragraph_index_zero_based": 1825,
       "heading_context": [],
       "sha256": "8736017f9846d100bcfb61678caf68ba0e77c8588674c9bee98dad3f6714639a",
       "bytes": 794
@@ -641,7 +641,7 @@
     {
       "id": 79,
       "file": "blocks/0079.txt",
-      "word_paragraph_index_zero_based": 1259,
+      "word_paragraph_index_zero_based": 1861,
       "heading_context": [],
       "sha256": "e630c8a30879ffb5ee71de8fc6aaef40dc2a4738b2c7b664f868011fd1759810",
       "bytes": 435
@@ -649,7 +649,7 @@
     {
       "id": 80,
       "file": "blocks/0080.txt",
-      "word_paragraph_index_zero_based": 1262,
+      "word_paragraph_index_zero_based": 1864,
       "heading_context": [],
       "sha256": "f382bdade49bb6686235b4e3f764aa5e3f210a45b26a326fbe73f67d4dad5e74",
       "bytes": 661
@@ -657,7 +657,7 @@
     {
       "id": 81,
       "file": "blocks/0081.txt",
-      "word_paragraph_index_zero_based": 1276,
+      "word_paragraph_index_zero_based": 1878,
       "heading_context": [],
       "sha256": "a1dfbebbb5b4418e0fdbcf6cf2707f9d8e276eb2c91d528da084119a55341f56",
       "bytes": 1732
@@ -665,7 +665,7 @@
     {
       "id": 82,
       "file": "blocks/0082.txt",
-      "word_paragraph_index_zero_based": 1309,
+      "word_paragraph_index_zero_based": 1911,
       "heading_context": [],
       "sha256": "44d8095de61fed535503f8f7ada2308d66f599aded16caf64826de38a725a671",
       "bytes": 922
@@ -673,7 +673,7 @@
     {
       "id": 83,
       "file": "blocks/0083.txt",
-      "word_paragraph_index_zero_based": 1312,
+      "word_paragraph_index_zero_based": 1914,
       "heading_context": [],
       "sha256": "401123e9e52c0b3ea85d8cf420129c79164bfbfb3d6437fed87ff1c612ed270b",
       "bytes": 583
@@ -681,7 +681,7 @@
     {
       "id": 84,
       "file": "blocks/0084.txt",
-      "word_paragraph_index_zero_based": 1315,
+      "word_paragraph_index_zero_based": 1917,
       "heading_context": [],
       "sha256": "4b137b3a97f2f35b2cb6a3bf8c8be71f96e62b953b277767fded2a489f38e19c",
       "bytes": 706
@@ -689,7 +689,7 @@
     {
       "id": 85,
       "file": "blocks/0085.txt",
-      "word_paragraph_index_zero_based": 1318,
+      "word_paragraph_index_zero_based": 1920,
       "heading_context": [],
       "sha256": "55494d5502eb104346d3aec060f6134426e406ab957786c4eea00235a2f33e92",
       "bytes": 741
@@ -697,7 +697,7 @@
     {
       "id": 86,
       "file": "blocks/0086.txt",
-      "word_paragraph_index_zero_based": 1367,
+      "word_paragraph_index_zero_based": 1969,
       "heading_context": [],
       "sha256": "e718a853cba0b39778d98cd5df60e5718b26327cf28f0af047d49e1a6a65733c",
       "bytes": 970
@@ -705,7 +705,7 @@
     {
       "id": 87,
       "file": "blocks/0087.txt",
-      "word_paragraph_index_zero_based": 1372,
+      "word_paragraph_index_zero_based": 1974,
       "heading_context": [],
       "sha256": "164c0102d2585b92f028bb357a46049d942f1c84875ce19b71103a730d5ea83f",
       "bytes": 568
@@ -713,7 +713,7 @@
     {
       "id": 88,
       "file": "blocks/0088.txt",
-      "word_paragraph_index_zero_based": 1404,
+      "word_paragraph_index_zero_based": 2006,
       "heading_context": [],
       "sha256": "4b331bbb82e1518826abffdfc174cb15290651cc899c5ebd6e240485aa109a15",
       "bytes": 796
@@ -721,7 +721,7 @@
     {
       "id": 89,
       "file": "blocks/0089.txt",
-      "word_paragraph_index_zero_based": 1408,
+      "word_paragraph_index_zero_based": 2010,
       "heading_context": [],
       "sha256": "1849e911be946cf2acd751aad7d7d26d7ec71b5dea4505025e23d1a9b2aa5ea8",
       "bytes": 661
@@ -729,7 +729,7 @@
     {
       "id": 90,
       "file": "blocks/0090.txt",
-      "word_paragraph_index_zero_based": 1412,
+      "word_paragraph_index_zero_based": 2014,
       "heading_context": [],
       "sha256": "4e055a79864c67b23cb2b330a4a8c5c0e5872cfe693d42238ef4d1f9e6a99de0",
       "bytes": 481
@@ -737,7 +737,7 @@
     {
       "id": 91,
       "file": "blocks/0091.txt",
-      "word_paragraph_index_zero_based": 1416,
+      "word_paragraph_index_zero_based": 2018,
       "heading_context": [],
       "sha256": "6a1dcec501f47516d352fbe1e0304fc8456ab62c67e60b72af1035519acc55e8",
       "bytes": 816
@@ -745,7 +745,7 @@
     {
       "id": 92,
       "file": "blocks/0092.txt",
-      "word_paragraph_index_zero_based": 1428,
+      "word_paragraph_index_zero_based": 2030,
       "heading_context": [],
       "sha256": "4a838e2b935c481586d4a1fc17f05e0d9ecb56ec8c45ecdb9671599b88c740dc",
       "bytes": 114
@@ -753,7 +753,7 @@
     {
       "id": 93,
       "file": "blocks/0093.txt",
-      "word_paragraph_index_zero_based": 1430,
+      "word_paragraph_index_zero_based": 2032,
       "heading_context": [],
       "sha256": "56ca47eb65aa00f6aa48bde4aff5b55d8251568dc56d0fd6db253923bfaf60e9",
       "bytes": 323
@@ -761,7 +761,7 @@
     {
       "id": 94,
       "file": "blocks/0094.txt",
-      "word_paragraph_index_zero_based": 1435,
+      "word_paragraph_index_zero_based": 2037,
       "heading_context": [],
       "sha256": "97ed591c5304027094f0b18de83844f20fbe58aa70ef36230acd429688c4d1ed",
       "bytes": 324
@@ -769,7 +769,7 @@
     {
       "id": 95,
       "file": "blocks/0095.txt",
-      "word_paragraph_index_zero_based": 1437,
+      "word_paragraph_index_zero_based": 2039,
       "heading_context": [],
       "sha256": "172f6bfd299476c34492dd18cf2a6c7811fe09cc499fdd490eaf008ea791b5fd",
       "bytes": 257
@@ -777,7 +777,7 @@
     {
       "id": 96,
       "file": "blocks/0096.txt",
-      "word_paragraph_index_zero_based": 1448,
+      "word_paragraph_index_zero_based": 2050,
       "heading_context": [],
       "sha256": "1afe42fd41e274b58e206caa78ce5a70901b7d2158111323a555e63ed7844da5",
       "bytes": 300
@@ -785,7 +785,7 @@
     {
       "id": 97,
       "file": "blocks/0097.txt",
-      "word_paragraph_index_zero_based": 1452,
+      "word_paragraph_index_zero_based": 2054,
       "heading_context": [],
       "sha256": "c4e47f89d2300c1d9dccb8ed94a7166faf70010febf51093f411f78ad9d2d632",
       "bytes": 794
@@ -793,7 +793,7 @@
     {
       "id": 98,
       "file": "blocks/0098.txt",
-      "word_paragraph_index_zero_based": 1457,
+      "word_paragraph_index_zero_based": 2059,
       "heading_context": [],
       "sha256": "e3d58097921f6222b92db6c207066e4ede35d38f7a2146b9405cc44d9846c735",
       "bytes": 153
@@ -801,7 +801,7 @@
     {
       "id": 99,
       "file": "blocks/0099.txt",
-      "word_paragraph_index_zero_based": 1459,
+      "word_paragraph_index_zero_based": 2061,
       "heading_context": [],
       "sha256": "21fb60e6363e2b62e3f44dd623b385197247f3fc6bda7ffb9147c917b872a40c",
       "bytes": 546
@@ -809,7 +809,7 @@
     {
       "id": 100,
       "file": "blocks/0100.txt",
-      "word_paragraph_index_zero_based": 1468,
+      "word_paragraph_index_zero_based": 2070,
       "heading_context": [],
       "sha256": "6bb6dba01c13b9e00c6de05218da5685939ece6989e4b95c6b5c546d2762c3ca",
       "bytes": 566
@@ -817,7 +817,7 @@
     {
       "id": 101,
       "file": "blocks/0101.txt",
-      "word_paragraph_index_zero_based": 1472,
+      "word_paragraph_index_zero_based": 2074,
       "heading_context": [],
       "sha256": "e352da04407b64ae30bbb255e857a5186b57191d06a36a185685fbad09508967",
       "bytes": 169
@@ -825,7 +825,7 @@
     {
       "id": 102,
       "file": "blocks/0102.txt",
-      "word_paragraph_index_zero_based": 1480,
+      "word_paragraph_index_zero_based": 2082,
       "heading_context": [],
       "sha256": "05c6215fd65b63381a5b578832068beaaa95948178887a2124d73c24f799f033",
       "bytes": 347
@@ -833,7 +833,7 @@
     {
       "id": 103,
       "file": "blocks/0103.txt",
-      "word_paragraph_index_zero_based": 1485,
+      "word_paragraph_index_zero_based": 2087,
       "heading_context": [],
       "sha256": "9162f9ce7c5a54634882db7fe9845698b4c318f9f7940efb852995d3411a0ef4",
       "bytes": 1007
@@ -841,7 +841,7 @@
     {
       "id": 104,
       "file": "blocks/0104.txt",
-      "word_paragraph_index_zero_based": 1503,
+      "word_paragraph_index_zero_based": 2105,
       "heading_context": [],
       "sha256": "20e6b018d69ebcaf9f765843ab958d9fbd494b63c97b1747f890c0437cf2857f",
       "bytes": 105
@@ -849,7 +849,7 @@
     {
       "id": 105,
       "file": "blocks/0105.txt",
-      "word_paragraph_index_zero_based": 1505,
+      "word_paragraph_index_zero_based": 2107,
       "heading_context": [],
       "sha256": "9fb4ccb07a273f0392225711630264c28a95b07fbae7e3080eeca69853a3c21c",
       "bytes": 405
@@ -857,7 +857,7 @@
     {
       "id": 106,
       "file": "blocks/0106.txt",
-      "word_paragraph_index_zero_based": 1507,
+      "word_paragraph_index_zero_based": 2109,
       "heading_context": [],
       "sha256": "5b7b4cf57f337d6baa004f2885c95905dab4ae8c9f30a4369ebb4b4f9c53d4a3",
       "bytes": 745
@@ -865,7 +865,7 @@
     {
       "id": 107,
       "file": "blocks/0107.txt",
-      "word_paragraph_index_zero_based": 1509,
+      "word_paragraph_index_zero_based": 2111,
       "heading_context": [],
       "sha256": "98961f0acb408eee253639048353a531e41b15389cdfc70a43878f4215b1a1ce",
       "bytes": 205
@@ -873,7 +873,7 @@
     {
       "id": 108,
       "file": "blocks/0108.txt",
-      "word_paragraph_index_zero_based": 1511,
+      "word_paragraph_index_zero_based": 2113,
       "heading_context": [],
       "sha256": "84976782a97035323805d589e8f1eb74356c5339d94e1c6c84eab88ef53b76cb",
       "bytes": 187
@@ -881,15 +881,15 @@
     {
       "id": 109,
       "file": "blocks/0109.txt",
-      "word_paragraph_index_zero_based": 1547,
+      "word_paragraph_index_zero_based": 2149,
       "heading_context": [],
-      "sha256": "682599be4e73dced059d34a4381db0fecd384c1913e08447eb619f42a187be85",
+      "sha256": "7beec925de2bf56445f8cd5a0be2e6baee5c923f05cba20a26286d04eb2be24e",
       "bytes": 831
     },
     {
       "id": 110,
       "file": "blocks/0110.txt",
-      "word_paragraph_index_zero_based": 1551,
+      "word_paragraph_index_zero_based": 2153,
       "heading_context": [],
       "sha256": "cfceaf16b9cf9337e346a22e714ae6d5ca0c64827f4aa044322c725fb56ec1f2",
       "bytes": 370
@@ -897,7 +897,7 @@
     {
       "id": 111,
       "file": "blocks/0111.txt",
-      "word_paragraph_index_zero_based": 1555,
+      "word_paragraph_index_zero_based": 2157,
       "heading_context": [],
       "sha256": "4315992a4b0f00be82e795cd255ca88939725f195f86b2ecc6e5e0c466089a94",
       "bytes": 228
@@ -905,7 +905,7 @@
     {
       "id": 112,
       "file": "blocks/0112.txt",
-      "word_paragraph_index_zero_based": 1618,
+      "word_paragraph_index_zero_based": 2220,
       "heading_context": [],
       "sha256": "19441d8f3f9843936e34a9d6b921527d77664fa1c6faf2d1868e2982b5243fee",
       "bytes": 914
@@ -913,7 +913,7 @@
     {
       "id": 113,
       "file": "blocks/0113.txt",
-      "word_paragraph_index_zero_based": 1621,
+      "word_paragraph_index_zero_based": 2223,
       "heading_context": [],
       "sha256": "56329f7007f002ead1223f4b3094a0b08129cab3711ef77248e196427f4d7ea8",
       "bytes": 388
@@ -921,7 +921,7 @@
     {
       "id": 114,
       "file": "blocks/0114.txt",
-      "word_paragraph_index_zero_based": 1658,
+      "word_paragraph_index_zero_based": 2260,
       "heading_context": [],
       "sha256": "91877a213e39a172bcb2682c8e77ef0e5333d8dcb6698cf70c2e83822246d021",
       "bytes": 484
@@ -929,7 +929,7 @@
     {
       "id": 115,
       "file": "blocks/0115.txt",
-      "word_paragraph_index_zero_based": 1660,
+      "word_paragraph_index_zero_based": 2262,
       "heading_context": [],
       "sha256": "e389268a6b8d2cf400f6554aa28376bc7ba685ffa1553981675f52ba35a8a441",
       "bytes": 688
@@ -937,7 +937,7 @@
     {
       "id": 116,
       "file": "blocks/0116.txt",
-      "word_paragraph_index_zero_based": 1662,
+      "word_paragraph_index_zero_based": 2264,
       "heading_context": [],
       "sha256": "85bf5efc83727a5620612f5ef6800926edf0cb21d49247eb9548d5092ebf7c89",
       "bytes": 355
@@ -945,7 +945,7 @@
     {
       "id": 117,
       "file": "blocks/0117.txt",
-      "word_paragraph_index_zero_based": 1664,
+      "word_paragraph_index_zero_based": 2266,
       "heading_context": [],
       "sha256": "61705836dc5695759e102afacf90ee3acc06b1e4d5e6514544f323979cd32d26",
       "bytes": 420
@@ -953,7 +953,7 @@
     {
       "id": 118,
       "file": "blocks/0118.txt",
-      "word_paragraph_index_zero_based": 1674,
+      "word_paragraph_index_zero_based": 2276,
       "heading_context": [],
       "sha256": "1a779015a60829e6d0764bc6692242cdb621bc36513aeab792c389e2f891e51b",
       "bytes": 936
@@ -961,7 +961,7 @@
     {
       "id": 119,
       "file": "blocks/0119.txt",
-      "word_paragraph_index_zero_based": 1734,
+      "word_paragraph_index_zero_based": 2360,
       "heading_context": [],
       "sha256": "e9bfebab0b075f0b7649d71ed9cae4c669ba2074f475fe1a698834a5e7dcc2cf",
       "bytes": 404
@@ -969,7 +969,7 @@
     {
       "id": 120,
       "file": "blocks/0120.txt",
-      "word_paragraph_index_zero_based": 1737,
+      "word_paragraph_index_zero_based": 2363,
       "heading_context": [],
       "sha256": "eb074bbe59c87a102f7452525853090b2a33033cd4ec88841f52bfdc4288a204",
       "bytes": 594
@@ -977,7 +977,7 @@
     {
       "id": 121,
       "file": "blocks/0121.txt",
-      "word_paragraph_index_zero_based": 1776,
+      "word_paragraph_index_zero_based": 2402,
       "heading_context": [],
       "sha256": "7ac2d5aff7e85ce1ef2c6f13e4b1bdedb0cfbe27d6dd6f655564b80afda8ce85",
       "bytes": 605
@@ -985,7 +985,7 @@
     {
       "id": 122,
       "file": "blocks/0122.txt",
-      "word_paragraph_index_zero_based": 1779,
+      "word_paragraph_index_zero_based": 2405,
       "heading_context": [],
       "sha256": "3fe9292baa8c105610242f8d27cee2ff2027ab2df7e9cb3ba58d32e354eda942",
       "bytes": 745
@@ -993,7 +993,7 @@
     {
       "id": 123,
       "file": "blocks/0123.txt",
-      "word_paragraph_index_zero_based": 1782,
+      "word_paragraph_index_zero_based": 2408,
       "heading_context": [],
       "sha256": "8e1e9b72fcd530f3a252dacc7bfe52dbd7ecfc4be9a1e73d680f8dd71b904843",
       "bytes": 454
@@ -1001,7 +1001,7 @@
     {
       "id": 124,
       "file": "blocks/0124.txt",
-      "word_paragraph_index_zero_based": 1785,
+      "word_paragraph_index_zero_based": 2411,
       "heading_context": [],
       "sha256": "4f7bf725ac16350dd7c0a516a8ce9ebc130cf7dbd965c40ed4cb0df98b93eba5",
       "bytes": 387
@@ -1009,7 +1009,7 @@
     {
       "id": 125,
       "file": "blocks/0125.txt",
-      "word_paragraph_index_zero_based": 1788,
+      "word_paragraph_index_zero_based": 2414,
       "heading_context": [],
       "sha256": "1f36bd4593a00fe95a74f94e119009171785bc348ed84a51e16a8bae37727bef",
       "bytes": 443
@@ -1017,7 +1017,7 @@
     {
       "id": 126,
       "file": "blocks/0126.txt",
-      "word_paragraph_index_zero_based": 1795,
+      "word_paragraph_index_zero_based": 2421,
       "heading_context": [],
       "sha256": "f06090499bdc8146ba7a3db3e73f14f061eb99b68261ea1ae818e5ae66e5ccf8",
       "bytes": 66
@@ -1025,7 +1025,7 @@
     {
       "id": 127,
       "file": "blocks/0127.txt",
-      "word_paragraph_index_zero_based": 1805,
+      "word_paragraph_index_zero_based": 2431,
       "heading_context": [],
       "sha256": "0a12a4be7fcb9a3ca68fae58931e691a2ee564ffc059cdea25d0c19362e9e2c7",
       "bytes": 134
@@ -1033,7 +1033,7 @@
     {
       "id": 128,
       "file": "blocks/0128.txt",
-      "word_paragraph_index_zero_based": 1812,
+      "word_paragraph_index_zero_based": 2438,
       "heading_context": [],
       "sha256": "a83eff16ad7b4ad78b9e49ed05c744cabf0f45ca352d015f112c07e1c8c234f8",
       "bytes": 136
@@ -1041,7 +1041,7 @@
     {
       "id": 129,
       "file": "blocks/0129.txt",
-      "word_paragraph_index_zero_based": 1892,
+      "word_paragraph_index_zero_based": 2553,
       "heading_context": [],
       "sha256": "3bdc29ac5aca18bffc93fda1656853df44affda131fb9e229799c1788b70e60e",
       "bytes": 938
@@ -1049,7 +1049,7 @@
     {
       "id": 130,
       "file": "blocks/0130.txt",
-      "word_paragraph_index_zero_based": 1895,
+      "word_paragraph_index_zero_based": 2556,
       "heading_context": [],
       "sha256": "83303cb1b2652ebd8f7d56b584491b9a18dfbbad747b669c4b7e578f19f05b11",
       "bytes": 1736
@@ -1057,7 +1057,7 @@
     {
       "id": 131,
       "file": "blocks/0131.txt",
-      "word_paragraph_index_zero_based": 1898,
+      "word_paragraph_index_zero_based": 2559,
       "heading_context": [],
       "sha256": "7341686925208906af7b4643079054d1f3ea63a25d8e4744e41669f38f46cc50",
       "bytes": 956
@@ -1065,7 +1065,7 @@
     {
       "id": 132,
       "file": "blocks/0132.txt",
-      "word_paragraph_index_zero_based": 1932,
+      "word_paragraph_index_zero_based": 2593,
       "heading_context": [],
       "sha256": "d2c8d293905d763c9c1fd6cc6d1173f8bc522776d694532ec750b122f5b0d6ed",
       "bytes": 1072
@@ -1073,7 +1073,7 @@
     {
       "id": 133,
       "file": "blocks/0133.txt",
-      "word_paragraph_index_zero_based": 1935,
+      "word_paragraph_index_zero_based": 2596,
       "heading_context": [],
       "sha256": "f75209720c51f11d38a8f3934ae0f8e136d5784825b0c7ca92ec9fb94695ed87",
       "bytes": 675
@@ -1081,7 +1081,7 @@
     {
       "id": 134,
       "file": "blocks/0134.txt",
-      "word_paragraph_index_zero_based": 1938,
+      "word_paragraph_index_zero_based": 2599,
       "heading_context": [],
       "sha256": "7388b4377df9539f5492d7d7c49551b8e36291accc69cb9ae6c765d454cf06f6",
       "bytes": 922
@@ -1089,7 +1089,7 @@
     {
       "id": 135,
       "file": "blocks/0135.txt",
-      "word_paragraph_index_zero_based": 1941,
+      "word_paragraph_index_zero_based": 2602,
       "heading_context": [],
       "sha256": "a71c3abb4c447896bb2422f8a23567af0c250967c5b1cb7862507cf7018d77d5",
       "bytes": 1028
@@ -1097,7 +1097,7 @@
     {
       "id": 136,
       "file": "blocks/0136.txt",
-      "word_paragraph_index_zero_based": 1946,
+      "word_paragraph_index_zero_based": 2607,
       "heading_context": [],
       "sha256": "5b24ff12e02b5af9d0b12b0126a29fc9e41b5c15cd88c0151aa686f53ec6210a",
       "bytes": 394
@@ -1105,7 +1105,7 @@
     {
       "id": 137,
       "file": "blocks/0137.txt",
-      "word_paragraph_index_zero_based": 1981,
+      "word_paragraph_index_zero_based": 2642,
       "heading_context": [],
       "sha256": "c6011b0dac2a83ec6c181847119c36519e17f2dab65b10501a9b87508ca7429e",
       "bytes": 276
@@ -1113,7 +1113,7 @@
     {
       "id": 138,
       "file": "blocks/0138.txt",
-      "word_paragraph_index_zero_based": 2037,
+      "word_paragraph_index_zero_based": 2753,
       "heading_context": [],
       "sha256": "577510f8950aca219f206a578944601b928b5eb05a8a2b0338f963907d8d75a6",
       "bytes": 671
@@ -1121,7 +1121,7 @@
     {
       "id": 139,
       "file": "blocks/0139.txt",
-      "word_paragraph_index_zero_based": 2040,
+      "word_paragraph_index_zero_based": 2756,
       "heading_context": [],
       "sha256": "41c74e437b6787d9b3b1482cf533e020441b8eb9f26bb67fff2e4152b4f2e867",
       "bytes": 667
@@ -1129,7 +1129,7 @@
     {
       "id": 140,
       "file": "blocks/0140.txt",
-      "word_paragraph_index_zero_based": 2043,
+      "word_paragraph_index_zero_based": 2759,
       "heading_context": [],
       "sha256": "42378f78958280f4e3a8461eecd011379ce9e954790e2bc5dd93267a8014891b",
       "bytes": 676
@@ -1137,7 +1137,7 @@
     {
       "id": 141,
       "file": "blocks/0141.txt",
-      "word_paragraph_index_zero_based": 2075,
+      "word_paragraph_index_zero_based": 2791,
       "heading_context": [],
       "sha256": "b354eaac21d4d80d200eab1617bcee3bd3f25b732fa21471ee16cf14896fae94",
       "bytes": 729
@@ -1145,7 +1145,7 @@
     {
       "id": 142,
       "file": "blocks/0142.txt",
-      "word_paragraph_index_zero_based": 2079,
+      "word_paragraph_index_zero_based": 2795,
       "heading_context": [],
       "sha256": "bffdab2ecfbabfad70a7df4670a719c30608a6e4b0b242a189665bbab66fe7df",
       "bytes": 564
@@ -1153,7 +1153,7 @@
     {
       "id": 143,
       "file": "blocks/0143.txt",
-      "word_paragraph_index_zero_based": 2083,
+      "word_paragraph_index_zero_based": 2849,
       "heading_context": [],
       "sha256": "dfe5d1bb45787d0a253f886d2f323ae276afc5c5145def88b0476e71b79fd991",
       "bytes": 793
@@ -1161,7 +1161,7 @@
     {
       "id": 144,
       "file": "blocks/0144.txt",
-      "word_paragraph_index_zero_based": 2168,
+      "word_paragraph_index_zero_based": 2934,
       "heading_context": [],
       "sha256": "6ede1e1481c32d04d4d1b9e32bcf520d671b064dab68e6f1f5ce1132796f2b92",
       "bytes": 507
@@ -1169,7 +1169,7 @@
     {
       "id": 145,
       "file": "blocks/0145.txt",
-      "word_paragraph_index_zero_based": 2169,
+      "word_paragraph_index_zero_based": 2935,
       "heading_context": [],
       "sha256": "bbd813954dbbcaa6968046bd2cd720af47488106a0a92f7c6325f86b5e4f934c",
       "bytes": 633
@@ -1177,7 +1177,7 @@
     {
       "id": 146,
       "file": "blocks/0146.txt",
-      "word_paragraph_index_zero_based": 2170,
+      "word_paragraph_index_zero_based": 2936,
       "heading_context": [],
       "sha256": "92eac2c154be2efc0bcfd12712fa6ee31eff4439b36b43ade0d8a88368d2cdf3",
       "bytes": 639
@@ -1185,7 +1185,7 @@
     {
       "id": 147,
       "file": "blocks/0147.txt",
-      "word_paragraph_index_zero_based": 2171,
+      "word_paragraph_index_zero_based": 2937,
       "heading_context": [],
       "sha256": "827ebbc20f0fbeaf3381260b8b57469759e554b5bf6438cdbe77b9c354fba856",
       "bytes": 652
@@ -1193,7 +1193,7 @@
     {
       "id": 148,
       "file": "blocks/0148.txt",
-      "word_paragraph_index_zero_based": 2204,
+      "word_paragraph_index_zero_based": 2970,
       "heading_context": [],
       "sha256": "bac1c2d48f39314c3748c08e18476530e8fa398d9624f7fce58f59d782dcf323",
       "bytes": 830
@@ -1201,7 +1201,7 @@
     {
       "id": 149,
       "file": "blocks/0149.txt",
-      "word_paragraph_index_zero_based": 2207,
+      "word_paragraph_index_zero_based": 2973,
       "heading_context": [],
       "sha256": "5988a4b6c715ec5e50cb06a45967f890b83a2b4d5576413f8b10dfdb27f0d3e0",
       "bytes": 412
@@ -1209,7 +1209,7 @@
     {
       "id": 150,
       "file": "blocks/0150.txt",
-      "word_paragraph_index_zero_based": 2210,
+      "word_paragraph_index_zero_based": 2976,
       "heading_context": [],
       "sha256": "6f3c4b6425337ce9bef697b88b9d7a2e8fc23b0a34f215198a53439970f61d77",
       "bytes": 722
@@ -1217,7 +1217,7 @@
     {
       "id": 151,
       "file": "blocks/0151.txt",
-      "word_paragraph_index_zero_based": 2213,
+      "word_paragraph_index_zero_based": 2979,
       "heading_context": [],
       "sha256": "95c49e2ea1d01c949af48ef8abeebbbc8c379ec1f8534b2c90e1acaf2c12e9c5",
       "bytes": 956
@@ -1225,7 +1225,7 @@
     {
       "id": 152,
       "file": "blocks/0152.txt",
-      "word_paragraph_index_zero_based": 2219,
+      "word_paragraph_index_zero_based": 2985,
       "heading_context": [],
       "sha256": "31595a7a45b8bf56f02085ee561feffc006e85611785b755dc0793c449a68a8a",
       "bytes": 335
@@ -1233,7 +1233,7 @@
     {
       "id": 153,
       "file": "blocks/0153.txt",
-      "word_paragraph_index_zero_based": 2226,
+      "word_paragraph_index_zero_based": 2992,
       "heading_context": [],
       "sha256": "23fe5878fc83b2ea1d45bf406cefb90cb1f8287c56ab495fdcdaaabfdbb9e6b2",
       "bytes": 551
@@ -1241,7 +1241,7 @@
     {
       "id": 154,
       "file": "blocks/0154.txt",
-      "word_paragraph_index_zero_based": 2229,
+      "word_paragraph_index_zero_based": 2995,
       "heading_context": [],
       "sha256": "6825cdd0332d32d4d7f5f0f980b5e0880bf9e0cf2c58a22b48f9e6f7ec6fd4c9",
       "bytes": 1138
@@ -1249,7 +1249,7 @@
     {
       "id": 155,
       "file": "blocks/0155.txt",
-      "word_paragraph_index_zero_based": 2235,
+      "word_paragraph_index_zero_based": 3001,
       "heading_context": [],
       "sha256": "8d0129230396812f569ed866b62d543d1dac190b63461c96a19248d5d1dde459",
       "bytes": 115
@@ -1257,7 +1257,7 @@
     {
       "id": 156,
       "file": "blocks/0156.txt",
-      "word_paragraph_index_zero_based": 2237,
+      "word_paragraph_index_zero_based": 3003,
       "heading_context": [],
       "sha256": "842c39e44e605fd66c9f1858cf2fe004f00158ea8f4b2d658ae585ad0fa00cf2",
       "bytes": 695
@@ -1265,7 +1265,7 @@
     {
       "id": 157,
       "file": "blocks/0157.txt",
-      "word_paragraph_index_zero_based": 2269,
+      "word_paragraph_index_zero_based": 3035,
       "heading_context": [],
       "sha256": "d8d38e58736be2dea7cddaef2730f109cbe8aacefa60c54a8272332f1f8b5237",
       "bytes": 428
@@ -1273,7 +1273,7 @@
     {
       "id": 158,
       "file": "blocks/0158.txt",
-      "word_paragraph_index_zero_based": 2271,
+      "word_paragraph_index_zero_based": 3037,
       "heading_context": [],
       "sha256": "bc04a113bee8dbfcc3613ec1d07520fc6876946a0ef1fc8c6f0f111ff7e41814",
       "bytes": 437
@@ -1281,7 +1281,7 @@
     {
       "id": 159,
       "file": "blocks/0159.txt",
-      "word_paragraph_index_zero_based": 2273,
+      "word_paragraph_index_zero_based": 3039,
       "heading_context": [],
       "sha256": "2bde87125c8b342bdf6354a77697f749cfa30c3d1bcfe553cf2a7ebb8f596350",
       "bytes": 586
@@ -1289,7 +1289,7 @@
     {
       "id": 160,
       "file": "blocks/0160.txt",
-      "word_paragraph_index_zero_based": 2275,
+      "word_paragraph_index_zero_based": 3041,
       "heading_context": [],
       "sha256": "6ebd1c709070022ed2652aad206340e6f0e741e3acf1272978cd9a385f82539d",
       "bytes": 342
@@ -1297,7 +1297,7 @@
     {
       "id": 161,
       "file": "blocks/0161.txt",
-      "word_paragraph_index_zero_based": 2278,
+      "word_paragraph_index_zero_based": 3044,
       "heading_context": [],
       "sha256": "d4ea7fe40f808f9fe9f42db5705595f5a3dfd6f74b095cf32d3a0b4793bcba67",
       "bytes": 545
@@ -1305,7 +1305,7 @@
     {
       "id": 162,
       "file": "blocks/0162.txt",
-      "word_paragraph_index_zero_based": 2312,
+      "word_paragraph_index_zero_based": 3078,
       "heading_context": [],
       "sha256": "e052507cf20d08e53432ad9bd0f561f45d75a201515204da52589daf32a01f4a",
       "bytes": 425
@@ -1313,7 +1313,7 @@
     {
       "id": 163,
       "file": "blocks/0163.txt",
-      "word_paragraph_index_zero_based": 2315,
+      "word_paragraph_index_zero_based": 3081,
       "heading_context": [],
       "sha256": "f6107405ba433af008a7296d0f2f4d2596977ed38163bdf2658aa702b42f46ae",
       "bytes": 815
@@ -1321,7 +1321,7 @@
     {
       "id": 164,
       "file": "blocks/0164.txt",
-      "word_paragraph_index_zero_based": 2318,
+      "word_paragraph_index_zero_based": 3084,
       "heading_context": [],
       "sha256": "7daa488fd522d4dd8588d550750cc5f4bdf4f64c92102c50fb6a6fc5b9b70b37",
       "bytes": 536
@@ -1329,7 +1329,7 @@
     {
       "id": 165,
       "file": "blocks/0165.txt",
-      "word_paragraph_index_zero_based": 2321,
+      "word_paragraph_index_zero_based": 3087,
       "heading_context": [],
       "sha256": "5acb5ab79b50bd025c9329e1821cb5c3112aa321456deac45ce9dcc3b40be2b0",
       "bytes": 544
@@ -1337,7 +1337,7 @@
     {
       "id": 166,
       "file": "blocks/0166.txt",
-      "word_paragraph_index_zero_based": 2324,
+      "word_paragraph_index_zero_based": 3090,
       "heading_context": [],
       "sha256": "c3306941ce9be72e0f3895e0b60041136a4e8148424aca1c87713e44080e4be3",
       "bytes": 292
@@ -1345,7 +1345,7 @@
     {
       "id": 167,
       "file": "blocks/0167.txt",
-      "word_paragraph_index_zero_based": 2401,
+      "word_paragraph_index_zero_based": 3167,
       "heading_context": [],
       "sha256": "e0d37ab81118d4124fdf5479276f6ee30683ddb8b55f05badc2b596deda59eb7",
       "bytes": 1149
@@ -1353,7 +1353,7 @@
     {
       "id": 168,
       "file": "blocks/0168.txt",
-      "word_paragraph_index_zero_based": 2406,
+      "word_paragraph_index_zero_based": 3172,
       "heading_context": [],
       "sha256": "e4eba14a455a731f851ffcf0ac8db1399bddfd417810e6eb6a74c40a6a02d5ce",
       "bytes": 876
@@ -1361,7 +1361,7 @@
     {
       "id": 169,
       "file": "blocks/0169.txt",
-      "word_paragraph_index_zero_based": 2409,
+      "word_paragraph_index_zero_based": 3175,
       "heading_context": [],
       "sha256": "d4d562f250fd14e9199b2e04686a894a04576e45439cdc2f61a264bb699c8fe8",
       "bytes": 435
@@ -1369,7 +1369,7 @@
     {
       "id": 170,
       "file": "blocks/0170.txt",
-      "word_paragraph_index_zero_based": 2411,
+      "word_paragraph_index_zero_based": 3177,
       "heading_context": [],
       "sha256": "9042c1336cdd5801c87edc9094d0e458e87e89c3a6fe8abd95e42e64e88597ce",
       "bytes": 113
@@ -1377,7 +1377,7 @@
     {
       "id": 171,
       "file": "blocks/0171.txt",
-      "word_paragraph_index_zero_based": 2413,
+      "word_paragraph_index_zero_based": 3179,
       "heading_context": [],
       "sha256": "f1859e6621015bc03f283e59970fe5c18fa80b2a102787ad3dfa02d21168003b",
       "bytes": 365
@@ -1385,7 +1385,7 @@
     {
       "id": 172,
       "file": "blocks/0172.txt",
-      "word_paragraph_index_zero_based": 2415,
+      "word_paragraph_index_zero_based": 3181,
       "heading_context": [],
       "sha256": "f2ca80cc9ffbf8710b27dc0f17753b2fd883c728c7503772c612b167a280b6a6",
       "bytes": 93
@@ -1393,15 +1393,15 @@
     {
       "id": 173,
       "file": "blocks/0173.txt",
-      "word_paragraph_index_zero_based": 2456,
+      "word_paragraph_index_zero_based": 3222,
       "heading_context": [],
-      "sha256": "ece237bf48f8503ca2e934dee7c0f772451a8ef28c329c211175287f2c8d6f41",
+      "sha256": "7c3e20b29f89af99def72b8275f3e7e862bbe87f3b38eb76cb0b91b3a07b3608",
       "bytes": 1004
     },
     {
       "id": 174,
       "file": "blocks/0174.txt",
-      "word_paragraph_index_zero_based": 2460,
+      "word_paragraph_index_zero_based": 3226,
       "heading_context": [],
       "sha256": "a7e6d45b3e5e86364dd39a6c56590eff562c25c666e5284361222dfdf8ed25f3",
       "bytes": 758
@@ -1409,15 +1409,15 @@
     {
       "id": 175,
       "file": "blocks/0175.txt",
-      "word_paragraph_index_zero_based": 2464,
+      "word_paragraph_index_zero_based": 3230,
       "heading_context": [],
-      "sha256": "1c795df973a22a31a85e109e4d34ecef12b517476ae25c223dc41e45a6245ac7",
-      "bytes": 1019
+      "sha256": "c067707b89c87143ffa735685f5ea5d2cc125a0c7bc11b06c2bb9497f30f7da8",
+      "bytes": 1017
     },
     {
       "id": 176,
       "file": "blocks/0176.txt",
-      "word_paragraph_index_zero_based": 2523,
+      "word_paragraph_index_zero_based": 3289,
       "heading_context": [],
       "sha256": "f3921978d5ab1d6b1220db0a9ebd87122017426f19b98a94bc58937df31392cd",
       "bytes": 941
@@ -1425,7 +1425,7 @@
     {
       "id": 177,
       "file": "blocks/0177.txt",
-      "word_paragraph_index_zero_based": 2557,
+      "word_paragraph_index_zero_based": 3323,
       "heading_context": [],
       "sha256": "fe333bf1d86029bfb39ec3121c2c27dbd8381b97396d2832bd9433bfa6faa087",
       "bytes": 749
@@ -1433,15 +1433,15 @@
     {
       "id": 178,
       "file": "blocks/0178.txt",
-      "word_paragraph_index_zero_based": 2560,
+      "word_paragraph_index_zero_based": 3326,
       "heading_context": [],
-      "sha256": "39b93c1bc7dd35a90b444222a7208b040183cef6af2f79b68defbc0d128b1fe8",
-      "bytes": 659
+      "sha256": "c90f53c2d9bec50eb2e378fe5ca52edaf880eadffa777e87e8f092b08a1bbf7d",
+      "bytes": 662
     },
     {
       "id": 179,
       "file": "blocks/0179.txt",
-      "word_paragraph_index_zero_based": 2563,
+      "word_paragraph_index_zero_based": 3329,
       "heading_context": [],
       "sha256": "67e95d9583761774837c5c4199f933b2121dd7de068de02ca264618f26321d91",
       "bytes": 331
@@ -1449,7 +1449,7 @@
     {
       "id": 180,
       "file": "blocks/0180.txt",
-      "word_paragraph_index_zero_based": 2566,
+      "word_paragraph_index_zero_based": 3332,
       "heading_context": [],
       "sha256": "37253e736b65d3d6b08ebb52a7b0e35c18b47132b63e92d01c58f2a16b2d1cf7",
       "bytes": 655
@@ -1457,7 +1457,7 @@
     {
       "id": 181,
       "file": "blocks/0181.txt",
-      "word_paragraph_index_zero_based": 2569,
+      "word_paragraph_index_zero_based": 3335,
       "heading_context": [],
       "sha256": "f8440743e9e400c5ea88756fda65c15fd9d6cef76d5d96a0619e0b7b6f087ff6",
       "bytes": 365
@@ -1465,7 +1465,7 @@
     {
       "id": 182,
       "file": "blocks/0182.txt",
-      "word_paragraph_index_zero_based": 2576,
+      "word_paragraph_index_zero_based": 3342,
       "heading_context": [],
       "sha256": "75e3b77cc3a7f65f2e09c9181419bbd8fe0aea1cf8f326f68405fee051b07d60",
       "bytes": 207
@@ -1473,7 +1473,7 @@
     {
       "id": 183,
       "file": "blocks/0183.txt",
-      "word_paragraph_index_zero_based": 2583,
+      "word_paragraph_index_zero_based": 3349,
       "heading_context": [],
       "sha256": "926d7499b4bf09c7db1592cc0694b6d11c2e7181022767851f9361c71034f04f",
       "bytes": 562
@@ -1481,7 +1481,7 @@
     {
       "id": 184,
       "file": "blocks/0184.txt",
-      "word_paragraph_index_zero_based": 2594,
+      "word_paragraph_index_zero_based": 3360,
       "heading_context": [],
       "sha256": "599f800cbe702e6bd66b9d79fa7b5d7732ae0f27de387354bcf2388c2c374ed1",
       "bytes": 185
@@ -1489,7 +1489,7 @@
     {
       "id": 185,
       "file": "blocks/0185.txt",
-      "word_paragraph_index_zero_based": 2604,
+      "word_paragraph_index_zero_based": 3370,
       "heading_context": [],
       "sha256": "4f6761e91ceb9fda9f989ea00a3d89b5181b6ba9c5e24f953b0b4e19b006f341",
       "bytes": 221
@@ -1497,7 +1497,7 @@
     {
       "id": 186,
       "file": "blocks/0186.txt",
-      "word_paragraph_index_zero_based": 2633,
+      "word_paragraph_index_zero_based": 3399,
       "heading_context": [],
       "sha256": "96d50b0ba70420be9180244f1f6cc60e8783d145d4adbc05d6926cb5049033e3",
       "bytes": 162
@@ -1505,7 +1505,7 @@
     {
       "id": 187,
       "file": "blocks/0187.txt",
-      "word_paragraph_index_zero_based": 2637,
+      "word_paragraph_index_zero_based": 3403,
       "heading_context": [],
       "sha256": "a34fba14596ad120926b9166719a76c368ee3a40b5b58cf97f3b6a40b56a83ad",
       "bytes": 448
@@ -1513,7 +1513,7 @@
     {
       "id": 188,
       "file": "blocks/0188.txt",
-      "word_paragraph_index_zero_based": 2639,
+      "word_paragraph_index_zero_based": 3405,
       "heading_context": [],
       "sha256": "8897a5113dd7d0b3bc9b68671dc5023a1cc08dde87d37d4ab0532751fee769d2",
       "bytes": 227
@@ -1521,7 +1521,7 @@
     {
       "id": 189,
       "file": "blocks/0189.txt",
-      "word_paragraph_index_zero_based": 2643,
+      "word_paragraph_index_zero_based": 3409,
       "heading_context": [],
       "sha256": "75b85d3a8d19f26b572165e5880afe72e937c38c40ff8dd3caeb69ff94286228",
       "bytes": 667
@@ -1529,7 +1529,7 @@
     {
       "id": 190,
       "file": "blocks/0190.txt",
-      "word_paragraph_index_zero_based": 2678,
+      "word_paragraph_index_zero_based": 3444,
       "heading_context": [],
       "sha256": "44fe8be64b46177a49b10d3f7133fa31d9527020b60b6f3b331e973d17ae8ec8",
       "bytes": 396
@@ -1537,7 +1537,7 @@
     {
       "id": 191,
       "file": "blocks/0191.txt",
-      "word_paragraph_index_zero_based": 2681,
+      "word_paragraph_index_zero_based": 3447,
       "heading_context": [],
       "sha256": "ba06121573c992918e572cdb9aeb9b1b90a157c1bc6b37fe0dbcc231a1770385",
       "bytes": 773
@@ -1545,7 +1545,7 @@
     {
       "id": 192,
       "file": "blocks/0192.txt",
-      "word_paragraph_index_zero_based": 2684,
+      "word_paragraph_index_zero_based": 3450,
       "heading_context": [],
       "sha256": "1b6468445a72f6b55a9ef2a62137cb0369ca943006d653f92060e63827ab1bd2",
       "bytes": 208
@@ -1553,7 +1553,7 @@
     {
       "id": 193,
       "file": "blocks/0193.txt",
-      "word_paragraph_index_zero_based": 2687,
+      "word_paragraph_index_zero_based": 3453,
       "heading_context": [],
       "sha256": "b4136de00dce12a76edcc1a18b21a92655bd7318ac35d0194d67e5a0c1729fae",
       "bytes": 747
@@ -1561,7 +1561,7 @@
     {
       "id": 194,
       "file": "blocks/0194.txt",
-      "word_paragraph_index_zero_based": 2693,
+      "word_paragraph_index_zero_based": 3459,
       "heading_context": [],
       "sha256": "b04acd93098e3af0776b5df26e789029c330676fe6ad13dc8ad4b550695e601a",
       "bytes": 285
@@ -1569,7 +1569,7 @@
     {
       "id": 195,
       "file": "blocks/0195.txt",
-      "word_paragraph_index_zero_based": 2698,
+      "word_paragraph_index_zero_based": 3464,
       "heading_context": [],
       "sha256": "82dfead87105ee45eb6870c259d694b2370d25cc194d44769cab67e79d19d966",
       "bytes": 348
@@ -1577,7 +1577,7 @@
     {
       "id": 196,
       "file": "blocks/0196.txt",
-      "word_paragraph_index_zero_based": 2700,
+      "word_paragraph_index_zero_based": 3466,
       "heading_context": [],
       "sha256": "fa39bd7121301532bc63fa096060fe58997f2437b9dca8bcf410f9dd8d2cf9c6",
       "bytes": 358
@@ -1585,7 +1585,7 @@
     {
       "id": 197,
       "file": "blocks/0197.txt",
-      "word_paragraph_index_zero_based": 2706,
+      "word_paragraph_index_zero_based": 3472,
       "heading_context": [],
       "sha256": "45a909d3089023ad0a4dc665802d79522df02c5cd12464a65f34beaca59f8ff2",
       "bytes": 243
@@ -1593,7 +1593,7 @@
     {
       "id": 198,
       "file": "blocks/0198.txt",
-      "word_paragraph_index_zero_based": 2709,
+      "word_paragraph_index_zero_based": 3475,
       "heading_context": [],
       "sha256": "113ae982dcbb4dead3c283914ff360f3cd9804c3a730a0ec73460b4be359912d",
       "bytes": 260
@@ -1601,7 +1601,7 @@
     {
       "id": 199,
       "file": "blocks/0199.txt",
-      "word_paragraph_index_zero_based": 2716,
+      "word_paragraph_index_zero_based": 3482,
       "heading_context": [],
       "sha256": "32e4f2a1db44b7efbd8a2ae1735e1cbdf3bae4153dfe960596b422fa24f20c94",
       "bytes": 382
@@ -1609,7 +1609,7 @@
     {
       "id": 200,
       "file": "blocks/0200.txt",
-      "word_paragraph_index_zero_based": 2721,
+      "word_paragraph_index_zero_based": 3487,
       "heading_context": [],
       "sha256": "aa0ab1ddd43905634191dda9e5ce7e2cdd31b61321a52572404554711f218d2a",
       "bytes": 353
@@ -1617,7 +1617,7 @@
     {
       "id": 201,
       "file": "blocks/0201.txt",
-      "word_paragraph_index_zero_based": 2752,
+      "word_paragraph_index_zero_based": 3518,
       "heading_context": [],
       "sha256": "c273473303660b7f20077620d1482b743bab7403bf02bdec82935e347706db97",
       "bytes": 1325
@@ -1625,7 +1625,7 @@
     {
       "id": 202,
       "file": "blocks/0202.txt",
-      "word_paragraph_index_zero_based": 2755,
+      "word_paragraph_index_zero_based": 3521,
       "heading_context": [],
       "sha256": "7711df5fe4f76983d5b41db4a4068b8b60826c5d459cf360924455d18baf387a",
       "bytes": 1697
@@ -1633,7 +1633,7 @@
     {
       "id": 203,
       "file": "blocks/0203.txt",
-      "word_paragraph_index_zero_based": 2792,
+      "word_paragraph_index_zero_based": 3558,
       "heading_context": [],
       "sha256": "71ec21cd86f7f56d14d017e68ef89c3454cc30a309acdf7241eb9588fdf25208",
       "bytes": 478
@@ -1641,15 +1641,15 @@
     {
       "id": 204,
       "file": "blocks/0204.txt",
-      "word_paragraph_index_zero_based": 2795,
+      "word_paragraph_index_zero_based": 3561,
       "heading_context": [],
-      "sha256": "50cb3de5625f1148f97a3677cd61352b2f73b3a357dc8bdbbdd8cdacb63d3fb8",
+      "sha256": "b190f7e0d51250ec6049dc691b1792751e4e5b58173e04fcf5e6e316821ea4c2",
       "bytes": 415
     },
     {
       "id": 205,
       "file": "blocks/0205.txt",
-      "word_paragraph_index_zero_based": 2798,
+      "word_paragraph_index_zero_based": 3564,
       "heading_context": [],
       "sha256": "a4a5beef252257189c364c3c73896fcb5f6f3e71ed7b03f4cc3320388f7eb5c1",
       "bytes": 407
@@ -1657,7 +1657,7 @@
     {
       "id": 206,
       "file": "blocks/0206.txt",
-      "word_paragraph_index_zero_based": 2801,
+      "word_paragraph_index_zero_based": 3567,
       "heading_context": [],
       "sha256": "3a2dc4ac1fe6172df23c0825fcc8433c5a5930351549fd2b9d57a201e6dbd7a0",
       "bytes": 640
@@ -1665,7 +1665,7 @@
     {
       "id": 207,
       "file": "blocks/0207.txt",
-      "word_paragraph_index_zero_based": 2873,
+      "word_paragraph_index_zero_based": 3639,
       "heading_context": [],
       "sha256": "b20ca1193a2c783c61d002626783208b9afd1cc05028a5303b7e0c53850c788a",
       "bytes": 387
@@ -1673,7 +1673,7 @@
     {
       "id": 208,
       "file": "blocks/0208.txt",
-      "word_paragraph_index_zero_based": 2875,
+      "word_paragraph_index_zero_based": 3641,
       "heading_context": [],
       "sha256": "67b563a3cb7971d5b932b613459a3bbab75573c618e4ef31cc2bc1483c6ed004",
       "bytes": 428
@@ -1681,7 +1681,7 @@
     {
       "id": 209,
       "file": "blocks/0209.txt",
-      "word_paragraph_index_zero_based": 2877,
+      "word_paragraph_index_zero_based": 3643,
       "heading_context": [],
       "sha256": "19d05c4f9b41a0f1cdd15883ffa541a0f4112556f1610a88bc68c13e72d58222",
       "bytes": 329
@@ -1689,31 +1689,31 @@
     {
       "id": 210,
       "file": "blocks/0210.txt",
-      "word_paragraph_index_zero_based": 2879,
+      "word_paragraph_index_zero_based": 3645,
       "heading_context": [],
-      "sha256": "3f9c9c658d98ebf9da9dbf75e9a595b9b7f5b3abd45d4ece6bdacbb387c17766",
+      "sha256": "4c7f9ee4163c432e938607c111fca3cf6069fc3edf292534a40cba1c4038ed0a",
       "bytes": 309
     },
     {
       "id": 211,
       "file": "blocks/0211.txt",
-      "word_paragraph_index_zero_based": 2881,
+      "word_paragraph_index_zero_based": 3647,
       "heading_context": [],
-      "sha256": "ebfd42cea8ea08380c9b307812fe644825808143820aede6898505fcbcaa67bc",
+      "sha256": "272f008a8bc1151d623286fac8f630522cb32bcc881975c43d04793aba68fc2a",
       "bytes": 613
     },
     {
       "id": 212,
       "file": "blocks/0212.txt",
-      "word_paragraph_index_zero_based": 2920,
+      "word_paragraph_index_zero_based": 3686,
       "heading_context": [],
-      "sha256": "70ce02c63807adb78a696b989a1242ae202c95450da28014797551e4f07c954f",
+      "sha256": "193bfd44564907755097a4467d254338a8363941ebff606dce3a980dd235a0c9",
       "bytes": 1084
     },
     {
       "id": 213,
       "file": "blocks/0213.txt",
-      "word_paragraph_index_zero_based": 2924,
+      "word_paragraph_index_zero_based": 3690,
       "heading_context": [],
       "sha256": "2c5b84fd4513cebaa3ba20999753a0d6079fe53b25ce5dfe478e67d9f006a15d",
       "bytes": 887
@@ -1721,7 +1721,7 @@
     {
       "id": 214,
       "file": "blocks/0214.txt",
-      "word_paragraph_index_zero_based": 2928,
+      "word_paragraph_index_zero_based": 3694,
       "heading_context": [],
       "sha256": "a6d9c19ff8d9064a5d4ac29aa1d3f922efb2067afc049c99c175362819b0e9b7",
       "bytes": 354
@@ -1729,7 +1729,7 @@
     {
       "id": 215,
       "file": "blocks/0215.txt",
-      "word_paragraph_index_zero_based": 2934,
+      "word_paragraph_index_zero_based": 3700,
       "heading_context": [],
       "sha256": "38f9361a2eaa7ffe9a82a0f6d31fcf1f1e51bf96119f48eeefb38b84eefe3ac7",
       "bytes": 169
@@ -1737,7 +1737,7 @@
     {
       "id": 216,
       "file": "blocks/0216.txt",
-      "word_paragraph_index_zero_based": 2940,
+      "word_paragraph_index_zero_based": 3706,
       "heading_context": [],
       "sha256": "fb8e0065ca25c59386d4abe7152348a0068894fc690bbfa22922a5c9c16cc810",
       "bytes": 443
@@ -1745,7 +1745,7 @@
     {
       "id": 217,
       "file": "blocks/0217.txt",
-      "word_paragraph_index_zero_based": 2942,
+      "word_paragraph_index_zero_based": 3708,
       "heading_context": [],
       "sha256": "d97f20c85dce90dc270b7ba4a25fdaf148b8c88fff460474b33ad1c8f88b5dc4",
       "bytes": 382
@@ -1753,7 +1753,7 @@
     {
       "id": 218,
       "file": "blocks/0218.txt",
-      "word_paragraph_index_zero_based": 2946,
+      "word_paragraph_index_zero_based": 3712,
       "heading_context": [],
       "sha256": "556013f5a89cd742b7d099d11eab3e69be83490d55faedceb5524ed482cbf020",
       "bytes": 326
@@ -1761,7 +1761,7 @@
     {
       "id": 219,
       "file": "blocks/0219.txt",
-      "word_paragraph_index_zero_based": 2953,
+      "word_paragraph_index_zero_based": 3719,
       "heading_context": [],
       "sha256": "710b771b69eab23c9b0a57f8f56aea4ecd05e317342a66839184d90ddc835882",
       "bytes": 320
@@ -1769,7 +1769,7 @@
     {
       "id": 220,
       "file": "blocks/0220.txt",
-      "word_paragraph_index_zero_based": 2956,
+      "word_paragraph_index_zero_based": 3722,
       "heading_context": [],
       "sha256": "230f1efe7f2fb5fca19712c58453cd5955c8a2b43c7ca0dece14d22ba500e466",
       "bytes": 482
@@ -1777,7 +1777,7 @@
     {
       "id": 221,
       "file": "blocks/0221.txt",
-      "word_paragraph_index_zero_based": 2958,
+      "word_paragraph_index_zero_based": 3724,
       "heading_context": [],
       "sha256": "f4240aef9aa862d8906f296c67ada7271345e571d1ce846f0c44939bc47adaf4",
       "bytes": 389
@@ -1785,7 +1785,7 @@
     {
       "id": 222,
       "file": "blocks/0222.txt",
-      "word_paragraph_index_zero_based": 2963,
+      "word_paragraph_index_zero_based": 3729,
       "heading_context": [],
       "sha256": "9a144d1af8ae20c7bdf21f632ae54130c544871db8647102aefe5ce737f41cff",
       "bytes": 243
@@ -1793,7 +1793,7 @@
     {
       "id": 223,
       "file": "blocks/0223.txt",
-      "word_paragraph_index_zero_based": 2966,
+      "word_paragraph_index_zero_based": 3732,
       "heading_context": [],
       "sha256": "7182d3a376ddbbdad51bc539f431dd091f0de8f6702290a5a2133271ab95e4d6",
       "bytes": 390
@@ -1801,7 +1801,7 @@
     {
       "id": 224,
       "file": "blocks/0224.txt",
-      "word_paragraph_index_zero_based": 2972,
+      "word_paragraph_index_zero_based": 3738,
       "heading_context": [],
       "sha256": "81e66797fd91d2db02b9488505f3bd231ad2a05284b052280b1b393bb550fac3",
       "bytes": 225
@@ -1809,7 +1809,7 @@
     {
       "id": 225,
       "file": "blocks/0225.txt",
-      "word_paragraph_index_zero_based": 2976,
+      "word_paragraph_index_zero_based": 3742,
       "heading_context": [],
       "sha256": "2117b1e2bf4253f5e4d7ae820b1def355c079dcda6a79f2730d81cf85242d009",
       "bytes": 758
@@ -1817,7 +1817,7 @@
     {
       "id": 226,
       "file": "blocks/0226.txt",
-      "word_paragraph_index_zero_based": 2980,
+      "word_paragraph_index_zero_based": 3746,
       "heading_context": [],
       "sha256": "20c07194442734aaf5ebd14a368478226b18ac50347d1dbf6a2b5047603307ba",
       "bytes": 141
@@ -1825,7 +1825,7 @@
     {
       "id": 227,
       "file": "blocks/0227.txt",
-      "word_paragraph_index_zero_based": 2987,
+      "word_paragraph_index_zero_based": 3753,
       "heading_context": [],
       "sha256": "3d042346087e00c9f99fb05f453caba8905a266d15d2a7338e34bfc651864479",
       "bytes": 237
@@ -1833,7 +1833,7 @@
     {
       "id": 228,
       "file": "blocks/0228.txt",
-      "word_paragraph_index_zero_based": 2989,
+      "word_paragraph_index_zero_based": 3755,
       "heading_context": [],
       "sha256": "4f6528b6f0959f15cdffbd004b3e562b59fbfd380e2ce3f7ba2f4b01ce8554e9",
       "bytes": 1000
@@ -1841,7 +1841,7 @@
     {
       "id": 229,
       "file": "blocks/0229.txt",
-      "word_paragraph_index_zero_based": 3003,
+      "word_paragraph_index_zero_based": 3769,
       "heading_context": [],
       "sha256": "7ca1016b6944079e94547f26892151b82e73c6412fa94ea243964011d058d512",
       "bytes": 501
@@ -1849,7 +1849,7 @@
     {
       "id": 230,
       "file": "blocks/0230.txt",
-      "word_paragraph_index_zero_based": 3006,
+      "word_paragraph_index_zero_based": 3772,
       "heading_context": [],
       "sha256": "c102a5927169e963e0294343ee0498bd244bac3c020121d210215e41665668d1",
       "bytes": 299
@@ -1857,7 +1857,7 @@
     {
       "id": 231,
       "file": "blocks/0231.txt",
-      "word_paragraph_index_zero_based": 3009,
+      "word_paragraph_index_zero_based": 3775,
       "heading_context": [],
       "sha256": "f49d6bda90a2b754cd10d750f5e255012d51822d2afd81efc2bcdc8d3d4ad5ae",
       "bytes": 309
@@ -1865,23 +1865,23 @@
     {
       "id": 232,
       "file": "blocks/0232.txt",
-      "word_paragraph_index_zero_based": 3041,
+      "word_paragraph_index_zero_based": 3807,
       "heading_context": [],
-      "sha256": "21c44520914c797cd09fb82e428739f16f54bf879f883a47d53957cbb3ed2bcd",
-      "bytes": 998
+      "sha256": "b964294f78377e53bcab0e4975bc82d23f847da7cd809bbab7cc4055c56ef52c",
+      "bytes": 997
     },
     {
       "id": 233,
       "file": "blocks/0233.txt",
-      "word_paragraph_index_zero_based": 3044,
+      "word_paragraph_index_zero_based": 3810,
       "heading_context": [],
-      "sha256": "8336df52fb20bdba4cadfb3d890e2a0d93d35daa05a319a1d2cc40492a9959eb",
-      "bytes": 825
+      "sha256": "57672f9f5a4dca060626b9027ca24e48f389484a70a34507e5813a3d0de61514",
+      "bytes": 824
     },
     {
       "id": 234,
       "file": "blocks/0234.txt",
-      "word_paragraph_index_zero_based": 3047,
+      "word_paragraph_index_zero_based": 3813,
       "heading_context": [],
       "sha256": "cbf151e358ed74b732fad36f5ca11b2dcb00be0c6ae6c5e8b3b2b41aa44751d7",
       "bytes": 1157
@@ -1889,7 +1889,7 @@
     {
       "id": 235,
       "file": "blocks/0235.txt",
-      "word_paragraph_index_zero_based": 3054,
+      "word_paragraph_index_zero_based": 3820,
       "heading_context": [],
       "sha256": "7e6abd16212e236740fff5bf105bbf945386179c634db7be230af3291f53f20e",
       "bytes": 188
@@ -1897,7 +1897,7 @@
     {
       "id": 236,
       "file": "blocks/0236.txt",
-      "word_paragraph_index_zero_based": 3058,
+      "word_paragraph_index_zero_based": 3824,
       "heading_context": [],
       "sha256": "bd9dca7f55b8cdacb0e49012756d82c2c5c84b2db044a42f61799d479b7c2990",
       "bytes": 91
@@ -1905,7 +1905,7 @@
     {
       "id": 237,
       "file": "blocks/0237.txt",
-      "word_paragraph_index_zero_based": 3061,
+      "word_paragraph_index_zero_based": 3827,
       "heading_context": [],
       "sha256": "7fc0d5be22a11131e598fb24a027fff421c1b18ab321a7cb9a322712ed19cc9d",
       "bytes": 279
@@ -1913,15 +1913,15 @@
     {
       "id": 238,
       "file": "blocks/0238.txt",
-      "word_paragraph_index_zero_based": 3066,
+      "word_paragraph_index_zero_based": 3832,
       "heading_context": [],
-      "sha256": "2320d68fe9c2968208e7735afdf118f7744fb1f48531a3de80db3508dec0e900",
-      "bytes": 90
+      "sha256": "f09053d68c46158a12a6b9475fe36ba0e23ec203ac1e7fb3dae5534b39a75346",
+      "bytes": 93
     },
     {
       "id": 239,
       "file": "blocks/0239.txt",
-      "word_paragraph_index_zero_based": 3119,
+      "word_paragraph_index_zero_based": 3885,
       "heading_context": [],
       "sha256": "b1c79780bafaea47dd403a23869dc739c19fe06d0ce539a341ef84e565f7df24",
       "bytes": 769
@@ -1929,7 +1929,7 @@
     {
       "id": 240,
       "file": "blocks/0240.txt",
-      "word_paragraph_index_zero_based": 3122,
+      "word_paragraph_index_zero_based": 3888,
       "heading_context": [],
       "sha256": "d779e062bafa55a6348fda2762c31f2fe67bd23526704be8fe1f0526b4b4bfb2",
       "bytes": 603
@@ -1937,7 +1937,7 @@
     {
       "id": 241,
       "file": "blocks/0241.txt",
-      "word_paragraph_index_zero_based": 3152,
+      "word_paragraph_index_zero_based": 3918,
       "heading_context": [],
       "sha256": "f46537623ddff8bafb9a0a3a47ae66976e5dd535584a9042c980a99f0e685950",
       "bytes": 718
@@ -1945,7 +1945,7 @@
     {
       "id": 242,
       "file": "blocks/0242.txt",
-      "word_paragraph_index_zero_based": 3154,
+      "word_paragraph_index_zero_based": 3920,
       "heading_context": [],
       "sha256": "f7411c2ddd74ccdec90e1e5e28e76962137f9d75c6ab918da9f6a23967bbdb51",
       "bytes": 402
@@ -1953,7 +1953,7 @@
     {
       "id": 243,
       "file": "blocks/0243.txt",
-      "word_paragraph_index_zero_based": 3156,
+      "word_paragraph_index_zero_based": 3922,
       "heading_context": [],
       "sha256": "e041f107acf3eff09f6c8fb43f2f6c6b8cc3372e8e635cef82da872c8cbf6ade",
       "bytes": 607
@@ -1961,7 +1961,7 @@
     {
       "id": 244,
       "file": "blocks/0244.txt",
-      "word_paragraph_index_zero_based": 3161,
+      "word_paragraph_index_zero_based": 3927,
       "heading_context": [],
       "sha256": "04f9915be611b1847ad819b8f0fdc2a28de7287166c62acf2be2579ff5734fb5",
       "bytes": 934
@@ -1969,7 +1969,7 @@
     {
       "id": 245,
       "file": "blocks/0245.txt",
-      "word_paragraph_index_zero_based": 3210,
+      "word_paragraph_index_zero_based": 3976,
       "heading_context": [],
       "sha256": "ac7378011fc7a35e534ba0fc432965769af88e16e3f8b48dfc9b55f2eaa6fc5a",
       "bytes": 966
@@ -1977,7 +1977,7 @@
     {
       "id": 246,
       "file": "blocks/0246.txt",
-      "word_paragraph_index_zero_based": 3212,
+      "word_paragraph_index_zero_based": 3978,
       "heading_context": [],
       "sha256": "c51651fcb44d48a0dd1058182c8fd9cb26bee2e4cdaac7bb3c4db48f04bd7c8d",
       "bytes": 2364
@@ -1985,7 +1985,7 @@
     {
       "id": 247,
       "file": "blocks/0247.txt",
-      "word_paragraph_index_zero_based": 3244,
+      "word_paragraph_index_zero_based": 4010,
       "heading_context": [],
       "sha256": "85618a5711053c0b61720f23418b26e876182135e77ba45d905f7da04ae2c047",
       "bytes": 824
@@ -1993,7 +1993,7 @@
     {
       "id": 248,
       "file": "blocks/0248.txt",
-      "word_paragraph_index_zero_based": 3246,
+      "word_paragraph_index_zero_based": 4012,
       "heading_context": [],
       "sha256": "4842bb8d4449c202f6541df896c5a7f9189fa5e02a076fef6cb888a4f483854f",
       "bytes": 711
@@ -2001,7 +2001,7 @@
     {
       "id": 249,
       "file": "blocks/0249.txt",
-      "word_paragraph_index_zero_based": 3248,
+      "word_paragraph_index_zero_based": 4014,
       "heading_context": [],
       "sha256": "07d2e31a316480e32fea3adb71d00ca371b6a847cf6256f4bb4fbeec3b0502e6",
       "bytes": 472
@@ -2009,7 +2009,7 @@
     {
       "id": 250,
       "file": "blocks/0250.txt",
-      "word_paragraph_index_zero_based": 3250,
+      "word_paragraph_index_zero_based": 4016,
       "heading_context": [],
       "sha256": "cd81d60e86929a82558e280d9ab15df9cd51a1e9c8c9e16b213f9aa60da618aa",
       "bytes": 690
@@ -2017,7 +2017,7 @@
     {
       "id": 251,
       "file": "blocks/0251.txt",
-      "word_paragraph_index_zero_based": 3252,
+      "word_paragraph_index_zero_based": 4018,
       "heading_context": [],
       "sha256": "fd99226bef52a324a26333c262d6213674a51134ce12c439fbed512b5e19b904",
       "bytes": 391
@@ -2025,7 +2025,7 @@
     {
       "id": 252,
       "file": "blocks/0252.txt",
-      "word_paragraph_index_zero_based": 3287,
+      "word_paragraph_index_zero_based": 4053,
       "heading_context": [],
       "sha256": "67584c87b2b9fe244a9f29658e9229fd242108de07d123ccc849bf686fa1760d",
       "bytes": 317
@@ -2033,7 +2033,7 @@
     {
       "id": 253,
       "file": "blocks/0253.txt",
-      "word_paragraph_index_zero_based": 3289,
+      "word_paragraph_index_zero_based": 4055,
       "heading_context": [],
       "sha256": "a2510e1c6cc5d58053bdb12817033cb10024ff52573bb27ad13a27c5926c3ed7",
       "bytes": 1353
@@ -2041,7 +2041,7 @@
     {
       "id": 254,
       "file": "blocks/0254.txt",
-      "word_paragraph_index_zero_based": 3292,
+      "word_paragraph_index_zero_based": 4058,
       "heading_context": [],
       "sha256": "462071763c058a0715c4342cf77eac3dfdc98db8810b8401e65214a2920cfb4c",
       "bytes": 408
@@ -2049,7 +2049,7 @@
     {
       "id": 255,
       "file": "blocks/0255.txt",
-      "word_paragraph_index_zero_based": 3578,
+      "word_paragraph_index_zero_based": 4419,
       "heading_context": [],
       "sha256": "d1477248d88ed8ba4f85595193ac1210cdd60598f7585045b5f5633dd47c0de9",
       "bytes": 123
@@ -2057,7 +2057,7 @@
     {
       "id": 256,
       "file": "blocks/0256.txt",
-      "word_paragraph_index_zero_based": 4122,
+      "word_paragraph_index_zero_based": 5136,
       "heading_context": [],
       "sha256": "665b40a2eae18c22ddbbedb749af6fbb0342e6d23fd93b2ed387883bc0f1fd0d",
       "bytes": 5038
@@ -2065,7 +2065,7 @@
     {
       "id": 257,
       "file": "blocks/0257.txt",
-      "word_paragraph_index_zero_based": 4127,
+      "word_paragraph_index_zero_based": 5141,
       "heading_context": [],
       "sha256": "a8f1991719df3bf92d429ebc3963bafd7fa8996d771d58c8ddcb9b7e120b2f41",
       "bytes": 4720
@@ -2073,7 +2073,7 @@
     {
       "id": 258,
       "file": "blocks/0258.txt",
-      "word_paragraph_index_zero_based": 4359,
+      "word_paragraph_index_zero_based": 5581,
       "heading_context": [],
       "sha256": "ed2b0757b1c009e5be744305492d0f906f6c07b48894a77313646b13cbb7a4f4",
       "bytes": 494
@@ -2081,7 +2081,7 @@
     {
       "id": 259,
       "file": "blocks/0259.txt",
-      "word_paragraph_index_zero_based": 4366,
+      "word_paragraph_index_zero_based": 5588,
       "heading_context": [],
       "sha256": "40e5ece211c2ace7cedd928fc8bd49146e38c0635e5304ea8733d7ce64884e5c",
       "bytes": 1570
@@ -2089,7 +2089,7 @@
     {
       "id": 260,
       "file": "blocks/0260.txt",
-      "word_paragraph_index_zero_based": 4369,
+      "word_paragraph_index_zero_based": 5591,
       "heading_context": [],
       "sha256": "277b092a72e9735d531239dc0e310f69b4913d6fdad3cd9d87ed1b8f684b8b9b",
       "bytes": 1296
@@ -2097,31 +2097,31 @@
     {
       "id": 261,
       "file": "blocks/0261.txt",
-      "word_paragraph_index_zero_based": 4399,
+      "word_paragraph_index_zero_based": 5621,
       "heading_context": [],
-      "sha256": "20e437520e33936689c5bb954db3a3ce8bfc63888ab14e82b206a955462e984a",
-      "bytes": 506
+      "sha256": "457be4a560fbe76a8d6271c215c2da3a62071c34be0d2464bc53efa17eb51ab9",
+      "bytes": 498
     },
     {
       "id": 262,
       "file": "blocks/0262.txt",
-      "word_paragraph_index_zero_based": 4402,
+      "word_paragraph_index_zero_based": 5624,
       "heading_context": [],
-      "sha256": "c956bfb8d35336160c5d8b14cb6aa86e070ce3b30f4cba060c3bec38d44174bd",
-      "bytes": 498
+      "sha256": "f719736c5f7d8b2626ae2c4a516d5e02c02a8b82712a9da1690a184652cde097",
+      "bytes": 494
     },
     {
       "id": 263,
       "file": "blocks/0263.txt",
-      "word_paragraph_index_zero_based": 4405,
+      "word_paragraph_index_zero_based": 5627,
       "heading_context": [],
-      "sha256": "4dbeeaeb6a0ec3d60e5c6fb051157102a4f319d6ad3ceb7fdefdc65224dafcc0",
-      "bytes": 450
+      "sha256": "38f20424c1dd9bbead95fa62930533420db804cbb7072637587f0931581a7f09",
+      "bytes": 446
     },
     {
       "id": 264,
       "file": "blocks/0264.txt",
-      "word_paragraph_index_zero_based": 4409,
+      "word_paragraph_index_zero_based": 5631,
       "heading_context": [],
       "sha256": "36fc5b061cebf72dd44e145d932aba6299a95480d85d9043fe3854cea6272423",
       "bytes": 1046
@@ -2129,7 +2129,7 @@
     {
       "id": 265,
       "file": "blocks/0265.txt",
-      "word_paragraph_index_zero_based": 4413,
+      "word_paragraph_index_zero_based": 5635,
       "heading_context": [],
       "sha256": "ae5e15fe272cfb477ceeb819c4b74ddff8c8395ddb44bd7b1f41a1c99a9710c7",
       "bytes": 721
@@ -2137,7 +2137,7 @@
     {
       "id": 266,
       "file": "blocks/0266.txt",
-      "word_paragraph_index_zero_based": 4440,
+      "word_paragraph_index_zero_based": 5662,
       "heading_context": [],
       "sha256": "ee759a2e196458ff80b7eeaf1a98734c395c484ec9db638ebd107f5c05c153cd",
       "bytes": 840
@@ -2145,7 +2145,7 @@
     {
       "id": 267,
       "file": "blocks/0267.txt",
-      "word_paragraph_index_zero_based": 4457,
+      "word_paragraph_index_zero_based": 5679,
       "heading_context": [],
       "sha256": "c974f817add2f6196cbb588a63e5bb26ae165f9c292ce669337d963a6b1c035e",
       "bytes": 851
@@ -2153,7 +2153,7 @@
     {
       "id": 268,
       "file": "blocks/0268.txt",
-      "word_paragraph_index_zero_based": 4539,
+      "word_paragraph_index_zero_based": 5813,
       "heading_context": [],
       "sha256": "e324afa0e8e83a25836e9f32c0e10c92ccfffcfe6c816a1dd9fe08bb3fa67646",
       "bytes": 1645
@@ -2161,7 +2161,7 @@
     {
       "id": 269,
       "file": "blocks/0269.txt",
-      "word_paragraph_index_zero_based": 4549,
+      "word_paragraph_index_zero_based": 5823,
       "heading_context": [],
       "sha256": "0c74aa477fc947768bfe1a85dc138b6b8a5654d7295f2d6896015560b72cd47b",
       "bytes": 343
@@ -2169,7 +2169,7 @@
     {
       "id": 270,
       "file": "blocks/0270.txt",
-      "word_paragraph_index_zero_based": 4559,
+      "word_paragraph_index_zero_based": 5833,
       "heading_context": [],
       "sha256": "aac7047ea161d79fe6d9b8c4d8291a2ee33c974146569abd1cb8f4ec1d39a975",
       "bytes": 227
@@ -2177,7 +2177,7 @@
     {
       "id": 271,
       "file": "blocks/0271.txt",
-      "word_paragraph_index_zero_based": 4562,
+      "word_paragraph_index_zero_based": 5836,
       "heading_context": [],
       "sha256": "4a681539adb6005bd91d65fd029cddc0229bd0afeca9a7ee516e68d778d6fe69",
       "bytes": 246
@@ -2185,7 +2185,7 @@
     {
       "id": 272,
       "file": "blocks/0272.txt",
-      "word_paragraph_index_zero_based": 4565,
+      "word_paragraph_index_zero_based": 5839,
       "heading_context": [],
       "sha256": "275a0660076c8d050dbde57e07b06b87d2ca66675f1cd00f0232e3a11f3a6cdf",
       "bytes": 276
@@ -2193,15 +2193,15 @@
     {
       "id": 273,
       "file": "blocks/0273.txt",
-      "word_paragraph_index_zero_based": 4568,
+      "word_paragraph_index_zero_based": 5842,
       "heading_context": [],
-      "sha256": "8dc5527ef4545650891789387c1b6de1a761b39041f99a8fc920d7aeb09df897",
+      "sha256": "7831f4297629e316c33e54bd243cfd594ac5959f5ebd35842b1022e4d961c07c",
       "bytes": 289
     },
     {
       "id": 274,
       "file": "blocks/0274.txt",
-      "word_paragraph_index_zero_based": 4571,
+      "word_paragraph_index_zero_based": 5845,
       "heading_context": [],
       "sha256": "e9b28cdad79fad2cdb9898188c08733c7101ccad3b9bdd1d2df7c65cb5ecaf11",
       "bytes": 193
@@ -2209,10 +2209,12 @@
     {
       "id": 275,
       "file": "blocks/0275.txt",
-      "word_paragraph_index_zero_based": 4574,
+      "word_paragraph_index_zero_based": 5848,
       "heading_context": [],
       "sha256": "ced4f4d7d20a29a314c0d878f5ddb4e1659231a4567b51b4a5a24c2777fe9e9b",
       "bytes": 248
     }
-  ]
+  ],
+  "editorial_revision_date": "2026-10-06",
+  "case_application_names": "generic"
 }

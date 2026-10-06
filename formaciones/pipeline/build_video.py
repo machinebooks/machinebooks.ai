@@ -32,7 +32,7 @@ OUTPUT_FORMAT = "mp3_44100_128"
 
 # ─── Speaker notes Módulo 1 FinOps ───────────────────────────────────────────
 SPEAKER_NOTES = [
-    "Bienvenidos al módulo uno: La factura que nadie esperaba. En las próximas cuatro horas, vamos a entender por qué el coste de la inteligencia artificial en producción es el problema que nadie presupuestó, y qué podemos hacer al respecto. Mi nombre es C.P. Sylvar, llevo más de veinte años en ciberseguridad y arquitectura de IA.",
+    "Bienvenidos al módulo uno: La factura que nadie esperaba. En las próximas cuatro horas, vamos a entender por qué el coste de la inteligencia artificial en producción es el problema que nadie presupuestó, y qué podemos hacer al respecto. Mi nombre es Carlos Pérez González, llevo más de veinte años en ciberseguridad y arquitectura de IA.",
     "Imagina que recibes una factura de cloud el lunes por la mañana. Cuarenta y siete mil dólares. Nadie lo presupuestó. El CFO quiere una explicación para el jueves. Y tú no sabes si el coste viene de los tokens del LLM, de las instancias de GPU, del almacenamiento vectorial, o de todo a la vez. Este es el problema que FinOps para IA viene a resolver.",
     "Este curso tiene un planteamiento único. No hablamos solo de gobernar el coste de la IA, ni solo de optimizar cloud con IA. Hablamos de los dos ejes a la vez, porque en la práctica se cruzan. Un agente inteligente que optimiza tu factura de AWS también genera tokens que cuestan dinero. Si no gobiernas ambos ejes, solo estás moviendo el coste de un lado a otro.",
     "Cada llamada a un LLM tiene un coste atómico compuesto de tokens de entrada y tokens de salida. El system prompt se repite en cada llamada y puede representar entre un veinte y un cuarenta por ciento de los tokens de entrada. Los cached tokens, cuando están disponibles, reducen el coste hasta un noventa por ciento en la parte de entrada.",
@@ -238,7 +238,7 @@ def build_video(slides_dir: Path, audio_dir: Path, output_path: Path):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Pipeline SylvarSec: PPTX > PNG > MP3 > MP4"
+        description="Pipeline MachineBooks: PPTX > PNG > MP3 > MP4"
     )
     parser.add_argument(
         "pptx",
@@ -288,7 +288,7 @@ def main():
     video_path = out_dir / f"{pptx_path.stem}.mp4"
 
     print(f"\n{'='*60}")
-    print(f"  PIPELINE SYLVARSEC - PPTX > VIDEO")
+    print(f"  PIPELINE MachineBooks - PPTX > VIDEO")
     print(f"  Input:  {pptx_path}")
     print(f"  Output: {out_dir}")
     print(f"{'='*60}")

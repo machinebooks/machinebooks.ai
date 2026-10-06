@@ -1,4 +1,4 @@
-# ~/.sylvarsec/config.yaml
+# ~/.research-notebook/config.yaml
 llm:
   provider: lmstudio
   base_url: http://localhost:1234/v1
@@ -14,7 +14,7 @@ cloud_llm:
   block_on_workspace_tags: ["pre-disclosure", "private-program"]
 
 memory:
-  path: ~/.sylvarsec/memories
+  path: ~/.research-notebook/memories
   index: qdrant
   retention_days: 730
 
