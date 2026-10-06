@@ -1,6 +1,6 @@
 {
   "editorial_version": "1.1",
-  "source_word_sha256": "276cb65846c57b8954031f6c0ef45e8b8242fc092d65245fe03199dd7f6f06db",
+  "source_word_sha256": "24a6d479c03c187678838b7b5f00bb6ba49f7085b1a58cb712a3069222a34a8c",
   "source_file": "The-User-and-the-Machine.docx",
   "language": "en",
   "scope": "educational SourceCode blocks; private desktop and core excluded",
@@ -8,12 +8,12 @@
   "block_count": 630,
   "execution_status": "not established by extraction",
   "manuscript_final_four_sha256": {
-    "El-Usuario-y-la-Maquina_Fv.docx": "f54adebf43979407fa1fdd7477e4345962fab281d5a3fbdf8ec8485724f612d0",
-    "El-Usuario-y-la-Maquina_Fv.epub": "09ccd2099741e9f2e4af53cd0d9bb8b6125450a550c86e40201e0353416d7a43",
-    "The-User-and-the-Machine.docx": "276cb65846c57b8954031f6c0ef45e8b8242fc092d65245fe03199dd7f6f06db",
-    "The-User-and-the-Machine.epub": "f11f64b84307cbbc71b5cced69f22a7666e2259418f5853686d0a2925e86fc23"
+    "El-Usuario-y-la-Maquina_Fv.docx": "62a0137d8a87d6bfb1a496148ae89ec25bef15b5087830bbeb406eb18261dd13",
+    "El-Usuario-y-la-Maquina_Fv.epub": "eb77022106f60f3a5b03fc5f6a5805af16a284968d18ad81cc5bb485dd386a6f",
+    "The-User-and-the-Machine.docx": "24a6d479c03c187678838b7b5f00bb6ba49f7085b1a58cb712a3069222a34a8c",
+    "The-User-and-the-Machine.epub": "a1184ee5cdf640b1fff0b69bdd1b21ec10b5bc1e7d52867a17596cee759e563d"
   },
-  "canonical_promotion_receipt_sha256": "814833a308a14facd1838a3a80efd7eb786ed432bb4434d024453cdb5ab27ebb",
+  "canonical_promotion_receipt_sha256": "382325c3e5697b69ccda7f14bdfbdefcbccb3924af3a58c692533ff3ecc70286",
   "blocks": [
     {
       "id": 1,
@@ -611,8 +611,8 @@
         "3. Do it yourself",
         "Practical case 1: Reorganize a year of invoices in 10 minutes"
       ],
-      "sha256": "95606782a3a2f05af21422901e1bbf731ffe669efd2c4a2935e130740bd842bb",
-      "bytes": 577
+      "sha256": "195fc79a6ea8b6325fa661745b81240960e74c208fb74b62c91f7f4d31091982",
+      "bytes": 582
     },
     {
       "id": 51,
@@ -779,8 +779,8 @@
         "3. Do it yourself",
         "Practical case 1: Extract data from 50 invoices into a consolidated Excel"
       ],
-      "sha256": "697ffb7331845c85eb3fe1cbbf57e50c7bd7ea1d3a21627ee6648ed3c2ed3a78",
-      "bytes": 214
+      "sha256": "8f1e1c37a18ef3df9b4d23b141e2b13391620661a87d435ceb7507b49f8983ae",
+      "bytes": 219
     },
     {
       "id": 65,
@@ -7573,5 +7573,8 @@
     }
   ],
   "editorial_revision_date": "2026-10-06",
-  "case_application_names": "generic"
+  "case_application_names": "generic",
+  "corporate_example_names": "generic sample suppliers",
+  "source_correction_receipt_sha256": "2f3c7230e13d639056703038d7c1daca97828241823c55dea0b1887f10c275ea",
+  "independent_corporate_revision_receipt_sha256": "e6a950173a6a4c93af7fe0eb7b36a080d6783e1f0090cecf8ecd5186042aacd2"
 }
