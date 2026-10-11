@@ -1,6 +1,6 @@
 {
   "editorial_version": "1.1",
-  "source_word_sha256": "05004e0b748cd920ded34942a54f613fee6b3559586df0af8fbd9f3f64f3bba0",
+  "source_word_sha256": "d7fa826b30375c0da1b9d6480bbd411f9cb4e1110ff52108882dac3bb7e37f7b",
   "source_file": "AI-Safety-Engineer-and-the-Machine.docx",
   "language": "en",
   "scope": "educational SourceCode blocks; private desktop and core excluded",
@@ -8,12 +8,11 @@
   "block_count": 115,
   "execution_status": "not established by extraction",
   "manuscript_final_four_sha256": {
-    "AI-Safety-Engineer-and-the-Machine.docx": "05004e0b748cd920ded34942a54f613fee6b3559586df0af8fbd9f3f64f3bba0",
-    "AI-Safety-Engineer-and-the-Machine.epub": "e09dafe7c2315eb6370276b01eca25cb3a09a9e434c13d1121e88a819a618139",
-    "AI-Safety-Engineer-y-la-Maquina.docx": "d6aaa3a4667aaf630f675152adede504e8a5ccb45d4787064b03c8907f20db34",
-    "AI-Safety-Engineer-y-la-Maquina.epub": "df4dbba0b891ed0afce9fe72ed90168a0834180dbcf187f90387fe31e19fb823"
+    "AI-Safety-Engineer-y-la-Maquina.docx": "1823f863f4af6effb1960c41a8147eace10103f8688cb648424709cc38087bac",
+    "AI-Safety-Engineer-y-la-Maquina.epub": "2c7f52ad254ae3083ac858341acf7e8d17af10839e28d51bcbb6fcf05b214eb3",
+    "AI-Safety-Engineer-and-the-Machine.docx": "d7fa826b30375c0da1b9d6480bbd411f9cb4e1110ff52108882dac3bb7e37f7b",
+    "AI-Safety-Engineer-and-the-Machine.epub": "4139b2f26f4b14d9f5a28879fc483400df8793edf9a0b2e82da338cdd5288f0d"
   },
-  "canonical_promotion_receipt_sha256": "2aa76abc7983e203acc6f0a99acab70f239f4d668899077d793a72f14e19e42d",
   "blocks": [
     {
       "id": 1,
@@ -1397,5 +1396,13 @@
     }
   ],
   "editorial_revision_date": "2026-10-06",
-  "case_application_names": "generic"
+  "case_application_names": "generic",
+  "editorial_correction_date": "2026-10-11",
+  "latest_kdp_status": "SUBMITTED_UPDATES_IN_REVIEW",
+  "literal_code_unchanged_except_repeated_prose_or_duplicate_examples_removed": true,
+  "previous_canonical_promotion_receipt_sha256": "2aa76abc7983e203acc6f0a99acab70f239f4d668899077d793a72f14e19e42d",
+  "current_correction_receipt_scope": "repeticiones-oct11",
+  "retired_duplicate_blocks": [],
+  "canonical_promotion_receipt_sha256": "42522e06ccd12b59408d48c971aaec498b9c15fa72fc6c3e1904707f793953ec",
+  "current_editable_source_includes_native_cached_index": true
 }

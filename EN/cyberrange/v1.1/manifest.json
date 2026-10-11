@@ -1,19 +1,18 @@
 {
   "editorial_version": "1.1",
-  "source_word_sha256": "ccd6a3e0c425a1ab9032e827e4e1931c6a09d9c2845c5dc068f976d162460b62",
+  "source_word_sha256": "5311d4e70647b608d4dd2c997008e53be8625beabac4b8e44aa4078526984d1b",
   "source_file": "The-Cyber-Range-and-the-Machine.docx",
   "language": "en",
   "scope": "educational SourceCode blocks; private desktop and core excluded",
   "extraction": "literal w:t, line breaks w:br/w:cr and tabs w:tab in document order; UTF-8 without added headers",
-  "block_count": 329,
+  "block_count": 327,
   "execution_status": "not established by extraction",
   "manuscript_final_four_sha256": {
-    "El-Cyber-Range-y-la-Maquina.docx": "cb93ef005a0e1a51f7cb210cf6be4bc4aa3cbd742ab143d62ce4decf8c927eca",
-    "El-Cyber-Range-y-la-Maquina.epub": "dc6b245e7c9e3ed9f6faff2e428247c2e7c6380d2d08c8444fca4574eeda37b2",
-    "The-Cyber-Range-and-the-Machine.docx": "ccd6a3e0c425a1ab9032e827e4e1931c6a09d9c2845c5dc068f976d162460b62",
-    "The-Cyber-Range-and-the-Machine.epub": "866f7b48553ec61e224f4a648475108adbdee30408182728089e41d5918fbdb4"
+    "El-Cyber-Range-y-la-Maquina.docx": "b7e268f6e85d96abf88487bb8b741b4c4ce8e4a6b3c6fe67c18581e92d825f8c",
+    "El-Cyber-Range-y-la-Maquina.epub": "bf51395b132d9ed71451dc2c6b69a0dba6218e3d56f83b3c4f4bdbead1aff22a",
+    "The-Cyber-Range-and-the-Machine.docx": "5311d4e70647b608d4dd2c997008e53be8625beabac4b8e44aa4078526984d1b",
+    "The-Cyber-Range-and-the-Machine.epub": "a1e72f9a9030bf6bdfa7e32d624a4519d7ec90ac33ba996e1dc72e4b3adf0bc7"
   },
-  "canonical_promotion_receipt_sha256": "43bf673f9fc17678e79ce13f95322b8d81fae5c752366dd2512141ce47a6d697",
   "blocks": [
     {
       "id": 1,
@@ -992,22 +991,6 @@
       "bytes": 2175
     },
     {
-      "id": 123,
-      "file": "blocks/0123.txt",
-      "word_paragraph_index_zero_based": 1846,
-      "heading_context": [],
-      "sha256": "3faaf3a0dcb88d2a6958f148b97f3b42e855fc61948d3bc4cac91cd4eda21392",
-      "bytes": 2175
-    },
-    {
-      "id": 124,
-      "file": "blocks/0124.txt",
-      "word_paragraph_index_zero_based": 1849,
-      "heading_context": [],
-      "sha256": "3faaf3a0dcb88d2a6958f148b97f3b42e855fc61948d3bc4cac91cd4eda21392",
-      "bytes": 2175
-    },
-    {
       "id": 125,
       "file": "blocks/0125.txt",
       "word_paragraph_index_zero_based": 1854,
@@ -1080,8 +1063,8 @@
       "bytes": 82
     },
     {
-      "id": 134,
-      "file": "blocks/0134.txt",
+      "id": 123,
+      "file": "blocks/0123.txt",
       "word_paragraph_index_zero_based": 2055,
       "heading_context": [],
       "sha256": "3faaf3a0dcb88d2a6958f148b97f3b42e855fc61948d3bc4cac91cd4eda21392",
@@ -2649,5 +2632,24 @@
     }
   ],
   "editorial_revision_date": "2026-10-06",
-  "case_application_names": "generic"
+  "case_application_names": "generic",
+  "editorial_correction_date": "2026-10-11",
+  "latest_kdp_status": "SUBMITTED_UPDATES_IN_REVIEW",
+  "literal_code_unchanged_except_repeated_prose_or_duplicate_examples_removed": true,
+  "previous_canonical_promotion_receipt_sha256": "43bf673f9fc17678e79ce13f95322b8d81fae5c752366dd2512141ce47a6d697",
+  "current_correction_receipt_scope": "repeticiones-oct11",
+  "retired_duplicate_blocks": [
+    {
+      "file": "blocks/0124.txt",
+      "sha256": "3faaf3a0dcb88d2a6958f148b97f3b42e855fc61948d3bc4cac91cd4eda21392",
+      "preserved_in_git_history": true
+    },
+    {
+      "file": "blocks/0134.txt",
+      "sha256": "3faaf3a0dcb88d2a6958f148b97f3b42e855fc61948d3bc4cac91cd4eda21392",
+      "preserved_in_git_history": true
+    }
+  ],
+  "canonical_promotion_receipt_sha256": "42522e06ccd12b59408d48c971aaec498b9c15fa72fc6c3e1904707f793953ec",
+  "current_editable_source_includes_native_cached_index": true
 }

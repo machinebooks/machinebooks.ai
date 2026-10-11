@@ -1,6 +1,6 @@
 {
   "editorial_version": "1.1",
-  "source_word_sha256": "f68d04f6cdccf1fa821746d88dab111d4a1ee9a55d7fcca25d51a22454e4e173",
+  "source_word_sha256": "a4c75934bdbc48192574050906e640e1b9184df32841f8ce3600e6fe656c20ad",
   "source_file": "The-Bug-Bounty-Hunter-and-the-Machine.docx",
   "language": "en",
   "scope": "educational SourceCode blocks; private desktop and core excluded",
@@ -8,12 +8,11 @@
   "block_count": 414,
   "execution_status": "not established by extraction",
   "manuscript_final_four_sha256": {
-    "El-Bug-Bounty-Hunter-y-la-Maquina.docx": "65be972288d92ec995dd69ff80554f85afdeef9d1baa99fb713df0d9e4d85309",
-    "El-Bug-Bounty-Hunter-y-la-Maquina.epub": "4119bd0c909aa0476359578e055456ba2dc2b1b006cc58ff0854f7c59a8dbb72",
-    "The-Bug-Bounty-Hunter-and-the-Machine.docx": "f68d04f6cdccf1fa821746d88dab111d4a1ee9a55d7fcca25d51a22454e4e173",
-    "The-Bug-Bounty-Hunter-and-the-Machine.epub": "cff0865c08e476c9f14bf8ed8513525d1132f5c81d4219a85ad53cc2415ea2f9"
+    "El-Bug-Bounty-Hunter-y-la-Maquina.docx": "d53b7d3742f07c5882d87e63f6a3ea4bc702ab77576340adfd3e3c995c882f1f",
+    "El-Bug-Bounty-Hunter-y-la-Maquina.epub": "34b0643ea7ecb595800b43718d9ba384aed30c7fa701206d9a0effac4c474ad4",
+    "The-Bug-Bounty-Hunter-and-the-Machine.docx": "a4c75934bdbc48192574050906e640e1b9184df32841f8ce3600e6fe656c20ad",
+    "The-Bug-Bounty-Hunter-and-the-Machine.epub": "46e081a1e40a79254df7ddc890c5d77076e6755252bbd8bfb25cef12e2213870"
   },
-  "canonical_promotion_receipt_sha256": "07e9d105da3744df99684ee7f71cf4dc8a465527139175211778f6d9a8a9c5a0",
   "blocks": [
     {
       "id": 1,
@@ -3329,5 +3328,13 @@
     }
   ],
   "editorial_revision_date": "2026-10-06",
-  "case_application_names": "generic"
+  "case_application_names": "generic",
+  "editorial_correction_date": "2026-10-11",
+  "latest_kdp_status": "SUBMITTED_UPDATES_IN_REVIEW",
+  "literal_code_unchanged_except_repeated_prose_or_duplicate_examples_removed": true,
+  "previous_canonical_promotion_receipt_sha256": "07e9d105da3744df99684ee7f71cf4dc8a465527139175211778f6d9a8a9c5a0",
+  "current_correction_receipt_scope": "repeticiones-oct11",
+  "retired_duplicate_blocks": [],
+  "canonical_promotion_receipt_sha256": "42522e06ccd12b59408d48c971aaec498b9c15fa72fc6c3e1904707f793953ec",
+  "current_editable_source_includes_native_cached_index": true
 }

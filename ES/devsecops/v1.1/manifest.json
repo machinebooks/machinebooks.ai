@@ -1,6 +1,6 @@
 {
   "editorial_version": "1.1",
-  "source_word_sha256": "064ae511c0b297fd6086fe609da7dc10f1d3b2e35013a8210fe20ab2031c45e1",
+  "source_word_sha256": "6be11c5d47df4295526599647442c498d033f85127533d1380b164ca4fdacb33",
   "source_file": "El-DevSecOps-y-la-Maquina.docx",
   "language": "es",
   "scope": "educational SourceCode blocks; private desktop and core excluded",
@@ -8,10 +8,10 @@
   "block_count": 309,
   "execution_status": "not established by extraction",
   "manuscript_final_four_sha256": {
-    "El-DevSecOps-y-la-Maquina.docx": "064ae511c0b297fd6086fe609da7dc10f1d3b2e35013a8210fe20ab2031c45e1",
-    "El-DevSecOps-y-la-Maquina.epub": "113ae3705524931685412de8366addcf9c2343a0002c87d0edac232e840886d3",
-    "The-DevSecOps-and-the-Machine.docx": "3c8e467b3079e08fdb8ee03c0af52be116b4a3161a59f43168a0f95f7e3ccc0d",
-    "The-DevSecOps-and-the-Machine.epub": "ade3d1a1ad7b1eec74efab27cfe5cacc46af06a9974b7e9990c57af718db3293"
+    "El-DevSecOps-y-la-Maquina.docx": "6be11c5d47df4295526599647442c498d033f85127533d1380b164ca4fdacb33",
+    "El-DevSecOps-y-la-Maquina.epub": "d19101e902f992549dabaa4382b270382210ce610aafa59be63242d68213e387",
+    "The-DevSecOps-and-the-Machine.docx": "c8583abd68f346505eddeb52645f1bfcd0fc76c1f0bbd42d5da9181764c19367",
+    "The-DevSecOps-and-the-Machine.epub": "ddde6d90c41c5462b8baa593680dbe5bdf3eeb186b3654629a4b0a9c6005e1c5"
   },
   "blocks": [
     {
@@ -2488,5 +2488,13 @@
     }
   ],
   "editorial_revision_date": "2026-10-06",
-  "case_application_names": "generic"
+  "case_application_names": "generic",
+  "editorial_correction_date": "2026-10-11",
+  "latest_kdp_status": "SUBMITTED_UPDATES_IN_REVIEW",
+  "literal_code_unchanged_except_repeated_prose_or_duplicate_examples_removed": true,
+  "previous_canonical_promotion_receipt_sha256": null,
+  "current_correction_receipt_scope": "repeticiones-oct11",
+  "retired_duplicate_blocks": [],
+  "canonical_promotion_receipt_sha256": "42522e06ccd12b59408d48c971aaec498b9c15fa72fc6c3e1904707f793953ec",
+  "current_editable_source_includes_native_cached_index": true
 }

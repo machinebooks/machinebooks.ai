@@ -1,6 +1,6 @@
 {
   "editorial_version": "1.1",
-  "source_word_sha256": "eda05532b55d1e3034c43028985a96decb364c87f1ad2ea9633c349beaa1e848",
+  "source_word_sha256": "188de69f205b0c3ff8bddd704f1126de687a2dfc9cf517bdae7ef157c39073f0",
   "source_file": "Anatomy-of-an-Agent.docx",
   "language": "en",
   "scope": "educational SourceCode blocks; private desktop and core excluded",
@@ -8,10 +8,10 @@
   "block_count": 275,
   "execution_status": "not established by extraction",
   "manuscript_final_four_sha256": {
-    "Anatomia-de-un-Agente-de-IA.docx": "1ad887fb0d5bc9b958495a081e0765776b6ca915c8b32e8a80b036fe8312bdfa",
-    "Anatomia-de-un-Agente-de-IA.epub": "439ef056c114a464c1bfcc982749dffaa3bc4c7c59d6c8be1dda4605906bbad9",
-    "Anatomy-of-an-Agent.docx": "eda05532b55d1e3034c43028985a96decb364c87f1ad2ea9633c349beaa1e848",
-    "Anatomy-of-an-Agent.epub": "6ced44f444b540713f347e5211e19a4f4107e913a602ed1cb5f65a89b2ec0932"
+    "Anatomia-de-un-Agente-de-IA.docx": "8693049c7db01b60cd6a44c9b8b9d5e831a671d148ae287cb8f3aed45dfcf551",
+    "Anatomia-de-un-Agente-de-IA.epub": "e8ce0fda17b77e11772199b42d8702e38f8fc48493296a2dc5de4ce1d68ffc5a",
+    "Anatomy-of-an-Agent.docx": "188de69f205b0c3ff8bddd704f1126de687a2dfc9cf517bdae7ef157c39073f0",
+    "Anatomy-of-an-Agent.epub": "4ffbcaba9adbab5c539cc7505811f88695bed5b95443fd50a69f0745a7389148"
   },
   "blocks": [
     {
@@ -2216,5 +2216,13 @@
     }
   ],
   "editorial_revision_date": "2026-10-06",
-  "case_application_names": "generic"
+  "case_application_names": "generic",
+  "editorial_correction_date": "2026-10-11",
+  "latest_kdp_status": "SUBMITTED_UPDATES_IN_REVIEW",
+  "literal_code_unchanged_except_repeated_prose_or_duplicate_examples_removed": true,
+  "previous_canonical_promotion_receipt_sha256": null,
+  "current_correction_receipt_scope": "repeticiones-oct11",
+  "retired_duplicate_blocks": [],
+  "canonical_promotion_receipt_sha256": "42522e06ccd12b59408d48c971aaec498b9c15fa72fc6c3e1904707f793953ec",
+  "current_editable_source_includes_native_cached_index": true
 }
