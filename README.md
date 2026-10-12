@@ -30,19 +30,19 @@ Publication status varies by title and language; the editing and unavailable-mat
 
 El estado de publicación varía por título e idioma. Las entradas en edición o con material no disponible no anuncian publicación ni disponibilidad de ejemplos. Consulta **[machinebooks.ai](https://machinebooks.ai/)** para los detalles y enlaces actuales.
 
-## Review status — 11 October 2026
+## Review status — 12 October 2026
 
 The thirteen Spanish and English v1.1 manuscript pairs use generic application names. On 11 October, redundant warnings, reading lists, and duplicated examples were corrected in Agents, Corporate AI Platform, AI Safety, Bug Bounty, CISO, Cyber Range, DevSecOps, and PQC-Day. The Spanish text was corrected first and its English counterpart was aligned. Technical contracts and substantive examples remain available. The five other books retain their approved revision.
 
 Los trece pares de manuscritos v1.1 en español e inglés utilizan nombres genéricos para las aplicaciones. El 11 de octubre se corrigieron advertencias, lecturas y ejemplos redundantes en Agentes, Plataforma IA Corporativa, AI Safety, Bug Bounty, CISO, Cyber Range, DevSecOps y PQC-Day. Se corrigió primero el español y se alineó su versión inglesa. Se conservan los contratos técnicos y los ejemplos sustantivos. Los otros cinco libros mantienen su revisión aprobada.
 
-All 16 corrected Kindle updates and 14 corrected paperback updates have KDP submission confirmations. These updated files await Amazon's approval. Historical Live checks refer to the preceding files: the 26 Kindle and 22 paperback generic-name updates were approved on 9 October; the English second paperback editions of Agents and Cyber Range were approved on 11 October before this correction. Their earlier English paperbacks were then unpublished as authorized.
+All 16 corrected Kindle updates and 14 corrected paperback updates were verified Live without pending updates on 12 October. The confirmed 11 October submissions were reconciled by exact title ID and ASIN against a fresh KDP bookshelf read; all 30 submitted manuscript hashes and 14 paperback cover hashes match the current canonical packages. This check covers the corrected files, rather than relying on the original publication dates. The earlier English paperbacks of Agents and Cyber Range remain unpublished as authorized.
 
-Las 16 actualizaciones Kindle corregidas y 14 actualizaciones de papel corregidas tienen confirmación de envío de KDP. Estos archivos actualizados esperan la aprobación de Amazon. Las comprobaciones históricas En línea corresponden a los archivos anteriores: las 26 actualizaciones Kindle y 22 de papel con nombres genéricos se aprobaron el 9 de octubre; las segundas ediciones de papel EN de Agentes y Cyber Range se aprobaron el 11 de octubre antes de esta corrección. Después se retiraron sus papeles ingleses anteriores, según lo autorizado.
+Las 16 actualizaciones Kindle corregidas y 14 actualizaciones de papel corregidas se verificaron En línea sin actualizaciones pendientes el 12 de octubre. Se contrastaron los envíos confirmados del 11 de octubre por ID de título y ASIN exactos con una lectura fresca de la biblioteca KDP; los 30 hashes de manuscritos enviados y los 14 de cubiertas de papel coinciden con los paquetes canónicos actuales. La comprobación corresponde a los archivos corregidos y no se basa en las fechas de publicación originales. Los papeles ingleses anteriores de Agentes y Cyber Range permanecen retirados según lo autorizado.
 
-The Spanish DevSecOps paperback has a submission confirmation, while its bookshelf label remains inconsistent with the publishing-status dialog. This is being monitored without a duplicate submission.
+The Spanish DevSecOps paperback's contradictory bookshelf label is resolved: both the fresh bookshelf and status dialog now show Live, without pending changes. No duplicate submission was made.
 
-El papel español de DevSecOps tiene confirmación de envío, pero su etiqueta en la biblioteca no coincide con el diálogo de estado de publicación. Se mantiene el seguimiento sin duplicar el envío.
+La etiqueta contradictoria del papel español de DevSecOps está resuelta: la biblioteca y el diálogo de estado muestran ahora En línea, sin cambios pendientes. No se duplicó el envío.
 
 Gateway will use one complete 8 x 10 inch paperback per language: 810 physical pages in Spanish and 800 in English, preserving all 34 chapters and Appendices A–F. The four-volume plan is cancelled. New paperback identities and ISBNs are required for the changed trim size and page counts. Both old 7 x 10 inch paperbacks were unpublished in KDP on 11 October at the author's request; both Kindle editions remain live. KDP blocked title creation on 11 October; the next expected quota reset is 18 October 2026 at 00:00 UTC. Final KDP Previewer approval and submission remain pending.
 
